@@ -405,97 +405,96 @@ class Application:
         self.root.destroy()  # 关闭窗口
 
 
-def get_system_architecture():
-    return platform.machine()
-
-
-def check_dll_exists(dll_name):
-    try:
-        # 尝试加载 DLL
-        ctypes.WinDLL(dll_name)
-        print(f"{dll_name} is present on the system.")
-        return True
-    except OSError as e:
-        print(f"Failed to load {dll_name}: {e}")
-        return False
-
-
-def check_vc_redist_2015_installed():
-    """检查是否安装了任意版本的Visual C++ 2015"""
-
-    # 设置查询注册表的路径
-    path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-    # 32位和64位键的访问标志
-    arch_keys = [winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY]
-
-    for arch in arch_keys:
-        try:
-            # 打开 Uninstall 键，根据架构访问注册表
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path, 0, winreg.KEY_READ | arch)
-            i = 0
-            while True:
-                try:
-                    # 枚举 Uninstall 键下的子键
-                    subkey_name = winreg.EnumKey(key, i)
-                    subkey = winreg.OpenKey(key, subkey_name)
-                    try:
-                        # 获取 DisplayName 属性
-                        name = winreg.QueryValueEx(subkey, 'DisplayName')[0]
-                        # 检查名称中是否含有 Visual C++ 2015 Redistributable 字样
-                        if 'Visual C++ 2015' in name:
-                            print(f"Found: {name}")
-                            return True
-                    except OSError:
-                        pass
-                    winreg.CloseKey(subkey)
-                except OSError:
-                    break
-                i += 1
-            winreg.CloseKey(key)
-        except OSError:
-            pass
-
-    print("Visual C++ 2015 Redistributable is not installed.")
-    return False
-
-
-def download_and_install_vc_redist(architecture):
-    # 根据架构选择正确的下载链接
-    if architecture.endswith('64'):
-        # 64位系统下载链接
-        url = "https://download.visualstudio.microsoft.com/download/pr/11100229/30017d88dbb4c9c2f59083cda4f35f40/vc_redist.x64.exe"
-    else:
-        # 32位系统下载链接
-        url = "https://download.visualstudio.microsoft.com/download/pr/11100229/78c1e864d806e36f6035d80a0e80399e/vc_redist.x86.exe"
-
-    local_filename = url.split('/')[-1]
-    print(f"Downloading {local_filename} for {architecture}...")
-
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
-
-    # 安装下载的文件
-    print(f"Installing {local_filename}...")
-    subprocess.run(local_filename, shell=True)
+# def get_system_architecture():
+#     return platform.machine()
+#
+#
+# def check_dll_exists(dll_name):
+#     try:
+#         # 尝试加载 DLL
+#         ctypes.WinDLL(dll_name)
+#         print(f"{dll_name} is present on the system.")
+#         return True
+#     except OSError as e:
+#         print(f"Failed to load {dll_name}: {e}")
+#         return False
+#
+#
+# def check_vc_redist_2015_installed():
+#     """检查是否安装了任意版本的Visual C++ 2015"""
+#
+#     # 设置查询注册表的路径
+#     path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+#     # 32位和64位键的访问标志
+#     arch_keys = [winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY]
+#
+#     for arch in arch_keys:
+#         try:
+#             # 打开 Uninstall 键，根据架构访问注册表
+#             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path, 0, winreg.KEY_READ | arch)
+#             i = 0
+#             while True:
+#                 try:
+#                     # 枚举 Uninstall 键下的子键
+#                     subkey_name = winreg.EnumKey(key, i)
+#                     subkey = winreg.OpenKey(key, subkey_name)
+#                     try:
+#                         # 获取 DisplayName 属性
+#                         name = winreg.QueryValueEx(subkey, 'DisplayName')[0]
+#                         # 检查名称中是否含有 Visual C++ 2015 Redistributable 字样
+#                         if 'Visual C++ 2015' in name:
+#                             print(f"Found: {name}")
+#                             return True
+#                     except OSError:
+#                         pass
+#                     winreg.CloseKey(subkey)
+#                 except OSError:
+#                     break
+#                 i += 1
+#             winreg.CloseKey(key)
+#         except OSError:
+#             pass
+#
+#     print("Visual C++ 2015 Redistributable is not installed.")
+#     return False
+#
+#
+# def download_and_install_vc_redist(architecture):
+#     # 根据架构选择正确的下载链接
+#     if architecture.endswith('64'):
+#         # 64位系统下载链接
+#         url = "https://download.visualstudio.microsoft.com/download/pr/11100229/30017d88dbb4c9c2f59083cda4f35f40/vc_redist.x64.exe"
+#     else:
+#         # 32位系统下载链接
+#         url = "https://download.visualstudio.microsoft.com/download/pr/11100229/78c1e864d806e36f6035d80a0e80399e/vc_redist.x86.exe"
+#
+#     local_filename = url.split('/')[-1]
+#     print(f"Downloading {local_filename} for {architecture}...")
+#
+#     with requests.get(url, stream=True) as r:
+#         r.raise_for_status()
+#         with open(local_filename, 'wb') as f:
+#             for chunk in r.iter_content(chunk_size=8192):
+#                 f.write(chunk)
+#
+#     # 安装下载的文件
+#     print(f"Installing {local_filename}...")
+#     subprocess.run(local_filename, shell=True)
 
 
 if __name__ == '__main__':
-    # 前置检查环境依赖！！！！
-    # 检查 DLL 是否存在
-    dll_check_result = check_dll_exists("api-ms-win-crt-stdio-l1-1-0.dll")
-    # 如果不存在目标DLL，检查是否安装Visual C++ 2015
-    if not dll_check_result:
-        check_vc_result = check_vc_redist_2015_installed()
-        # 如果没有安装任意版本的Visual C++ 2015，直接拉去官网的Visual C++ 2015下载并安装
-        if not check_vc_result:
-            # 检测系统架构
-            arch = get_system_architecture()
-            # 根据架构选择正确的下载链接
-            download_and_install_vc_redist(arch)
-
+    # # 前置检查环境依赖！！！！
+    # # 检查 DLL 是否存在
+    # dll_check_result = check_dll_exists("api-ms-win-crt-stdio-l1-1-0.dll")
+    # # 如果不存在目标DLL，检查是否安装Visual C++ 2015
+    # if not dll_check_result:
+    #     check_vc_result = check_vc_redist_2015_installed()
+    #     # 如果没有安装任意版本的Visual C++ 2015，直接拉去官网的Visual C++ 2015下载并安装
+    #     if not check_vc_result:
+    #         # 检测系统架构
+    #         arch = get_system_architecture()
+    #         # 根据架构选择正确的下载链接
+    #         download_and_install_vc_redist(arch)
 
     root = tk.Tk()
     app = Application(root)
