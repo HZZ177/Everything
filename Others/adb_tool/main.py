@@ -5,7 +5,7 @@
 # @File    : main.py
 # @Software: PyCharm
 # @description:
-import datetime,subprocess,os,sys,threading,ctypes,winreg,requests,platform
+import datetime, subprocess, os, sys, threading, ctypes, winreg, requests, platform
 import tkinter as tk
 from tkinter import messagebox, filedialog
 
@@ -29,22 +29,103 @@ class Application:
         self.download_log_path = self.base_path
 
         # 定义一些基本属性
-        self.main_frame = None
-        self.function_frame = None
-        self.top_download_log = None
+        self.main_frame = None      # 主页基座
+        self.function_frame = None  # 功能选择界面基座
+        self.top_download_log = None    # 下载日志浮窗基座
+        self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
 
-        self.device_ip = None
+        self.device_ip = None   # 连接设备ip
+        self.device_entries = None   # 输入多设备ip列表
+        self.device_index = -1   # 多设备ip在数组中的位置
+
+        # 定义版本号
+        self.version = "v1.2.0"
 
         # 定义初始化窗口的基本信息
         self.root = base_root
-        self.root.title("ADB-设备调试工具-V1.0.0")
+        self.root.title(f"ADB-设备调试工具-{self.version}")
         # 初始化窗口居中弹出
         self.center_window(self.root, 3)
         # 当用户尝试关闭窗口时，调用 on_closing 函数
         root.protocol("WM_DELETE_WINDOW", lambda: app.on_closing())
 
+    def choose_devices_mode_page(self, base_root):
+        """进入哪种设备连接模式，单设备/多设备升级"""
+
+        # 清除之前的页面内容
+        for widget in base_root.winfo_children():
+            widget.destroy()
+
+        # 单设备连接模式按钮
+        single_device_button = tk.Button(base_root, text="连接单个设备",
+                                         command=lambda: self.create_ip_input_table(self.root))
+        single_device_button.pack(pady=50)
+
+        # 多设备批量升级模式按钮
+        multiple_devices_button = tk.Button(base_root, text="批量设备一键升级",
+                                            command=lambda: self.upgrade_multiple_device(base_root))
+        multiple_devices_button.pack(pady=50)
+
+    def upgrade_multiple_device(self, base_root):
+        """选择连接单个设备/批量升级设备"""
+
+        # 清除之前的页面内容
+        for widget in base_root.winfo_children():
+            widget.destroy()
+
+        self.device_entries = []    # 接收批量设备ip的数组
+        # 创建页面
+        self.basic_frame = tk.Frame(base_root)
+        self.basic_frame.pack(pady=20)
+
+        label = tk.Label(self.basic_frame, text="请在下方输入要升级的设备IP:")
+        label.pack(pady=(20, 5))
+
+        # 生成添加设备按钮
+        add_device_button = tk.Button(self.basic_frame, text="添加设备", command=self.add_device_and_index)
+        add_device_button.pack(pady=10)
+
+        # 设置升级按钮
+        upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices1)
+        upgrade_button.pack(pady=10)
+
+    def add_device_and_index(self):
+        """添加新的设备输入框，并更新索引位置"""
+        self.device_entries.append(tk.StringVar())  # 使用 StringVar 保存输入框的值
+        new_entry = tk.Entry(self.basic_frame, textvariable=self.device_entries[-1])
+        new_entry.pack(pady=2)
+        self.device_index += 1
+
+    def upgrade_all_devices1(self):
+        """一键升级所有设备"""
+        # 遍历所有输入框的值，并存入数组中
+        ip_addresses = [entry.get() for entry in self.device_entries]
+        # 打印或者进行其他操作，比如将 IP 地址数组传递给升级函数
+        print("所有设备的 IP 地址:", ip_addresses)
+
+    def upgrade_all_devices(self):
+        """一次性升级所有列出的设备"""
+        apk_path = filedialog.askopenfilename(
+            title="选择一个升级包",
+            filetypes=(("apk文件", "*.apk"),)
+        )
+
+        if not apk_path:
+            messagebox.showinfo("提示", "没有选择APK文件！")
+            return
+
+        for entry in self.device_entries:
+            device_ip = entry.get().strip()
+            if device_ip:
+                self.upgrade_to_device()
+
     def create_ip_input_table(self, base_root):
         """设备IP输入界面"""
+
+        # 清除之前的页面内容
+        for widget in base_root.winfo_children():
+            widget.destroy()
+
         # 创建主页面
         self.main_frame = tk.Frame(base_root)
         self.main_frame.pack(pady=20)
@@ -498,7 +579,7 @@ if __name__ == '__main__':
 
     root = tk.Tk()
     app = Application(root)
-    app.create_ip_input_table(root)
+    app.choose_devices_mode_page(root)
 
     # 持续事件监控
     root.mainloop()
