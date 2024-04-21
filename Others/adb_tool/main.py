@@ -5,7 +5,15 @@
 # @File    : main.py
 # @Software: PyCharm
 # @description:
-import datetime, subprocess, os, sys, threading, ctypes, winreg, requests, platform
+import datetime
+import subprocess
+import os
+import sys
+import threading
+import ctypes
+import winreg
+import requests
+import platform
 import tkinter as tk
 from tkinter import messagebox, filedialog
 
@@ -22,7 +30,7 @@ class Application:
         # 定义不同设备的日志路径
         self.fccc_logfile = "/sdcard/Android/data/com.keytop.fccc/files/log"  # fcc收费一体机
         self.fsfp_logfile = "/sdcard/Android/data/com.keytop.fsfp/files/log"  # fsfp立式人脸找车机
-        self.fsfa_logfile = "/sdcard/Android/data/com.keytop.frsa/files/log"  # fsfa壁挂式人脸找车机
+        self.fsfa_logfile = "/sdcard/Android/data/com.keytop.fsfa/files/log"  # fsfa壁挂式人脸找车机
         self.lcdgs_logfile = "/sdcard/Android/data/com.keytop.lcdgs/files/log"  # LCD显示屏
 
         # 保存日志文件路径
@@ -36,7 +44,7 @@ class Application:
 
         self.device_ip = None   # 连接设备ip
         self.device_entries = None   # 输入多设备ip列表
-        self.device_index = -1   # 多设备ip在数组中的位置
+        self.device_number = 0   # 多设备ip在数组中的位置
 
         # 定义版本号
         self.version = "v1.2.0"
@@ -58,12 +66,12 @@ class Application:
 
         # 单设备连接模式按钮
         single_device_button = tk.Button(base_root, text="连接单个设备",
-                                         command=lambda: self.create_ip_input_table(self.root))
+                                         command=lambda: self.create_ip_input_table(self.root), width=20, height=2)
         single_device_button.pack(pady=50)
 
         # 多设备批量升级模式按钮
         multiple_devices_button = tk.Button(base_root, text="批量设备一键升级",
-                                            command=lambda: self.upgrade_multiple_device(base_root))
+                                            command=lambda: self.upgrade_multiple_device(base_root), width=20, height=2)
         multiple_devices_button.pack(pady=50)
 
     def upgrade_multiple_device(self, base_root):
@@ -72,6 +80,9 @@ class Application:
         # 清除之前的页面内容
         for widget in base_root.winfo_children():
             widget.destroy()
+
+        self.device_number = 0
+        self.center_window(base_root)
 
         self.device_entries = []    # 接收批量设备ip的数组
         # 创建页面
@@ -83,23 +94,64 @@ class Application:
 
         # 生成添加设备按钮
         add_device_button = tk.Button(self.basic_frame, text="添加设备", command=self.add_device_and_index)
-        add_device_button.pack(pady=10)
-
-        # 设置升级按钮
+        add_device_button.pack(side="left", pady=10, padx=20)
+        # 生成升级按钮
         upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices1)
-        upgrade_button.pack(pady=10)
+        upgrade_button.pack(side="right", pady=10, padx=20)
+        # 固定在页面左上角，返回主页面按钮
+        back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.back_to_main_page(self.basic_frame))
+        back_button.place(x=20, y=10)
+
+        # 生成第一个初始输入框
+        self.add_device_and_index()
+
+    def back_to_main_page(self, basic_frame):
+        # 清除之前的页面内容
+        basic_frame.destroy()
+
+        self.choose_devices_mode_page(self.root)
+        # # 重新设置窗口大小为初始值
+        self.center_window(self.root, relative_size=3)
 
     def add_device_and_index(self):
         """添加新的设备输入框，并更新索引位置"""
-        self.device_entries.append(tk.StringVar())  # 使用 StringVar 保存输入框的值
-        new_entry = tk.Entry(self.basic_frame, textvariable=self.device_entries[-1])
-        new_entry.pack(pady=2)
-        self.device_index += 1
+        new_entry_var = tk.StringVar()  # 使用StringVar控件，动态保存输入框的值
+        self.device_entries.append(new_entry_var)  # 将每次生成的控件添加到数组中
+
+        # 创建一个框架用于包含输入框和摧毁按钮
+        entry_frame = tk.Frame(self.basic_frame)
+        entry_frame.pack(pady=2)
+
+        # 在框架中创建输入框
+        new_entry = tk.Entry(entry_frame, textvariable=self.device_entries[-1])
+        new_entry.pack(side="left")
+
+        # 在框架中创建摧毁按钮
+        destroy_button = tk.Button(entry_frame, text="删除", command=lambda: self.remove_entry(new_entry_var, entry_frame))
+        destroy_button.pack(side="right", padx=2, pady=0)
+
+        self.device_number += 1
+        self.center_window(self.root, calculate_size=self.device_number)
+
+    def remove_entry(self, entry_var, frame):
+        """删除数组中保存的StringVar控件"""
+        self.device_entries.remove(entry_var)  # 从数组中移除对应的 StringVar
+        frame.destroy()  # 销毁框架
 
     def upgrade_all_devices1(self):
         """一键升级所有设备"""
         # 遍历所有输入框的值，并存入数组中
         ip_addresses = [entry.get() for entry in self.device_entries]
+
+        # 检查所有输入ip合法性
+        error_address = []
+        for address in ip_addresses:
+            result = self.is_ip_legal(address)
+            if result != 0:
+                error_address.append(address)
+        if len(error_address) != 0:
+            messagebox.showerror("提示", f"输入IP地址中存在非法地址！\n包含：{error_address}")
+
         # 打印或者进行其他操作，比如将 IP 地址数组传递给升级函数
         print("所有设备的 IP 地址:", ip_addresses)
 
@@ -142,6 +194,10 @@ class Application:
                                 command=lambda: self.entry_select_function_page(entry_ip.get()))
         btn_connect.pack(pady=(5, 20))
 
+        # 固定在页面左上角，返回主页面按钮
+        back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(base_root))
+        back_button.place(x=20, y=10)
+
         # 聚焦到当前输入框
         entry_ip.focus_set()
         self.root.bind("<Return>", lambda event: self.entry_select_function_page(entry_ip.get()))  # 绑定回车键触发连接按钮
@@ -157,7 +213,7 @@ class Application:
                 result = self.connect_device(ip)
                 if "connected" in result.stdout:
                     self.main_frame.pack_forget()  # 隐藏主连接界面
-                    root.title(f"ADB-设备调试工具-V1.0.0===当前连接设备：{ip}")
+                    root.title(f"ADB-设备调试工具{self.version}===当前连接设备：{ip}")
                     # 如果成功连接设备，显示后续控制面板界面
                     self.show_control_panel()
                 else:
@@ -348,7 +404,7 @@ class Application:
                         messagebox.showerror("镜像失败", f"启动设备屏幕镜像失败！\n{line}")
                         return
             # 如果正常结束读取循环，假定镜像成功
-            messagebox.showinfo("镜像结束", "设备屏幕镜像已结束！")
+            # messagebox.showinfo("镜像结束", "设备屏幕镜像已结束！")
         except Exception as e:
             messagebox.showerror("错误", f"读取输出时发生错误！\n{str(e)}")
 
@@ -436,7 +492,7 @@ class Application:
         """adb连接设备函数"""
         command = [self.adb_path, 'connect', ip]
         result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
-                       capture_output=True, text=True, timeout=5)
+                                capture_output=True, text=True, timeout=5)
         return result
 
     def connect_to_other_device(self, now_frame):
@@ -453,8 +509,10 @@ class Application:
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
-        width = max(self.root.winfo_reqwidth(), screen_width // relative_size, calculate_size * 50)
-        height = max(self.root.winfo_reqheight(), screen_height // relative_size, calculate_size * 50)
+        width_min_size = 400
+
+        width = max(screen_width // relative_size, width_min_size)
+        height = max(screen_height // relative_size, calculate_size * 50)
 
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
