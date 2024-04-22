@@ -10,8 +10,17 @@ import subprocess
 import shutil
 import os
 
+pyinstaller_path = r"C:\Users\86364\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts\pyinstaller.exe"
+project_path = os.getcwd()  # 项目基础路径
+extra_tool_path = os.path.join(project_path, 'scrcpy_tool')     # 打包的额外资源文件
+main_script_path = os.path.join(project_path, 'main.py')    # 主题代码文件路径
+version = "v1.2.0"  # 打包程序名称中的版本号
 
-def pack_and_clean_temp(script_name, app_name):
+script_name = main_script_path
+app_name = f"ADB-设备调试工具-{version}"
+
+
+def pack_and_clean_temp(extra_tool_path, script_name, app_name):
     """
     使用 PyInstaller 打包给定的 Python 脚本，并在打包完成后清理临时文件。
 
@@ -20,15 +29,17 @@ def pack_and_clean_temp(script_name, app_name):
         app_name: 打包后的应用程序名称。
     """
     command = [
-        'pyinstaller',
+        pyinstaller_path,
+        "pyinstaller",
         '--onefile',
         '--windowed',
-        '--add-data', f'{script_name};{app_name}',
-        '-n', app_name,
-        script_name
+        f'--add-data="{extra_tool_path};scrcpy_tool"',
+        '-n', f"'{app_name}'",
+        f"'{script_name}'"
     ]
     try:
         print("开始打包...")
+        print("Executing command:", " ".join(command))
         subprocess.run(command, check=True)
         print("打包完成！")
         print("开始清理临时文件...")
@@ -40,8 +51,8 @@ def pack_and_clean_temp(script_name, app_name):
         print("打包过程中出现错误。")
 
 
-# 调用函数来执行打包并清理临时文件
-pack_and_clean_temp(
-    r'C:\Users\86364\PycharmProjects\everything\Others\adb_tool\scrcpy_tool\main.py',
-    'adb设备调试工具V1.2.0'
-)
+
+
+if __name__ == "__main__":
+    # 调用函数来执行打包并清理临时文件
+    pack_and_clean_temp(extra_tool_path, script_name, app_name)
