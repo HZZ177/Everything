@@ -15,7 +15,7 @@ import winreg
 import requests
 import platform
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, ttk
 
 
 class Application:
@@ -23,6 +23,8 @@ class Application:
         # 初始化程序基座
 
         # 获取adb和scrcpy的完整路径
+
+
         self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.adb_path = os.path.join(self.base_path, 'scrcpy_tool', 'adb.exe')
         self.scrcpy_path = os.path.join(self.base_path, 'scrcpy_tool', 'scrcpy.exe')
@@ -41,6 +43,11 @@ class Application:
         self.function_frame = None  # 功能选择界面基座
         self.top_download_log = None    # 下载日志浮窗基座
         self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
+
+        self.progress_window = None     # 多设备升级进度条窗口
+        self.progress_label = None
+        self.progress_bar = None
+        self.progress_log_text = None
 
         self.device_ip = None   # 连接设备ip
         self.device_entries = None   # 输入多设备ip列表
@@ -66,23 +73,23 @@ class Application:
 
         # 单设备连接模式按钮
         single_device_button = tk.Button(base_root, text="连接单个设备",
-                                         command=lambda: self.create_ip_input_table(self.root), width=20, height=2)
-        single_device_button.pack(pady=50)
+                                         command=lambda: self.create_ip_input_table(self.root), width=20, height=2, bd=4)
+        single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         # 多设备批量升级模式按钮
         multiple_devices_button = tk.Button(base_root, text="批量设备一键升级",
-                                            command=lambda: self.upgrade_multiple_device(base_root), width=20, height=2)
-        multiple_devices_button.pack(pady=50)
+                                            command=lambda: self.upgrade_multiple_device(base_root), width=20, height=2, bd=4)
+        multiple_devices_button.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
     def upgrade_multiple_device(self, base_root):
-        """选择连接单个设备/批量升级设备"""
+        """批量升级设备页面"""
 
         # 清除之前的页面内容
         for widget in base_root.winfo_children():
             widget.destroy()
 
-        self.device_number = 0
-        self.center_window(base_root)
+        # self.device_number = 0
+        # self.center_window(base_root)
 
         self.device_entries = []    # 接收批量设备ip的数组
         # 创建页面
@@ -96,10 +103,10 @@ class Application:
         add_device_button = tk.Button(self.basic_frame, text="添加设备", command=self.add_device_and_index)
         add_device_button.pack(side="left", pady=10, padx=20)
         # 生成升级按钮
-        upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices1)
+        upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices_pre)
         upgrade_button.pack(side="right", pady=10, padx=20)
         # 固定在页面左上角，返回主页面按钮
-        back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.back_to_main_page(self.basic_frame))
+        back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(self.root))
         back_button.place(x=20, y=10)
 
         # 生成第一个初始输入框
@@ -131,45 +138,125 @@ class Application:
         destroy_button.pack(side="right", padx=2, pady=0)
 
         self.device_number += 1
-        self.center_window(self.root, calculate_size=self.device_number)
+        # self.center_window(self.root, calculate_size=self.device_number)
 
     def remove_entry(self, entry_var, frame):
         """删除数组中保存的StringVar控件"""
         self.device_entries.remove(entry_var)  # 从数组中移除对应的 StringVar
         frame.destroy()  # 销毁框架
 
-    def upgrade_all_devices1(self):
-        """一键升级所有设备"""
-        # 遍历所有输入框的值，并存入数组中
-        ip_addresses = [entry.get() for entry in self.device_entries]
+    def upgrade_all_devices_pre(self):
+        """一键升级所有设备——前置检查"""
 
-        # 检查所有输入ip合法性
+        # 遍历所有输入框的值，并存入数组中
+        ip_addresses = []
+        for entry in self.device_entries:
+            ip_address = entry.get()
+            if ip_address not in ip_addresses:
+                ip_addresses.append(ip_address)
+            else:
+                messagebox.showerror("提示", f"存在重复IP{ip_address}")
+                return
+
+        # 输入判空
+        if len(ip_addresses) == 0:
+            messagebox.showerror("提示", "请输入至少一个设备IP！")
+            return
+
+        # 如果输入非空，检查所有输入ip合法性并将所有非法地址存入
         error_address = []
         for address in ip_addresses:
             result = self.is_ip_legal(address)
             if result != 0:
                 error_address.append(address)
+
         if len(error_address) != 0:
             messagebox.showerror("提示", f"输入IP地址中存在非法地址！\n包含：{error_address}")
+        else:
+            self.upgrade_all_devices(ip_addresses)
 
-        # 打印或者进行其他操作，比如将 IP 地址数组传递给升级函数
-        print("所有设备的 IP 地址:", ip_addresses)
+        # 调试操作
+        # print("所有设备的 IP 地址:", ip_addresses)
 
-    def upgrade_all_devices(self):
+    def upgrade_all_devices(self, ip_addresses):
         """一次性升级所有列出的设备"""
+
+        # 选择升级包
         apk_path = filedialog.askopenfilename(
             title="选择一个升级包",
             filetypes=(("apk文件", "*.apk"),)
         )
 
         if not apk_path:
-            messagebox.showinfo("提示", "没有选择APK文件！")
+            messagebox.showinfo("提示", "没有选中任何升级包！")
             return
 
-        for entry in self.device_entries:
-            device_ip = entry.get().strip()
-            if device_ip:
-                self.upgrade_to_device()
+        # 创建进度条窗口
+        # self.progress_window = tk.Toplevel(self.root)
+        # self.progress_window.title("升级进度")
+        # self.progress_window.geometry("300x100")
+
+        # 添加进度条
+        self.progress_label = tk.Label(self.root, text="升级整体进度：")
+        self.progress_label.pack()
+
+        self.progress_bar = tk.ttk.Progressbar(self.root, orient="horizontal", length=200, mode="determinate")
+        self.progress_bar.pack()
+
+        self.progress_log_text = tk.Text(self.root, height=10, width=60)
+        self.progress_log_text.pack(pady=5)
+
+        self.root.update()
+        # 执行升级过程
+        self.upgrade_devices(apk_path, ip_addresses)
+
+    def upgrade_devices(self, apk_path, ip_addresses):
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        upgrade_fail_devices = []
+        for idx, ip in enumerate(ip_addresses):
+            # 先断连所有设备
+            self.disconnect_all_device()
+            # 执行升级包指令
+            command_upgrade_by_apk = [self.adb_path, "install", "-r", apk_path]
+            try:
+                # 尝试连接指定设备。连接失败则跳过
+                self.progress_log_text.insert(tk.END, f"{current_time} - 正在连接设备{ip}...\n")
+                self.root.update()
+                connect_result = self.connect_device(ip)
+                if "超时" in connect_result or "失败" in connect_result:
+                    self.progress_log_text.insert(tk.END, f"{current_time} - {connect_result}升级跳过该设备!\n")
+                    self.root.update()
+                    upgrade_fail_devices.append(ip)
+                    continue
+                # 连接成功则尝试升级
+                self.progress_log_text.insert(tk.END, f"{current_time} - 连接成功，正在升级 {ip}...\n")
+                self.root.update()
+                upload_result = subprocess.run(command_upgrade_by_apk, creationflags=subprocess.CREATE_NO_WINDOW,
+                                               encoding='utf-8', capture_output=True, text=True)
+                if upload_result.returncode != 0:
+                    upgrade_fail_devices.append(ip)
+                    self.progress_log_text.insert(tk.END, f"{current_time} - 设备 {ip} 升级失败!\n")
+                else:
+                    self.progress_log_text.insert(tk.END, f"{current_time} - {ip}升级成功!!!\n")
+                    self.root.update()
+            except Exception as e:
+                pass
+            finally:
+                # 更新进度条
+                progress_value = int((idx + 1) / len(ip_addresses) * 100)
+                self.progress_bar["value"] = progress_value
+                self.root.update()
+        # self.progress_window.destroy()
+
+        if len(upgrade_fail_devices) != 0:
+            self.progress_log_text.insert(tk.END, f"\n{current_time} - 所有设备升级已完成，部分设备升级失败！"
+                                                  f"请重新尝试升级或手动升级以下设备！\n\n{upgrade_fail_devices}\n")
+            self.root.update()
+            messagebox.showwarning("提示！", f"所有设备升级已完成，部分设备升级失败!\n请重新尝试升级或手动升级以下设备!(可在日志末尾手动复制出来)\n{upgrade_fail_devices}\n")
+        else:
+            self.progress_log_text.insert(tk.END, f"\n{current_time} - 所有设备已经成功升级!!!\n")
+            self.root.update()
+            messagebox.showinfo("提示！", f"所有设备已经成功升级!")
 
     def create_ip_input_table(self, base_root):
         """设备IP输入界面"""
@@ -491,9 +578,14 @@ class Application:
     def connect_device(self, ip):
         """adb连接设备函数"""
         command = [self.adb_path, 'connect', ip]
-        result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
-                                capture_output=True, text=True, timeout=5)
-        return result
+        try:
+            result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
+                                    capture_output=True, text=True, timeout=5)
+            return result
+        except subprocess.CalledProcessError as e:
+            return f"连接设备 {ip} 失败！"
+        except subprocess.TimeoutExpired as e:
+            return f"连接设备 {ip} 超时！"
 
     def connect_to_other_device(self, now_frame):
         """连接其他设备按钮绑定事件"""
