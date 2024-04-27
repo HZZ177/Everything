@@ -14,6 +14,7 @@ import ctypes
 import winreg
 import requests
 import platform
+import threading
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import messagebox, filedialog, ttk
@@ -24,6 +25,7 @@ class Application:
         # 初始化程序基座
 
         # 获取adb和scrcpy的完整路径
+
         self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.adb_path = os.path.join(self.base_path, 'scrcpy_tool', 'adb.exe')
         self.scrcpy_path = os.path.join(self.base_path, 'scrcpy_tool', 'scrcpy.exe')
@@ -44,11 +46,13 @@ class Application:
         self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
 
         self.progress_window = None     # 多设备升级进度条窗口
+        self.progress_frame = None
         self.progress_label = None
         self.progress_bar = None
         self.progress_log_text = None
 
-        self.device_ip = None   # 连接设备ip
+
+        self.device_ip = None   # 单设备连接设备ip
         self.device_entries = None   # 输入多设备ip列表
         self.device_number = 0   # 多设备ip在数组中的位置
 
@@ -193,24 +197,29 @@ class Application:
             messagebox.showinfo("提示", "没有选中任何升级包！")
             return
 
-        # 创建进度条窗口
-        # self.progress_window = tk.Toplevel(self.root)
-        # self.progress_window.title("升级进度")
-        # self.progress_window.geometry("300x100")
+        # 清除之前的进度条框架
+        if hasattr(self, 'progress_frame') and self.progress_frame is not None:
+            self.progress_frame.destroy()
+        # 创建进度条frame
+        self.progress_frame = tk.Frame(self.root)
+        self.progress_frame.pack()
 
         # 添加进度条
-        self.progress_label = tk.Label(self.root, text="升级整体进度：")
+        self.progress_label = tk.Label(self.progress_frame, text="升级整体进度：")
         self.progress_label.pack()
 
-        self.progress_bar = tk.ttk.Progressbar(self.root, orient="horizontal", length=200, mode="determinate")
+        self.progress_bar = tk.ttk.Progressbar(self.progress_frame, orient="horizontal", length=200, mode="determinate")
         self.progress_bar.pack()
 
-        self.progress_log_text = tk.Text(self.root, height=10, width=60)
+        # 添加日志输出框
+        self.progress_log_text = tk.Text(self.progress_frame, height=10, width=60)
         self.progress_log_text.pack(pady=5)
 
         self.root.update()
         # 执行升级过程
-        self.upgrade_devices(apk_path, ip_addresses)
+        upgrade_thread = threading.Thread(target=self.upgrade_devices, args=(apk_path, ip_addresses))
+        upgrade_thread.daemon = True  # 将线程设置为守护线程(主线程退出时自动退出)
+        upgrade_thread.start()
 
     def upgrade_devices(self, apk_path, ip_addresses):
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
