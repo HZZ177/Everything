@@ -15,6 +15,7 @@ import winreg
 import requests
 import platform
 import tkinter as tk
+from tkinter import font as tkfont
 from tkinter import messagebox, filedialog, ttk
 
 
@@ -23,8 +24,6 @@ class Application:
         # 初始化程序基座
 
         # 获取adb和scrcpy的完整路径
-
-
         self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.adb_path = os.path.join(self.base_path, 'scrcpy_tool', 'adb.exe')
         self.scrcpy_path = os.path.join(self.base_path, 'scrcpy_tool', 'scrcpy.exe')
@@ -71,14 +70,17 @@ class Application:
         for widget in base_root.winfo_children():
             widget.destroy()
 
+        # 设置按钮加粗字体
+        bold_font = tkfont.Font(weight="bold")
+
         # 单设备连接模式按钮
         single_device_button = tk.Button(base_root, text="连接单个设备",
-                                         command=lambda: self.create_ip_input_table(self.root), width=20, height=2, bd=4)
+                                         command=lambda: self.create_ip_input_table(self.root), font=bold_font, width=20, height=2, bd=4)
         single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         # 多设备批量升级模式按钮
         multiple_devices_button = tk.Button(base_root, text="批量设备一键升级",
-                                            command=lambda: self.upgrade_multiple_device(base_root), width=20, height=2, bd=4)
+                                            command=lambda: self.upgrade_multiple_device(base_root),font=bold_font, width=20, height=2, bd=4)
         multiple_devices_button.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
     def upgrade_multiple_device(self, base_root):
@@ -298,7 +300,7 @@ class Application:
             self.disconnect_all_device()
             try:
                 result = self.connect_device(ip)
-                if "connected" in result.stdout:
+                if "成功" in result:
                     self.main_frame.pack_forget()  # 隐藏主连接界面
                     root.title(f"ADB-设备调试工具{self.version}===当前连接设备：{ip}")
                     # 如果成功连接设备，显示后续控制面板界面
@@ -579,9 +581,9 @@ class Application:
         """adb连接设备函数"""
         command = [self.adb_path, 'connect', ip]
         try:
-            result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
+            subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
                                     capture_output=True, text=True, timeout=5)
-            return result
+            return "连接设备成功！"
         except subprocess.CalledProcessError as e:
             return f"连接设备 {ip} 失败！"
         except subprocess.TimeoutExpired as e:
