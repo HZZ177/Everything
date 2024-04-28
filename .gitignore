@@ -1,3 +1,4 @@
 dist/
 Others/adb_tool/dist/
 Others/adb_tool/build/
+Others/adb_tool/logs/
