@@ -51,8 +51,8 @@ class Application:
         self.progress_bar = None
         self.progress_log_text = None
 
-
         self.device_ip = None   # 单设备连接设备ip
+        self.ip_record = []     # 连接设备历史
         self.device_entries = None   # 输入多设备ip列表
         self.device_number = 0   # 多设备ip在数组中的位置
 
@@ -284,8 +284,13 @@ class Application:
         label_prompt = tk.Label(self.main_frame, text="请输入要连接的设备完整IP地址:")
         label_prompt.pack(pady=(20, 5))
         # 创建IP地址输入框
-        entry_ip = tk.Entry(self.main_frame, width=20)
+        entry_ip = ttk.Combobox(self.main_frame, width=20)
         entry_ip.pack(pady=5)
+
+        # 添加历史记录到下拉列表
+        # self.record_previous_devices()
+        previous_devices = self.ip_record  # 获取历史记录
+        entry_ip['values'] = previous_devices  # 将历史记录填充到下拉列表中
 
         # 定义链接设备按钮，触发adb connect
         btn_connect = tk.Button(self.main_frame, text="连接设备",
@@ -310,6 +315,8 @@ class Application:
             try:
                 result = self.connect_device(ip)
                 if "成功" in result:
+                    if ip not in self.ip_record:
+                        self.ip_record.insert(0, ip)   # 添加校验通过的ip到历史列表
                     self.main_frame.pack_forget()  # 隐藏主连接界面
                     root.title(f"ADB-设备调试工具{self.version}===当前连接设备：{ip}")
                     # 如果成功连接设备，显示后续控制面板界面
