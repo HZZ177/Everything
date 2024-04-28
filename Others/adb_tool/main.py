@@ -24,8 +24,14 @@ class Application:
     def __init__(self, base_root):
         # 初始化程序基座
 
-        # 获取adb和scrcpy的完整路径
+        # 当前文件所处路径，兼容打包为exe后的路径
+        if getattr(sys, 'frozen', False):
+            self.application_path = os.path.dirname(sys.executable)
+        else:
+            self.application_path = os.path.dirname(os.path.abspath(__file__))
 
+        # 获取adb和scrcpy的完整路径
+        self.log_file_path = os.path.join(self.application_path, 'logs')
         self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.adb_path = os.path.join(self.base_path, 'scrcpy_tool', 'adb.exe')
         self.scrcpy_path = os.path.join(self.base_path, 'scrcpy_tool', 'scrcpy.exe')
@@ -36,7 +42,7 @@ class Application:
         self.fsfa_logfile = "/sdcard/Android/data/com.keytop.fsfa/files/log"  # fsfa壁挂式人脸找车机
         self.lcdgs_logfile = "/sdcard/Android/data/com.keytop.lcdgs/files/log"  # LCD显示屏
 
-        # 保存日志文件路径
+        # 保存设备日志文件路径
         self.download_log_path = self.base_path
 
         # 定义一些基本属性
@@ -45,12 +51,15 @@ class Application:
         self.top_download_log = None    # 下载日志浮窗基座
         self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
 
-        self.progress_window = None     # 多设备升级进度条窗口
-        self.progress_frame = None
-        self.progress_label = None
-        self.progress_bar = None
-        self.progress_log_text = None
+        self.progress_window = None     # 多设备升级进度窗口
+        self.progress_frame = None      # 批量设备升级界面
+        self.progress_label = None      # 批量设备升级提示标签
+        self.progress_bar = None        # 批量设备升级进度条
+        self.text_frame = None          # 多设备升级日志输出frame页
+        self.progress_log_text = None   # 日志输出文本框
+        self.scrollbar = None           # 多设备升级滚动条
 
+        # 定义一些基本变量
         self.device_ip = None   # 单设备连接设备ip
         self.ip_record = []     # 连接设备历史
         self.device_entries = None   # 输入多设备ip列表
@@ -205,17 +214,25 @@ class Application:
         self.progress_frame.pack()
 
         # 添加进度条
-        self.progress_label = tk.Label(self.progress_frame, text="升级整体进度：")
+        self.progress_label = tk.Label(self.progress_frame, text=f"升级整体进度:")
         self.progress_label.pack()
 
         self.progress_bar = tk.ttk.Progressbar(self.progress_frame, orient="horizontal", length=200, mode="determinate")
         self.progress_bar.pack()
 
-        # 添加日志输出框
-        self.progress_log_text = tk.Text(self.progress_frame, height=10, width=60)
-        self.progress_log_text.pack(pady=5)
+        # 创建一个frame用于包裹文本框和滚动条
+        self.text_frame = tk.Frame(self.progress_frame)
+        self.text_frame.pack(pady=5)
 
-        self.root.update()
+        # 添加日志输出框
+        self.progress_log_text = tk.Text(self.text_frame, height=10, width=60)
+        self.progress_log_text.pack(side="left", fill="both", expand=True)
+
+        # 创建垂直滚动条并与文本框关联
+        self.scrollbar = tk.Scrollbar(self.text_frame, command=self.progress_log_text.yview)
+        self.scrollbar.pack(side="right", fill="y")
+        self.progress_log_text.config(yscrollcommand=self.scrollbar.set)
+
         # 执行升级过程
         upgrade_thread = threading.Thread(target=self.upgrade_devices, args=(apk_path, ip_addresses))
         upgrade_thread.daemon = True  # 将线程设置为守护线程(主线程退出时自动退出)
@@ -231,6 +248,7 @@ class Application:
             command_upgrade_by_apk = [self.adb_path, "install", "-r", apk_path]
             try:
                 # 尝试连接指定设备。连接失败则跳过
+                self.progress_log_text.insert(tk.END, f"{current_time} - ===批量升级开始!!!===\n")
                 self.progress_log_text.insert(tk.END, f"{current_time} - 正在连接设备{ip}...\n")
                 self.root.update()
                 connect_result = self.connect_device(ip)
@@ -261,11 +279,22 @@ class Application:
 
         if len(upgrade_fail_devices) != 0:
             self.progress_log_text.insert(tk.END, f"\n{current_time} - 所有设备升级已完成，部分设备升级失败！"
-                                                  f"请重新尝试升级或手动升级以下设备！\n\n{upgrade_fail_devices}\n")
+                                                  f"请重新尝试升级或手动升级以下设备！\n\n{upgrade_fail_devices}\n\n")
+            self.progress_log_text.insert(tk.END, f"{current_time} - ===批量升级结束===\n")
             self.root.update()
+
+            current_log_day = datetime.datetime.now().strftime("%Y-%m-%d")
+            # 确保目录存在
+            print(self.log_file_path)
+            os.makedirs(self.log_file_path, exist_ok=True)
+            # 保存界面日志文件框中所有日志内容到文件
+            with open(f"{self.log_file_path}/{current_log_day}.txt", "a", encoding="utf-8") as log_file:
+                log_file.write(self.progress_log_text.get("1.0", tk.END))
+
             messagebox.showwarning("提示！", f"所有设备升级已完成，部分设备升级失败!\n请重新尝试升级或手动升级以下设备!(可在日志末尾手动复制出来)\n{upgrade_fail_devices}\n")
         else:
             self.progress_log_text.insert(tk.END, f"\n{current_time} - 所有设备已经成功升级!!!\n")
+            self.progress_log_text.insert(tk.END, f"{current_time} - ===批量升级结束!!!===\n")
             self.root.update()
             messagebox.showinfo("提示！", f"所有设备已经成功升级!")
 
@@ -310,6 +339,10 @@ class Application:
         self.device_ip = ip
         result = self.is_ip_legal(ip)
         if not result:
+            remind_label = tk.Label(self.root, text="正在连接设备...")
+            remind_label.pack(pady=2)  # 创建并显示提醒标签
+            self.root.update_idletasks()  # 强制更新界面
+
             # 如果ip校验通过，先断连所有adb连接，然后尝试连接ip设备
             self.disconnect_all_device()
             try:
@@ -327,6 +360,8 @@ class Application:
                 messagebox.showerror("连接错误", "连接错误：命令执行失败，状态码 {}\n错误信息：{}".format(e.returncode, e.stderr))
             except subprocess.TimeoutExpired:
                 messagebox.showerror("连接超时", "连接超时，请检查设备是否在线或IP地址是否正确")
+            finally:
+                remind_label.destroy()  # 取消提示标签
         else:
             messagebox.showwarning(title="提示!", message=result)
 
@@ -430,15 +465,10 @@ class Application:
 
         # 当前下载时间
         download_time = datetime.date.today().strftime("%Y%m%d")
-        # 当前下载文件保存路径，兼容打包为exe后的路径
-        if getattr(sys, 'frozen', False):
-            application_path = os.path.dirname(sys.executable)
-        else:
-            application_path = os.path.dirname(os.path.abspath(__file__))
 
         # 下载的日志保存路径为当前文件夹下的自定义文件夹
         save_file_name = f"download_log_{download_time}"
-        save_path = os.path.join(application_path, f"download_log_{download_time}/")
+        save_path = os.path.join(self.application_path, f"download_log_{download_time}/")
         # 检查路径是否存在，不存在则创建
         os.makedirs(save_path, exist_ok=True)
 

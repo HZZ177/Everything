@@ -23,10 +23,7 @@ app_name = f"ADB-设备调试工具-{version}"
 def pack_and_clean_temp(extra_tool_path, app_name):
     """
     使用 PyInstaller 打包给定的 Python 脚本，并在打包完成后清理临时文件。
-
-    参数：
-        script_name: 要打包的 Python 脚本文件名。
-        app_name: 打包后的应用程序名称。
+    app_name: 打包后的应用程序名称
     """
     command = [
         "pyinstaller",
