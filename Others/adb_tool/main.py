@@ -288,7 +288,7 @@ class Application:
             print(self.log_file_path)
             os.makedirs(self.log_file_path, exist_ok=True)
             # 保存界面日志文件框中所有日志内容到文件
-            with open(f"{self.log_file_path}/{current_log_day}.txt", "a", encoding="utf-8") as log_file:
+            with open(f"{self.log_file_path}\\{current_log_day}.txt", "a", encoding="utf-8") as log_file:
                 log_file.write(self.progress_log_text.get("1.0", tk.END))
 
             messagebox.showwarning("提示！", f"所有设备升级已完成，部分设备升级失败!\n请重新尝试升级或手动升级以下设备!(可在日志末尾手动复制出来)\n{upgrade_fail_devices}\n")
