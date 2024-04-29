@@ -30,16 +30,25 @@ class Application:
         else:
             self.application_path = os.path.dirname(os.path.abspath(__file__))
 
+        # 临时目录
+        if getattr(sys, 'frozen', False):
+            # 如果应用程序是被打包成可执行文件
+            self.temp_dir = sys._MEIPASS
+        else:
+            # 如果应用程序直接运行
+            self.temp_dir = os.path.dirname(os.path.abspath(__file__))
+
         # 获取adb和scrcpy的完整路径
         self.log_file_path = os.path.join(self.application_path, 'logs')
         self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.adb_path = os.path.join(self.base_path, 'scrcpy_tool', 'adb.exe')
+        self.adb_window_path = os.path.join(self.temp_dir, 'scrcpy_tool', 'adb.exe')
         self.scrcpy_path = os.path.join(self.base_path, 'scrcpy_tool', 'scrcpy.exe')
 
         # 定义不同设备的日志路径
         self.fccc_logfile = "/sdcard/Android/data/com.keytop.fccc/files/log"  # fcc收费一体机
         self.fsfp_logfile = "/sdcard/Android/data/com.keytop.fsfp/files/log"  # fsfp立式人脸找车机
-        self.fsfa_logfile = "/sdcard/Android/data/com.keytop.fsfa/files/log"  # fsfa壁挂式人脸找车机
+        self.frsa_logfile = "/sdcard/Android/data/com.keytop.frsa/files/log"  # frsa壁挂式人脸找车机
         self.lcdgs_logfile = "/sdcard/Android/data/com.keytop.lcdgs/files/log"  # LCD显示屏
 
         # 保存设备日志文件路径
@@ -252,14 +261,21 @@ class Application:
                 self.progress_log_text.insert(tk.END, f"{current_time} - 正在连接设备{ip}...\n")
                 self.root.update()
                 connect_result = self.connect_device(ip)
-                if "超时" in connect_result or "失败" in connect_result:
+                # 连接成功则尝试升级
+                if isinstance(connect_result, subprocess.TimeoutExpired):
+                    self.progress_log_text.insert(tk.END, f"{current_time} - 设备连接超时，升级跳过该设备!\n")
+                    self.root.update()
+                    upgrade_fail_devices.append(ip)
+                    continue
+                if isinstance(connect_result, subprocess.CalledProcessError):
                     self.progress_log_text.insert(tk.END, f"{current_time} - {connect_result}升级跳过该设备!\n")
                     self.root.update()
                     upgrade_fail_devices.append(ip)
                     continue
-                # 连接成功则尝试升级
-                self.progress_log_text.insert(tk.END, f"{current_time} - 连接成功，正在升级 {ip}...\n")
-                self.root.update()
+                elif "connected" in connect_result.stdout:
+                    self.progress_log_text.insert(tk.END, f"{current_time} - 连接成功，正在升级 {ip}...\n")
+                    self.root.update()
+
                 upload_result = subprocess.run(command_upgrade_by_apk, creationflags=subprocess.CREATE_NO_WINDOW,
                                                encoding='utf-8', capture_output=True, text=True)
                 if upload_result.returncode != 0:
@@ -347,19 +363,19 @@ class Application:
             self.disconnect_all_device()
             try:
                 result = self.connect_device(ip)
-                if "成功" in result:
+                if "connected" in result.stdout:
                     if ip not in self.ip_record:
                         self.ip_record.insert(0, ip)   # 添加校验通过的ip到历史列表
                     self.main_frame.pack_forget()  # 隐藏主连接界面
                     root.title(f"ADB-设备调试工具{self.version}===当前连接设备：{ip}")
                     # 如果成功连接设备，显示后续控制面板界面
                     self.show_control_panel()
+                elif isinstance(result, subprocess.TimeoutExpired):
+                    messagebox.showerror("连接超时", "连接超时，请检查设备是否在线或IP地址是否正确")
+                elif isinstance(result, subprocess.CalledProcessError):
+                    messagebox.showerror("连接错误", "连接错误：命令执行失败，状态码 {}\n错误信息：{}".format(result.returncode, result.stderr))
                 else:
-                    messagebox.showerror("连接失败", "连接失败，请检查IP地址并重试。")
-            except subprocess.CalledProcessError as e:
-                messagebox.showerror("连接错误", "连接错误：命令执行失败，状态码 {}\n错误信息：{}".format(e.returncode, e.stderr))
-            except subprocess.TimeoutExpired:
-                messagebox.showerror("连接超时", "连接超时，请检查设备是否在线或IP地址是否正确")
+                    messagebox.showerror("连接失败", f"连接失败，请检查IP地址并重试\n报错信息:\n{result.stdout}")
             finally:
                 remind_label.destroy()  # 取消提示标签
         else:
@@ -377,7 +393,7 @@ class Application:
             "下载设备日志": lambda: self.show_download_panel(),
             "开启设备屏幕镜像": lambda: self.start_screen_mirror(self.device_ip),
             "升级设备程序(仅支持apk)": lambda: self.upgrade_to_device(),
-            "发送ADB命令": lambda: self.ask_for_adb_command(root, self.adb_path),  # 发送简单adb指令并执行
+            "打开ADB命令窗口": lambda: self.open_adb_window(root, self.adb_window_path),  # 发送简单adb指令并执行
             # "断开设备连接": lambda: self.disconnect_device(root, adb_path),  # 暂时屏蔽该功能，感觉用不上
             "连接其他设备": lambda: self.connect_to_other_device(self.function_frame),
             "重启设备": lambda: self.restart_device()
@@ -407,7 +423,7 @@ class Application:
         buttons_info = {
             "fcc收费一体机": lambda: self.download_log_choose_page(self.top_download_log, self.fccc_logfile),
             "fsfp立式人脸找车机": lambda: self.download_log_choose_page(self.top_download_log, self.fsfp_logfile),
-            "fsfa壁挂式人脸找车机": lambda: self.download_log_choose_page(self.top_download_log, self.fsfa_logfile),
+            "frsa壁挂式人脸找车机": lambda: self.download_log_choose_page(self.top_download_log, self.frsa_logfile),
             "Lcd显示屏": lambda: self.download_log_choose_page(self.top_download_log, self.lcdgs_logfile)
         }
 
@@ -572,36 +588,11 @@ class Application:
         else:
             messagebox.showerror("执行失败", "命令执行失败！\n错误信息：" + result.stderr)
 
-    def ask_for_adb_command(self, root, adb_path):
-        """弹出一个输入框让用户输入ADB命令"""
-        # 创建一个简单的对话框窗口
-        top = tk.Toplevel(root)
-        top.title("输入ADB命令")
-        self.center_window(top, 4)
-
-        # 提示标签
-        label = tk.Label(top, text="前缀不带adb！请直接输入指令部分！\n例如：disconnect/shell input keyevent等")
-        label.pack(padx=20, pady=(30, 0))  # 上边距10, 下边距0，增加视觉舒适度
-
-        # 输入命令的文本框
-        command_entry = tk.Entry(top, width=40)
-        command_entry.pack(padx=20, pady=(30, 0))
-        command_entry.focus_set()  # 聚焦到当前输入框
-
-        # <发送指令>按钮绑定指令事件
-        def submit(event=None):
-            command = str(command_entry.get())
-            try:
-                self.send_simple_adb_command(command)
-            except Exception as e:
-                messagebox.showerror("错误", f"发送指令出现异常！\n错误信息：{e}")
-            finally:
-                top.destroy()
-
-        # 定义确定按钮，点击后执行命令
-        submit_button = tk.Button(top, text="发送指令", command=submit)
-        submit_button.pack(pady=(20, 20))
-        top.bind("<Return>", submit)  # 绑定回车键触发连接按钮
+    @staticmethod
+    def open_adb_window(self, adb_window_path):
+        """打开一个ADB命令窗口"""
+        # 使用subprocess模块打开ADB命令窗口
+        subprocess.Popen(["start", "cmd", "/k", adb_window_path], shell=True)
 
     def restart_device(self):
         """重启设备并检查命令是否成功下发"""
@@ -627,13 +618,13 @@ class Application:
         """adb连接设备函数"""
         command = [self.adb_path, 'connect', ip]
         try:
-            subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
-                                    capture_output=True, text=True, timeout=5)
-            return "连接设备成功！"
+            result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
+                                    capture_output=True, text=True, timeout=5, encoding='utf-8')
+            return result#"连接设备成功！"
         except subprocess.CalledProcessError as e:
-            return f"连接设备 {ip} 失败！"
+            return e#f"连接设备 {ip} 失败！"
         except subprocess.TimeoutExpired as e:
-            return f"连接设备 {ip} 超时！"
+            return e#f"连接设备 {ip} 超时！"
 
     def connect_to_other_device(self, now_frame):
         """连接其他设备按钮绑定事件"""
