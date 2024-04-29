@@ -241,6 +241,7 @@ class Application:
     def upgrade_devices(self, apk_path, ip_addresses):
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         upgrade_fail_devices = []
+        self.progress_log_text.insert(tk.END, f"{current_time} - ===批量升级开始!!!===\n")
         for idx, ip in enumerate(ip_addresses):
             # 先断连所有设备
             self.disconnect_all_device()
@@ -248,7 +249,6 @@ class Application:
             command_upgrade_by_apk = [self.adb_path, "install", "-r", apk_path]
             try:
                 # 尝试连接指定设备。连接失败则跳过
-                self.progress_log_text.insert(tk.END, f"{current_time} - ===批量升级开始!!!===\n")
                 self.progress_log_text.insert(tk.END, f"{current_time} - 正在连接设备{ip}...\n")
                 self.root.update()
                 connect_result = self.connect_device(ip)
