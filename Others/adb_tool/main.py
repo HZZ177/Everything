@@ -592,7 +592,7 @@ class Application:
     def open_adb_window(self, adb_window_path):
         """打开一个ADB命令窗口"""
         # 使用subprocess模块打开ADB命令窗口
-        subprocess.Popen(["start", "cmd", "/k", adb_window_path], shell=True)
+        subprocess.Popen(["start", "cmd", "/k", adb_window_path], shell=True, cwd=os.path.dirname(adb_window_path))
 
     def restart_device(self):
         """重启设备并检查命令是否成功下发"""
