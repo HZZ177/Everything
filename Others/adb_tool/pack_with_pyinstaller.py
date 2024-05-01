@@ -38,14 +38,13 @@ def pack_and_clean_temp(extra_tool_path, app_name):
         print("Executing command:", " ".join(command))
         subprocess.run(command, check=True)
         print("打包完成！")
-    except subprocess.CalledProcessError:
-        print("打包过程中出现错误。")
-    finally:
         print("开始清理临时文件...")
         # 清理临时文件
         shutil.rmtree('build')
         os.remove(f'{app_name}.spec')
         print("临时文件清理完成！")
+    except subprocess.CalledProcessError:
+        print("打包过程中出现错误。")
 
 
 if __name__ == "__main__":
