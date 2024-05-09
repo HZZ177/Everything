@@ -591,8 +591,41 @@ class Application:
     @staticmethod
     def open_adb_window(self, adb_window_path):
         """打开一个ADB命令窗口"""
+        # 定义提示字
+        tips_dict = {
+            "----": "---",
+            "常用adb系统命令": "",
+            "   	获取root权限": "adb root",
+            "   	重启设备": "adb reboot",
+            "   	抓取log": "adb logcat > xxxx",
+            "   	查询已连接设备": "adb devices",
+            "   	获取设备状态": "adb get-state",
+            "   	获取adb信息": "adb version",
+            "   	apk安装": "adb install xxx/xxx.apk",
+            "   	apk卸载": "adb uninstall com.app.xxx(应用包名)",
+            "   	复制文件到电脑": "adb pull sdcard/xxx xxxxxx",
+            "   	复制文件到安卓": "adb push xxxx sdcard/",
+            "---": "----",
+            "常用adb shell命令": "",
+            "   	列出系统应用": "adb shell pm list package -s",
+            "   	列出第三方应用": "adb shell pm list package -3",
+            "   	发送文本": "adb shell input text xxxxxxxx",
+            "   	按下home键": "adb shell input keyevent KEYCODE_HOME",
+            "   	按下back键": "adb shell input keyevent BACK",
+            "   	亮屏/熄屏": "adb shell input keyevent 26",
+            "   	增加音量": "adb shell input keyevent 24",
+            "   	降低音量": "adb shell input keyevent 25",
+            "   	系统静音": "adb shell input keyevent 164",
+            "   	截图": "adb shell screencap -p /sdcard/screen.png",
+            "   	录屏(max 3min)": "adb shell screenrecord sdcard/record.mp4"
+        }
+        # 构建提示和命令字符串
+        tips_commands = " && ".join([f"echo {tip}-----{command}" for tip, command in tips_dict.items()])
+        print(tips_commands)
+
         # 使用subprocess模块打开ADB命令窗口
-        subprocess.Popen(["start", "cmd", "/k", adb_window_path], shell=True, cwd=os.path.dirname(adb_window_path))
+        subprocess.Popen(["start", "cmd", "/k", f"{tips_commands}\n && adb --help > nul 2>&1 & echo off",
+                          adb_window_path], shell=True, cwd=os.path.dirname(adb_window_path))
 
     def restart_device(self):
         """重启设备并检查命令是否成功下发"""

@@ -10,7 +10,6 @@ import subprocess
 import shutil
 import os
 
-# pyinstaller_path = r"C:\Users\86364\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts\pyinstaller.exe"
 project_path = os.getcwd()  # 项目基础路径
 extra_tool_path = os.path.join(project_path, 'scrcpy_tool')     # 打包的额外资源文件
 main_script_path = os.path.join(project_path, 'main.py')    # 主题代码文件路径
