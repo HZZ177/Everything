@@ -25,6 +25,7 @@ class Application:
         # 初始化程序基座
 
         # 当前文件所处路径，兼容打包为exe后的路径
+
         if getattr(sys, 'frozen', False):
             self.application_path = os.path.dirname(sys.executable)
         else:
@@ -69,6 +70,7 @@ class Application:
         self.scrollbar = None           # 多设备升级滚动条
 
         # 定义一些基本变量
+        self.btn_connect = None     # 链接设备按钮
         self.device_ip = None   # 单设备连接设备ip
         self.ip_record = []     # 连接设备历史
         self.device_entries = None   # 输入多设备ip列表
@@ -95,15 +97,33 @@ class Application:
         # 设置按钮加粗字体
         bold_font = tkfont.Font(weight="bold")
 
-        # 单设备连接模式按钮
-        single_device_button = tk.Button(base_root, text="连接单个设备",
-                                         command=lambda: self.create_ip_input_table(self.root), font=bold_font, width=20, height=2, bd=4)
-        single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+        # 创建 Notebook 组件
+        notebook = ttk.Notebook(base_root)
 
-        # 多设备批量升级模式按钮
-        multiple_devices_button = tk.Button(base_root, text="批量设备一键升级",
-                                            command=lambda: self.upgrade_multiple_device(base_root),font=bold_font, width=20, height=2, bd=4)
-        multiple_devices_button.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+        # 添加第一个标签页 - 单设备连接模式
+        single_device_frame = ttk.Frame(notebook)
+        notebook.add(single_device_frame, text='连接单个设备')
+        self.create_ip_input_table(single_device_frame)  # 直接显示设备IP输入界面
+
+        # # 在第一个标签页中添加按钮
+        # single_device_button = tk.Button(single_device_frame, text="连接单个设备",
+        #                                  command=lambda: self.create_ip_input_table(base_root), font=bold_font,
+        #                                  width=20, height=2, bd=4)
+        # single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        # 添加第二个标签页 - 多设备批量升级模式
+        multiple_devices_frame = ttk.Frame(notebook)
+        notebook.add(multiple_devices_frame, text='批量设备一键升级')
+        self.upgrade_multiple_device(multiple_devices_frame)  # 直接显示批量升级设备页面
+
+        # # 在第二个标签页中添加按钮
+        # multiple_devices_button = tk.Button(multiple_devices_frame, text="批量设备一键升级",
+        #                                     command=lambda: self.upgrade_multiple_device(base_root), font=bold_font,
+        #                                     width=20, height=2, bd=4)
+        # multiple_devices_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        # 将 Notebook 组件放置到窗口中
+        notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
     def upgrade_multiple_device(self, base_root):
         """批量升级设备页面"""
@@ -130,8 +150,8 @@ class Application:
         upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices_pre)
         upgrade_button.pack(side="right", pady=10, padx=20)
         # 固定在页面左上角，返回主页面按钮
-        back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(self.root))
-        back_button.place(x=20, y=10)
+        # back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(self.root))
+        # back_button.place(x=20, y=50)
 
         # 生成第一个初始输入框
         self.add_device_and_index()
@@ -338,13 +358,13 @@ class Application:
         entry_ip['values'] = previous_devices  # 将历史记录填充到下拉列表中
 
         # 定义链接设备按钮，触发adb connect
-        btn_connect = tk.Button(self.main_frame, text="连接设备",
+        self.btn_connect = tk.Button(self.main_frame, text="连接设备",
                                 command=lambda: self.entry_select_function_page(entry_ip.get()))
-        btn_connect.pack(pady=(5, 20))
+        self.btn_connect.pack(pady=(5, 20))
 
         # 固定在页面左上角，返回主页面按钮
-        back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(base_root))
-        back_button.place(x=20, y=10)
+        # back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(base_root))
+        # back_button.place(x=20, y=50)
 
         # 聚焦到当前输入框
         entry_ip.focus_set()
@@ -355,31 +375,41 @@ class Application:
         self.device_ip = ip
         result = self.is_ip_legal(ip)
         if not result:
-            remind_label = tk.Label(self.root, text="正在连接设备...")
-            remind_label.pack(pady=2)  # 创建并显示提醒标签
-            self.root.update_idletasks()  # 强制更新界面
+            # 禁用连接设备按钮
+            self.btn_connect.config(state=tk.DISABLED)
 
-            # 如果ip校验通过，先断连所有adb连接，然后尝试连接ip设备
-            self.disconnect_all_device()
-            try:
-                result = self.connect_device(ip)
-                if "connected" in result.stdout:
-                    if ip not in self.ip_record:
-                        self.ip_record.insert(0, ip)   # 添加校验通过的ip到历史列表
-                    self.main_frame.pack_forget()  # 隐藏主连接界面
-                    root.title(f"ADB-设备调试工具{self.version}===当前连接设备：{ip}")
-                    # 如果成功连接设备，显示后续控制面板界面
-                    self.show_control_panel()
-                elif isinstance(result, subprocess.TimeoutExpired):
-                    messagebox.showerror("连接超时", "连接超时，请检查设备是否在线或IP地址是否正确")
-                elif isinstance(result, subprocess.CalledProcessError):
-                    messagebox.showerror("连接错误", "连接错误：命令执行失败，状态码 {}\n错误信息：{}".format(result.returncode, result.stderr))
-                else:
-                    messagebox.showerror("连接失败", f"连接失败，请检查IP地址并重试\n报错信息:\n{result.stdout}")
-            finally:
-                remind_label.destroy()  # 取消提示标签
+            remind_label = tk.Label(self.main_frame, text="正在连接设备...")
+            remind_label.pack(pady=2)  # 创建并显示提醒标签
+            self.main_frame.update_idletasks()  # 强制更新界面
+
+            # 创建并启动连接设备的守护线程
+            connect_thread = threading.Thread(target=self.connect_device_async, args=(ip, remind_label))
+            connect_thread.daemon = True
+            connect_thread.start()
         else:
             messagebox.showwarning(title="提示!", message=result)
+
+    def connect_device_async(self, ip, remind_label):
+        """异步连接设备"""
+        result = self.connect_device(ip)
+        remind_label.destroy()  # 取消提示标签
+
+        # 在连接结果返回后恢复连接设备按钮为可点击状态
+        self.btn_connect.config(state=tk.NORMAL)
+
+        if "connected" in result.stdout:
+            if ip not in self.ip_record:
+                self.ip_record.insert(0, ip)   # 添加校验通过的ip到历史列表
+            self.main_frame.pack_forget()  # 隐藏主连接界面
+            root.title(f"ADB-设备调试工具{self.version}===当前连接设备：{ip}")
+            # 如果成功连接设备，显示后续控制面板界面
+            self.show_control_panel()
+        elif isinstance(result, subprocess.TimeoutExpired):
+            messagebox.showerror("连接超时", "连接超时，请检查设备是否在线或IP地址是否正确")
+        elif isinstance(result, subprocess.CalledProcessError):
+            messagebox.showerror("连接错误", "连接错误：命令执行失败，状态码 {}\n错误信息：{}".format(result.returncode, result.stderr))
+        else:
+            messagebox.showerror("连接失败", f"连接失败，请检查IP地址并重试\n报错信息:\n{result.stdout}")
 
     def show_control_panel(self):
         """连接设备IP成功后弹出的界面"""
@@ -708,97 +738,7 @@ class Application:
         self.root.destroy()  # 关闭窗口
 
 
-# def get_system_architecture():
-#     return platform.machine()
-#
-#
-# def check_dll_exists(dll_name):
-#     try:
-#         # 尝试加载 DLL
-#         ctypes.WinDLL(dll_name)
-#         print(f"{dll_name} is present on the system.")
-#         return True
-#     except OSError as e:
-#         print(f"Failed to load {dll_name}: {e}")
-#         return False
-#
-#
-# def check_vc_redist_2015_installed():
-#     """检查是否安装了任意版本的Visual C++ 2015"""
-#
-#     # 设置查询注册表的路径
-#     path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-#     # 32位和64位键的访问标志
-#     arch_keys = [winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY]
-#
-#     for arch in arch_keys:
-#         try:
-#             # 打开 Uninstall 键，根据架构访问注册表
-#             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path, 0, winreg.KEY_READ | arch)
-#             i = 0
-#             while True:
-#                 try:
-#                     # 枚举 Uninstall 键下的子键
-#                     subkey_name = winreg.EnumKey(key, i)
-#                     subkey = winreg.OpenKey(key, subkey_name)
-#                     try:
-#                         # 获取 DisplayName 属性
-#                         name = winreg.QueryValueEx(subkey, 'DisplayName')[0]
-#                         # 检查名称中是否含有 Visual C++ 2015 Redistributable 字样
-#                         if 'Visual C++ 2015' in name:
-#                             print(f"Found: {name}")
-#                             return True
-#                     except OSError:
-#                         pass
-#                     winreg.CloseKey(subkey)
-#                 except OSError:
-#                     break
-#                 i += 1
-#             winreg.CloseKey(key)
-#         except OSError:
-#             pass
-#
-#     print("Visual C++ 2015 Redistributable is not installed.")
-#     return False
-#
-#
-# def download_and_install_vc_redist(architecture):
-#     # 根据架构选择正确的下载链接
-#     if architecture.endswith('64'):
-#         # 64位系统下载链接
-#         url = "https://download.visualstudio.microsoft.com/download/pr/11100229/30017d88dbb4c9c2f59083cda4f35f40/vc_redist.x64.exe"
-#     else:
-#         # 32位系统下载链接
-#         url = "https://download.visualstudio.microsoft.com/download/pr/11100229/78c1e864d806e36f6035d80a0e80399e/vc_redist.x86.exe"
-#
-#     local_filename = url.split('/')[-1]
-#     print(f"Downloading {local_filename} for {architecture}...")
-#
-#     with requests.get(url, stream=True) as r:
-#         r.raise_for_status()
-#         with open(local_filename, 'wb') as f:
-#             for chunk in r.iter_content(chunk_size=8192):
-#                 f.write(chunk)
-#
-#     # 安装下载的文件
-#     print(f"Installing {local_filename}...")
-#     subprocess.run(local_filename, shell=True)
-
-
 if __name__ == '__main__':
-    # # 前置检查环境依赖！！！！
-    # # 检查 DLL 是否存在
-    # dll_check_result = check_dll_exists("api-ms-win-crt-stdio-l1-1-0.dll")
-    # # 如果不存在目标DLL，检查是否安装Visual C++ 2015
-    # if not dll_check_result:
-    #     check_vc_result = check_vc_redist_2015_installed()
-    #     # 如果没有安装任意版本的Visual C++ 2015，直接拉去官网的Visual C++ 2015下载并安装
-    #     if not check_vc_result:
-    #         # 检测系统架构
-    #         arch = get_system_architecture()
-    #         # 根据架构选择正确的下载链接
-    #         download_and_install_vc_redist(arch)
-
     root = tk.Tk()
     app = Application(root)
     app.choose_devices_mode_page(root)
