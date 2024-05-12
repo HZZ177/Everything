@@ -12,7 +12,7 @@ import os
 
 project_path = os.getcwd()  # 项目基础路径
 extra_tool_path = os.path.join(project_path, 'scrcpy_tool')     # 打包的额外资源文件
-main_script_path = os.path.join(project_path, 'main.py')    # 主题代码文件路径
+main_script_path = os.path.join(project_path, 'main_origin.py')    # 主题代码文件路径
 version = "v1.2.0"  # 打包程序名称中的版本号
 
 script_name = main_script_path
@@ -30,7 +30,7 @@ def pack_and_clean_temp(extra_tool_path, app_name):
         '--windowed',
         '--add-data', f"{extra_tool_path};scrcpy_tool",
         '-n', f"{app_name}",
-        "main.py"
+        "main_origin.py"
     ]
     try:
         print("开始打包...")
