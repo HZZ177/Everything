@@ -3,8 +3,7 @@ import os
 import sys
 from tkinter import ttk
 from tkinter import font as tkfont
-from Others.adb_tool.managers.device_manager import DeviceManager
-from Others.adb_tool.managers.upgrade_manager import UpgradeManager
+from Others.adb_tool.managers.device_function_manager import DeviceManager
 from Others.adb_tool.managers.log_manager import LogManager
 from Others.adb_tool.utils.utils import Util
 from Others.adb_tool.utils.config import Config
@@ -12,6 +11,8 @@ from Others.adb_tool.utils.config import Config
 
 class MainWindow:
     def __init__(self, root):
+
+        self.root = root
 
         # 当前执行程序所处路径，兼容打包为exe后的路径
         if getattr(sys, 'frozen', False):
@@ -27,10 +28,29 @@ class MainWindow:
             # 如果应用程序直接运行
             self.temp_dir = os.path.dirname(os.path.abspath(__file__))
 
-        self.root = root
-        self.device_manager = DeviceManager()
-        self.upgrade_manager = UpgradeManager()
-        self.log_manager = LogManager()
+        # 定义一些基本变量
+        self.btn_connect = None  # 链接设备按钮
+        self.device_ip = None  # 单设备连接设备ip
+        self.ip_record = []  # 连接设备历史
+        self.device_entries = None  # 输入多设备ip列表
+        self.device_number = 0  # 多设备ip在数组中的位置
+
+        # 定义一些基本页面属性
+        self.main_frame = None  # 主页基座
+        self.function_frame = None  # 功能选择界面基座
+        self.top_download_log = None  # 下载日志浮窗基座
+        self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
+
+        self.progress_window = None  # 多设备升级进度窗口
+        self.progress_frame = None  # 批量设备升级界面
+        self.progress_label = None  # 批量设备升级提示标签
+        self.progress_bar = None  # 批量设备升级进度条
+        self.text_frame = None  # 多设备升级日志输出frame页
+        self.progress_log_text = None  # 日志输出文本框
+        self.scrollbar = None  # 多设备升级滚动条
+
+        # 当用户尝试关闭窗口时，调用 on_closing 函数
+        root.protocol("WM_DELETE_WINDOW", lambda: Util.on_closing(self.root))
 
     def initialize_ui(self):
         """初始化程序基座UI"""
@@ -39,6 +59,7 @@ class MainWindow:
         self.root.title(f"ADB-设备调试工具-{Config.version}")
         # 居中弹出基座
         Util.center_window(self.root, self.root)
+        self.create_function_notebook(self.root)
 
     def create_function_notebook(self, root):
         """顶部标签页：单设备连接/多设备升级"""
@@ -67,7 +88,7 @@ class MainWindow:
         # 添加第二个标签页 - 多设备批量升级模式
         multiple_devices_frame = ttk.Frame(notebook)
         notebook.add(multiple_devices_frame, text='批量设备一键升级')
-        #self.upgrade_multiple_device(multiple_devices_frame)  # 直接显示批量升级设备页面
+        self.upgrade_multiple_device_page(multiple_devices_frame)  # 直接显示批量升级设备页面
 
         # # 在第二个标签页中添加按钮
         # multiple_devices_button = tk.Button(multiple_devices_frame, text="批量设备一键升级",
@@ -116,3 +137,34 @@ class MainWindow:
 
         def entry_select_function_page():
             pass
+
+    def upgrade_multiple_device_page(self, multiple_devices_frame):
+        """批量升级设备页面"""
+
+        # 清除之前的页面内容
+        for widget in multiple_devices_frame.winfo_children():
+            widget.destroy()
+
+        # self.device_number = 0
+        # self.center_window(base_root)
+
+        self.device_entries = []  # 接收批量设备ip的数组
+        # # 创建页面
+        # self.basic_frame = tk.Frame(multiple_devices_frame)
+        # self.basic_frame.pack(pady=20)
+
+        label = tk.Label(multiple_devices_frame, text="请在下方输入要升级的设备IP:")
+        label.pack(pady=(20, 5))
+
+        # 生成添加设备按钮
+        add_device_button = tk.Button(multiple_devices_frame, text="添加设备", command=self.add_device_and_index)
+        add_device_button.pack(side="left", pady=10, padx=20)
+        # 生成升级按钮
+        upgrade_button = tk.Button(multiple_devices_frame, text="一键升级", command=self.upgrade_all_devices_pre)
+        upgrade_button.pack(side="right", pady=10, padx=20)
+        # 固定在页面左上角，返回主页面按钮
+        # back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(self.root))
+        # back_button.place(x=20, y=50)
+
+        # 生成第一个初始输入框
+        self.add_device_and_index()

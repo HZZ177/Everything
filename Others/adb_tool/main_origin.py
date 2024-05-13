@@ -54,7 +54,7 @@ class Application:
         # 保存设备日志文件路径
         self.download_log_path = self.base_path
 
-        # 定义一些基本属性
+        # 定义一些基本页面属性
         self.main_frame = None      # 主页基座
         self.function_frame = None  # 功能选择界面基座
         self.top_download_log = None    # 下载日志浮窗基座
@@ -682,11 +682,11 @@ class Application:
         try:
             result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, check=True,
                                     capture_output=True, text=True, timeout=5, encoding='utf-8')
-            return result#"连接设备成功！"
+            return result   # "连接设备成功！"
         except subprocess.CalledProcessError as e:
-            return e#f"连接设备 {ip} 失败！"
+            return e    # f"连接设备 {ip} 失败！"
         except subprocess.TimeoutExpired as e:
-            return e#f"连接设备 {ip} 超时！"
+            return e    # f"连接设备 {ip} 超时！"
 
     def connect_to_other_device(self, now_frame):
         """连接其他设备按钮绑定事件"""
