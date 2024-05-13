@@ -1,7 +1,20 @@
+
+from Others.adb_tool.managers.device_function_manager import DeviceManager
+
+
 class Util:
     """各种工具类函数"""
+
     @staticmethod
     def center_window(root, target_window, relative_size=3, calculate_size=0):
+        """
+        工具函数，居中窗口并支持自定义窗口大小，按照实际屏幕的的1/relative_size计算
+        :param root: 基座对象
+        :param target_window: 要居中的目标窗口
+        :param relative_size: 要创建的窗口大小，默认屏幕的1/3
+        :param calculate_size: 根据组件动态计算出的最小所需大小
+        :return:
+        """
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
 
@@ -18,7 +31,11 @@ class Util:
 
     @staticmethod
     def is_ip_legal(ip):
-        """工具函数，判断传入ip是否合法"""
+        """
+        工具函数，判断传入ip是否合法
+        :param ip: 要判断合法性的对象ip
+        :return:
+        """
 
         # ip地址元素拆分
         segments = ip.split('.')
@@ -33,3 +50,13 @@ class Util:
             if num < 0 or num > 255:
                 return "ip地址中有超出255的值！请重新输入！"
         return 0    # ip地址正确合法
+
+    @staticmethod
+    def on_closing(root):
+        """
+        工具函数，程序退出时自动触发断连函数
+        :param root: 被关闭的基座对象
+        :return:
+        """
+        DeviceManager.disconnect_all_device()
+        root.destroy()  # 关闭窗口
