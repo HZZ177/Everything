@@ -25,8 +25,6 @@ class Application:
         # 初始化程序基座
 
         # 当前文件所处路径，兼容打包为exe后的路径
-
-
         if getattr(sys, 'frozen', False):
             self.application_path = os.path.dirname(sys.executable)
         else:
@@ -41,7 +39,7 @@ class Application:
             self.temp_dir = os.path.dirname(os.path.abspath(__file__))
 
         # 获取adb和scrcpy的完整路径
-        self.log_file_path = os.path.join(self.application_path, 'logs')
+        self.log_file_path = os.path.join(self.application_path, 'Update_logs')
         self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.adb_path = os.path.join(self.base_path, 'scrcpy_tool', 'adb.exe')
         self.adb_window_path = os.path.join(self.temp_dir, 'scrcpy_tool', 'adb.exe')
@@ -325,7 +323,7 @@ class Application:
 
             current_log_day = datetime.datetime.now().strftime("%Y-%m-%d")
             # 确保目录存在
-            print(self.log_file_path)
+            # print(self.log_file_path)
             os.makedirs(self.log_file_path, exist_ok=True)
             # 保存界面日志文件框中所有日志内容到文件
             with open(f"{self.log_file_path}\\{current_log_day}.txt", "a", encoding="utf-8") as log_file:
@@ -336,6 +334,15 @@ class Application:
             self.progress_log_text.insert(tk.END, f"\n{current_time} - 所有设备已经成功升级!!!\n")
             self.progress_log_text.insert(tk.END, f"{current_time} - ===批量升级结束!!!===\n")
             self.root.update()
+
+            current_log_day = datetime.datetime.now().strftime("%Y-%m-%d")
+            # 确保目录存在
+            # print(self.log_file_path)
+            os.makedirs(self.log_file_path, exist_ok=True)
+            # 保存界面日志文件框中所有日志内容到文件
+            with open(f"{self.log_file_path}\\{current_log_day}.txt", "a", encoding="utf-8") as log_file:
+                log_file.write(self.progress_log_text.get("1.0", tk.END))
+
             messagebox.showinfo("提示！", f"所有设备已经成功升级!")
 
     def create_ip_input_table(self, base_root):
