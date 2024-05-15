@@ -10,11 +10,6 @@ import subprocess
 import os
 import sys
 import threading
-import ctypes
-import winreg
-import requests
-import platform
-import threading
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import messagebox, filedialog, ttk
@@ -115,12 +110,12 @@ class Application:
         self.upgrade_multiple_device(self.multiple_devices_frame)  # 直接显示批量升级设备页面
 
         # 绑定标签页切换事件
-        self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
+        self.notebook.bind("<<NotebookTabChanged>>", self.tab_change_event)
 
         # 将 Notebook 组件放置到窗口中
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-    def on_tab_changed(self, event):
+    def tab_change_event(self, event):
         """标签页切换事件处理函数"""
         selected_tab = event.widget.index(event.widget.select())
         if selected_tab == 0:  # 单设备连接模式
@@ -402,7 +397,7 @@ class Application:
         self.root.bind("<Return>", lambda event: self.entry_select_function_page(self.entry_ip.get()))  # 绑定回车键触发连接按钮
 
     def entry_select_function_page(self, ip):
-        """尝试连接设备并进入控制面板页面"""
+        """控制面板页面"""
         self.device_ip = ip
         result = self.is_ip_legal(ip)
         if not result:

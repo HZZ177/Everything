@@ -1,7 +1,8 @@
+import threading
 import tkinter as tk
 import os
 import sys
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter import font as tkfont
 from Others.adb_tool.managers.device_function_manager import DeviceManager
 from Others.adb_tool.managers.log_manager import LogManager
@@ -59,42 +60,33 @@ class MainWindow:
         self.root.title(f"ADB-设备调试工具-{Config.version}")
         # 居中弹出基座
         Util.center_window(self.root, self.root)
-        self.create_function_notebook(self.root)
+        self.create_function_notebook()
 
-    def create_function_notebook(self, root):
+    def create_function_notebook(self):
         """顶部标签页：单设备连接/多设备升级"""
 
         # 清除之前的页面内容
-        for widget in root.winfo_children():
+        for widget in self.root.winfo_children():
             widget.destroy()
 
         # 设置按钮加粗字体
         bold_font = tkfont.Font(weight="bold")
 
         # 创建 Notebook 组件
-        notebook = ttk.Notebook(root)
+        notebook = ttk.Notebook(self.root)
 
         # 添加第一个标签页 - 单设备连接模式
         single_device_frame = ttk.Frame(notebook)
         notebook.add(single_device_frame, text='连接单个设备')
         self.create_ip_input_page(single_device_frame)  # 直接显示设备IP输入界面
 
-        # # 在第一个标签页中添加按钮
-        # single_device_button = tk.Button(single_device_frame, text="连接单个设备",
-        #                                  command=lambda: self.create_ip_input_table(base_root), font=bold_font,
-        #                                  width=20, height=2, bd=4)
-        # single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
-
         # 添加第二个标签页 - 多设备批量升级模式
         multiple_devices_frame = ttk.Frame(notebook)
         notebook.add(multiple_devices_frame, text='批量设备一键升级')
         self.upgrade_multiple_device_page(multiple_devices_frame)  # 直接显示批量升级设备页面
 
-        # # 在第二个标签页中添加按钮
-        # multiple_devices_button = tk.Button(multiple_devices_frame, text="批量设备一键升级",
-        #                                     command=lambda: self.upgrade_multiple_device(base_root), font=bold_font,
-        #                                     width=20, height=2, bd=4)
-        # multiple_devices_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+        # 绑定标签页切换事件
+        notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
 
         # 将 Notebook 组件放置到窗口中
         notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
@@ -137,6 +129,25 @@ class MainWindow:
 
         def entry_select_function_page():
             pass
+
+    def entry_select_function_page(self, ip):
+        """控制面板页面"""
+        self.device_ip = ip
+        result = Util.is_ip_legal(ip)
+        if not result:
+            # 禁用连接设备按钮
+            self.btn_connect.config(state=tk.DISABLED)
+
+            remind_label = tk.Label(self.main_frame, text="正在连接设备...")
+            remind_label.pack(pady=2)  # 创建并显示提醒标签
+            self.main_frame.update_idletasks()  # 强制更新界面
+
+            # 创建并启动连接设备的守护线程
+            connect_thread = threading.Thread(target=self.connect_device_async, args=(ip, remind_label))
+            connect_thread.daemon = True
+            connect_thread.start()
+        else:
+            messagebox.showwarning(title="提示!", message=result)
 
     def upgrade_multiple_device_page(self, multiple_devices_frame):
         """批量升级设备页面"""

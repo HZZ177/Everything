@@ -4,6 +4,8 @@
 # Time：2024/5/14
 
 import tkinter as tk
+from Others.adb_tool.ui.main_window import MainWindow
+
 
 class PageEventManager:
     """页面功能类"""
@@ -26,3 +28,15 @@ class PageEventManager:
 
         self.device_number += 1
         # self.center_window(self.root, calculate_size=self.device_number)
+
+    def tab_change_event(self, root, event):
+        """标签页切换事件处理函数"""
+        selected_tab = event.widget.index(event.widget.select())
+        if selected_tab == 0:  # 单设备连接模式
+            root.bind("<Return>", self.handle_enter_key_single_device)
+        else:  # 多设备批量升级模式
+            root.unbind("<Return>")
+
+    def handle_enter_key_single_device(self, event):
+        """处理单设备连接模式下的回车键事件"""
+        MainWindow.entry_select_function_page(self.entry_ip.get())
