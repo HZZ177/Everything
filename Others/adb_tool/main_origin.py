@@ -25,6 +25,7 @@ class Application:
         # 初始化程序基座
 
         # 当前文件所处路径，兼容打包为exe后的路径
+
         if getattr(sys, 'frozen', False):
             self.application_path = os.path.dirname(sys.executable)
         else:
@@ -57,8 +58,8 @@ class Application:
         # 定义一些基本页面属性
         self.main_frame = None      # 主页基座
         self.notebook = None        # 标签页基座
-        self.single_device_frame = None
-        self.multiple_devices_frame = None
+        self.single_device_frame = None    # notebook中的单设备界面
+        self.multiple_devices_frame = None  # notebook中的多设备界面
         self.function_frame = None  # 功能选择界面基座
         self.top_download_log = None    # 下载日志浮窗基座
         self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
@@ -72,6 +73,7 @@ class Application:
         self.scrollbar = None           # 多设备升级滚动条
 
         # 定义一些基本变量
+        self.entry_ip = None        # 连接单设备页面输入框
         self.btn_connect = None     # 链接设备按钮
         self.device_ip = None   # 单设备连接设备ip
         self.ip_record = []     # 连接设备历史
@@ -107,25 +109,28 @@ class Application:
         self.notebook.add(self.single_device_frame, text='连接单个设备')
         self.create_ip_input_table(self.single_device_frame)  # 直接显示设备IP输入界面
 
-        # # 在第一个标签页中添加按钮
-        # single_device_button = tk.Button(single_device_frame, text="连接单个设备",
-        #                                  command=lambda: self.create_ip_input_table(base_root), font=bold_font,
-        #                                  width=20, height=2, bd=4)
-        # single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
-
         # 添加第二个标签页 - 多设备批量升级模式
         self.multiple_devices_frame = ttk.Frame(self.notebook)
         self.notebook.add(self.multiple_devices_frame, text='批量设备一键升级')
         self.upgrade_multiple_device(self.multiple_devices_frame)  # 直接显示批量升级设备页面
 
-        # # 在第二个标签页中添加按钮
-        # multiple_devices_button = tk.Button(multiple_devices_frame, text="批量设备一键升级",
-        #                                     command=lambda: self.upgrade_multiple_device(base_root), font=bold_font,
-        #                                     width=20, height=2, bd=4)
-        # multiple_devices_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+        # 绑定标签页切换事件
+        self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
 
         # 将 Notebook 组件放置到窗口中
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+    def on_tab_changed(self, event):
+        """标签页切换事件处理函数"""
+        selected_tab = event.widget.index(event.widget.select())
+        if selected_tab == 0:  # 单设备连接模式
+            self.root.bind("<Return>", self.handle_enter_key_single_device)
+        else:  # 多设备批量升级模式
+            self.root.unbind("<Return>")
+
+    def handle_enter_key_single_device(self, event):
+        """处理单设备连接模式下的回车键事件"""
+        self.entry_select_function_page(self.entry_ip.get())
 
     def upgrade_multiple_device(self, base_root):
         """批量升级设备页面"""
@@ -142,8 +147,13 @@ class Application:
         self.basic_frame = tk.Frame(base_root)
         self.basic_frame.pack(pady=20)
 
+        # 生成初始化按钮
+        regenerate_button = tk.Button(self.basic_frame, text="初始化该界面",
+                                      command=lambda: self.regenerate_multiple_device_page(self.multiple_devices_frame))
+        regenerate_button.place(x=0, y=0)
+
         label = tk.Label(self.basic_frame, text="请在下方输入要升级的设备IP:")
-        label.pack(pady=(20, 5))
+        label.pack(pady=(30, 5))
 
         # 生成添加设备按钮
         add_device_button = tk.Button(self.basic_frame, text="添加设备", command=self.add_device_and_index)
@@ -151,12 +161,22 @@ class Application:
         # 生成升级按钮
         upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices_pre)
         upgrade_button.pack(side="right", pady=10, padx=20)
+
+
+
         # 固定在页面左上角，返回主页面按钮
         # back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(self.root))
         # back_button.place(x=20, y=50)
 
         # 生成第一个初始输入框
         self.add_device_and_index()
+
+    def regenerate_multiple_device_page(self, target_frame):
+        # 清除之前的页面内容
+        for widget in target_frame.winfo_children():
+            widget.destroy()
+
+        self.upgrade_multiple_device(self.multiple_devices_frame)
 
     def back_to_main_page(self, basic_frame):
         # 清除之前的页面内容
@@ -358,19 +378,19 @@ class Application:
 
         # 定义界面提示词
         label_prompt = tk.Label(self.main_frame, text="请输入要连接的设备完整IP地址:")
-        label_prompt.pack(pady=(20, 5))
+        label_prompt.pack(pady=(30, 5))
         # 创建IP地址输入框
-        entry_ip = ttk.Combobox(self.main_frame, width=20)
-        entry_ip.pack(pady=5)
+        self.entry_ip = ttk.Combobox(self.main_frame, width=20)
+        self.entry_ip.pack(pady=5)
 
         # 添加历史记录到下拉列表
         # self.record_previous_devices()
         previous_devices = self.ip_record  # 获取历史记录
-        entry_ip['values'] = previous_devices  # 将历史记录填充到下拉列表中
+        self.entry_ip['values'] = previous_devices  # 将历史记录填充到下拉列表中
 
         # 定义链接设备按钮，触发adb connect
         self.btn_connect = tk.Button(self.main_frame, text="连接设备",
-                                command=lambda: self.entry_select_function_page(entry_ip.get()))
+                                command=lambda: self.entry_select_function_page(self.entry_ip.get()))
         self.btn_connect.pack(pady=(5, 20))
 
         # 固定在页面左上角，返回主页面按钮
@@ -378,8 +398,8 @@ class Application:
         # back_button.place(x=20, y=50)
 
         # 聚焦到当前输入框
-        entry_ip.focus_set()
-        self.root.bind("<Return>", lambda event: self.entry_select_function_page(entry_ip.get()))  # 绑定回车键触发连接按钮
+        self.entry_ip.focus_set()
+        self.root.bind("<Return>", lambda event: self.entry_select_function_page(self.entry_ip.get()))  # 绑定回车键触发连接按钮
 
     def entry_select_function_page(self, ip):
         """尝试连接设备并进入控制面板页面"""
