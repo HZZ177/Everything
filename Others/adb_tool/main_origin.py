@@ -25,6 +25,8 @@ class Application:
         # 初始化程序基座
 
         # 当前文件所处路径，兼容打包为exe后的路径
+
+
         if getattr(sys, 'frozen', False):
             self.application_path = os.path.dirname(sys.executable)
         else:
@@ -56,6 +58,9 @@ class Application:
 
         # 定义一些基本页面属性
         self.main_frame = None      # 主页基座
+        self.notebook = None        # 标签页基座
+        self.single_device_frame = None
+        self.multiple_devices_frame = None
         self.function_frame = None  # 功能选择界面基座
         self.top_download_log = None    # 下载日志浮窗基座
         self.basic_frame = None  # 选择连接单个设备/批量设备升级界面基座
@@ -97,12 +102,12 @@ class Application:
         bold_font = tkfont.Font(weight="bold")
 
         # 创建 Notebook 组件
-        notebook = ttk.Notebook(base_root)
+        self.notebook = ttk.Notebook(base_root)
 
         # 添加第一个标签页 - 单设备连接模式
-        single_device_frame = ttk.Frame(notebook)
-        notebook.add(single_device_frame, text='连接单个设备')
-        self.create_ip_input_table(single_device_frame)  # 直接显示设备IP输入界面
+        self.single_device_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.single_device_frame, text='连接单个设备')
+        self.create_ip_input_table(self.single_device_frame)  # 直接显示设备IP输入界面
 
         # # 在第一个标签页中添加按钮
         # single_device_button = tk.Button(single_device_frame, text="连接单个设备",
@@ -111,9 +116,9 @@ class Application:
         # single_device_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         # 添加第二个标签页 - 多设备批量升级模式
-        multiple_devices_frame = ttk.Frame(notebook)
-        notebook.add(multiple_devices_frame, text='批量设备一键升级')
-        self.upgrade_multiple_device(multiple_devices_frame)  # 直接显示批量升级设备页面
+        self.multiple_devices_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.multiple_devices_frame, text='批量设备一键升级')
+        self.upgrade_multiple_device(self.multiple_devices_frame)  # 直接显示批量升级设备页面
 
         # # 在第二个标签页中添加按钮
         # multiple_devices_button = tk.Button(multiple_devices_frame, text="批量设备一键升级",
@@ -122,7 +127,7 @@ class Application:
         # multiple_devices_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         # 将 Notebook 组件放置到窗口中
-        notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
     def upgrade_multiple_device(self, base_root):
         """批量升级设备页面"""
@@ -238,7 +243,7 @@ class Application:
         if hasattr(self, 'progress_frame') and self.progress_frame is not None:
             self.progress_frame.destroy()
         # 创建进度条frame
-        self.progress_frame = tk.Frame(self.root)
+        self.progress_frame = tk.Frame(self.multiple_devices_frame)
         self.progress_frame.pack()
 
         # 添加进度条
@@ -414,7 +419,7 @@ class Application:
         """连接设备IP成功后弹出的界面"""
 
         # 定义选择功能frame界面基座
-        self.function_frame = tk.Frame(self.root)
+        self.function_frame = tk.Frame(self.single_device_frame)
         self.function_frame.pack(pady=20)
 
         # 定义按钮信息
@@ -696,7 +701,7 @@ class Application:
         else:
             messagebox.showerror("错误", f"指令执行出错！\n错误信息：{result.stderr}")
         now_frame.pack_forget()
-        self.create_ip_input_table(self.root)
+        self.create_ip_input_table(self.single_device_frame)
 
     def center_window(self, target_window, relative_size=4, calculate_size=0):
         screen_width = self.root.winfo_screenwidth()
