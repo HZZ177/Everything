@@ -76,7 +76,7 @@ class Application:
         self.device_number = 0   # 多设备ip在数组中的位置
 
         # 定义版本号
-        self.version = "v1.2.0"
+        self.version = "v1.2.1"
 
         # 定义初始化窗口的基本信息
         self.root = base_root
@@ -461,7 +461,7 @@ class Application:
             button.pack(pady=10)
             button_num += 1
 
-        self.center_window(self.root, 3, calculate_size=button_num)
+        self.center_window(self.root, 3, calculate_size=button_num+3)
 
     def show_download_panel(self):
         """不同设备下载日志界面"""
