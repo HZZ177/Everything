@@ -52,8 +52,8 @@ try:
             plate_no = generate_chinese_license_plate()
             plate_no_simple = plate_no[1:]
             car_image_url = fake.image_url()
-            plate_no_reliability = random.randint(0, 100)
-            create_time = datetime.now()
+            plate_no_reliability = random.randint(500, 100)
+            create_time = fake.date_time_between(start_date='-2y', end_date='now')
 
             data.append((
                 park_addr, plate_no, plate_no_simple, car_image_url, plate_no_reliability, create_time
