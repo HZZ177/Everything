@@ -41,7 +41,7 @@ try:
             reason = fake.text(max_nb_chars=50)
             status = random.randint(0, 1)
             req_id = str(uuid.uuid4()).replace('-', '')
-            create_time = datetime.now()
+            create_time = fake.date_time_between(start_date='-2y', end_date='now')
 
             data.append((
                 url, header, params, reason, status, req_id, create_time

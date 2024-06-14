@@ -10,8 +10,21 @@ import pymysql
 import uuid
 from datetime import datetime, timedelta
 import random
+import string
 
 fake = Faker()
+
+
+def generate_chinese_license_plate():
+    province = random.choice([
+        '京', '津', '沪', '渝', '冀', '豫', '云', '辽', '黑', '湘', '皖', '鲁',
+        '新', '苏', '浙', '赣', '鄂', '桂', '甘', '晋', '蒙', '陕', '吉', '闽',
+        '贵', '粤', '青', '藏', '川', '宁', '琼'
+    ])
+    letter = random.choice(string.ascii_uppercase)
+    numbers = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    return f"{province}{letter}{numbers}"
+
 
 # 连接数据库
 connection = pymysql.connect(
@@ -46,13 +59,13 @@ try:
             floor_name = fake.word()
             area_id = random.randint(1, 50)
             area_name = fake.word()
-            plate_no = fake.license_plate()
-            plate_no_simple = ''.join(filter(str.isalnum, plate_no))
+            plate_no = generate_chinese_license_plate()
+            plate_no_simple = plate_no[1:]
             plate_no_color = random.choice(['blue', 'yellow', 'white', 'green'])
             car_image_url = fake.image_url()
             event_type = random.randint(1, 2)
-            in_out_time = fake.date_time_between(start_date='-1y', end_date='now')
-            create_time = datetime.now()
+            in_out_time = fake.date_time_between(start_date='-2y', end_date='now')
+            create_time = fake.date_time_between(start_date='-2y', end_date='now')
             creator = fake.name()
             updater = fake.name()
 
