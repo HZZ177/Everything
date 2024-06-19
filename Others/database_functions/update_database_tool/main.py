@@ -79,7 +79,7 @@ class Application:
         self.connect_to_database()
 
         # 文件路径
-        output_file = 'database_construct_describe.txt'
+        output_file = 'database_construct_describe.sql'
 
         try:
             with self.connection.cursor() as cursor:
@@ -90,7 +90,7 @@ class Application:
                 with open(output_file, 'w', encoding="utf-8") as file:
                     for table in tables:
                         table_name = table[0]
-                        file.write(f"Table: {table_name}\n")
+                        file.write(f"-- 构造表{table_name}\n")
 
                         # 调试输出
                         # print(f"正在处理表: {table_name}")
@@ -100,8 +100,8 @@ class Application:
                         columns = cursor.fetchall()
 
                         for column in columns:
-                            describe = column
-                            file.write(f"  describe: {describe}\n")
+                            describe = column[1]
+                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace("CREATE TABLE", "")}\n")
 
                         file.write("\n")
 
