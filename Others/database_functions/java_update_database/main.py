@@ -190,10 +190,10 @@ class Application:
 
 
 if __name__ == "__main__":
-    app = Application(host="localhost", port=5831, user="root", password="Keytop:wabjtam!", database='ktpark')
+    app = Application(host="localhost", port=5831, user="root", password="Keytop:wabjtam!", database='parking_guidance')
 
     # 获取标准库结构
-    # app.get_all_tables_and_columns_from_database()
+    app.get_all_tables_and_columns_from_database()
 
     # 检查数据库结构是否一致
-    app.check_database_consistency('wanted_database_structure.txt')
+    #app.check_database_consistency('wanted_database_structure.txt')
