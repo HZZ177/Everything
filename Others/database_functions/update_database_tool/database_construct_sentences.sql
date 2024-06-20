@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `api_access_info` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_app_code` (`app_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='api接入表'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='api接入表';
 
 -- 构造表api_push_info
 CREATE TABLE IF NOT EXISTS `api_push_info` (
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `api_push_info` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_func_module` (`func_module`) USING BTREE,
   KEY `index_app_code` (`app_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='推送信息'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='推送信息';
 
 -- 构造表api_supplementary_push
 CREATE TABLE IF NOT EXISTS `api_supplementary_push` (
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `api_supplementary_push` (
   `req_id` varchar(32) DEFAULT NULL COMMENT '事件ID，用于查询对应绑定事件关系',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='补推信息表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='补推信息表';
 
 -- 构造表area_camera
 CREATE TABLE IF NOT EXISTS `area_camera` (
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `area_camera` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `updater` datetime DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域相机'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域相机';
 
 -- 构造表area_camera_relate
 CREATE TABLE IF NOT EXISTS `area_camera_relate` (
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `area_camera_relate` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creater` varchar(50) DEFAULT NULL COMMENT '创建者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域相机关联区域表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域相机关联区域表';
 
 -- 构造表area_info
 CREATE TABLE IF NOT EXISTS `area_info` (
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `area_info` (
   `park_space_camera_unique_id` varchar(64) DEFAULT NULL COMMENT '立体车位相机唯一标识',
   `detector_park_addr_list` varchar(1024) DEFAULT NULL COMMENT '立体车位关联探测器车位唯一标识，以英文,分隔开',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域信息'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域信息';
 
 -- 构造表b_car_in_out_record
 CREATE TABLE IF NOT EXISTS `b_car_in_out_record` (
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `b_car_in_out_record` (
   KEY `index_element_park_id` (`element_park_id`) USING BTREE,
   KEY `index_park_no` (`park_no`) USING BTREE,
   KEY `index_plate_no` (`plate_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='历史进出车记录表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='历史进出车记录表';
 
 -- 构造表b_car_in_out_record_area
 CREATE TABLE IF NOT EXISTS `b_car_in_out_record_area` (
@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `b_car_in_out_record_area` (
   `updater` varchar(100) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_create_time` (`create_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆进出车记录（区域相机）'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆进出车记录（区域相机）';
 
 -- 构造表b_present_car_plate_record
 CREATE TABLE IF NOT EXISTS `b_present_car_plate_record` (
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `b_present_car_plate_record` (
   `recognition_number` int(11) DEFAULT '1' COMMENT '图片识别车牌次数',
   `charge_status` tinyint(1) DEFAULT '0' COMMENT '收费系统比对状态，0：未比对  1：已比对',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车车牌记录表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车车牌记录表';
 
 -- 构造表b_present_car_record
 CREATE TABLE IF NOT EXISTS `b_present_car_record` (
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `b_present_car_record` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_element_park_id` (`element_park_id`) USING BTREE,
   KEY `index_plate_no` (`plate_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表';
 
 -- 构造表b_present_car_record_area
 CREATE TABLE IF NOT EXISTS `b_present_car_record_area` (
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `b_present_car_record_area` (
   `updater` varchar(100) DEFAULT NULL COMMENT '更新者',
   `data_source` tinyint(1) DEFAULT '0' COMMENT '数据来源 0：区域相机 1：立体车位',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表（区域相机使用）'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表（区域相机使用）';
 
 -- 构造表b_recognition_record
 CREATE TABLE IF NOT EXISTS `b_recognition_record` (
@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `b_recognition_record` (
   `plate_no_reliability` int(11) DEFAULT NULL COMMENT '图片识别车牌可信度',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='识别记录表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='识别记录表';
 
 -- 构造表berth_rate_info
 CREATE TABLE IF NOT EXISTS `berth_rate_info` (
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `berth_rate_info` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='泊位使用率信息表'
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='泊位使用率信息表';
 
 -- 构造表color_transparency_styles
 CREATE TABLE IF NOT EXISTS `color_transparency_styles` (
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `color_transparency_styles` (
   `occupy_fill_color` varchar(32) DEFAULT NULL COMMENT '车位占用时填充颜色',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_styles_id` (`map_styles_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='颜色透明度配置表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='颜色透明度配置表';
 
 -- 构造表coordinate
 CREATE TABLE IF NOT EXISTS `coordinate` (
@@ -277,7 +277,7 @@ CREATE TABLE IF NOT EXISTS `coordinate` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_element_id` (`element_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='元素坐标表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='元素坐标表';
 
 -- 构造表device_escalation
 CREATE TABLE IF NOT EXISTS `device_escalation` (
@@ -291,7 +291,7 @@ CREATE TABLE IF NOT EXISTS `device_escalation` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `exception` tinyint(1) DEFAULT '0' COMMENT '异常问题(0：正常， 1：车位编号重复， 2：无车位编号)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备信息上报表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备信息上报表';
 
 -- 构造表element_beacon
 CREATE TABLE IF NOT EXISTS `element_beacon` (
@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `element_beacon` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='蓝牙信标'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='蓝牙信标';
 
 -- 构造表element_column
 CREATE TABLE IF NOT EXISTS `element_column` (
@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS `element_column` (
   `updater` varchar(255) DEFAULT NULL COMMENT '更新人',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='柱子元素表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='柱子元素表';
 
 -- 构造表element_connector
 CREATE TABLE IF NOT EXISTS `element_connector` (
@@ -340,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `element_connector` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_floor_id` (`floor_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通行设施'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通行设施';
 
 -- 构造表element_custom
 CREATE TABLE IF NOT EXISTS `element_custom` (
@@ -356,7 +356,7 @@ CREATE TABLE IF NOT EXISTS `element_custom` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义元素表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义元素表';
 
 -- 构造表element_custom_detail
 CREATE TABLE IF NOT EXISTS `element_custom_detail` (
@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `element_custom_detail` (
   KEY `idx_element_custom_id` (`element_custom_id`) USING BTREE,
   KEY `idx_floor_id` (`floor_id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义元素详情表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义元素详情表';
 
 -- 构造表element_ground
 CREATE TABLE IF NOT EXISTS `element_ground` (
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS `element_ground` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_floor_id` (`floor_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地面元素表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地面元素表';
 
 -- 构造表element_impassable_path
 CREATE TABLE IF NOT EXISTS `element_impassable_path` (
@@ -405,7 +405,7 @@ CREATE TABLE IF NOT EXISTS `element_impassable_path` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_floor_id` (`floor_id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='不可通行路线'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='不可通行路线';
 
 -- 构造表element_machine
 CREATE TABLE IF NOT EXISTS `element_machine` (
@@ -424,7 +424,7 @@ CREATE TABLE IF NOT EXISTS `element_machine` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_ip` (`ip`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='找车机'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='找车机';
 
 -- 构造表element_model
 CREATE TABLE IF NOT EXISTS `element_model` (
@@ -445,7 +445,7 @@ CREATE TABLE IF NOT EXISTS `element_model` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_floor_id` (`floor_id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='模型'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='模型';
 
 -- 构造表element_park
 CREATE TABLE IF NOT EXISTS `element_park` (
@@ -480,7 +480,7 @@ CREATE TABLE IF NOT EXISTS `element_park` (
   KEY `idx_park_addr` (`park_addr`) USING BTREE,
   KEY `index_area_id` (`area_id`) USING BTREE,
   KEY `index_park_no` (`park_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位';
 
 -- 构造表element_path
 CREATE TABLE IF NOT EXISTS `element_path` (
@@ -500,7 +500,7 @@ CREATE TABLE IF NOT EXISTS `element_path` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_floor_id` (`floor_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='路网'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='路网';
 
 -- 构造表element_screen
 CREATE TABLE IF NOT EXISTS `element_screen` (
@@ -522,7 +522,7 @@ CREATE TABLE IF NOT EXISTS `element_screen` (
   `direction` int(11) DEFAULT '1' COMMENT '屏方向（屏顺序配置字段，用来控制屏从左到右地址是递增(1)还是递减(-1)）',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_screen_addr` (`screen_addr`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='屏'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='屏';
 
 -- 构造表element_screen_child
 CREATE TABLE IF NOT EXISTS `element_screen_child` (
@@ -552,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `element_screen_child` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_parent_id` (`parent_id`) USING BTREE,
   KEY `index_screen_addr` (`screen_addr`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='子屏表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='子屏表';
 
 -- 构造表element_screen_park_relation
 CREATE TABLE IF NOT EXISTS `element_screen_park_relation` (
@@ -564,7 +564,7 @@ CREATE TABLE IF NOT EXISTS `element_screen_park_relation` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_screen_id` (`screen_id`) USING BTREE,
   KEY `idx_park_id` (`park_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='屏和车位的关系表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='屏和车位的关系表';
 
 -- 构造表f_config
 CREATE TABLE IF NOT EXISTS `f_config` (
@@ -583,7 +583,7 @@ CREATE TABLE IF NOT EXISTS `f_config` (
   `channel_swagger_switch` tinyint(1) DEFAULT '1' COMMENT 'channel_service服务swagger配置开关 0:开启  1:关闭',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_config_code` (`config_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统配置表'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统配置表';
 
 -- 构造表face_info
 CREATE TABLE IF NOT EXISTS `face_info` (
@@ -596,7 +596,7 @@ CREATE TABLE IF NOT EXISTS `face_info` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸信息表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸信息表';
 
 -- 构造表floor_info
 CREATE TABLE IF NOT EXISTS `floor_info` (
@@ -616,7 +616,7 @@ CREATE TABLE IF NOT EXISTS `floor_info` (
   `floor_capture` varchar(255) DEFAULT NULL COMMENT '楼层底图截图保存URL',
   `capture_source` tinyint(1) DEFAULT '0' COMMENT '楼层底图来源方式，0:3D手动截图 1:2D地图照片迁移',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='楼层信息'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='楼层信息';
 
 -- 构造表general_config
 CREATE TABLE IF NOT EXISTS `general_config` (
@@ -627,7 +627,7 @@ CREATE TABLE IF NOT EXISTS `general_config` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='通用参数配置信息表'
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='通用参数配置信息表';
 
 -- 构造表image_styles
 CREATE TABLE IF NOT EXISTS `image_styles` (
@@ -652,7 +652,7 @@ CREATE TABLE IF NOT EXISTS `image_styles` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_styles_id` (`map_styles_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='图标配置表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='图标配置表';
 
 -- 构造表info_across_floor
 CREATE TABLE IF NOT EXISTS `info_across_floor` (
@@ -671,7 +671,7 @@ CREATE TABLE IF NOT EXISTS `info_across_floor` (
   `updater` varchar(255) DEFAULT NULL COMMENT '更新人',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='跨层寻车用指引设置表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='跨层寻车用指引设置表';
 
 -- 构造表info_machine_config
 CREATE TABLE IF NOT EXISTS `info_machine_config` (
@@ -698,7 +698,7 @@ CREATE TABLE IF NOT EXISTS `info_machine_config` (
   `route_qr_type` tinyint(4) DEFAULT '0' COMMENT '找车路线二维码类型  0=自定义二维码',
   `route_qr_url` varchar(255) DEFAULT NULL COMMENT '找车路线二维码图片路径',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='找车机常用参数表'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='找车机常用参数表';
 
 -- 构造表ini_config
 CREATE TABLE IF NOT EXISTS `ini_config` (
@@ -714,7 +714,7 @@ CREATE TABLE IF NOT EXISTS `ini_config` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++参数配置表'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++参数配置表';
 
 -- 构造表internationalization
 CREATE TABLE IF NOT EXISTS `internationalization` (
@@ -732,7 +732,7 @@ CREATE TABLE IF NOT EXISTS `internationalization` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `udx_code` (`code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=29896 DEFAULT CHARSET=utf8mb4 COMMENT='国际化'
+) ENGINE=InnoDB AUTO_INCREMENT=29895 DEFAULT CHARSET=utf8mb4 COMMENT='国际化';
 
 -- 构造表internationalization_relation
 CREATE TABLE IF NOT EXISTS `internationalization_relation` (
@@ -746,7 +746,7 @@ CREATE TABLE IF NOT EXISTS `internationalization_relation` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='国际化字段与语言关系表'
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='国际化字段与语言关系表';
 
 -- 构造表lcd_advertisement_config
 CREATE TABLE IF NOT EXISTS `lcd_advertisement_config` (
@@ -762,7 +762,7 @@ CREATE TABLE IF NOT EXISTS `lcd_advertisement_config` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_lcd_advertisement_scheme_id` (`lcd_advertisement_scheme_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏广告配置表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏广告配置表';
 
 -- 构造表lcd_advertisement_scheme
 CREATE TABLE IF NOT EXISTS `lcd_advertisement_scheme` (
@@ -776,7 +776,7 @@ CREATE TABLE IF NOT EXISTS `lcd_advertisement_scheme` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏广告方案表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏广告方案表';
 
 -- 构造表lcd_screen_config
 CREATE TABLE IF NOT EXISTS `lcd_screen_config` (
@@ -793,7 +793,7 @@ CREATE TABLE IF NOT EXISTS `lcd_screen_config` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_element_screen_id` (`element_screen_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏配置'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏配置';
 
 -- 构造表light_scheme_plan
 CREATE TABLE IF NOT EXISTS `light_scheme_plan` (
@@ -811,7 +811,7 @@ CREATE TABLE IF NOT EXISTS `light_scheme_plan` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案下发计划'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案下发计划';
 
 -- 构造表light_scheme_plan_park_relation
 CREATE TABLE IF NOT EXISTS `light_scheme_plan_park_relation` (
@@ -821,7 +821,7 @@ CREATE TABLE IF NOT EXISTS `light_scheme_plan_park_relation` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案下发计划与车位关系表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案下发计划与车位关系表';
 
 -- 构造表lot_info
 CREATE TABLE IF NOT EXISTS `lot_info` (
@@ -844,7 +844,7 @@ CREATE TABLE IF NOT EXISTS `lot_info` (
   `lisence_authorize_code` varchar(1024) DEFAULT NULL COMMENT 'Lisence授权码',
   `lisence_trial_period` datetime DEFAULT NULL COMMENT 'Lisence首次默认30天试用期(寻车服务首次启动时，开始生效)，开始试用时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='车场信息'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='车场信息';
 
 -- 构造表machine_advertisement_config
 CREATE TABLE IF NOT EXISTS `machine_advertisement_config` (
@@ -861,7 +861,7 @@ CREATE TABLE IF NOT EXISTS `machine_advertisement_config` (
   KEY `idx_machine_ad_scheme_id` (`machine_ad_scheme_id`) USING BTREE,
   KEY `idx_machine_ip` (`machine_ip`) USING BTREE,
   KEY `idx_screen_ad_scheme_id` (`screen_ad_scheme_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='找车机广告配置'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='找车机广告配置';
 
 -- 构造表map_styles
 CREATE TABLE IF NOT EXISTS `map_styles` (
@@ -876,7 +876,7 @@ CREATE TABLE IF NOT EXISTS `map_styles` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地图样式配置表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地图样式配置表';
 
 -- 构造表node_device
 CREATE TABLE IF NOT EXISTS `node_device` (
@@ -896,7 +896,7 @@ CREATE TABLE IF NOT EXISTS `node_device` (
   `deleted` int(11) DEFAULT '0' COMMENT '是否删除  0：未删除、  1：已删除',
   `floor_id` int(11) DEFAULT NULL COMMENT '楼层id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='节点设备'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='节点设备';
 
 -- 构造表node_device_relate
 CREATE TABLE IF NOT EXISTS `node_device_relate` (
@@ -907,7 +907,7 @@ CREATE TABLE IF NOT EXISTS `node_device_relate` (
   `entrance_exit` tinyint(4) DEFAULT NULL COMMENT '相机放置类型  1：入口   2：出口   3：出入口',
   `entrance_exit_name` varchar(255) DEFAULT NULL COMMENT '枚举类型：  入口   出口  出入口',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域设备与区域的关系表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域设备与区域的关系表';
 
 -- 构造表parking_light_area_relation
 CREATE TABLE IF NOT EXISTS `parking_light_area_relation` (
@@ -922,7 +922,7 @@ CREATE TABLE IF NOT EXISTS `parking_light_area_relation` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_area_id` (`area_id`) USING BTREE,
   KEY `index_parking_light_scheme_id` (`parking_light_scheme_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案和区域的关系表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案和区域的关系表';
 
 -- 构造表parking_light_scheme
 CREATE TABLE IF NOT EXISTS `parking_light_scheme` (
@@ -943,7 +943,7 @@ CREATE TABLE IF NOT EXISTS `parking_light_scheme` (
   `custom_warning_color` varchar(32) DEFAULT NULL COMMENT '自定义告警颜色',
   `custom_free_color` varchar(32) DEFAULT NULL COMMENT '自定义空闲颜色',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案';
 
 -- 构造表permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -963,7 +963,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updator` varchar(255) DEFAULT NULL COMMENT '更新人',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=598 DEFAULT CHARSET=utf8mb4 COMMENT='权限'
+) ENGINE=InnoDB AUTO_INCREMENT=591 DEFAULT CHARSET=utf8mb4 COMMENT='权限';
 
 -- 构造表role
 CREATE TABLE IF NOT EXISTS `role` (
@@ -977,7 +977,7 @@ CREATE TABLE IF NOT EXISTS `role` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='角色'
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='角色';
 
 -- 构造表role_permission_relation
 CREATE TABLE IF NOT EXISTS `role_permission_relation` (
@@ -987,7 +987,7 @@ CREATE TABLE IF NOT EXISTS `role_permission_relation` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(50) DEFAULT NULL COMMENT '创建者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=971 DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关系表'
+) ENGINE=InnoDB AUTO_INCREMENT=971 DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关系表';
 
 -- 构造表schedule_config
 CREATE TABLE IF NOT EXISTS `schedule_config` (
@@ -1031,7 +1031,7 @@ CREATE TABLE IF NOT EXISTS `schedule_config` (
   `clean_area_picture` int(11) DEFAULT '1' COMMENT '区域照片文件定时清理（单位：天）',
   `warn_switch` int(11) NOT NULL DEFAULT '1' COMMENT '告警开关 1=开 0=关',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='参数配置表'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='参数配置表';
 
 -- 构造表t_access_config
 CREATE TABLE IF NOT EXISTS `t_access_config` (
@@ -1073,7 +1073,7 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
   `recognition_switch` tinyint(1) DEFAULT '1' COMMENT '识别库开关，0:关闭 1:开启',
   `free_occupy_switch` tinyint(1) DEFAULT '0' COMMENT '找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++重构配置信息表'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++重构配置信息表';
 
 -- 构造表t_car_in_out_statistics
 CREATE TABLE IF NOT EXISTS `t_car_in_out_statistics` (
@@ -1091,7 +1091,7 @@ CREATE TABLE IF NOT EXISTS `t_car_in_out_statistics` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_record_time` (`record_end_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='出入车流量统计'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='出入车流量统计';
 
 -- 构造表t_login_log
 CREATE TABLE IF NOT EXISTS `t_login_log` (
@@ -1109,7 +1109,7 @@ CREATE TABLE IF NOT EXISTS `t_login_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_user_account` (`user_account`) USING BTREE,
   KEY `idx_user_name` (`user_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='登陆日志表'
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='登陆日志表';
 
 -- 构造表t_server_log
 CREATE TABLE IF NOT EXISTS `t_server_log` (
@@ -1125,7 +1125,7 @@ CREATE TABLE IF NOT EXISTS `t_server_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_file_name` (`file_name`) USING BTREE,
   KEY `idx_log_time` (`log_time`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8mb4 COMMENT='服务日志表'
+) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8mb4 COMMENT='服务日志表';
 
 -- 构造表user
 CREATE TABLE IF NOT EXISTS `user` (
@@ -1149,7 +1149,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `password_record` varchar(255) DEFAULT NULL COMMENT '密码修改信息记录(默认保存最近5条更新数据)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='用户'
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='用户';
 
 -- 构造表warn_illegal_park
 CREATE TABLE IF NOT EXISTS `warn_illegal_park` (
@@ -1162,7 +1162,7 @@ CREATE TABLE IF NOT EXISTS `warn_illegal_park` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆违停告警配置'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆违停告警配置';
 
 -- 构造表warn_illegal_park_relate
 CREATE TABLE IF NOT EXISTS `warn_illegal_park_relate` (
@@ -1174,7 +1174,7 @@ CREATE TABLE IF NOT EXISTS `warn_illegal_park_relate` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆违停告警配置关系表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆违停告警配置关系表';
 
 -- 构造表warn_log
 CREATE TABLE IF NOT EXISTS `warn_log` (
@@ -1198,7 +1198,7 @@ CREATE TABLE IF NOT EXISTS `warn_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_park_id` (`park_id`) USING BTREE,
   KEY `idx_present_car_record_id` (`present_car_record_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='告警记录'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='告警记录';
 
 -- 构造表warn_space_occupy
 CREATE TABLE IF NOT EXISTS `warn_space_occupy` (
@@ -1211,7 +1211,7 @@ CREATE TABLE IF NOT EXISTS `warn_space_occupy` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位占用告警配置'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位占用告警配置';
 
 -- 构造表warn_special_car
 CREATE TABLE IF NOT EXISTS `warn_special_car` (
@@ -1226,7 +1226,7 @@ CREATE TABLE IF NOT EXISTS `warn_special_car` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='特殊车辆配置'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='特殊车辆配置';
 
 -- 构造表warn_time
 CREATE TABLE IF NOT EXISTS `warn_time` (
@@ -1241,5 +1241,5 @@ CREATE TABLE IF NOT EXISTS `warn_time` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='固定车绑定告警时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='固定车绑定告警时间';
 
