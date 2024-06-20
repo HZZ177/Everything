@@ -74,7 +74,7 @@ class Application:
 
         sleep(2)
 
-    def get_all_construct_describe(self):
+    def get_all_construct_sentence(self):
 
         self.connect_to_database()
 
@@ -101,7 +101,44 @@ class Application:
 
                         for column in columns:
                             describe = column[1]
-                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace("CREATE TABLE", "")}\n")
+                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace("CREATE TABLE", "")};\n")
+
+                        file.write("\n")
+
+        except Exception as e:
+            print(f"获取表结构信息失败: {e}")
+            traceback.print_exc()
+
+        sleep(2)
+
+    def get_all_column_insert_sentence(self):
+
+        self.connect_to_database()
+
+        # 文件路径
+        output_file = 'database_construct_describe.sql'
+
+        try:
+            with self.connection.cursor() as cursor:
+                # 获取所有表名
+                cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
+                tables = cursor.fetchall()
+
+                with open(output_file, 'w', encoding="utf-8") as file:
+                    for table in tables:
+                        table_name = table[0]
+                        file.write(f"-- 构造表{table_name}\n")
+
+                        # 调试输出
+                        # print(f"正在处理表: {table_name}")
+
+                        # 获取所有表的初始化语句
+                        cursor.execute(f"show create TABLE `{table_name}`")
+                        columns = cursor.fetchall()
+
+                        for column in columns:
+                            describe = column[1]
+                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace("CREATE TABLE", "")};\n")
 
                         file.write("\n")
 
