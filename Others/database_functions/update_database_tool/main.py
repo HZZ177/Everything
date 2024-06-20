@@ -74,12 +74,12 @@ class Application:
 
         sleep(2)
 
-    def get_all_construct_sentence(self):
+    def get_all_construct_sentences(self):
 
         self.connect_to_database()
 
         # 文件路径
-        output_file = 'database_construct_describe.sql'
+        output_file = 'database_construct_sentences.sql'
 
         try:
             with self.connection.cursor() as cursor:
@@ -111,12 +111,12 @@ class Application:
 
         sleep(2)
 
-    def get_all_column_insert_sentence(self):
+    def get_all_column_insert_sentences(self):
 
         self.connect_to_database()
 
         # 文件路径
-        output_file = 'database_construct_describe.sql'
+        output_file = 'column_insert_sentences.sql'
 
         try:
             with self.connection.cursor() as cursor:
@@ -127,18 +127,30 @@ class Application:
                 with open(output_file, 'w', encoding="utf-8") as file:
                     for table in tables:
                         table_name = table[0]
-                        file.write(f"-- 构造表{table_name}\n")
+                        # file.write(f"-- 构造表{table_name}\n")
 
                         # 调试输出
                         # print(f"正在处理表: {table_name}")
 
                         # 获取所有表的初始化语句
                         cursor.execute(f"show create TABLE `{table_name}`")
-                        columns = cursor.fetchall()
+                        create_sentences = cursor.fetchall()
+                        fields = str(create_sentences).split(r'\n')
 
-                        for column in columns:
-                            describe = column[1]
-                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace("CREATE TABLE", "")};\n")
+                        # 获取所有字段的字符串并初步规范格式
+                        sentences = str(fields[2:][:-1]).replace("  ", "").replace(',"', '"').split(", ")
+                        file.write(f"--表{table_name}字段创建语句\n")
+                        for sentence in sentences:
+                            # 控制添加索引的字段的格式，去除前后引号
+                            if sentence[0] != "`":
+                                sentence.replace("'", "")
+                            # 规范所有单句的格式
+                            format_sentence = sentence.replace("[", "").replace("]", "").replace(",", "").replace('"', "")
+
+                            # 开始生成调取存储过程的字段生成语句
+                            if format_sentence[0] == "`":
+                                column = format_sentence.split("`")[1]
+                                file.write(f"CALL add_element_unless_exists('column', '{table_name}', '{column}', 'ALTER TABLE {table_name} ADD COLUMN {format_sentence}')\n")
 
                         file.write("\n")
 
@@ -156,4 +168,7 @@ if __name__ == "__main__":
     # app.get_all_tables_and_columns()
 
     # 获取所有表创建语句
-    app.get_all_construct_describe()
+    # app.get_all_construct_sentences()
+
+    # 获取所有字段创建语句
+    app.get_all_column_insert_sentences()
