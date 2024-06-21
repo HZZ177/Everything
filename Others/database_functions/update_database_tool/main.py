@@ -139,18 +139,22 @@ class Application:
 
                         # 获取所有字段的字符串并初步规范格式
                         sentences = str(fields[2:][:-1]).replace("  ", "").replace(',"', '"').split(", ")
-                        file.write(f"--表{table_name}字段创建语句\n")
+                        file.write(f"-- 表{table_name}字段创建语句\n")
                         for sentence in sentences:
+                            column_id = 0
+
                             # 控制添加索引的字段的格式，去除前后引号
                             if sentence[0] != "`":
                                 sentence.replace("'", "")
                             # 规范所有单句的格式
-                            format_sentence = sentence.replace("[", "").replace("]", "").replace(",", "").replace('"', "")
+                            format_sentence = sentence.replace("[", "").replace("]", "").replace(",", "").replace('"', "").replace("'", '"')
 
                             # 开始生成调取存储过程的字段生成语句
                             if format_sentence[0] == "`":
                                 column = format_sentence.split("`")[1]
-                                file.write(f"CALL add_element_unless_exists('column', '{table_name}', '{column}', 'ALTER TABLE {table_name} ADD COLUMN {format_sentence}')\n")
+                                if column_id < 1:
+                                    file.write(f"CALL add_element_unless_exists('column', '{table_name}', '{column}', 'ALTER TABLE {table_name} ADD COLUMN {format_sentence}');\n")
+                                file.write(f"CALL add_element_unless_exists('column', '{table_name}', '{column}', 'ALTER TABLE {table_name} ADD COLUMN {format_sentence}');\n")
 
                         file.write("\n")
 
