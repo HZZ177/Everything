@@ -1,0 +1,16 @@
+# 通过路侧收费系统接口新增固定车卡类型
+host:
+api: '/web/parking/fix-cardType/addFixCardType'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "新增固定车卡类型"
+    - request_data:
+        parkCode: ""
+        fixCardType: ""
+        fixCardTypeDesc: ""
+        applyFlag: ""
+        chargeFlag: ""

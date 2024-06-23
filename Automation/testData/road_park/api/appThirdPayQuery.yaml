@@ -1,0 +1,15 @@
+# 通过路内app接口进行第三方支付订单查询
+host:
+api: '/api/app/thirdPayQuery'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "第三方支付订单查询"
+    - request_data:
+        orderNo: ""
+        parkCode: ""
+        payChannel: ""
+        payType: ""

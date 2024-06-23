@@ -1,0 +1,15 @@
+# 通过路内app接口进行车辆查费
+host:
+api: '/api/app/getFee'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "车辆查费"
+    - request_data:
+        carNo: ""
+        parkCode: ""
+        parkingRecordId: ""
+        queryFeeTime: ""

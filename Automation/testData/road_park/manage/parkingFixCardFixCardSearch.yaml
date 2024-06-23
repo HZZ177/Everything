@@ -1,0 +1,18 @@
+# 通过路侧收费系统接口固定车卡管理 -> 固定车卡列表查询（分页）
+host:
+api: '/web/parking/fix-card/fixCardSearch'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "固定车卡管理 -> 固定车卡列表查询（分页）"
+    - request_data:
+        carNo: ""
+        parkCode: ""
+        cardName: ""
+        fixCardTypeIdList: []
+        phone: ""
+        current: 1
+        size: 10

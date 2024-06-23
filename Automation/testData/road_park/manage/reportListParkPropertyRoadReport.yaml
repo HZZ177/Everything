@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口查询基于路段的固定资产报表
+host:
+api: '/web/report/listParkPropertyRoadReport'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询基于路段的固定资产报表"
+    - request_data:
+        beginTime: ""
+        parkCode: ""
+        endTime: ""
+        roadCodes: []

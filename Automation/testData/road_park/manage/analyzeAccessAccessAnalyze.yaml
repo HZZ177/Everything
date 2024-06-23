@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口查询大额逃费
+host:
+api: '/web/analyze/access/accessAnalyze'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询大额逃费"
+    - request_data:
+        startDate: ""
+        parkCode: ""
+        endDate: ""
+        dimension: 0

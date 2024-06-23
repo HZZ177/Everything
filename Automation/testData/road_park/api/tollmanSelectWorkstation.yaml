@@ -1,0 +1,17 @@
+# 通过路内app接口进行选择工作站操作
+host:
+api: '/api/tollman/selectWorkstation'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "选择工作站"
+    - request_data:
+        parkCode: ""
+        tollmanId: ""
+        workstationId: ""
+        posModel: "Mi A1"
+        posNo: "866174017174554"
+        posVersion: "2.0.10"

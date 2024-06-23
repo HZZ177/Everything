@@ -1,0 +1,14 @@
+# 通过路侧收费系统接口分页查询固定车卡类型
+host:
+api: '/web/parking/fix-cardType/pageFixCardType'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "分页查询固定车卡类型"
+    - request_data:
+        parkCode: ""
+        current: 1
+        size: 10

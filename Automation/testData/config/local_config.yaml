@@ -1,0 +1,96 @@
+#===================
+# local环境数据
+#===================
+# 百度识图相关
+baidu_ocr_api:
+  client_id: Rxzhzvds7GTzxH4sAIsDI8uP
+  client_secret: Ze45MVHtlaIkfsKBnvFbGGqUZPnKzTk3
+# 企业微信相关
+auto_city_wx:
+#  robot_key: 2379c6e3-767d-474b-8f03-ea1b5d238adc
+  robot_key: aee09df7-c213-4a95-b6e8-6524fd37591e
+# 重试相关
+retry_num: 3
+# 车场id
+parkCode: LC1201000001
+
+# 手持机数据
+app:
+  domain: http://roadpark.keytop.cn:15612
+
+# 管理端数据
+roadTollSystem:
+  domain: https://roadpark.keytop.cn
+  username: 15683152128
+  password: dwb123123
+
+# c端
+client:
+  domain: http://roadpark.keytop.cn:19900
+
+hardware_platform:
+  domain: http://roadpark.keytop.cn:8101
+  username: 15683152128
+  password: dwb123123
+  # 地磁imei
+  iot_imei: 8600000000003
+  # 高位相机id
+  cameraId: AA82349429
+  # 地位视频桩
+  low_video_deviceId: CA21812844
+
+# 测试数据库配置
+mysql:
+  host: 117.173.153.92
+  port: 57036
+  user: root
+  password: keytop123
+  database: road_manage
+
+# 固定车卡信息
+fix_card:
+  cardName: 自动化固定车卡
+  phone: 15683152128
+  parkspaceNum: 10
+  fixComboNum: 1
+
+# 报表核对车场id
+# 运营日报
+park_report_day:
+  - LC5001000005
+# 资金对账表
+fund_check_day:
+  - LC5001000005
+# 收费员统计
+toll_man_profit_day:
+  - LC5001000005
+# 工作站统计
+test_work_station_day_report:
+  - LC5001000005
+# 大额逃费
+big_order_day:
+  - LC5001000005
+# 夜间逃费
+night_escape:
+  - LC5001000005
+# 车流分析
+access_analyze:
+  - LC5001000005
+# 收入分析
+income_analyze:
+  - LC1201000001
+# 固定资产盘点报表
+list_park_property:
+  - LC5001000005
+# 路段统计
+road_info:
+  - LC5001000005
+# 路段逃费明细
+road_escape:
+  - LC5001000005
+# 收费员效率分析
+toll_man_efficiency:
+  - LC5001000005
+# 停车时长统计
+park_min_detail:
+  - LC5001000005

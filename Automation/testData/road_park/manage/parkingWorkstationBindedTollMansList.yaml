@@ -1,0 +1,12 @@
+# 通过路侧收费系统接口查询车场工作站已绑定的收费员列表
+host:
+api: '/web/parking/workstation/binded/tollmans/list'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "GET"
+data:
+  - - id: 1
+    - ps: "查询车场工作站已绑定的收费员列表"
+    - request_data:
+        workstationId: ""

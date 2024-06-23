@@ -1,0 +1,11 @@
+# 通过路侧收费系统接口批量绑定路段规则
+host:
+api: '/web/fee/new/batchBind'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "批量绑定路段规则"
+    - request_data:

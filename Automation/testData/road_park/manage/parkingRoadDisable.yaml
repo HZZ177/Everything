@@ -1,0 +1,13 @@
+# 通过路侧收费系统接口停用车场路段
+host:
+api: '/web/parking/road/disable'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "停用车场路段"
+    - request_data:
+        params:
+          id: ""

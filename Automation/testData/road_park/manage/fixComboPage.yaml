@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口查询固定车充值套餐分页列表
+host:
+api: '/web/fixCombo/page'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询固定车充值套餐分页列表"
+    - request_data:
+        parkCode: ""
+        name: ""
+        current: 0
+        size: 10

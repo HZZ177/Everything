@@ -1,0 +1,13 @@
+# 通过路内app接口现金支付成功（POS机现金支付）
+host:
+api: '/api/app/paySuccess'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "现金支付成功（POS机现金支付）"
+    - request_data:
+        orderNo: ""
+        payTime: ""

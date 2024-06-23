@@ -1,0 +1,17 @@
+# 通过路侧收费系统接口分页查询车场收费员列表信息
+host:
+api: '/web/parking/tollman/page'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "分页查询车场收费员列表信息"
+    - request_data:
+        username: ""
+        parkCode: ""
+        tollmanName: ""
+        status:
+        current: 1
+        size: 10

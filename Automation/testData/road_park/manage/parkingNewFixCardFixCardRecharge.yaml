@@ -1,0 +1,29 @@
+# 通过路侧收费系统接口固定车卡充值
+host:
+api: '/web/parking/new-fix-card/fixCardRecharge'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "固定车卡充值"
+    - request_data:
+        cardName: ""
+        carNo: ""
+        cardId: ""
+        phoneNo: ""
+        parkCode: ""
+        fixCardType: ""
+        fixCardTypeStr: ""
+        fixComboId: ""
+        fixComboName: ""
+        fixComboNum: ""
+        feeByParkspace: ""
+        fee: ""
+        rechargeType: ""
+        rechargeCount: ""
+        giveType: ""
+        giveCount: ""
+        payType: ""
+        remark: ""

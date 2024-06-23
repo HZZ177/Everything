@@ -1,0 +1,24 @@
+# 通过路侧收费系统接口分页查询停车计费明细列表
+host:
+api: '/web/record/parkingSession/listParkingSessionPage'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "分页查询停车计费明细列表"
+    - request_data:
+        status: ""
+        parkCode: ""
+        inTimeEnd: ""
+        workstationIdList: ""
+        outTollmanIdList: ""
+        inTimeStart: ""
+        outTimeEnd: ""
+        outTimeStart: ""
+        carNo: ""
+        roadCode: ""
+        parkspaceCode: ""
+        current: 1
+        size: 10

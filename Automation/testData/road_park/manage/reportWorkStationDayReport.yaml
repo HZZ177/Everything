@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口查询工作站统计
+host:
+api: '/web/report/getWorkStationDayReport'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询工作站统计"
+    - request_data:
+        beginTime: ""
+        parkCode: ""
+        endTime: ""
+        workStationIds: []

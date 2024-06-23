@@ -1,0 +1,12 @@
+# 通过路侧收费系统接口进行获取验证码图片
+host:
+api: '/web/auth/code'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "get"
+data:
+  - - id: 1
+    - ps: "获取验证码图片"
+    - request_data:
+

@@ -1,0 +1,11 @@
+# 通过硬件云平台管理端接口低位视频桩测试命令
+host:
+api: '/hardware-platform/low-video/cmd/test'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "低位视频桩测试命令"
+    - request_data:

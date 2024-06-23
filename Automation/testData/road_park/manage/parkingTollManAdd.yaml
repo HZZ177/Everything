@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口添加收费员
+host:
+api: '/web/parking/tollman/add'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "添加收费员"
+    - request_data:
+        id: ""
+        tollmanName: ""
+        username: ""
+        parkCode: ""

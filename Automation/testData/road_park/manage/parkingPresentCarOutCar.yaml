@@ -1,0 +1,14 @@
+# 通过路侧收费系统接口web端出车
+host:
+api: '/web/parking/presentCar/outCar'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "web端出车"
+    - request_data:
+        parkCode: ""
+        carNo: ""
+        outTime: ""

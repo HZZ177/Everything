@@ -1,0 +1,13 @@
+# 通过路侧收费系统接口增加固定车区域
+host:
+api: '/web/parking/area/areaAdd'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "增加固定车区域"
+    - request_data:
+        parkCode: ""
+        areaName: ""
