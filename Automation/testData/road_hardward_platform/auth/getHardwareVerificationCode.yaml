@@ -1,0 +1,12 @@
+# 通过硬件云平台管理端接口进行获取验证码图片
+host:
+api: '/hardware-platform/manage/auth/code'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "get"
+data:
+  - - id: 1
+    - ps: "获取硬件云平台管理端验证码图片"
+    - request_data:
+

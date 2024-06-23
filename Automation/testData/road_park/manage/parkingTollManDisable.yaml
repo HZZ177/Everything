@@ -1,0 +1,12 @@
+# 通过路侧收费系统接口删除车场收费员
+host:
+api: '/web/parking/tollman/disable'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "GET"
+data:
+  - - id: 1
+    - ps: "删除车场收费员"
+    - request_data:
+        tollmanId:

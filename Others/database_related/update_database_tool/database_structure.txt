@@ -1,0 +1,848 @@
+Table: areapointled
+  Field: ID, Type: int(11)
+  Field: Lid, Type: int(11)
+  Field: Aid, Type: int(11)
+
+Table: buspointled
+  Field: ID, Type: int(11)
+  Field: PAddr, Type: int(11)
+  Field: LAddr, Type: int(11)
+  Field: pid, Type: int(11)
+  Field: lid, Type: int(11)
+
+Table: buspointrecorder
+  Field: ID, Type: int(11)
+  Field: Paddr, Type: int(11)
+  Field: Rid, Type: int(11)
+  Field: Rport, Type: int(11)
+
+Table: carcolor
+  Field: ID, Type: int(10) unsigned
+  Field: LedOne, Type: int(10) unsigned
+  Field: LedTwo, Type: int(10) unsigned
+  Field: ACar, Type: int(10) unsigned
+  Field: NoCar, Type: int(10) unsigned
+  Field: CarType, Type: int(10) unsigned
+  Field: TypeNamect, Type: varchar(45)
+  Field: TypeNameen, Type: varchar(45)
+  Field: IfCount, Type: int(11)
+
+Table: carfindencrypt
+  Field: id, Type: int(11)
+  Field: CarNum, Type: varchar(10)
+  Field: password, Type: varchar(10)
+  Field: ValidityFromDate, Type: datetime
+  Field: ValidityToDate, Type: datetime
+  Field: CreateTime, Type: datetime
+
+Table: columns_priv
+  Field: Host, Type: char(60)
+  Field: Db, Type: char(64)
+  Field: User, Type: char(16)
+  Field: Table_name, Type: char(64)
+  Field: Column_name, Type: char(64)
+  Field: Timestamp, Type: timestamp
+  Field: Column_priv, Type: set('Select','Insert','Update','References')
+
+Table: controlset
+  Field: ID, Type: int(11)
+  Field: LNumber, Type: varchar(50)
+  Field: Location, Type: varchar(50)
+  Field: Direction, Type: varchar(50)
+  Field: Color, Type: varchar(50)
+  Field: BusType, Type: varchar(50)
+
+Table: cy2
+  Field: ID, Type: int(11)
+  Field: CIP, Type: varchar(50)
+  Field: OtherMid, Type: int(11) unsigned
+  Field: FloorPoint, Type: varchar(50)
+  Field: fstate, Type: int(11) unsigned
+  Field: otherselfmac, Type: int(10)
+  Field: DirType, Type: int(1)
+  Field: CliFlag, Type: int(8)
+  Field: CliDate, Type: datetime
+  Field: IsDelete, Type: int(1)
+
+Table: cy_cx_a
+  Field: ID, Type: int(11)
+  Field: CName, Type: varchar(50)
+  Field: CIP, Type: varchar(50)
+  Field: MID, Type: int(11)
+  Field: lukou, Type: int(11)
+  Field: mapfile, Type: varchar(45)
+  Field: angle, Type: int(11)
+  Field: Direction, Type: int(6)
+  Field: PosX, Type: int(11)
+  Field: PosY, Type: int(11)
+  Field: AreaId, Type: int(11)
+  Field: CliFlag, Type: int(8)
+  Field: CliDate, Type: datetime
+  Field: IsDelete, Type: int(1)
+  Field: route_ip, Type: varchar(50)
+  Field: up_point, Type: varchar(50)
+  Field: down_point, Type: varchar(50)
+  Field: left_point, Type: varchar(50)
+  Field: right_point, Type: varchar(50)
+
+Table: dspinfolog
+  Field: ID, Type: int(11)
+  Field: CarplateNum, Type: varchar(50)
+  Field: CarAddr, Type: int(11)
+  Field: ImgName, Type: varchar(100)
+  Field: PdataTime, Type: varchar(40)
+
+Table: infoarea
+  Field: ID, Type: int(11)
+  Field: AreaName, Type: varchar(30)
+  Field: AreaName2, Type: varchar(30)
+  Field: MapId, Type: int(11)
+  Field: MapName, Type: varchar(30)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+  Field: PosX, Type: int(11)
+  Field: PosY, Type: int(11)
+  Field: TotalNum, Type: int(11)
+  Field: FreeNum, Type: int(11)
+  Field: AreaType, Type: int(11)
+  Field: LimitNum, Type: int(11)
+  Field: AreaName3, Type: varchar(30)
+  Field: ClientUpdateTime, Type: timestamp
+
+Table: infobus
+  Field: ID, Type: int(11)
+  Field: BusNumber, Type: varchar(40)
+  Field: Addr, Type: int(11)
+  Field: state, Type: int(11)
+  Field: LeaveTime, Type: varchar(40)
+  Field: ComeTime, Type: varchar(40)
+  Field: carplatenum, Type: varchar(50)
+  Field: ImgName, Type: varchar(50)
+  Field: AreaID, Type: int(11)
+  Field: Flag, Type: int(10) unsigned
+  Field: PreLeaveTime, Type: varchar(40)
+  Field: PreComeTime, Type: varchar(40)
+  Field: PreCarplateNum, Type: varchar(50)
+  Field: CarType, Type: int(11)
+  Field: ifchange, Type: int(11)
+  Field: ifsend, Type: int(11)
+  Field: CarplateDigital, Type: varchar(45)
+  Field: Mid, Type: int(10) unsigned
+  Field: Trun, Type: int(10) unsigned
+  Field: PosX, Type: int(10) unsigned
+  Field: PosY, Type: int(10) unsigned
+  Field: IfSetRoute, Type: varchar(255)
+  Field: PSPlaceNum, Type: varchar(30)
+  Field: PSPlaceName, Type: varchar(30)
+  Field: WDCloudFlag, Type: int(4)
+  Field: WDCloudDate, Type: datetime
+  Field: parktype, Type: int(1)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+  Field: ClientUpdateTime, Type: timestamp
+
+Table: infoconfig
+  Field: id, Type: int(11)
+  Field: inquireWays, Type: varchar(200)
+  Field: openAlreadyTime, Type: tinyint(1)
+  Field: chargePort, Type: int(11)
+  Field: openParingTime, Type: tinyint(1)
+  Field: openBusiness, Type: tinyint(1)
+  Field: openCarPwd, Type: tinyint(1)
+  Field: cloudPort, Type: int(11)
+  Field: plugInCard, Type: tinyint(1)
+  Field: swipingCard, Type: tinyint(1)
+  Field: snapCard, Type: tinyint(1)
+  Field: aliPay, Type: tinyint(1)
+  Field: weiXin, Type: tinyint(1)
+  Field: cloudChargeServiceAdd, Type: varchar(50)
+  Field: chargeServiceAdd, Type: varchar(50)
+  Field: recordCount, Type: int(11)
+  Field: routeType, Type: tinyint(1)
+  Field: phoneServiceAdd, Type: varchar(50)
+  Field: ifSubSeller, Type: tinyint(4)
+  Field: plateMaxNum, Type: int(11)
+  Field: parkMaxNum, Type: int(11)
+  Field: isOpenPrint, Type: tinyint(4)
+  Field: isOpenPickUp, Type: tinyint(4)
+  Field: languageSupport, Type: int(11)
+  Field: foreginLanguage, Type: varchar(30)
+  Field: isOpenQrcode, Type: tinyint(1)
+
+Table: infofloor
+  Field: id, Type: int(11)
+  Field: curmid, Type: int(11)
+  Field: othermid, Type: int(11)
+  Field: imgsrc, Type: varchar(255)
+  Field: ftype, Type: int(11)
+  Field: pointid, Type: int(11)
+
+Table: infohint
+  Field: ID, Type: int(11)
+  Field: FindOption, Type: int(11)
+  Field: SubOption, Type: int(11)
+  Field: Memo, Type: varchar(255)
+  Field: cnWarnInfo, Type: varchar(255)
+  Field: enWarnInfo, Type: varchar(255)
+  Field: otherWarnInfo, Type: varchar(255)
+
+Table: infoled
+  Field: ID, Type: int(11)
+  Field: Addr, Type: int(11)
+  Field: LMemo, Type: varchar(255)
+  Field: LType, Type: varchar(2)
+  Field: ShowNum, Type: smallint(6)
+  Field: ShowType, Type: int(11)
+  Field: State, Type: int(11)
+  Field: EmptyBus, Type: int(11)
+  Field: last_update, Type: datetime
+  Field: ifclosed, Type: int(11)
+  Field: ifsend, Type: int(11) unsigned
+  Field: ledsz, Type: int(11) unsigned
+  Field: allbusaddr, Type: int(11) unsigned
+  Field: lotid, Type: int(11)
+  Field: posx, Type: int(11)
+  Field: posy, Type: int(11)
+  Field: checknum, Type: int(11)
+  Field: ledtype, Type: int(11)
+  Field: criticalval, Type: int(11)
+  Field: levaddr, Type: int(11)
+  Field: inoutledip, Type: varchar(255)
+  Field: ledkind, Type: int(2)
+
+Table: infoledlev
+  Field: ID, Type: int(11)
+  Field: Addr, Type: int(11)
+  Field: LMemo, Type: varchar(255)
+  Field: LType, Type: varchar(2)
+  Field: ShowNum, Type: smallint(6)
+  Field: ShowType, Type: int(11)
+  Field: State, Type: int(11)
+  Field: EmptyBus, Type: int(11)
+  Field: last_update, Type: datetime
+  Field: ifclosed, Type: int(11)
+  Field: ifsend, Type: int(11) unsigned
+  Field: ledsz, Type: int(11) unsigned
+  Field: allbusaddr, Type: int(11) unsigned
+  Field: lotid, Type: int(11)
+  Field: posx, Type: int(11)
+  Field: posy, Type: int(11)
+  Field: checknum, Type: int(11)
+  Field: ledtype, Type: int(11)
+  Field: criticalval, Type: int(11)
+
+Table: infomap
+  Field: ID, Type: int(11)
+  Field: Mapname, Type: varchar(30)
+  Field: Mapfile, Type: varchar(60)
+  Field: Big, Type: int(11) unsigned
+  Field: FloorPoint, Type: varchar(50)
+  Field: MapDeclare, Type: varchar(50)
+  Field: SpaceL, Type: int(8)
+  Field: SpaceW, Type: int(8)
+  Field: orderNo, Type: tinyint(4)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+  Field: total, Type: int(11)
+  Field: angle, Type: float
+  Field: Disperpixel, Type: float
+
+Table: infonode
+  Field: ID, Type: int(11)
+  Field: Addr, Type: int(11)
+  Field: BusNum, Type: int(11)
+  Field: NMemo, Type: mediumtext
+  Field: State, Type: int(11)
+  Field: LastRecData, Type: varchar(30)
+  Field: LastRecTime, Type: varchar(40)
+  Field: PowerIp, Type: varchar(255)
+  Field: PowerSend, Type: varchar(255)
+  Field: PowerSendTime, Type: datetime
+  Field: DeviceType, Type: int(11)
+
+Table: infopic
+  Field: id, Type: int(11)
+  Field: imgsrc, Type: varchar(255)
+  Field: imgname, Type: varchar(255)
+
+Table: inforecorder
+  Field: id, Type: int(11)
+  Field: ip, Type: varchar(255)
+  Field: Memo, Type: varchar(255)
+  Field: loginname, Type: varchar(255)
+  Field: loginpwd, Type: varchar(255)
+  Field: port, Type: int(11)
+
+Table: infoserlog
+  Field: id, Type: int(11)
+  Field: usetime, Type: datetime
+  Field: usetype, Type: int(11)
+  Field: useval, Type: varchar(255)
+  Field: cip, Type: varchar(255)
+
+Table: infosystem
+  Field: id, Type: int(11)
+  Field: type, Type: int(11)
+  Field: memo, Type: varchar(255)
+  Field: value, Type: varchar(255)
+
+Table: log_carinout
+  Field: ID, Type: int(11)
+  Field: ParkDate, Type: date
+  Field: ParkHour, Type: int(11)
+  Field: FlowIn, Type: int(11)
+  Field: FlowOut, Type: int(11)
+  Field: FlowIn1, Type: int(11)
+  Field: FlowOut1, Type: int(11)
+  Field: FlowIn2, Type: int(11)
+  Field: FlowOut2, Type: int(11)
+  Field: FlowIn3, Type: int(11)
+  Field: FlowOut3, Type: int(11)
+
+Table: log_hourcount
+  Field: ID, Type: int(11)
+  Field: StaticDate, Type: date
+  Field: StaticHour, Type: int(11)
+  Field: ParkLong, Type: double
+  Field: ParkLong1, Type: double
+  Field: ParkLong2, Type: double
+  Field: ParkLong3, Type: double
+  Field: ParkCount, Type: int(11)
+  Field: ParkCount1, Type: int(11)
+  Field: ParkCount2, Type: int(11)
+  Field: ParkCount3, Type: int(11)
+
+Table: log_login
+  Field: login_id, Type: int(11)
+  Field: login_account, Type: varchar(50)
+  Field: login_time, Type: datetime
+  Field: login_desc, Type: varchar(200)
+  Field: login_ip, Type: varchar(50)
+
+Table: log_operate
+  Field: ope_id, Type: int(11)
+  Field: ope_user_id, Type: varchar(11)
+  Field: ope_time, Type: datetime
+  Field: ope_ip, Type: varchar(50)
+  Field: ope_action, Type: int(1)
+  Field: ope_content, Type: longtext
+
+Table: log_parkcount
+  Field: ID, Type: int(11)
+  Field: AreaId, Type: int(11)
+  Field: AreaName, Type: varchar(50)
+  Field: ParkDate, Type: datetime
+  Field: ParkHour, Type: int(11)
+  Field: ParkCount, Type: int(11)
+  Field: FlowIn, Type: int(11)
+  Field: FlowOut, Type: int(11)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+
+Table: log_parkinglotlog
+  Field: id, Type: int(11)
+  Field: CarplateNum, Type: varchar(20)
+  Field: CarAddr, Type: int(11)
+  Field: ImgName, Type: varchar(255)
+  Field: InTime, Type: datetime
+  Field: OutTime, Type: datetime
+  Field: longTime, Type: int(11)
+  Field: AreaId, Type: int(11)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+
+Table: log_temp
+  Field: ID, Type: int(11)
+  Field: temp, Type: int(11)
+
+Table: parklampgroup
+  Field: id, Type: int(10) unsigned
+  Field: groupname, Type: varchar(45)
+  Field: lampId, Type: varchar(4096)
+  Field: parkId, Type: varchar(4096)
+  Field: empty, Type: int(10) unsigned
+  Field: state, Type: int(10) unsigned
+  Field: lastULTime, Type: datetime
+  Field: lotid, Type: int(11)
+  Field: lotname, Type: varchar(50)
+  Field: total, Type: int(11)
+
+Table: parkmsglog
+  Field: id, Type: int(11)
+  Field: areaid, Type: int(11)
+  Field: busnumber, Type: varchar(255)
+  Field: plate, Type: varchar(255)
+  Field: cometime, Type: datetime
+  Field: parklong, Type: int(11)
+  Field: imgname, Type: varchar(255)
+  Field: toltype, Type: int(11)
+  Field: statictime, Type: datetime
+
+Table: parkwarnlog
+  Field: id, Type: int(11)
+  Field: areaid, Type: int(11)
+  Field: busnumber, Type: varchar(255)
+  Field: plate, Type: varchar(255)
+  Field: cometime, Type: datetime
+  Field: parklong, Type: int(11)
+  Field: imgname, Type: varchar(255)
+  Field: toltype, Type: int(11)
+  Field: statictime, Type: datetime
+
+Table: sys_assign
+  Field: assign_id, Type: int(11)
+  Field: assign_rela_id, Type: char(32)
+  Field: assign_role, Type: int(11)
+  Field: assign_type, Type: int(1)
+  Field: create_time, Type: datetime
+
+Table: sys_i18n_message
+  Field: ID, Type: int(11)
+  Field: CODE, Type: varchar(100)
+  Field: DESCRIPTION, Type: varchar(500)
+  Field: MODULE, Type: varchar(100)
+  Field: ZH_CN, Type: varchar(500)
+  Field: ZH_HK, Type: varchar(500)
+  Field: ZH_TW, Type: varchar(500)
+  Field: EN_US, Type: varchar(500)
+  Field: QT_LAN, Type: varchar(500)
+  Field: CREATE_TIME, Type: datetime
+  Field: UPDATE_TIME, Type: timestamp
+
+Table: sys_module
+  Field: module_id, Type: char(32)
+  Field: module_pid, Type: char(32)
+  Field: module_name, Type: varchar(50)
+  Field: module_url, Type: varchar(200)
+  Field: module_desc, Type: varchar(200)
+  Field: module_order, Type: int(5)
+  Field: module_show, Type: int(1)
+  Field: module_status, Type: int(1)
+  Field: module_icon, Type: varchar(20)
+  Field: module_val, Type: varchar(50)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: datetime
+
+Table: sys_module_node
+  Field: node_id, Type: char(32)
+  Field: node_module, Type: char(32)
+  Field: node_name, Type: varchar(50)
+  Field: node_url, Type: varchar(100)
+  Field: node_val, Type: varchar(50)
+  Field: node_order, Type: int(5)
+  Field: node_desc, Type: varchar(200)
+  Field: node_i18n_code, Type: varchar(255)
+
+Table: sys_org
+  Field: id, Type: char(32)
+  Field: pid, Type: char(32)
+  Field: name, Type: varchar(200)
+  Field: description, Type: varchar(200)
+  Field: remark, Type: varchar(200)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: timestamp
+  Field: is_show, Type: char(1)
+
+Table: sys_org_role
+  Field: id, Type: int(11)
+  Field: role_id, Type: char(32)
+  Field: org_id, Type: char(32)
+  Field: create_time, Type: datetime
+
+Table: sys_org_user
+  Field: id, Type: char(32)
+  Field: org_id, Type: char(32)
+  Field: user_id, Type: char(32)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: timestamp
+
+Table: sys_role
+  Field: role_id, Type: int(11)
+  Field: role_name, Type: varchar(50)
+  Field: role_remark, Type: varchar(200)
+  Field: role_desc, Type: varchar(200)
+  Field: role_status, Type: int(1)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: datetime
+
+Table: sys_role_user
+  Field: id, Type: int(11)
+  Field: role_id, Type: int(11)
+  Field: user_id, Type: int(11)
+  Field: create_time, Type: datetime
+
+Table: sys_user
+  Field: user_id, Type: int(11)
+  Field: user_name, Type: varchar(50)
+  Field: user_account, Type: varchar(50)
+  Field: user_pwd, Type: varchar(50)
+  Field: user_phone, Type: varchar(11)
+  Field: user_remark, Type: varchar(200)
+  Field: user_desc, Type: varchar(500)
+  Field: user_status, Type: int(1)
+  Field: user_admin, Type: int(1)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: datetime
+
+Table: t_ad
+  Field: Id, Type: int(8)
+  Field: ParkId, Type: int(8)
+  Field: ComputerId, Type: varchar(20)
+  Field: AdType, Type: tinyint(4)
+  Field: PlayType, Type: int(8)
+  Field: VideoUrl, Type: varchar(1000)
+  Field: ImagePlayTime, Type: int(8)
+  Field: ImagePlayStyle, Type: int(8)
+  Field: ImagesUrl, Type: varchar(1000)
+
+Table: t_adsub
+  Field: id, Type: int(11)
+  Field: ObjectId, Type: int(8)
+  Field: FormId, Type: int(11)
+  Field: FilePath, Type: varchar(500)
+  Field: Remark, Type: varchar(255)
+  Field: FileType, Type: tinyint(4)
+
+Table: t_area_device
+  Field: id, Type: int(11)
+  Field: deviceaddr, Type: int(11)
+  Field: areaid, Type: int(11)
+  Field: type, Type: int(11)
+  Field: outareaid, Type: varchar(255)
+
+Table: t_businfo
+  Field: id, Type: int(11)
+  Field: busid, Type: varchar(32)
+  Field: lockDtuId, Type: varchar(32)
+  Field: lockPos, Type: varchar(32)
+  Field: autoLock, Type: int(11)
+  Field: lockStatus, Type: int(11)
+  Field: detectDtuId, Type: varchar(32)
+  Field: detectPos, Type: varchar(32)
+  Field: detectStatus, Type: int(11)
+  Field: updateTime, Type: datetime
+
+Table: t_display_config
+  Field: id, Type: int(11)
+  Field: lot_id, Type: int(11)
+  Field: title_top, Type: double(255,0)
+  Field: title_left, Type: double
+  Field: title_font_size, Type: double
+  Field: title_color, Type: varchar(255)
+  Field: title_text, Type: varchar(255)
+  Field: led_font_size, Type: double
+  Field: led_width, Type: double
+  Field: led_height, Type: double
+  Field: led_common_color, Type: varchar(255)
+  Field: led_full_color, Type: varchar(255)
+  Field: ico_width, Type: double
+  Field: ico_height, Type: double
+  Field: ico_woman_img, Type: varchar(255)
+  Field: ico_woman_actimg, Type: varchar(255)
+  Field: ico_man_img, Type: varchar(255)
+  Field: ico_man_actimg, Type: varchar(255)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: timestamp
+
+Table: t_events
+  Field: id, Type: bigint(20)
+  Field: evtType, Type: int(11)
+  Field: imgName, Type: varchar(50)
+  Field: dspIp, Type: varchar(32)
+  Field: evtTime, Type: varchar(32)
+  Field: inAddr, Type: varchar(32)
+  Field: inTime, Type: varchar(32)
+  Field: outAddr, Type: varchar(32)
+  Field: outTime, Type: varchar(32)
+  Field: money, Type: int(11)
+  Field: carNo, Type: varchar(32)
+  Field: carplateNum, Type: varchar(2000)
+  Field: carplateType, Type: int(1) unsigned
+  Field: carplateProty1, Type: int(3) unsigned
+  Field: carplateProty2, Type: int(3) unsigned
+  Field: enchargeFlag, Type: int(1) unsigned
+  Field: serialType, Type: int(1) unsigned
+  Field: serialNo, Type: varchar(500)
+  Field: inImgName, Type: varchar(50)
+  Field: CarColor, Type: varchar(45)
+  Field: CarBrand, Type: varchar(45)
+  Field: RecogEnable, Type: int(8)
+  Field: CarplateColor, Type: varchar(45)
+  Field: CameraId, Type: int(11)
+  Field: remark, Type: varchar(50)
+
+Table: t_faceinfo
+  Field: id, Type: int(11)
+  Field: plateNo, Type: varchar(50)
+  Field: faceInfo, Type: text
+  Field: createTime, Type: datetime
+  Field: isTemp, Type: int(11)
+  Field: faceId, Type: varchar(50)
+
+Table: t_fcs_seller
+  Field: id, Type: int(20)
+  Field: seller_name, Type: varchar(50)
+  Field: seller_code, Type: varchar(50)
+  Field: pos_x, Type: int(4)
+  Field: pos_y, Type: int(4)
+  Field: floor_id, Type: int(8)
+  Field: is_delete, Type: int(1)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: timestamp
+
+Table: t_findcar_events
+  Field: id, Type: bigint(20)
+  Field: evtType, Type: int(11)
+  Field: imgName, Type: varchar(255)
+  Field: dspIp, Type: varchar(32)
+  Field: evtTime, Type: varchar(32)
+  Field: inAddr, Type: varchar(32)
+  Field: inTime, Type: varchar(32)
+  Field: outAddr, Type: varchar(32)
+  Field: outTime, Type: varchar(32)
+  Field: money, Type: int(11)
+  Field: carNo, Type: varchar(32)
+  Field: carplateNum, Type: varchar(45)
+  Field: carplateType, Type: int(1) unsigned
+  Field: carplateProty1, Type: int(3) unsigned
+  Field: carplateProty2, Type: int(3) unsigned
+  Field: enchargeFlag, Type: int(1) unsigned
+  Field: serialType, Type: int(1) unsigned
+  Field: serialNo, Type: varchar(45)
+  Field: inImgName, Type: varchar(50)
+  Field: CarColor, Type: varchar(45)
+  Field: CarBrand, Type: varchar(45)
+  Field: RecogEnable, Type: int(8)
+  Field: CarplateColor, Type: varchar(45)
+  Field: CameraId, Type: int(11)
+  Field: remark, Type: varchar(50)
+
+Table: t_findcar_upload
+  Field: id, Type: int(11)
+  Field: code, Type: varchar(20)
+  Field: uploadTime, Type: datetime
+  Field: remark, Type: varchar(256)
+
+Table: t_ibeacon
+  Field: id, Type: int(11)
+  Field: lotCode, Type: int(11)
+  Field: UUID, Type: varchar(255)
+  Field: Major, Type: varchar(255)
+  Field: Minor, Type: varchar(255)
+  Field: Addr, Type: int(11)
+  Field: PosX, Type: int(10) unsigned
+  Field: PosY, Type: int(10) unsigned
+  Field: Mid, Type: int(10) unsigned
+
+Table: t_illegal_report
+  Field: id, Type: int(11)
+  Field: carPlateNum, Type: varchar(50)
+  Field: parkTime, Type: datetime
+  Field: busNumber, Type: varchar(50)
+  Field: illegalPlate, Type: varchar(50)
+  Field: imgName, Type: varchar(100)
+  Field: isAlarm, Type: int(11)
+  Field: remark, Type: varchar(512)
+  Field: createTime, Type: datetime
+
+Table: t_illegal_spaces
+  Field: id, Type: int(11)
+  Field: carPlateNum, Type: varchar(50)
+  Field: busNumber, Type: varchar(50)
+  Field: owner, Type: varchar(100)
+  Field: scheme, Type: int(11)
+  Field: ledIp, Type: varchar(50)
+  Field: remark, Type: varchar(512)
+  Field: operator, Type: varchar(100)
+  Field: createTime, Type: datetime
+
+Table: t_infobus_getinfobus_tmp
+  Field: id, Type: int(11)
+  Field: BusNumber, Type: varchar(40)
+  Field: Addr, Type: int(11)
+  Field: state, Type: int(11)
+  Field: LeaveTime, Type: varchar(40)
+  Field: ComeTime, Type: varchar(40)
+  Field: CarPlateNum, Type: varchar(50)
+  Field: ImgName, Type: varchar(50)
+  Field: AreaID, Type: int(11)
+  Field: PreLeaveTime, Type: varchar(40)
+  Field: PreComeTime, Type: varchar(40)
+  Field: PreCarplateNum, Type: varchar(50)
+  Field: CarType, Type: int(11)
+  Field: CarplateDigital, Type: varchar(45)
+  Field: Mid, Type: int(10) unsigned
+  Field: Trun, Type: int(10) unsigned
+  Field: PosX, Type: int(10) unsigned
+  Field: PosY, Type: int(10) unsigned
+  Field: PSPlaceNum, Type: varchar(30)
+  Field: PSPlaceName, Type: varchar(30)
+  Field: IsDelete, Type: int(1)
+  Field: flag, Type: int(1)
+
+Table: t_keypoint
+  Field: id, Type: int(11)
+  Field: pointType, Type: int(3)
+  Field: pointName, Type: varchar(50)
+  Field: locateX, Type: int(5)
+  Field: locateY, Type: int(5)
+  Field: lotid, Type: int(10) unsigned
+  Field: CliFlag, Type: int(8)
+  Field: CliDate, Type: datetime
+  Field: IsDelete, Type: int(1)
+  Field: floorpoint, Type: varchar(255)
+
+Table: t_keypointlinks
+  Field: id, Type: int(11)
+  Field: pointType1, Type: int(1)
+  Field: pointId1, Type: int(11)
+  Field: pointType2, Type: int(1)
+  Field: pointId2, Type: int(11)
+  Field: direction, Type: int(4)
+  Field: distance, Type: int(11)
+  Field: CliFlag, Type: int(8)
+  Field: CliDate, Type: datetime
+  Field: IsDelete, Type: int(1)
+
+Table: t_led_events
+  Field: id, Type: bigint(20)
+  Field: evtType, Type: int(11)
+  Field: imgName, Type: varchar(50)
+  Field: dspIp, Type: varchar(32)
+  Field: evtTime, Type: varchar(32)
+  Field: inAddr, Type: varchar(32)
+  Field: inTime, Type: varchar(32)
+  Field: outAddr, Type: varchar(32)
+  Field: outTime, Type: varchar(32)
+  Field: money, Type: int(11)
+  Field: carNo, Type: varchar(32)
+  Field: carplateNum, Type: varchar(45)
+  Field: carplateType, Type: int(1) unsigned
+  Field: carplateProty1, Type: int(3) unsigned
+  Field: carplateProty2, Type: int(3) unsigned
+  Field: enchargeFlag, Type: int(1) unsigned
+  Field: serialType, Type: int(1) unsigned
+  Field: serialNo, Type: varchar(45)
+  Field: inImgName, Type: varchar(50)
+  Field: CarColor, Type: varchar(45)
+  Field: CarBrand, Type: varchar(45)
+  Field: RecogEnable, Type: int(8)
+  Field: CarplateColor, Type: varchar(45)
+  Field: CameraId, Type: int(11)
+  Field: remark, Type: varchar(50)
+
+Table: t_lock_control
+  Field: id, Type: int(11)
+  Field: busid, Type: varchar(32)
+  Field: action, Type: int(11)
+  Field: updateTime, Type: datetime
+
+Table: t_lotcarforfee
+  Field: carNo, Type: varchar(32)
+  Field: parkTime, Type: datetime
+  Field: lastUpdate, Type: datetime
+  Field: imgname, Type: varchar(100)
+
+Table: t_lotcarforfind
+  Field: carNo, Type: varchar(32)
+  Field: carAddr, Type: int(11)
+  Field: parkTime, Type: datetime
+  Field: lastUpdate, Type: datetime
+  Field: carNumber, Type: varchar(8)
+  Field: imgName, Type: varchar(50)
+  Field: carType, Type: int(2)
+  Field: CarPlateASI, Type: varchar(30)
+
+Table: t_lotcarforfind_area
+  Field: id, Type: int(11)
+  Field: carNo, Type: varchar(32)
+  Field: carAddr, Type: int(11)
+  Field: parkTime, Type: datetime
+  Field: lastUpdate, Type: datetime
+  Field: carNumber, Type: varchar(8)
+  Field: imgname, Type: varchar(255)
+  Field: CarPlateASI, Type: varchar(255)
+
+Table: t_parkinglot
+  Field: lotId, Type: int(3)
+  Field: lotName, Type: varchar(100)
+  Field: bgImgFile, Type: varchar(200)
+  Field: areaCount, Type: int(5)
+  Field: tollCount, Type: int(11)
+  Field: placeCount, Type: int(5)
+  Field: zoomRate, Type: tinyint(2)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+  Field: address, Type: varchar(200)
+  Field: totalSpace, Type: varchar(200)
+  Field: tel, Type: varchar(200)
+  Field: secret, Type: varchar(200)
+
+Table: t_power_events
+  Field: id, Type: bigint(20)
+  Field: evtType, Type: int(11)
+  Field: imgName, Type: varchar(50)
+  Field: dspIp, Type: varchar(32)
+  Field: evtTime, Type: varchar(32)
+  Field: inAddr, Type: varchar(32)
+  Field: inTime, Type: varchar(32)
+  Field: outAddr, Type: varchar(32)
+  Field: outTime, Type: varchar(32)
+  Field: money, Type: int(11)
+  Field: carNo, Type: varchar(32)
+  Field: carplateNum, Type: varchar(45)
+  Field: carplateType, Type: int(1) unsigned
+  Field: carplateProty1, Type: int(3) unsigned
+  Field: carplateProty2, Type: int(3) unsigned
+  Field: enchargeFlag, Type: int(1) unsigned
+  Field: serialType, Type: int(1) unsigned
+  Field: serialNo, Type: varchar(45)
+  Field: inImgName, Type: varchar(50)
+  Field: CarColor, Type: varchar(45)
+  Field: CarBrand, Type: varchar(45)
+  Field: RecogEnable, Type: int(8)
+  Field: CarplateColor, Type: varchar(45)
+  Field: CameraId, Type: int(11)
+  Field: remark, Type: varchar(50)
+
+Table: t_service_config
+  Field: id, Type: int(11)
+  Field: is_separate, Type: tinyint(1)
+  Field: is_sync_parking_data, Type: tinyint(1)
+  Field: is_sync_lock_instruction, Type: tinyint(1)
+  Field: create_time, Type: datetime
+  Field: update_time, Type: timestamp
+
+Table: t_toll_ip
+  Field: id, Type: int(11)
+  Field: ip, Type: varchar(20)
+  Field: createTime, Type: datetime
+  Field: creator, Type: varchar(256)
+
+Table: temp_log_parkcount
+  Field: ID, Type: int(11)
+  Field: AreaId, Type: int(11)
+  Field: AreaName, Type: varchar(50)
+  Field: ParkDate, Type: datetime
+  Field: ParkHour, Type: int(11)
+  Field: ParkCount, Type: int(11)
+  Field: FlowIn, Type: int(11)
+  Field: FlowOut, Type: int(11)
+  Field: CliDate, Type: datetime
+  Field: CliFlag, Type: int(8)
+  Field: IsDelete, Type: int(1)
+
+Table: user
+  Field: ID, Type: int(11)
+  Field: LoginName, Type: varchar(45)
+  Field: Pwd, Type: varchar(45)
+  Field: URight, Type: int(10) unsigned
+  Field: lastlogintime, Type: varchar(40)
+  Field: UserType, Type: int(11)
+

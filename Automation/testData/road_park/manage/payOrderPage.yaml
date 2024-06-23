@@ -1,0 +1,23 @@
+# 通过路侧收费系统接口分页查询管理端支付订单
+host:
+api: '/web/payOrder/page'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "分页查询管理端支付订单"
+    - request_data:
+        parkCode: ""
+        carNo: ""
+        payType: ""
+        payChannel: ""
+        paySource: ""
+        status: ""
+        payTimeStart: ""
+        payTimeEnd: ""
+        createTimeStart: ""
+        createTimeEnd: ""
+        current: 1
+        size: 10

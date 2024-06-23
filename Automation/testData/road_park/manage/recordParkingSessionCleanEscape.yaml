@@ -1,0 +1,17 @@
+# 通过路侧收费系统接口清除欠费
+api: '/web/record/parkingSession/cleanEscape'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "清除欠费"
+    - request_data:
+        cleanMoney: ""
+        cleanTime: ""
+        remark: ""
+        operatorId: ""
+        operatorName: ""
+        parkCode: ""
+        parkingRecordId: ""

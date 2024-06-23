@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口固定车区域管理——》列表查询（分页）
+host:
+api: '/web/parking/area/areaSearch'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "固定车区域管理——》列表查询（分页）"
+    - request_data:
+        parkCode: ""
+        areaName: ""
+        current: 1
+        size: 10

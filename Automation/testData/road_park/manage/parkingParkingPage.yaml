@@ -1,0 +1,16 @@
+# 通过路侧收费系统接口查询车场信息
+host:
+api: '/web/parking/parking/page'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "分页查询车位信息"
+    - request_data:
+        parkName: ""
+        parkCode: ""
+        id: ""
+        current: 1
+        size: 10

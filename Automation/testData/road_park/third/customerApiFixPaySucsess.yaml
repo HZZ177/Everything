@@ -1,0 +1,21 @@
+# 通过C端接口进行C端充值支付成功回调
+host:
+api: '/third/customer/api/fix/paySuccess'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "C端充值支付成功回调"
+    - request_data:
+        orderNo: ""
+        payMoney: ""
+        stcOrderNo: ""
+        merOrderNo: ""
+        cOrderNo: ""
+        payTime:
+        totalMoney:
+        freeMoney:
+        payChannel:
+        payType:

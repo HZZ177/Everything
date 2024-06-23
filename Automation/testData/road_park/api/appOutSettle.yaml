@@ -1,0 +1,19 @@
+# 通过路内app接口进行结算离场（POS机点击结算离场）
+host:
+api: '/api/app/outSettle'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "结算离场（POS机点击结算离场）"
+    - request_data:
+        parkingRecordId: ""
+        queryFeeTime: ""
+        totalActualBalance: ""
+        totalFee: ""
+        payMoney: ""
+        freeMoney: ""
+        isPayEscape: ""
+        tollmanId: ""

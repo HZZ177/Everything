@@ -1,0 +1,14 @@
+# 通过路内app接口进行收费员登录操作
+host:
+api: '/api/tollman/login'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "收费员登录"
+    - request_data:
+        username: ""
+        password: ""
+        parkCode: ""

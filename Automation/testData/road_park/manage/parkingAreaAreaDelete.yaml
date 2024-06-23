@@ -1,0 +1,12 @@
+# 通过路侧收费系统接口删除固定车区域
+host:
+api: '/web/parking/area/areaDelete'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "get"
+data:
+  - - id: 1
+    - ps: "删除固定车区域"
+    - request_data:
+        id: ""

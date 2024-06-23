@@ -1,0 +1,12 @@
+# 通过路侧收费系统接口删除计费规则
+host:
+api: '/web/fee/new/deleteRuleGroup'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "POST"
+data:
+  - - id: 1
+    - ps: "删除计费规则"
+    - request_data:
+        id: ""

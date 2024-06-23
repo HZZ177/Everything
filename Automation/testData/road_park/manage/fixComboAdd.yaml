@@ -1,0 +1,26 @@
+# 通过路侧收费系统接口新增固定车充值套餐
+host:
+api: '/web/fixCombo/add'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "新增固定车充值套餐"
+    - request_data:
+        parkCode: ""
+        name: ""
+        fixCardTypeId: ""
+        areaIdList: ""
+        startDate: ""
+        endDate: ""
+        chargeNum: ""
+        chargeType: 0
+        giveNum: 0
+        giveType: 0
+        fee: ""
+        feeByParkspace: ""
+        thirdRecharge: ""
+        description: ""
+        giveFlag: ""

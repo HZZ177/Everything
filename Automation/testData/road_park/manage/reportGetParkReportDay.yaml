@@ -1,0 +1,14 @@
+# 通过路侧收费系统接口查询车场运营日报
+host:
+api: '/web/report/getParkReportDay'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询车场运营日报"
+    - request_data:
+        startDate: ""
+        parkCode: ""
+        endDate: ""

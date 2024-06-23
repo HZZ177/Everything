@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口进行登录操作
+host:
+api: '/web/auth/login'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "登录路侧收费系统"
+    - request_data:
+        username: ""
+        password: ""
+        code: ""
+        uuid: ""

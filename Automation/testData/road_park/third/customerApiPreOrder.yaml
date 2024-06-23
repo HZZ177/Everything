@@ -1,0 +1,20 @@
+# 通过C端接口进行C端购买固定车卡套餐预下单
+host:
+api: '/third/customer/api/fix/preOrder'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "C端购买固定车卡套餐预下单"
+    - request_data:
+        parkCode: ""
+        comboId: ""
+        buyNum: ""
+        cardId: ""
+        carNos: []
+        cardName:
+        phone:
+        cardParkspaceNum:
+        remark:

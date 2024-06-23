@@ -1,0 +1,15 @@
+# 通过路内app接口进行消息列表查询
+host:
+api: '/api/message/page'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "消息列表查询"
+    - request_data:
+        workStationId: ""
+        status: 0
+        current: 1
+        size: 10

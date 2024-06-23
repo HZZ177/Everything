@@ -1,0 +1,12 @@
+# 通过路侧收费系统接口分页查询车辆证据链
+host:
+api: '/web/parking/parking/evidence'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "get"
+data:
+  - - id: 1
+    - ps: "查询车辆证据链"
+    - request_data:
+        parkingRecordId: ""

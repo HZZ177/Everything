@@ -1,0 +1,17 @@
+# 通过路侧收费系统接口新增单车位
+host:
+api: '/web/parking/parkspace/add'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "POST"
+data:
+  - - id: 1
+    - ps: "新增单车位"
+    - request_data:
+        parkCode: ""
+        id: ""
+        parkspaceCode: ""
+        roadCode: ""
+        longitude: ""
+        latitude: ""

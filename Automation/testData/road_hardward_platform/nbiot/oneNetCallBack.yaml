@@ -1,0 +1,11 @@
+# 通过硬件云平台管理端接口进行地磁入车，出车，心跳，其它...
+host:
+api: '/hardware-platform/nbiot/nbiot/oneNetCallBack'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "移动运营商 - 地磁入车，出车，心跳，其它..."
+    - request_data:

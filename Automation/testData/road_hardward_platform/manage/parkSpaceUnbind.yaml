@@ -1,0 +1,12 @@
+# 通过硬件云平台管理端接口进行解绑（批量解绑）
+host:
+api: '/hardware-platform/manage/manage/parkspace/unbind'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "解绑（批量解绑）"
+    - request_data:
+

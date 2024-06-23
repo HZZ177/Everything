@@ -1,0 +1,22 @@
+# 通过路内app接口进行车辆下单
+host:
+api: '/api/app/order'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "车辆下单"
+    - request_data:
+        details: ""
+        carNo: ""
+        parkCode: ""
+        tollmanId: ""
+        parkingRecordId: ""
+        parkingRecordIds: ""
+        payChannel: ""
+        payType: ""
+        settlementType: ""
+        settlementWay: ""
+        queryFeeTime: ""

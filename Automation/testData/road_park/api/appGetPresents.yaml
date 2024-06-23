@@ -1,0 +1,16 @@
+# 通过路内app接口查询工作站下全部在场车信息
+host:
+api: '/api/app/getPresents'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询工作站下全部在场车信息"
+    - request_data:
+        parkCode: ""
+        tollmanId: ""
+        workstationId: ""
+        showEmptySpace: ""
+        stopTimeSort: ""

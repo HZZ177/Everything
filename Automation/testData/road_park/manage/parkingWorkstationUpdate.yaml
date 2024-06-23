@@ -1,0 +1,16 @@
+# 通过路侧收费系统接口修改工作站
+host:
+api: '/web/parking/workstation/update'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "POST"
+data:
+  - - id: 1
+    - ps: "修改工作站"
+    - request_data:
+        id: ""
+        workStationName: ""
+        parkCode: ""
+        parkingIds: ""
+        tollmanIds: ""

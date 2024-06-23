@@ -1,0 +1,13 @@
+# 通过路内app接口上传文件图片base64
+host:
+api: '/file/manage/upload/base64'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "上传文件图片base64"
+    - request_data:
+        data: ""
+        packageName: ""

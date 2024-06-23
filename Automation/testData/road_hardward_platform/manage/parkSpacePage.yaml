@@ -1,0 +1,19 @@
+# 通过硬件云平台管理端接口进行更新车场配置列表
+host:
+api: '/hardware-platform/manage/manage/parkspace/page'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "更新车场配置列表"
+    - request_data:
+        roadName: ""
+        parkspaceNo: ""
+        deviceCode: ""
+        bindStatus: ""
+        deviceType: ""
+        parkId: ""
+        current: 1
+        size: 20

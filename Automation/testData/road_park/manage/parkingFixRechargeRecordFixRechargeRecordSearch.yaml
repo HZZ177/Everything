@@ -1,0 +1,20 @@
+# 通过路侧收费系统接口分页查询固定车充值明细
+host:
+api: '/web/parking/fix-recharge-record/fixRechargeRecordSearch'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "分页查询固定车充值明细"
+    - request_data:
+        payTimeStart: ""
+        payTimeEnd: ""
+        payTime: ""
+        orderNo: ""
+        cardName: ""
+        carNo: ""
+        parkCode: ""
+        current: 1
+        size: 10

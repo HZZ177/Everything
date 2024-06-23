@@ -1,0 +1,15 @@
+# 通过硬件云平台管理端接口进行登录操作
+host:
+api: '/hardware-platform/manage/auth/login'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "登录硬件云平台管理端"
+    - request_data:
+        username: ""
+        password: ""
+        code: ""
+        uuid: ""

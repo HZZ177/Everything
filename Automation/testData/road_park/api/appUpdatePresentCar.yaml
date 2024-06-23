@@ -1,0 +1,19 @@
+# 通过路内app接口修改车牌/修改车型
+host:
+api: '/api/app/updatePresentCar'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "修改车牌/修改车型"
+    - request_data:
+        carNo: ""
+        carType: ""
+        parkingRecordId: ""
+        parkCode: ""
+        tollmanId: ""
+        tollmanName: ""
+        workstationId: ""
+        carImg: ""

@@ -1,0 +1,13 @@
+# 通过路侧收费系统接口添加工作站
+host:
+api: '/web/parking/workstation/add'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "GET"
+data:
+  - - id: 1
+    - ps: "添加工作站"
+    - request_data:
+        parkCode: ""
+        workStationName: ""

@@ -1,0 +1,19 @@
+# 通过路内app接口进行在场车详情页查询
+host:
+api: '/api/app/registerInCar'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "在场车详情页查询"
+    - request_data:
+        carImg: ""
+        carNo: ""
+        carType: ""
+        parkCode: ""
+        parkspaceCode: ""
+        roadCode: ""
+        tollmanId: ""
+        workstationId: ""

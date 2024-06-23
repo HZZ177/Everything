@@ -1,0 +1,15 @@
+# 通过路侧收费系统接口固定车区域管理——》路段信息列表查询(修改按钮)
+host:
+api: '/web/parking/area/getAreaRoadInfo'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "固定车区域管理——》路段信息列表查询(修改按钮)"
+    - request_data:
+        roadName: ""
+        parkCode: ""
+        current: 1
+        size: 1000

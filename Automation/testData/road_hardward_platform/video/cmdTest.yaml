@@ -1,0 +1,19 @@
+# 通过硬件云平台管理端接口进行科拓相机标准入出车测试
+host:
+api: '/hardware-platform/video/cmd/test'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "科拓相机标准入出车测试"
+    - request_data:
+        cmd: 'eventInfo'
+        cmdTime: ""
+        deviceId: ""
+        areaNum: '2'
+        parkingNum: '2'
+        eventNum: '1'
+        eventList:
+          -

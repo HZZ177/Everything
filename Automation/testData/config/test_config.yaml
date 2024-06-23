@@ -1,0 +1,45 @@
+#===================
+# test环境数据
+#===================
+# 车场id
+parkCode: LC1201000001
+
+# 手持机数据
+app:
+  domain: http://roadpark.keytop.cn:15612
+
+# 管理端数据
+manager:
+  domain: http://roadpark.keytop.cn
+  username: 18202823092
+  password: as101026
+
+# c端
+client:
+  domain: http://roadpark.keytop.cn:19900
+
+hardware_platform:
+  domain: http://roadpark.keytop.cn:8101
+  username: 18202823092
+  password: as101026
+  # 地磁imei
+  iot_imei: 8600000000003
+  # 高位相机id
+  cameraId: AA82349429
+  # 地位视频桩
+  low_video_deviceId: CA21812844
+
+# 测试数据库配置
+mysql:
+  host: 117.173.153.92
+  port: 57036
+  user: root
+  password: keytop123
+  database: road_manage
+
+# 固定车卡信息
+fix_card:
+  cardName: 自动化固定车卡
+  phone: 15683152128
+  parkspaceNum: 10
+  fixComboNum: 1

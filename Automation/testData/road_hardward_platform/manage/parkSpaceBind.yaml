@@ -1,0 +1,17 @@
+# 通过硬件云平台管理端接口进行泊位绑定设备
+host:
+api: '/hardware-platform/manage/manage/parkspace/bind'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "泊位绑定设备"
+    - request_data:
+        deviceType: ""
+        deviceCode: ""
+        cameraParkspaceCode: ""
+        parkspaceCode: ""
+        parkId: ""
+        roadCode: ""

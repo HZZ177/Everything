@@ -1,0 +1,16 @@
+# 通过路侧收费系统接口查询收费员统计
+host:
+api: '/web/report/tollmanProfitByDay'
+headers:
+  "Content-Type": "application/json;charset=UTF-8"
+  "Accept": "application/json"
+method: "post"
+data:
+  - - id: 1
+    - ps: "查询收费员统计"
+    - request_data:
+        startDate: ""
+        parkCode: ""
+        endDate: ""
+        dimension: 0
+        tollManIds: []
