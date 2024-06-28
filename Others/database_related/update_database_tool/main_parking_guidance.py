@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/6/19 17:11
 # @Author  : Heshouyi
-# @File    : main.py
+# @File    : main_parking_guidance.py
 # @Software: PyCharm
 # @description:
 import pymysql
@@ -30,7 +30,7 @@ class Application:
         self.connection = None
 
         # 文件路径
-        self.output_file = 'database_structure_fix.sql'
+        self.output_file = 'output/parking_guidance_database_structure_fix.sql'
 
     def connect_to_database(self):
         try:
@@ -57,7 +57,7 @@ class Application:
         self.connect_to_database()
 
         # 文件路径
-        output_file = 'database_structure.txt'
+        output_file = 'output/parking_guidance_database_structure.txt'
 
         try:
             with self.connection.cursor() as cursor:
