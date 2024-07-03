@@ -76,7 +76,7 @@ class Application:
         self.device_number = 0   # 多设备ip在数组中的位置
 
         # 定义版本号
-        self.version = "v1.2.1"
+        self.version = "v1.2.2"
 
         # 定义初始化窗口的基本信息
         self.root = base_root
@@ -493,7 +493,7 @@ class Application:
         self.top_download_log.grid_columnconfigure(0, weight=1)
         self.top_download_log.grid_columnconfigure(1, weight=0)
         self.top_download_log.grid_columnconfigure(2, weight=1)
-        self.center_window(self.top_download_log, 4, calculate_size=row_index+1)
+        self.center_window(self.top_download_log, 4, calculate_size=row_index+2)
 
     def download_log_choose_page(self, previous_top, log_file_path):
         """下载设备日志"""
