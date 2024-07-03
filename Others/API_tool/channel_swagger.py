@@ -21,3 +21,47 @@ print(swagger_data)
 # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
 with open('channel_swagger_data.json', 'w', encoding='utf-8') as f:
     json.dump(swagger_data, f, ensure_ascii=False, indent=2)
+
+
+# 固定base_url
+base_url = 'http://192.168.21.249:7072'
+
+
+# 生成请求函数
+def create_request_functions(swagger_data, base_url):
+    functions_code = ""
+
+    # 提取接口路径和方法
+    for path, path_item in swagger_data['paths'].items():
+        for method, operation in path_item.items():
+            function_name = operation['operationId']
+            params = operation.get('parameters', [])
+
+            # 动态生成函数代码
+            param_names = [param['name'] for param in params]
+            param_list = ", ".join(param_names)
+            function_code = f"def {function_name}({param_list}):\n"
+            function_code += f"    url = '{base_url}' + '{path}'\n"
+
+            # 构建请求参数字典
+            if param_names:
+                function_code += "    params = {\n"
+                for param_name in param_names:
+                    function_code += f"        '{param_name}': {param_name},\n"
+                function_code += "    }\n"
+
+            # 添加发送请求的代码
+            function_code += "    response = requests.request('{}', url, params=params)\n".format(method.upper())
+            function_code += "    return response.json()\n"
+            function_code += "\n"
+
+            functions_code += function_code
+
+    return functions_code
+
+# 动态生成的请求函数代码
+request_functions_code = create_request_functions(swagger_data, base_url)
+
+# 将生成的函数代码保存到文件
+with open('generated_request_functions.py', 'w', encoding='utf-8') as f:
+    f.write(request_functions_code)
