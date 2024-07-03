@@ -1,0 +1,4361 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "新版寻车Channel",
+    "version": "1.0.0",
+    "title": "新版寻车Channel API文档"
+  },
+  "host": "192.168.21.249:7072",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "C++配置信息下发",
+      "description": "Ini Change Controller"
+    },
+    {
+      "name": "car-in-out-record-controller",
+      "description": "Car In Out Record Controller"
+    },
+    {
+      "name": "health-check-controller",
+      "description": "Health Check Controller"
+    },
+    {
+      "name": "区域相机",
+      "description": "Area Camera Controller"
+    },
+    {
+      "name": "区域相机相关接口（部分弃用）",
+      "description": "Area Device Controller"
+    },
+    {
+      "name": "告警记录",
+      "description": "Warn Log Controller"
+    },
+    {
+      "name": "对接宜泊停车的接口",
+      "description": "Yi Bo Controller"
+    },
+    {
+      "name": "对接收费系统的接口",
+      "description": "Charge Controller"
+    },
+    {
+      "name": "屏指令相关接口",
+      "description": "Screen Notice Controller"
+    },
+    {
+      "name": "屏相关接口",
+      "description": "Screen Related Controller"
+    },
+    {
+      "name": "工具接口",
+      "description": "Tool Controller"
+    },
+    {
+      "name": "管理channel的定时任务",
+      "description": "Task Manage Controller"
+    },
+    {
+      "name": "紧急模式",
+      "description": "Emergency Mode Controller"
+    },
+    {
+      "name": "统一接口",
+      "description": "Unified Controller"
+    },
+    {
+      "name": "节点设备相关",
+      "description": "Node Device Controller"
+    },
+    {
+      "name": "车位灯方案接口",
+      "description": "Parking Light Notice Controller"
+    },
+    {
+      "name": "车位相关接口",
+      "description": "Park Controller"
+    },
+    {
+      "name": "车位相机上报",
+      "description": "Device Escalation Controller"
+    }
+  ],
+  "paths": {
+    "/area/areaDeviceUpdateStatus": {
+      "post": {
+        "tags": [
+          "区域相机相关接口（部分弃用）"
+        ],
+        "summary": "区域相机更新拥堵状态",
+        "operationId": "areaDeviceUpdateStatusUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "areaDeviceUpdateStatus",
+            "description": "areaDeviceUpdateStatus",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AreaDeviceUpdateStatusVO",
+              "originalRef": "AreaDeviceUpdateStatusVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/area/enter": {
+      "post": {
+        "tags": [
+          "区域相机相关接口（部分弃用）"
+        ],
+        "summary": "(弃用)区域入车",
+        "operationId": "enterUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AreaInOutVO",
+              "originalRef": "AreaInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/area/leave": {
+      "post": {
+        "tags": [
+          "区域相机相关接口（部分弃用）"
+        ],
+        "summary": "(弃用)区域出车",
+        "operationId": "leaveUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AreaInOutVO",
+              "originalRef": "AreaInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/area/updateStereoscopicDetectorParkAddrList": {
+      "get": {
+        "tags": [
+          "区域相机相关接口（部分弃用）"
+        ],
+        "summary": "更新立体区域关联探测器地址服务内存数据",
+        "operationId": "updateStereoscopicDetectorParkAddrListUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/areaCamera/areaInOut": {
+      "post": {
+        "tags": [
+          "区域相机"
+        ],
+        "summary": "区域相机进出车",
+        "operationId": "areaInOutUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "areaInOutReqVo",
+            "description": "areaInOutReqVo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AreaInOutReqVo",
+              "originalRef": "AreaInOutReqVo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/areaCamera/areaPostPicture": {
+      "post": {
+        "tags": [
+          "区域相机"
+        ],
+        "summary": "区域相机更新图片",
+        "operationId": "areaPostPictureUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "areaUpdatePlateReqVo",
+            "description": "areaUpdatePlateReqVo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AreaUpdatePlateReqVo",
+              "originalRef": "AreaUpdatePlateReqVo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/carInOut/listInOutCarInfo": {
+      "post": {
+        "tags": [
+          "car-in-out-record-controller"
+        ],
+        "summary": "历史进出车明细分页查询",
+        "operationId": "listInOutCarInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "inOutCarInfoReqDTO",
+            "description": "inOutCarInfoReqDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/历史进出车明细参数",
+              "originalRef": "历史进出车明细参数"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/统一返回参数",
+              "originalRef": "统一返回参数"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/charge/postCarOutInfo": {
+      "post": {
+        "tags": [
+          "对接收费系统的接口"
+        ],
+        "summary": "出场上报",
+        "operationId": "postCarOutInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostCarOutInfoReqVo",
+              "originalRef": "PostCarOutInfoReqVo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/deviceEscalation/getInfo": {
+      "post": {
+        "tags": [
+          "车位相机上报"
+        ],
+        "summary": "查询车位编号对应地址信息",
+        "operationId": "getInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "deviceEscalationReqVO",
+            "description": "deviceEscalationReqVO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/车位相机上报信息0",
+              "originalRef": "车位相机上报信息0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/车位相机上报信息",
+              "originalRef": "车位相机上报信息"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/deviceEscalation/saveInfo": {
+      "post": {
+        "tags": [
+          "车位相机上报"
+        ],
+        "summary": "保存相机对应车位信息",
+        "operationId": "saveInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "deviceEscalationReqVO",
+            "description": "deviceEscalationReqVO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/车位相机上报信息0",
+              "originalRef": "车位相机上报信息0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/emergencyMode/off": {
+      "get": {
+        "tags": [
+          "紧急模式"
+        ],
+        "summary": "关闭紧急模式",
+        "operationId": "offUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/接口返回统一对象«object»",
+              "originalRef": "接口返回统一对象«object»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/emergencyMode/on": {
+      "get": {
+        "tags": [
+          "紧急模式"
+        ],
+        "summary": "打开紧急模式",
+        "operationId": "onUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/接口返回统一对象«object»",
+              "originalRef": "接口返回统一对象«object»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/healthCheck": {
+      "get": {
+        "tags": [
+          "health-check-controller"
+        ],
+        "summary": "healthCheck",
+        "operationId": "healthCheckUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/iniChange/pushConfig": {
+      "post": {
+        "tags": [
+          "C++配置信息下发"
+        ],
+        "summary": "下发配置信息到C++",
+        "operationId": "pushConfigUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "iniChangeReqDTO",
+            "description": "iniChangeReqDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/IniChangeReqDTO",
+              "originalRef": "IniChangeReqDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/ledScreen/notice": {
+      "post": {
+        "tags": [
+          "屏指令相关接口"
+        ],
+        "summary": "传入子屏id集合，触发这些子屏统计屏关联车位，并下发屏指令",
+        "operationId": "noticeUsingPOST_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseReqVO对象",
+              "originalRef": "BaseReqVO对象"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/ledScreen/noticeTest": {
+      "post": {
+        "tags": [
+          "屏指令相关接口"
+        ],
+        "summary": "传入子屏id集合，进行屏测试操作，并下发屏指令",
+        "operationId": "noticeTestUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseReqVO对象",
+              "originalRef": "BaseReqVO对象"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/ledScreen/updateScreenCmd": {
+      "post": {
+        "tags": [
+          "屏指令相关接口"
+        ],
+        "summary": "第三方屏控制接口",
+        "operationId": "updateScreenCmdUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "screenCmdReqVO",
+            "description": "screenCmdReqVO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseReqVO对象",
+              "originalRef": "BaseReqVO对象"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/nodeDevice/initStatusBatch": {
+      "post": {
+        "tags": [
+          "节点设备相关"
+        ],
+        "summary": "初始化节点设备状态为离线",
+        "operationId": "initStatusBatchUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/nodeDevice/select485AndIpCamList": {
+      "post": {
+        "tags": [
+          "节点设备相关"
+        ],
+        "summary": "查询485节点和相机设备信息",
+        "operationId": "select485AndIpCamListUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/IpCam485ResponseVO",
+                "originalRef": "IpCam485ResponseVO"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/nodeDevice/selectAllList": {
+      "post": {
+        "tags": [
+          "节点设备相关"
+        ],
+        "summary": "查询所有节点设备地址",
+        "operationId": "selectAllListUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/nodeDevice/selectInterAndIpCamList": {
+      "post": {
+        "tags": [
+          "节点设备相关"
+        ],
+        "summary": "查询网络节点和相机节点设备信息",
+        "operationId": "selectInterNodeAndIpCamListUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/InterNodeAndIpCamResponseVO",
+                "originalRef": "InterNodeAndIpCamResponseVO"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/nodeDevice/updateStatusBatchByAddr": {
+      "post": {
+        "tags": [
+          "节点设备相关"
+        ],
+        "summary": "批量更新节点设备状态",
+        "operationId": "updateStatusBatchByAddrUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "param",
+            "description": "param",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/更新节点设备状态参数",
+              "originalRef": "更新节点设备状态参数"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/clearCaptureUrl": {
+      "get": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "清除内存中车位对应抓拍信息",
+        "operationId": "clearCaptureUrlUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "parkAddr",
+            "in": "query",
+            "description": "parkAddr",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/enter": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "车位入车",
+        "operationId": "enterUsingPOST_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/faultForFindCar": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "故障(找车系统)",
+        "operationId": "faultForFindCarUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/faultForGuidance": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "故障(引导系统)",
+        "operationId": "faultForGuidanceUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/freeForFindCar": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "无车(找车系统)",
+        "operationId": "freeForFindCarUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/freeForGuidance": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "无车(引导系统)",
+        "operationId": "freeForGuidanceUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/getCaptureUrl": {
+      "get": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "获取内存中车位对应抓拍信息",
+        "operationId": "getCaptureUrlUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "parkAddr",
+            "in": "query",
+            "description": "parkAddr",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/getEmptyCount": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "获取空车位数量",
+        "operationId": "getEmptyCountUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseVO",
+              "originalRef": "BaseVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/接口返回统一对象«int»",
+              "originalRef": "接口返回统一对象«int»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/leave": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "车位出车",
+        "operationId": "leaveUsingPOST_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/occupyForFindCar": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "有车(找车系统)",
+        "operationId": "occupyForFindCarUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/occupyForGuidance": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "有车(引导系统)",
+        "operationId": "occupyForGuidanceUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInOutVO",
+              "originalRef": "ParkInOutVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/pushParkCamera": {
+      "get": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "下发C++相机抓拍指令",
+        "operationId": "pushParkCameraUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "parkingIp",
+            "in": "query",
+            "description": "parkingIp",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parkingPort",
+            "in": "query",
+            "description": "parkingPort",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/selectParkListByCondition": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "根据条件查询车位信息",
+        "operationId": "selectParkListByConditionUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkInfoRequestVO",
+              "originalRef": "ParkInfoRequestVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ParkInfoResponseVO",
+                "originalRef": "ParkInfoResponseVO"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/snapAllByLot": {
+      "get": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "全场车位相机抓拍指令",
+        "operationId": "snapAllByLotUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/test": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "test",
+        "operationId": "testUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "addr",
+            "in": "query",
+            "description": "addr",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ElementParkInfoDTO",
+                "originalRef": "ElementParkInfoDTO"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/test2": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "test2",
+        "operationId": "test2UsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/updateAllFault": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "更新所有车位为故障",
+        "operationId": "updateAllFaultUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseVO",
+              "originalRef": "BaseVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/updateCaptureUrl": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "更新车位相机抓拍照片路径",
+        "operationId": "updateCaptureUrlUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "updateCaptureUrlVO",
+            "description": "updateCaptureUrlVO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateCaptureUrlVO",
+              "originalRef": "UpdateCaptureUrlVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/park/updatePlateNo": {
+      "post": {
+        "tags": [
+          "车位相关接口"
+        ],
+        "summary": "更新车牌",
+        "operationId": "updatePlateNoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdatePlateNoVO",
+              "originalRef": "UpdatePlateNoVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/parking-light/notice": {
+      "post": {
+        "tags": [
+          "车位灯方案接口"
+        ],
+        "summary": "方案推送",
+        "operationId": "noticeUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "parkingLightNoticeReqVO",
+            "description": "parkingLightNoticeReqVO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParkingLightNoticeReqVO对象",
+              "originalRef": "ParkingLightNoticeReqVO对象"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/parking-light/noticeForStopWarn": {
+      "post": {
+        "tags": [
+          "车位灯方案接口"
+        ],
+        "summary": "用于终止违停告警的下发灯指令方法",
+        "operationId": "noticeForStopWarnUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseReqVO对象",
+              "originalRef": "BaseReqVO对象"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/parkmall/carEnd": {
+      "post": {
+        "tags": [
+          "对接宜泊停车的接口"
+        ],
+        "summary": "车辆出场上报",
+        "operationId": "postCarOutInfoUsingPOST_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/YiBoParkOutVo",
+              "originalRef": "YiBoParkOutVo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/getAllTcpAddr": {
+      "post": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "获取所有网络屏的子屏地址",
+        "operationId": "getAllTcpAddrUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseVO",
+              "originalRef": "BaseVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/getLcdScreenData": {
+      "get": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "获取LCD屏下发数据",
+        "operationId": "getLcdScreenDataUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "description": "屏ip",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "屏类型",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/initAllOffLine": {
+      "post": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "把所有屏初始化为离线",
+        "operationId": "initAllOffLineUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseVO",
+              "originalRef": "BaseVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/ledPageRefresh": {
+      "post": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "LED屏页面刷新",
+        "operationId": "ledPageRefreshUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "dto",
+            "description": "dto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LedScreenNoticeDTO",
+              "originalRef": "LedScreenNoticeDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/sendLcdScreenData": {
+      "post": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "指令下发LCD屏数据",
+        "operationId": "sendLcdScreenDataUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LcdSocketMessageVO",
+              "originalRef": "LcdSocketMessageVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/sendLcdScreenDefaultData": {
+      "get": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "下发LCD屏默认(数据库)数据",
+        "operationId": "sendLcdScreenDefaultDataUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "description": "屏ip",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "屏类型",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screen/updateStatusByAddr": {
+      "post": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "更新指定的屏为指定状态",
+        "operationId": "updateStatusByAddrUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateScreenStatusRequestVO",
+              "originalRef": "UpdateScreenStatusRequestVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/screenRelated/listLcdScreen": {
+      "post": {
+        "tags": [
+          "屏相关接口"
+        ],
+        "summary": "LCD屏设备列表查询",
+        "operationId": "listLcdScreenUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListLcdScreenVO",
+              "originalRef": "ListLcdScreenVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PageResultDTO«ListLcdScreenDTO»",
+              "originalRef": "PageResultDTO«ListLcdScreenDTO»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/taskManage/resetAll": {
+      "get": {
+        "tags": [
+          "管理channel的定时任务"
+        ],
+        "summary": "重新加载所有系统定时任务",
+        "operationId": "resetAllUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/controlHighTask": {
+      "get": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "控制高负载任务(告警 进出车触发屏统计 有车无车上报) 1=开启 0=关闭",
+        "operationId": "controlHighTaskUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "flag",
+            "in": "query",
+            "description": "flag",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/dealWithGrpcCmd": {
+      "post": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "grpc的指令处理",
+        "operationId": "dealWithGrpcCmdUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "customJsonCmdRespDTO",
+            "description": "customJsonCmdRespDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CustomJsonCmd响应实体",
+              "originalRef": "CustomJsonCmd响应实体"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/统一返回参数",
+              "originalRef": "统一返回参数"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/sendCommandToAllScreen": {
+      "get": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "统计所有的屏数据，并下发指令",
+        "operationId": "sendCommandToAllScreenUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/sendLightCommandToFindCar": {
+      "post": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "给找车系统发送灯指令",
+        "operationId": "sendLightCommandToFindCarUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "baseReqDTO",
+            "description": "baseReqDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendCommandBaseReqDTO«LightCommandForFindReqDTO»",
+              "originalRef": "SendCommandBaseReqDTO«LightCommandForFindReqDTO»"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/sendLightCommandToGuidance": {
+      "post": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "给引导系统发送灯指令",
+        "operationId": "sendLightCommandToGuidanceUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "baseReqDTO",
+            "description": "baseReqDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendCommandBaseReqDTO«SendLightCommandOfGuidanceReqDTO»",
+              "originalRef": "SendCommandBaseReqDTO«SendLightCommandOfGuidanceReqDTO»"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/snap": {
+      "get": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "质检 - 抓拍",
+        "operationId": "snapUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/uniteApiPro": {
+      "post": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "测试统一接口（正式环境）",
+        "operationId": "uniteApiProUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UniteApiReqVo",
+              "originalRef": "UniteApiReqVo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/uniteApiTest": {
+      "post": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "测试统一接口（测试环境）",
+        "operationId": "uniteApiTestUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UniteApiReqVo",
+              "originalRef": "UniteApiReqVo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tool/uploadImg": {
+      "get": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "场端图片统一上云",
+        "operationId": "uploadImgUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "description": "url",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/unified/getCarLocInfo": {
+      "post": {
+        "tags": [
+          "统一接口"
+        ],
+        "summary": "车辆停放位置查询接口(精准)",
+        "operationId": "getCarLocInfoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "carLocInfoReqDTO",
+            "description": "carLocInfoReqDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/车辆停放位置查询接口",
+              "originalRef": "车辆停放位置查询接口"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/统一返回参数",
+              "originalRef": "统一返回参数"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/unified/getParkListByPlateNo": {
+      "post": {
+        "tags": [
+          "统一接口"
+        ],
+        "summary": "车辆停放位置查询接口(模糊)",
+        "operationId": "getParkListByPlateNoUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "getParkListByPlateNoReqDTO",
+            "description": "getParkListByPlateNoReqDTO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/根据车牌查车位（模糊）",
+              "originalRef": "根据车牌查车位（模糊）"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/统一返回参数",
+              "originalRef": "统一返回参数"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/warnLog/generateCrossLine": {
+      "post": {
+        "tags": [
+          "告警记录"
+        ],
+        "summary": "生成压线记录",
+        "operationId": "generateCrossLineUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerateCrossLineRequestVO",
+              "originalRef": "GenerateCrossLineRequestVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/warnLog/stopCrossLine": {
+      "post": {
+        "tags": [
+          "告警记录"
+        ],
+        "summary": "停止压线告警",
+        "operationId": "stopCrossLineUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerateCrossLineRequestVO",
+              "originalRef": "GenerateCrossLineRequestVO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "AreaDeviceUpdateStatusVO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "区域相机地址"
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "区域相机拥堵状态（0 不拥堵   1 拥堵）"
+        }
+      },
+      "title": "AreaDeviceUpdateStatusVO"
+    },
+    "AreaInOutInfoVO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "区域相机地址"
+        },
+        "carImageUrl": {
+          "type": "string",
+          "description": "车位图片路径"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌"
+        }
+      },
+      "title": "AreaInOutInfoVO"
+    },
+    "AreaInOutReqVo": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "事件ID --对应图片事件Id"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌"
+        },
+        "plateReliability": {
+          "type": "integer",
+          "format": "int32",
+          "description": "可信度"
+        },
+        "regionIp": {
+          "type": "string",
+          "description": "相机ip"
+        },
+        "triggerFlag": {
+          "type": "integer",
+          "format": "int32",
+          "description": "触发事件：3=来车 2=去车；"
+        }
+      },
+      "title": "AreaInOutReqVo"
+    },
+    "AreaInOutVO": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "description": "进出车参数",
+          "items": {
+            "$ref": "#/definitions/AreaInOutInfoVO",
+            "originalRef": "AreaInOutInfoVO"
+          }
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        }
+      },
+      "title": "AreaInOutVO"
+    },
+    "AreaUpdatePlateReqVo": {
+      "type": "object",
+      "properties": {
+        "carImageUrl": {
+          "type": "string",
+          "description": "图片路径"
+        },
+        "eventId": {
+          "type": "string",
+          "description": "事件ID"
+        },
+        "regionIp": {
+          "type": "string",
+          "description": "区域相机ip"
+        }
+      },
+      "title": "AreaUpdatePlateReqVo"
+    },
+    "BaseReqVO对象": {
+      "type": "object",
+      "properties": {
+        "reqId": {
+          "type": "string",
+          "description": "请求id"
+        },
+        "screenIdList": {
+          "type": "array",
+          "description": "子屏id集合",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "title": "BaseReqVO对象",
+      "description": "基础请求类"
+    },
+    "BaseVO": {
+      "type": "object",
+      "properties": {
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        }
+      },
+      "title": "BaseVO"
+    },
+    "CustomJsonCmd响应实体": {
+      "type": "object",
+      "properties": {
+        "areaId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "区域Id"
+        },
+        "areaName": {
+          "type": "string",
+          "description": "区域名称"
+        },
+        "beginAreaName": {
+          "type": "string",
+          "description": "起点区域名称"
+        },
+        "beginFloorName": {
+          "type": "string",
+          "description": "起点楼层名称"
+        },
+        "beginSpaceNo": {
+          "type": "string",
+          "description": "开始车位号"
+        },
+        "cmd": {
+          "type": "string",
+          "description": "指令"
+        },
+        "endAreaName": {
+          "type": "string",
+          "description": "终点区域名称"
+        },
+        "endFloorName": {
+          "type": "string",
+          "description": "终点楼层名称"
+        },
+        "endSpaceNo": {
+          "type": "string",
+          "description": "终点车位号"
+        },
+        "floorId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "楼层id"
+        },
+        "floorName": {
+          "type": "string",
+          "description": "楼层名称"
+        },
+        "imgName": {
+          "type": "string",
+          "description": "图片名称"
+        },
+        "inTimeEnd": {
+          "type": "string",
+          "description": "查询入车结束时间（必填，时间跨度最长30天）"
+        },
+        "inTimeStart": {
+          "type": "string",
+          "description": "查询入车开始时间（必填，时间跨度最长30天）"
+        },
+        "ip": {
+          "type": "string",
+          "description": "IP"
+        },
+        "ipList": {
+          "type": "array",
+          "description": "屏ip集合",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isBind": {
+          "type": "integer",
+          "format": "int32",
+          "description": "是否绑定"
+        },
+        "lcdCmdData": {
+          "description": "指令数据",
+          "$ref": "#/definitions/LcdSocketMessage",
+          "originalRef": "LcdSocketMessage"
+        },
+        "lightType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "灯类型 1-有线多彩灯 2-有线双色灯"
+        },
+        "nodeDeviceAddr": {
+          "type": "string",
+          "description": "节点设备地址"
+        },
+        "operateType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "操作类型 0-停止 1-开始"
+        },
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "每页条目数"
+        },
+        "parkSchmeParam": {
+          "type": "array",
+          "description": "根据车位编号修改车位灯方案",
+          "items": {
+            "$ref": "#/definitions/根据车位编号修改车位灯方案",
+            "originalRef": "根据车位编号修改车位灯方案"
+          }
+        },
+        "parkUpdateParam": {
+          "type": "array",
+          "description": "根据车位编号修改车位类型参数",
+          "items": {
+            "$ref": "#/definitions/根据车位编号修改车位类型参数",
+            "originalRef": "根据车位编号修改车位类型参数"
+          }
+        },
+        "parkUpdateStatusDTOList": {
+          "type": "array",
+          "description": "根据车位编号修改车位状态",
+          "items": {
+            "$ref": "#/definitions/车位状态更新请求参数",
+            "originalRef": "车位状态更新请求参数"
+          }
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌号"
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id"
+        },
+        "spaceNo": {
+          "type": "string",
+          "description": "车位编号"
+        },
+        "systemType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备类型  0-DSP车位相机   1-NODE节点控制器"
+        },
+        "testingBatchId": {
+          "type": "string",
+          "description": "质检中心检测批次ID"
+        },
+        "warnType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "告警类型  1：车位占用告警   2：车辆违停告警  3：特殊车辆入车  4：特殊车辆出车  5：车辆压线 6：油车违停"
+        }
+      },
+      "title": "CustomJsonCmd响应实体"
+    },
+    "DataContent": {
+      "type": "object",
+      "properties": {
+        "param": {
+          "$ref": "#/definitions/ParamContent",
+          "originalRef": "ParamContent"
+        },
+        "pushTime": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "DataContent"
+    },
+    "ElementParkInfoDTO": {
+      "type": "object",
+      "properties": {
+        "areaId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "areaName": {
+          "type": "string"
+        },
+        "carId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "carImageUrl": {
+          "type": "string"
+        },
+        "changePushFlag": {
+          "type": "boolean"
+        },
+        "changePushTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "control": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cppReportCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "creator": {
+          "type": "string"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "floorId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "floorName": {
+          "type": "string"
+        },
+        "height": {
+          "type": "number",
+          "format": "double"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "inTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "inType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastLeaveTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lotId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parkAddr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "parkCategory": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "parkNo": {
+          "type": "string"
+        },
+        "parkingCapture": {
+          "type": "string"
+        },
+        "plateNo": {
+          "type": "string"
+        },
+        "plateNoColor": {
+          "type": "string"
+        },
+        "plateNoSimple": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "stereoscopicParkCameraAddr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "uniqueId": {
+          "type": "string"
+        },
+        "uniqueIdentificationField": {
+          "type": "string"
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updater": {
+          "type": "string"
+        },
+        "warning": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "xcenter": {
+          "type": "string"
+        },
+        "ycenter": {
+          "type": "string"
+        }
+      },
+      "title": "ElementParkInfoDTO"
+    },
+    "GenerateCrossLineRequestVO": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "description": "车位地址集合",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        }
+      },
+      "title": "GenerateCrossLineRequestVO"
+    },
+    "IniChangeReqDTO": {
+      "type": "object",
+      "properties": {
+        "comname": {
+          "type": "string",
+          "description": "连接服务器的端口号 windows下是COM5, linux下是/dev/ttyS0"
+        },
+        "dspRecog": {
+          "type": "integer",
+          "format": "int32",
+          "description": "控制软识别与硬识别 0 软识别, 1 硬识别"
+        },
+        "firstServerIp": {
+          "type": "string",
+          "description": "设备IP前缀"
+        },
+        "picSwitch": {
+          "type": "integer",
+          "format": "int32",
+          "description": "是否开启空车牌图片收集功能  1 开启,  0 关闭"
+        },
+        "province": {
+          "type": "string",
+          "description": "车牌的默认省份(省份简称汉字) 默认为空"
+        },
+        "ret": {
+          "type": "integer",
+          "format": "int32",
+          "description": "控制TCP还是485通讯 0 tcp, 1 485"
+        },
+        "witch": {
+          "type": "integer",
+          "format": "int32",
+          "description": "控制故障状态的设备的开关 0 关闭， 1 开启"
+        }
+      },
+      "title": "IniChangeReqDTO"
+    },
+    "InterNodeAndIpCamResponseVO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "InterNodeAndIpCamResponseVO"
+    },
+    "IpCam485ResponseVO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "IpCam485ResponseVO"
+    },
+    "LCD屏广告方案": {
+      "type": "object",
+      "properties": {
+        "adList": {
+          "type": "array",
+          "description": "广告配置信息集合",
+          "items": {
+            "$ref": "#/definitions/LCD屏广告配置",
+            "originalRef": "LCD屏广告配置"
+          }
+        },
+        "carouselSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "轮播时间 单位s(秒)"
+        },
+        "species": {
+          "type": "integer",
+          "format": "int32",
+          "description": "类型 1：图片 2：视频"
+        }
+      },
+      "title": "LCD屏广告方案"
+    },
+    "LCD屏广告配置": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string",
+          "description": "文件名"
+        },
+        "playSort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "播放顺序"
+        }
+      },
+      "title": "LCD屏广告配置"
+    },
+    "LcdChildScreenH5DTO": {
+      "type": "object",
+      "properties": {
+        "arrowDirection": {
+          "type": "integer",
+          "format": "int32",
+          "description": "箭头方向   0：右   1：左   2：上   3：下"
+        },
+        "arrowPosition": {
+          "type": "integer",
+          "format": "int32",
+          "description": "箭头位置   0：右   1：左"
+        },
+        "isChange": {
+          "type": "boolean",
+          "description": "是否更新当前屏数据"
+        },
+        "showNum": {
+          "type": "integer",
+          "format": "int32",
+          "description": "显示数字（对应的屏应该展示的数字，定时任务以及进出车和车屏关系变动会更新这个字段）"
+        }
+      },
+      "title": "LcdChildScreenH5DTO"
+    },
+    "LcdSocketMessage": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/DataContent",
+          "originalRef": "DataContent"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "reqid": {
+          "type": "string"
+        },
+        "scene": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "showTemplate": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ts": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "LcdSocketMessage"
+    },
+    "LcdSocketMessageVO": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string",
+          "description": "pageUpdate页面更新;dataUpdate数据更新;temporaryPush临时推送;scriptExecution脚本执行;"
+        },
+        "data": {
+          "description": "数据体",
+          "$ref": "#/definitions/DataContent",
+          "originalRef": "DataContent"
+        },
+        "ip": {
+          "type": "string",
+          "description": "lcd屏ip"
+        },
+        "reqid": {
+          "type": "string",
+          "description": "请求ID(不传入时，系统内部会随机生成默认值)"
+        },
+        "scene": {
+          "type": "integer",
+          "format": "int32",
+          "description": "场景:1标准引导;999非标页面,默认：1标准引导"
+        },
+        "showTemplate": {
+          "type": "integer",
+          "format": "int32",
+          "description": "展示模板  0=非标模板 1=模板一"
+        },
+        "ts": {
+          "type": "integer",
+          "format": "int64",
+          "description": "时间戳(不传入时，系统内部会根据当前时间生成默认值)"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int32",
+          "description": "屏标识(0:一体屏,1:双拼接屏左屏,2:双拼接屏右屏)"
+        }
+      },
+      "title": "LcdSocketMessageVO"
+    },
+    "LedScreenNoticeDTO": {
+      "type": "object",
+      "properties": {
+        "reqId": {
+          "type": "string"
+        },
+        "screenIdList": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "title": "LedScreenNoticeDTO"
+    },
+    "LightCommandForFindReqDTO": {
+      "type": "object",
+      "properties": {
+        "dspIp": {
+          "type": "string"
+        },
+        "evtType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "imgName": {
+          "type": "string"
+        }
+      },
+      "title": "LightCommandForFindReqDTO"
+    },
+    "ListLcdScreenDTO": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备ID"
+        },
+        "ip": {
+          "type": "string",
+          "description": "设备IP"
+        },
+        "remark": {
+          "type": "string",
+          "description": "屏备注"
+        },
+        "screenType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "LCD屏类型： 0=一体屏 1=双拼接屏"
+        },
+        "showTemplate": {
+          "type": "integer",
+          "format": "int32",
+          "description": "展示模板  0=非标模板 1=模板一"
+        }
+      },
+      "title": "ListLcdScreenDTO"
+    },
+    "ListLcdScreenVO": {
+      "type": "object",
+      "properties": {
+        "ipList": {
+          "type": "array",
+          "description": "屏ip集合",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "每页条目数"
+        }
+      },
+      "title": "ListLcdScreenVO"
+    },
+    "PageResultDTO«ListLcdScreenDTO»": {
+      "type": "object",
+      "properties": {
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "每页条目数"
+        },
+        "recordSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "结果集的数量"
+        },
+        "records": {
+          "type": "array",
+          "description": "结果集",
+          "items": {
+            "$ref": "#/definitions/ListLcdScreenDTO",
+            "originalRef": "ListLcdScreenDTO"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 10000,
+          "description": "总条目数"
+        },
+        "totalPage": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "总页数"
+        }
+      },
+      "title": "PageResultDTO«ListLcdScreenDTO»"
+    },
+    "ParamContent": {
+      "type": "object",
+      "properties": {
+        "ad": {
+          "$ref": "#/definitions/LCD屏广告方案",
+          "originalRef": "LCD屏广告方案"
+        },
+        "appUrl": {
+          "type": "string"
+        },
+        "extra": {
+          "type": "string"
+        },
+        "isAdScreen": {
+          "type": "boolean"
+        },
+        "logTime": {
+          "type": "string"
+        },
+        "screenList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LcdChildScreenH5DTO",
+            "originalRef": "LcdChildScreenH5DTO"
+          }
+        },
+        "updateType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "yunweiIp": {
+          "type": "string"
+        }
+      },
+      "title": "ParamContent"
+    },
+    "ParkInOutVO": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "description": "车位地址集合",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        }
+      },
+      "title": "ParkInOutVO"
+    },
+    "ParkInfoRequestVO": {
+      "type": "object",
+      "properties": {
+        "parkAddr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位地址"
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位状态  0：空闲  1：占用  2：故障  3：停止服务"
+        }
+      },
+      "title": "ParkInfoRequestVO"
+    },
+    "ParkInfoResponseVO": {
+      "type": "object",
+      "properties": {
+        "areaId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "区域id"
+        },
+        "carImageUrl": {
+          "type": "string",
+          "description": "车辆图片路径"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "主键"
+        },
+        "inTime": {
+          "type": "string",
+          "description": "入车时间"
+        },
+        "outTime": {
+          "type": "string",
+          "description": "离开时间"
+        },
+        "parkAddr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位地址"
+        },
+        "parkCategory": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位种类"
+        },
+        "parkNo": {
+          "type": "string",
+          "description": "车位编号"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌号"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位状态 0-空闲 1-占用 2-故障 3-停止服务"
+        }
+      },
+      "title": "ParkInfoResponseVO"
+    },
+    "ParkingLightAreaRelationDTO对象": {
+      "type": "object",
+      "properties": {
+        "areaId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "区域id"
+        },
+        "areaName": {
+          "type": "string",
+          "description": "区域名称"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "创建时间"
+        },
+        "creator": {
+          "type": "string",
+          "description": "创建人"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "主键id"
+        },
+        "parkingLightSchemeId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位灯方案id"
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "更新时间"
+        },
+        "updater": {
+          "type": "string",
+          "description": "更新人"
+        }
+      },
+      "title": "ParkingLightAreaRelationDTO对象",
+      "description": "车位灯方案和区域的关系表"
+    },
+    "ParkingLightNoticeReqVO对象": {
+      "type": "object",
+      "properties": {
+        "freeColor": {
+          "type": "integer",
+          "format": "int32",
+          "description": "空闲颜色"
+        },
+        "lightType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "灯类型  1-有线多彩灯  2-有线双色灯"
+        },
+        "lotId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车场id"
+        },
+        "noticeType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "通知类型 0-按车位地址 1-按区域"
+        },
+        "occupyColor": {
+          "type": "integer",
+          "format": "int32",
+          "description": "占用颜色"
+        },
+        "parkAddr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位地址"
+        },
+        "parkingLightAreaRelationList": {
+          "type": "array",
+          "description": "车位灯方案和区域的关系列表",
+          "items": {
+            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象",
+            "originalRef": "ParkingLightAreaRelationDTO对象"
+          }
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求id"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备类型  0-DSP车位相机   1-NODE节点控制器"
+        },
+        "warningColor": {
+          "type": "integer",
+          "format": "int32",
+          "description": "告警颜色"
+        }
+      },
+      "title": "ParkingLightNoticeReqVO对象",
+      "description": "车位灯方案"
+    },
+    "PostCarOutInfoReqVo": {
+      "type": "object",
+      "properties": {
+        "plateNo": {
+          "type": "string",
+          "description": "车牌号"
+        }
+      },
+      "title": "PostCarOutInfoReqVo"
+    },
+    "SendCommandBaseReqDTO«LightCommandForFindReqDTO»": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string"
+        },
+        "lightType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LightCommandForFindReqDTO",
+            "originalRef": "LightCommandForFindReqDTO"
+          }
+        },
+        "reqId": {
+          "type": "string"
+        }
+      },
+      "title": "SendCommandBaseReqDTO«LightCommandForFindReqDTO»"
+    },
+    "SendCommandBaseReqDTO«SendLightCommandOfGuidanceReqDTO»": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string"
+        },
+        "lightType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SendLightCommandOfGuidanceReqDTO",
+            "originalRef": "SendLightCommandOfGuidanceReqDTO"
+          }
+        },
+        "reqId": {
+          "type": "string"
+        }
+      },
+      "title": "SendCommandBaseReqDTO«SendLightCommandOfGuidanceReqDTO»"
+    },
+    "SendLightCommandOfGuidanceReqDTO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lightFree": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lightOcc": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nodeType": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "SendLightCommandOfGuidanceReqDTO"
+    },
+    "UniteApiReqVo": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "string"
+        },
+        "appSecret": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "description": "接口的额外参数 用json字符串传入",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "parkId": {
+          "type": "string"
+        },
+        "serviceCode": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string",
+          "description": "接口uri"
+        },
+        "version": {
+          "type": "string",
+          "description": "请求头里的version 一般为1.0.0"
+        }
+      },
+      "title": "UniteApiReqVo"
+    },
+    "UpdateCaptureUrlVO": {
+      "type": "object",
+      "properties": {
+        "parkAddr": {
+          "type": "string",
+          "description": "车位地址(此处为不含后两位相机通道端口的车位地址)"
+        },
+        "parkingCaptureUrl": {
+          "type": "string",
+          "description": "抓拍照片路径"
+        }
+      },
+      "title": "UpdateCaptureUrlVO"
+    },
+    "UpdatePlateNoInfoVO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位地址"
+        },
+        "carImageUrl": {
+          "type": "string",
+          "description": "车位图片路径"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌"
+        },
+        "plateNoReliability": {
+          "type": "integer",
+          "format": "int32",
+          "description": "图片识别车牌可信度"
+        }
+      },
+      "title": "UpdatePlateNoInfoVO"
+    },
+    "UpdatePlateNoVO": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "description": "更新参数",
+          "items": {
+            "$ref": "#/definitions/UpdatePlateNoInfoVO",
+            "originalRef": "UpdatePlateNoInfoVO"
+          }
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        }
+      },
+      "title": "UpdatePlateNoVO"
+    },
+    "UpdateScreenStatusRequestVO": {
+      "type": "object",
+      "properties": {
+        "addr": {
+          "type": "integer",
+          "format": "int32",
+          "description": "子屏地址"
+        },
+        "reqId": {
+          "type": "string",
+          "description": "请求唯一id，用于追踪请求"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "状态  1：在线  2：离线"
+        }
+      },
+      "title": "UpdateScreenStatusRequestVO"
+    },
+    "YiBoParkOutVo": {
+      "type": "object",
+      "properties": {
+        "plateNumber": {
+          "type": "string",
+          "description": "车牌号"
+        }
+      },
+      "title": "YiBoParkOutVo"
+    },
+    "历史进出车明细参数": {
+      "type": "object",
+      "properties": {
+        "inTimeEnd": {
+          "type": "string",
+          "description": "查询入车结束时间（必填，时间跨度最长30天）"
+        },
+        "inTimeStart": {
+          "type": "string",
+          "description": "查询入车开始时间（必填，时间跨度最长30天）"
+        },
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "每页条目数"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌号"
+        },
+        "spaceNo": {
+          "type": "string",
+          "description": "车位号"
+        }
+      },
+      "title": "历史进出车明细参数"
+    },
+    "接口返回统一对象«int»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "code"
+        },
+        "data": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "title": "接口返回统一对象«int»"
+    },
+    "接口返回统一对象«object»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "code"
+        },
+        "data": {
+          "type": "object"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "title": "接口返回统一对象«object»"
+    },
+    "更新节点设备状态参数": {
+      "type": "object",
+      "properties": {
+        "addrStr": {
+          "type": "string",
+          "description": "节点地址（,分割）"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "节点设备状态(0 离线  1 在线)"
+        }
+      },
+      "title": "更新节点设备状态参数"
+    },
+    "根据车位编号修改车位灯方案": {
+      "type": "object",
+      "properties": {
+        "areaName": {
+          "type": "string"
+        },
+        "floorName": {
+          "type": "string"
+        },
+        "freeColor": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "occupyColor": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "spaceNo": {
+          "type": "string"
+        }
+      },
+      "title": "根据车位编号修改车位灯方案"
+    },
+    "根据车位编号修改车位类型参数": {
+      "type": "object",
+      "properties": {
+        "areaName": {
+          "type": "string",
+          "description": "区域名称"
+        },
+        "floorName": {
+          "type": "string",
+          "description": "楼层名称"
+        },
+        "parkType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位类型1 为普通车位 2 为新能源车位  3 为立体车位 4 共享车位"
+        },
+        "spaceNo": {
+          "type": "string",
+          "description": "车位编号"
+        }
+      },
+      "title": "根据车位编号修改车位类型参数"
+    },
+    "根据车牌查车位（模糊）": {
+      "type": "object",
+      "properties": {
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "每页条目数"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌号（必填，不限制位数，支持带汉字和不带汉字）"
+        }
+      },
+      "title": "根据车牌查车位（模糊）"
+    },
+    "统一返回参数": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "响应编码"
+        },
+        "content": {
+          "type": "object",
+          "description": "响应内容，json格式"
+        },
+        "msg": {
+          "type": "string",
+          "description": "响应失败信息"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "响应代码 true=成功，其他失败"
+        }
+      },
+      "title": "统一返回参数"
+    },
+    "车位状态更新请求参数": {
+      "type": "object",
+      "properties": {
+        "areaName": {
+          "type": "string",
+          "description": "区域名称"
+        },
+        "floorName": {
+          "type": "string",
+          "description": "楼层名称"
+        },
+        "spaceNo": {
+          "type": "string",
+          "description": "车位编号"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "车位状态 0-空闲 1-占用 2-故障 3-停止服务"
+        }
+      },
+      "title": "车位状态更新请求参数"
+    },
+    "车位相机上报信息": {
+      "type": "object",
+      "properties": {
+        "areaName": {
+          "type": "string",
+          "description": "区域名称"
+        },
+        "deviceIp": {
+          "type": "string",
+          "description": "上报设备IP"
+        },
+        "devicePort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "上报设备端口"
+        },
+        "floorName": {
+          "type": "string",
+          "description": "楼层名称"
+        },
+        "parkNo": {
+          "type": "string",
+          "description": "车位编号"
+        }
+      },
+      "title": "车位相机上报信息"
+    },
+    "车位相机上报信息0": {
+      "type": "object",
+      "properties": {
+        "areaName": {
+          "type": "string",
+          "description": "区域名称"
+        },
+        "deviceIp": {
+          "type": "string",
+          "description": "上报设备IP"
+        },
+        "devicePort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "上报设备端口"
+        },
+        "floorName": {
+          "type": "string",
+          "description": "楼层名称"
+        },
+        "parkNo": {
+          "type": "string",
+          "description": "车位编号"
+        }
+      },
+      "title": "车位相机上报信息0"
+    },
+    "车辆停放位置查询接口": {
+      "type": "object",
+      "properties": {
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "每页条目数"
+        },
+        "plateNo": {
+          "type": "string",
+          "description": "车牌号码"
+        }
+      },
+      "title": "车辆停放位置查询接口"
+    }
+  }
+}
