@@ -9,7 +9,11 @@
 import requests
 import json
 
-# 固定base_url
+
+# 外网base_url，用的时候需要走运维中心把7072代理出来
+# base_url = 'http://119.3.77.222:35022'
+
+# 内网固定base_url
 base_url = 'http://192.168.21.249:7072'
 # 拼接Swagger文档URL
 swagger_url = base_url + '/v2/api-docs?group=front-api'
