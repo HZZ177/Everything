@@ -2,27 +2,34 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/7/3 17:33
 # @Author  : Heshouyi
-# @File    : channel_swagger.py
+# @File    : admin_swagger.py
 # @Software: PyCharm
 # @description:
 
 import requests
 import json
+import re
 
 # 固定base_url
-base_url = 'http://119.3.77.222:35022'
+base_url = 'http://192.168.21.249:8083'
 # 拼接Swagger文档URL
-swagger_url = base_url + '/v2/api-docs?group=front-api'
+swagger_url = base_url + '/v2/api-docs?group=3D%E5%AF%BB%E8%BD%A6%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E5%8F%A3'
 
-# HTTP请求获取Swagger文档，并格式化
-response = requests.get(swagger_url)
-swagger_data = response.json()
-
+try:
+    # HTTP请求获取Swagger文档，并格式化
+    response = requests.get(swagger_url)
+    response.raise_for_status()
+    swagger_data = response.json()
+except requests.RequestException as e:
+    print(f"Error fetching Swagger data: {e}")
+    exit(1)
+except json.JSONDecodeError as e:
+    print(f"Error decoding JSON: {e}")
+    exit(1)
 
 # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
-with open('channel_swagger_data.json', 'w', encoding='utf-8') as f:
+with open('admin_swagger_data.json', 'w', encoding='utf-8') as f:
     json.dump(swagger_data, f, ensure_ascii=False, indent=2)
-
 
 # swagger到python的数据类型映射
 type_mapping = {
@@ -33,18 +40,21 @@ type_mapping = {
     'object': 'dict'
 }
 
-
 # 动态生成请求函数
 def create_request_functions(swagger_data, base_url):
     functions_code = ""
 
     # 提取接口路径和方法
     for path, path_item in swagger_data['paths'].items():
+        # 跳过包含 **、{xxx} 和中文字符的路径
+        if '**' in path or '{' in path or re.search('[\u4e00-\u9fff]', path):
+            continue
+
         for method, operation in path_item.items():
             # 使用路径的倒数第二部分和倒数第一部分组合作为函数名，并转换为小写，路径有-的直接去掉
             path_parts = path.strip('/').split('/')
             if len(path_parts) >= 2:
-                function_name = f"{str(path_parts[-2]).replace("-", "")}_{path_parts[-1]}".lower()
+                function_name = f"{str(path_parts[-2]).replace('-', '')}_{str(path_parts[-1]).replace('-', '_')}".lower()
             else:
                 function_name = path_parts[-1].lower()
 
@@ -56,21 +66,31 @@ def create_request_functions(swagger_data, base_url):
             param_names = []
             param_list = []
             param_annotations = []
+            query_params = []
+            path_params = []
+            body_params = {}
 
             for param in params:
-                if param['in'] == 'body' and '$ref' in param['schema']:
+                param_name = param['name'].lower()
+                if param['in'] == 'query':
+                    query_params.append(param_name)
+                elif param['in'] == 'path':
+                    path_params.append(param_name)
+                elif param['in'] == 'body' and '$ref' in param['schema']:
                     ref = param['schema']['$ref'].split('/')[-1]
                     definition = swagger_data['definitions'][ref]
                     for prop, prop_details in definition['properties'].items():
+                        prop_name = prop.lower()
                         prop_type = type_mapping.get(prop_details.get('type', 'string'), 'str')
-                        param_names.append(prop.lower())
-                        param_list.append(f"{prop.lower()}: {prop_type}")
-                        param_annotations.append(f":param {prop_type} {prop.lower()}: {prop_details.get('description', 'No description')}")
+                        body_params[prop_name] = prop_type
+                        param_names.append(prop_name)
+                        param_list.append(f"{prop_name}: {prop_type}")
+                        param_annotations.append(f":param {prop_type} {prop_name}: {prop_details.get('description', 'No description')}")
                 else:
                     param_type = type_mapping.get(param.get('type', 'string'), 'str')
-                    param_names.append(param['name'].lower())
-                    param_list.append(f"{param['name'].lower()}: {param_type}")
-                    param_annotations.append(f":param {param_type} {param['name'].lower()}: {param.get('description', 'No description')}")
+                    param_names.append(param_name)
+                    param_list.append(f"{param_name}: {param_type}")
+                    param_annotations.append(f":param {param_type} {param_name}: {param.get('description', 'No description')}")
 
             param_str = ", ".join(param_list)
             param_annotations_str = "\n    ".join(param_annotations)
@@ -85,14 +105,13 @@ def create_request_functions(swagger_data, base_url):
             function_code += "    }\n"
 
             # 添加发送请求的代码
-            function_code += "    response = requests.request('{}', url, json=params)\n".format(method.upper())
+            function_code += f"    response = requests.request('{method.upper()}', url, json=params)\n"
             function_code += "    return response.json()\n"
             function_code += "\n\n"
 
             functions_code += function_code
 
     return functions_code
-
 
 # 动态生成的请求函数代码
 request_functions_code = create_request_functions(swagger_data, base_url)
