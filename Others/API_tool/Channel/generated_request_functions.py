@@ -10,7 +10,7 @@ def area_areadeviceupdatestatus(addr: int, reqid: str, status: int):
     :param str reqid: 请求唯一id，用于追踪请求
     :param int status: 区域相机拥堵状态（0 不拥堵   1 拥堵）
     """
-    url = 'http://119.3.77.222:35022' + '/area/areaDeviceUpdateStatus'
+    url = 'http://192.168.21.249:7072' + '/area/areaDeviceUpdateStatus'
     params = {
         'addr': addr,
         'reqid': reqid,
@@ -26,7 +26,7 @@ def area_enter(list: list, reqid: str):
     :param list list: 进出车参数
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/area/enter'
+    url = 'http://192.168.21.249:7072' + '/area/enter'
     params = {
         'list': list,
         'reqid': reqid,
@@ -41,7 +41,7 @@ def area_leave(list: list, reqid: str):
     :param list list: 进出车参数
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/area/leave'
+    url = 'http://192.168.21.249:7072' + '/area/leave'
     params = {
         'list': list,
         'reqid': reqid,
@@ -55,7 +55,7 @@ def area_updatestereoscopicdetectorparkaddrlist():
     更新立体区域关联探测器地址服务内存数据
     
     """
-    url = 'http://119.3.77.222:35022' + '/area/updateStereoscopicDetectorParkAddrList'
+    url = 'http://192.168.21.249:7072' + '/area/updateStereoscopicDetectorParkAddrList'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -71,7 +71,7 @@ def areacamera_areainout(eventid: str, plateno: str, platereliability: int, regi
     :param str regionip: 相机ip
     :param int triggerflag: 触发事件：3=来车 2=去车；
     """
-    url = 'http://119.3.77.222:35022' + '/areaCamera/areaInOut'
+    url = 'http://192.168.21.249:7072' + '/areaCamera/areaInOut'
     params = {
         'eventid': eventid,
         'plateno': plateno,
@@ -90,7 +90,7 @@ def areacamera_areapostpicture(carimageurl: str, eventid: str, regionip: str):
     :param str eventid: 事件ID
     :param str regionip: 区域相机ip
     """
-    url = 'http://119.3.77.222:35022' + '/areaCamera/areaPostPicture'
+    url = 'http://192.168.21.249:7072' + '/areaCamera/areaPostPicture'
     params = {
         'carimageurl': carimageurl,
         'eventid': eventid,
@@ -110,7 +110,7 @@ def carinout_listinoutcarinfo(intimeend: str, intimestart: str, pageindex: int, 
     :param str plateno: 车牌号
     :param str spaceno: 车位号
     """
-    url = 'http://119.3.77.222:35022' + '/carInOut/listInOutCarInfo'
+    url = 'http://192.168.21.249:7072' + '/carInOut/listInOutCarInfo'
     params = {
         'intimeend': intimeend,
         'intimestart': intimestart,
@@ -128,7 +128,7 @@ def charge_postcaroutinfo(plateno: str):
     出场上报
     :param str plateno: 车牌号
     """
-    url = 'http://119.3.77.222:35022' + '/charge/postCarOutInfo'
+    url = 'http://192.168.21.249:7072' + '/charge/postCarOutInfo'
     params = {
         'plateno': plateno,
     }
@@ -145,7 +145,7 @@ def deviceescalation_getinfo(areaname: str, deviceip: str, deviceport: int, floo
     :param str floorname: 楼层名称
     :param str parkno: 车位编号
     """
-    url = 'http://119.3.77.222:35022' + '/deviceEscalation/getInfo'
+    url = 'http://192.168.21.249:7072' + '/deviceEscalation/getInfo'
     params = {
         'areaname': areaname,
         'deviceip': deviceip,
@@ -166,7 +166,7 @@ def deviceescalation_saveinfo(areaname: str, deviceip: str, deviceport: int, flo
     :param str floorname: 楼层名称
     :param str parkno: 车位编号
     """
-    url = 'http://119.3.77.222:35022' + '/deviceEscalation/saveInfo'
+    url = 'http://192.168.21.249:7072' + '/deviceEscalation/saveInfo'
     params = {
         'areaname': areaname,
         'deviceip': deviceip,
@@ -183,7 +183,7 @@ def emergencymode_off():
     关闭紧急模式
     
     """
-    url = 'http://119.3.77.222:35022' + '/emergencyMode/off'
+    url = 'http://192.168.21.249:7072' + '/emergencyMode/off'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -195,7 +195,7 @@ def emergencymode_on():
     打开紧急模式
     
     """
-    url = 'http://119.3.77.222:35022' + '/emergencyMode/on'
+    url = 'http://192.168.21.249:7072' + '/emergencyMode/on'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -207,7 +207,7 @@ def healthcheck():
     healthCheck
     
     """
-    url = 'http://119.3.77.222:35022' + '/healthCheck'
+    url = 'http://192.168.21.249:7072' + '/healthCheck'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -225,7 +225,7 @@ def inichange_pushconfig(comname: str, dsprecog: int, firstserverip: str, picswi
     :param int ret: 控制TCP还是485通讯 0 tcp, 1 485
     :param int witch: 控制故障状态的设备的开关 0 关闭， 1 开启
     """
-    url = 'http://119.3.77.222:35022' + '/iniChange/pushConfig'
+    url = 'http://192.168.21.249:7072' + '/iniChange/pushConfig'
     params = {
         'comname': comname,
         'dsprecog': dsprecog,
@@ -245,7 +245,7 @@ def ledscreen_notice(reqid: str, screenidlist: list):
     :param str reqid: 请求id
     :param list screenidlist: 子屏id集合
     """
-    url = 'http://119.3.77.222:35022' + '/ledScreen/notice'
+    url = 'http://192.168.21.249:7072' + '/ledScreen/notice'
     params = {
         'reqid': reqid,
         'screenidlist': screenidlist,
@@ -260,7 +260,7 @@ def ledscreen_noticetest(reqid: str, screenidlist: list):
     :param str reqid: 请求id
     :param list screenidlist: 子屏id集合
     """
-    url = 'http://119.3.77.222:35022' + '/ledScreen/noticeTest'
+    url = 'http://192.168.21.249:7072' + '/ledScreen/noticeTest'
     params = {
         'reqid': reqid,
         'screenidlist': screenidlist,
@@ -275,7 +275,7 @@ def ledscreen_updatescreencmd(reqid: str, screenidlist: list):
     :param str reqid: 请求id
     :param list screenidlist: 子屏id集合
     """
-    url = 'http://119.3.77.222:35022' + '/ledScreen/updateScreenCmd'
+    url = 'http://192.168.21.249:7072' + '/ledScreen/updateScreenCmd'
     params = {
         'reqid': reqid,
         'screenidlist': screenidlist,
@@ -289,7 +289,7 @@ def nodedevice_initstatusbatch():
     初始化节点设备状态为离线
     
     """
-    url = 'http://119.3.77.222:35022' + '/nodeDevice/initStatusBatch'
+    url = 'http://192.168.21.249:7072' + '/nodeDevice/initStatusBatch'
     params = {
     }
     response = requests.request('POST', url, json=params)
@@ -301,7 +301,7 @@ def nodedevice_select485andipcamlist():
     查询485节点和相机设备信息
     
     """
-    url = 'http://119.3.77.222:35022' + '/nodeDevice/select485AndIpCamList'
+    url = 'http://192.168.21.249:7072' + '/nodeDevice/select485AndIpCamList'
     params = {
     }
     response = requests.request('POST', url, json=params)
@@ -313,7 +313,7 @@ def nodedevice_selectalllist():
     查询所有节点设备地址
     
     """
-    url = 'http://119.3.77.222:35022' + '/nodeDevice/selectAllList'
+    url = 'http://192.168.21.249:7072' + '/nodeDevice/selectAllList'
     params = {
     }
     response = requests.request('POST', url, json=params)
@@ -325,7 +325,7 @@ def nodedevice_selectinterandipcamlist():
     查询网络节点和相机节点设备信息
     
     """
-    url = 'http://119.3.77.222:35022' + '/nodeDevice/selectInterAndIpCamList'
+    url = 'http://192.168.21.249:7072' + '/nodeDevice/selectInterAndIpCamList'
     params = {
     }
     response = requests.request('POST', url, json=params)
@@ -338,7 +338,7 @@ def nodedevice_updatestatusbatchbyaddr(addrstr: str, status: int):
     :param str addrstr: 节点地址（,分割）
     :param int status: 节点设备状态(0 离线  1 在线)
     """
-    url = 'http://119.3.77.222:35022' + '/nodeDevice/updateStatusBatchByAddr'
+    url = 'http://192.168.21.249:7072' + '/nodeDevice/updateStatusBatchByAddr'
     params = {
         'addrstr': addrstr,
         'status': status,
@@ -352,7 +352,7 @@ def park_clearcaptureurl(parkaddr: int):
     清除内存中车位对应抓拍信息
     :param int parkaddr: parkAddr
     """
-    url = 'http://119.3.77.222:35022' + '/park/clearCaptureUrl'
+    url = 'http://192.168.21.249:7072' + '/park/clearCaptureUrl'
     params = {
         'parkaddr': parkaddr,
     }
@@ -366,7 +366,7 @@ def park_enter(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/enter'
+    url = 'http://192.168.21.249:7072' + '/park/enter'
     params = {
         'list': list,
         'reqid': reqid,
@@ -381,7 +381,7 @@ def park_faultforfindcar(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/faultForFindCar'
+    url = 'http://192.168.21.249:7072' + '/park/faultForFindCar'
     params = {
         'list': list,
         'reqid': reqid,
@@ -396,7 +396,7 @@ def park_faultforguidance(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/faultForGuidance'
+    url = 'http://192.168.21.249:7072' + '/park/faultForGuidance'
     params = {
         'list': list,
         'reqid': reqid,
@@ -411,7 +411,7 @@ def park_freeforfindcar(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/freeForFindCar'
+    url = 'http://192.168.21.249:7072' + '/park/freeForFindCar'
     params = {
         'list': list,
         'reqid': reqid,
@@ -426,7 +426,7 @@ def park_freeforguidance(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/freeForGuidance'
+    url = 'http://192.168.21.249:7072' + '/park/freeForGuidance'
     params = {
         'list': list,
         'reqid': reqid,
@@ -440,7 +440,7 @@ def park_getcaptureurl(parkaddr: int):
     获取内存中车位对应抓拍信息
     :param int parkaddr: parkAddr
     """
-    url = 'http://119.3.77.222:35022' + '/park/getCaptureUrl'
+    url = 'http://192.168.21.249:7072' + '/park/getCaptureUrl'
     params = {
         'parkaddr': parkaddr,
     }
@@ -453,7 +453,7 @@ def park_getemptycount(reqid: str):
     获取空车位数量
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/getEmptyCount'
+    url = 'http://192.168.21.249:7072' + '/park/getEmptyCount'
     params = {
         'reqid': reqid,
     }
@@ -467,7 +467,7 @@ def park_leave(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/leave'
+    url = 'http://192.168.21.249:7072' + '/park/leave'
     params = {
         'list': list,
         'reqid': reqid,
@@ -482,7 +482,7 @@ def park_occupyforfindcar(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/occupyForFindCar'
+    url = 'http://192.168.21.249:7072' + '/park/occupyForFindCar'
     params = {
         'list': list,
         'reqid': reqid,
@@ -497,7 +497,7 @@ def park_occupyforguidance(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/occupyForGuidance'
+    url = 'http://192.168.21.249:7072' + '/park/occupyForGuidance'
     params = {
         'list': list,
         'reqid': reqid,
@@ -512,7 +512,7 @@ def park_pushparkcamera(parkingip: str, parkingport: int):
     :param str parkingip: parkingIp
     :param int parkingport: parkingPort
     """
-    url = 'http://119.3.77.222:35022' + '/park/pushParkCamera'
+    url = 'http://192.168.21.249:7072' + '/park/pushParkCamera'
     params = {
         'parkingip': parkingip,
         'parkingport': parkingport,
@@ -528,7 +528,7 @@ def park_selectparklistbycondition(parkaddr: int, reqid: str, status: int):
     :param str reqid: 请求唯一id，用于追踪请求
     :param int status: 车位状态  0：空闲  1：占用  2：故障  3：停止服务
     """
-    url = 'http://119.3.77.222:35022' + '/park/selectParkListByCondition'
+    url = 'http://192.168.21.249:7072' + '/park/selectParkListByCondition'
     params = {
         'parkaddr': parkaddr,
         'reqid': reqid,
@@ -543,7 +543,7 @@ def park_snapallbylot():
     全场车位相机抓拍指令
     
     """
-    url = 'http://119.3.77.222:35022' + '/park/snapAllByLot'
+    url = 'http://192.168.21.249:7072' + '/park/snapAllByLot'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -555,7 +555,7 @@ def park_test(addr: str):
     test
     :param str addr: addr
     """
-    url = 'http://119.3.77.222:35022' + '/park/test'
+    url = 'http://192.168.21.249:7072' + '/park/test'
     params = {
         'addr': addr,
     }
@@ -568,7 +568,7 @@ def park_test2():
     test2
     
     """
-    url = 'http://119.3.77.222:35022' + '/park/test2'
+    url = 'http://192.168.21.249:7072' + '/park/test2'
     params = {
     }
     response = requests.request('POST', url, json=params)
@@ -580,7 +580,7 @@ def park_updateallfault(reqid: str):
     更新所有车位为故障
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/updateAllFault'
+    url = 'http://192.168.21.249:7072' + '/park/updateAllFault'
     params = {
         'reqid': reqid,
     }
@@ -594,7 +594,7 @@ def park_updatecaptureurl(parkaddr: str, parkingcaptureurl: str):
     :param str parkaddr: 车位地址(此处为不含后两位相机通道端口的车位地址)
     :param str parkingcaptureurl: 抓拍照片路径
     """
-    url = 'http://119.3.77.222:35022' + '/park/updateCaptureUrl'
+    url = 'http://192.168.21.249:7072' + '/park/updateCaptureUrl'
     params = {
         'parkaddr': parkaddr,
         'parkingcaptureurl': parkingcaptureurl,
@@ -609,7 +609,7 @@ def park_updateplateno(list: list, reqid: str):
     :param list list: 更新参数
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/park/updatePlateNo'
+    url = 'http://192.168.21.249:7072' + '/park/updatePlateNo'
     params = {
         'list': list,
         'reqid': reqid,
@@ -632,7 +632,7 @@ def parkinglight_notice(freecolor: int, lighttype: int, lotid: int, noticetype: 
     :param int type: 设备类型  0-DSP车位相机   1-NODE节点控制器
     :param int warningcolor: 告警颜色
     """
-    url = 'http://119.3.77.222:35022' + '/parking-light/notice'
+    url = 'http://192.168.21.249:7072' + '/parking-light/notice'
     params = {
         'freecolor': freecolor,
         'lighttype': lighttype,
@@ -655,7 +655,7 @@ def parkinglight_noticeforstopwarn(reqid: str, screenidlist: list):
     :param str reqid: 请求id
     :param list screenidlist: 子屏id集合
     """
-    url = 'http://119.3.77.222:35022' + '/parking-light/noticeForStopWarn'
+    url = 'http://192.168.21.249:7072' + '/parking-light/noticeForStopWarn'
     params = {
         'reqid': reqid,
         'screenidlist': screenidlist,
@@ -669,7 +669,7 @@ def parkmall_carend(platenumber: str):
     车辆出场上报
     :param str platenumber: 车牌号
     """
-    url = 'http://119.3.77.222:35022' + '/parkmall/carEnd'
+    url = 'http://192.168.21.249:7072' + '/parkmall/carEnd'
     params = {
         'platenumber': platenumber,
     }
@@ -682,7 +682,7 @@ def screen_getalltcpaddr(reqid: str):
     获取所有网络屏的子屏地址
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/screen/getAllTcpAddr'
+    url = 'http://192.168.21.249:7072' + '/screen/getAllTcpAddr'
     params = {
         'reqid': reqid,
     }
@@ -696,7 +696,7 @@ def screen_getlcdscreendata(ip: str, type: int):
     :param str ip: 屏ip
     :param int type: 屏类型
     """
-    url = 'http://119.3.77.222:35022' + '/screen/getLcdScreenData'
+    url = 'http://192.168.21.249:7072' + '/screen/getLcdScreenData'
     params = {
         'ip': ip,
         'type': type,
@@ -710,7 +710,7 @@ def screen_initalloffline(reqid: str):
     把所有屏初始化为离线
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/screen/initAllOffLine'
+    url = 'http://192.168.21.249:7072' + '/screen/initAllOffLine'
     params = {
         'reqid': reqid,
     }
@@ -724,7 +724,7 @@ def screen_ledpagerefresh(reqid: str, screenidlist: list):
     :param str reqid: No description
     :param list screenidlist: No description
     """
-    url = 'http://119.3.77.222:35022' + '/screen/ledPageRefresh'
+    url = 'http://192.168.21.249:7072' + '/screen/ledPageRefresh'
     params = {
         'reqid': reqid,
         'screenidlist': screenidlist,
@@ -745,7 +745,7 @@ def screen_sendlcdscreendata(cmd: str, data: str, ip: str, reqid: str, scene: in
     :param int ts: 时间戳(不传入时，系统内部会根据当前时间生成默认值)
     :param int type: 屏标识(0:一体屏,1:双拼接屏左屏,2:双拼接屏右屏)
     """
-    url = 'http://119.3.77.222:35022' + '/screen/sendLcdScreenData'
+    url = 'http://192.168.21.249:7072' + '/screen/sendLcdScreenData'
     params = {
         'cmd': cmd,
         'data': data,
@@ -766,7 +766,7 @@ def screen_sendlcdscreendefaultdata(ip: str, type: int):
     :param str ip: 屏ip
     :param int type: 屏类型
     """
-    url = 'http://119.3.77.222:35022' + '/screen/sendLcdScreenDefaultData'
+    url = 'http://192.168.21.249:7072' + '/screen/sendLcdScreenDefaultData'
     params = {
         'ip': ip,
         'type': type,
@@ -782,7 +782,7 @@ def screen_updatestatusbyaddr(addr: int, reqid: str, status: int):
     :param str reqid: 请求唯一id，用于追踪请求
     :param int status: 状态  1：在线  2：离线
     """
-    url = 'http://119.3.77.222:35022' + '/screen/updateStatusByAddr'
+    url = 'http://192.168.21.249:7072' + '/screen/updateStatusByAddr'
     params = {
         'addr': addr,
         'reqid': reqid,
@@ -799,7 +799,7 @@ def screenrelated_listlcdscreen(iplist: list, pageindex: int, pagesize: int):
     :param int pageindex: 页数
     :param int pagesize: 每页条目数
     """
-    url = 'http://119.3.77.222:35022' + '/screenRelated/listLcdScreen'
+    url = 'http://192.168.21.249:7072' + '/screenRelated/listLcdScreen'
     params = {
         'iplist': iplist,
         'pageindex': pageindex,
@@ -814,7 +814,7 @@ def taskmanage_resetall():
     重新加载所有系统定时任务
     
     """
-    url = 'http://119.3.77.222:35022' + '/taskManage/resetAll'
+    url = 'http://192.168.21.249:7072' + '/taskManage/resetAll'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -826,7 +826,7 @@ def tool_controlhightask(flag: int):
     控制高负载任务(告警 进出车触发屏统计 有车无车上报) 1=开启 0=关闭
     :param int flag: flag
     """
-    url = 'http://119.3.77.222:35022' + '/tool/controlHighTask'
+    url = 'http://192.168.21.249:7072' + '/tool/controlHighTask'
     params = {
         'flag': flag,
     }
@@ -870,7 +870,7 @@ def tool_dealwithgrpccmd(areaid: int, areaname: str, beginareaname: str, beginfl
     :param str testingbatchid: 质检中心检测批次ID
     :param int warntype: 告警类型  1：车位占用告警   2：车辆违停告警  3：特殊车辆入车  4：特殊车辆出车  5：车辆压线 6：油车违停
     """
-    url = 'http://119.3.77.222:35022' + '/tool/dealWithGrpcCmd'
+    url = 'http://192.168.21.249:7072' + '/tool/dealWithGrpcCmd'
     params = {
         'areaid': areaid,
         'areaname': areaname,
@@ -914,7 +914,7 @@ def tool_sendcommandtoallscreen():
     统计所有的屏数据，并下发指令
     
     """
-    url = 'http://119.3.77.222:35022' + '/tool/sendCommandToAllScreen'
+    url = 'http://192.168.21.249:7072' + '/tool/sendCommandToAllScreen'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -929,7 +929,7 @@ def tool_sendlightcommandtofindcar(cmd: str, lighttype: int, list: list, reqid: 
     :param list list: No description
     :param str reqid: No description
     """
-    url = 'http://119.3.77.222:35022' + '/tool/sendLightCommandToFindCar'
+    url = 'http://192.168.21.249:7072' + '/tool/sendLightCommandToFindCar'
     params = {
         'cmd': cmd,
         'lighttype': lighttype,
@@ -948,7 +948,7 @@ def tool_sendlightcommandtoguidance(cmd: str, lighttype: int, list: list, reqid:
     :param list list: No description
     :param str reqid: No description
     """
-    url = 'http://119.3.77.222:35022' + '/tool/sendLightCommandToGuidance'
+    url = 'http://192.168.21.249:7072' + '/tool/sendLightCommandToGuidance'
     params = {
         'cmd': cmd,
         'lighttype': lighttype,
@@ -964,7 +964,7 @@ def tool_snap():
     质检 - 抓拍
     
     """
-    url = 'http://119.3.77.222:35022' + '/tool/snap'
+    url = 'http://192.168.21.249:7072' + '/tool/snap'
     params = {
     }
     response = requests.request('GET', url, json=params)
@@ -982,7 +982,7 @@ def tool_uniteapipro(appid: str, appsecret: str, params: dict, parkid: str, serv
     :param str uri: 接口uri
     :param str version: 请求头里的version 一般为1.0.0
     """
-    url = 'http://119.3.77.222:35022' + '/tool/uniteApiPro'
+    url = 'http://192.168.21.249:7072' + '/tool/uniteApiPro'
     params = {
         'appid': appid,
         'appsecret': appsecret,
@@ -1007,7 +1007,7 @@ def tool_uniteapitest(appid: str, appsecret: str, params: dict, parkid: str, ser
     :param str uri: 接口uri
     :param str version: 请求头里的version 一般为1.0.0
     """
-    url = 'http://119.3.77.222:35022' + '/tool/uniteApiTest'
+    url = 'http://192.168.21.249:7072' + '/tool/uniteApiTest'
     params = {
         'appid': appid,
         'appsecret': appsecret,
@@ -1026,7 +1026,7 @@ def tool_uploadimg(url: str):
     场端图片统一上云
     :param str url: url
     """
-    url = 'http://119.3.77.222:35022' + '/tool/uploadImg'
+    url = 'http://192.168.21.249:7072' + '/tool/uploadImg'
     params = {
         'url': url,
     }
@@ -1041,7 +1041,7 @@ def unified_getcarlocinfo(pageindex: int, pagesize: int, plateno: str):
     :param int pagesize: 每页条目数
     :param str plateno: 车牌号码
     """
-    url = 'http://119.3.77.222:35022' + '/unified/getCarLocInfo'
+    url = 'http://192.168.21.249:7072' + '/unified/getCarLocInfo'
     params = {
         'pageindex': pageindex,
         'pagesize': pagesize,
@@ -1058,7 +1058,7 @@ def unified_getparklistbyplateno(pageindex: int, pagesize: int, plateno: str):
     :param int pagesize: 每页条目数
     :param str plateno: 车牌号（必填，不限制位数，支持带汉字和不带汉字）
     """
-    url = 'http://119.3.77.222:35022' + '/unified/getParkListByPlateNo'
+    url = 'http://192.168.21.249:7072' + '/unified/getParkListByPlateNo'
     params = {
         'pageindex': pageindex,
         'pagesize': pagesize,
@@ -1074,7 +1074,7 @@ def warnlog_generatecrossline(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/warnLog/generateCrossLine'
+    url = 'http://192.168.21.249:7072' + '/warnLog/generateCrossLine'
     params = {
         'list': list,
         'reqid': reqid,
@@ -1089,7 +1089,7 @@ def warnlog_stopcrossline(list: list, reqid: str):
     :param list list: 车位地址集合
     :param str reqid: 请求唯一id，用于追踪请求
     """
-    url = 'http://119.3.77.222:35022' + '/warnLog/stopCrossLine'
+    url = 'http://192.168.21.249:7072' + '/warnLog/stopCrossLine'
     params = {
         'list': list,
         'reqid': reqid,
