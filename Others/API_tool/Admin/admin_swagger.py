@@ -11,10 +11,11 @@ import json
 import re
 
 # 外网base_url，用的时候需要走运维中心把8083代理出来
-base_url = 'http://119.3.77.222:35017'
+# base_url = 'http://119.3.77.222:35017'
 
 # 内网固定base_url
-# base_url = 'http://192.168.21.249:8083'
+base_url = 'http://192.168.7.58:8083'
+
 # 拼接Swagger文档URL
 swagger_url = base_url + '/v2/api-docs?group=3D%E5%AF%BB%E8%BD%A6%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E5%8F%A3'
 
@@ -87,20 +88,20 @@ def create_request_functions(swagger_data, base_url):
                         prop_name = prop.lower()
                         prop_type = type_mapping.get(prop_details.get('type', 'string'), 'str')
                         body_params[prop_name] = prop_type
-                        default_value = prop_details.get('example', None)
+                        default_value = prop_details.get('example', '')
                         if default_value is not None:
                             default_param_list.append(f"{prop_name}: {prop_type} = {repr(default_value)}")
                         else:
-                            param_list.append(f"{prop_name}: {prop_type}")
+                            param_list.append(f"{prop_name}: {prop_type} = ''")
                         param_names.append(prop_name)
                         param_annotations.append(f":param {prop_type} {prop_name}: {prop_details.get('description', 'No description')}")
                 else:
                     param_type = type_mapping.get(param.get('type', 'string'), 'str')
-                    default_value = param.get('example', None)
+                    default_value = param.get('example', '')
                     if default_value is not None:
                         default_param_list.append(f"{param_name}: {param_type} = {repr(default_value)}")
                     else:
-                        param_list.append(f"{param_name}: {param_type}")
+                        param_list.append(f"{param_name}: {param_type} = ''")
                     param_names.append(param_name)
                     param_annotations.append(f":param {param_type} {param_name}: {param.get('description', 'No description')}")
 
