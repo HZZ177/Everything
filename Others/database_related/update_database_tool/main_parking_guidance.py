@@ -137,7 +137,7 @@ DELIMITER ;
 
     def get_all_construct_sentences(self):
         """
-        获取所有表创建语句
+        获取所有表创建语句并动态生成目标语句
         :return:
         """
 
@@ -176,7 +176,7 @@ DELIMITER ;
 
     def get_all_column_insert_sentences(self):
         """
-        获取所有字段和索引创建语句
+        获取所有字段和索引动态生成结构修补语句
         :return:
         """
 
@@ -250,8 +250,8 @@ if __name__ == "__main__":
     # 写入存储过程
     app.insert_procedure_sentences()
 
-    # 获取所有表创建语句
+    # 获取所有表创建语句并动态生成目标语句
     app.get_all_construct_sentences()
 
-    # 获取所有字段和索引创建语句
+    # 获取所有字段和索引动态生成结构修补语句
     app.get_all_column_insert_sentences()
