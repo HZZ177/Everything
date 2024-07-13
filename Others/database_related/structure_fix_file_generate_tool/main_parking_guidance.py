@@ -5,6 +5,10 @@
 # @File    : main_parking_guidance.py
 # @Software: PyCharm
 # @description:
+import os
+import re
+import shutil
+
 import pymysql
 import traceback
 from time import sleep
@@ -100,7 +104,10 @@ DELIMITER $$
 -- sql_statement：执行的sql
 CREATE PROCEDURE add_element_unless_exists(IN element_type VARCHAR(64), IN tab_name VARCHAR(64), IN element_name VARCHAR(64), IN sql_statement VARCHAR(500))
 BEGIN
-
+    -- 设置字符集为 utf8mb4
+    SET NAMES utf8mb4 COLLATE utf8mb4_general_ci;
+    SET CHARACTER SET utf8mb4;
+    
     -- 新增字段
     IF element_type = 'column' THEN
         IF NOT EXISTS (
@@ -132,6 +139,7 @@ DELIMITER ;
 """
 
         with open(self.output_file, 'w', encoding="utf-8") as file:
+            file.write(f"SET NAMES utf8mb4;\nSET CHARACTER SET utf8mb4;\n\n")
             file.write(f"-- ============定义存储过程============\n")
             file.write(f"{procedure_add_element_unless_exists}\n\n")
 
@@ -192,46 +200,74 @@ DELIMITER ;
                     file.write("-- ===============全量更新所有表字段===============\n")
                     for table in tables:
                         table_name = table[0]
-                        # file.write(f"-- 构造表{table_name}\n")
-
-                        # 调试输出
-                        # print(f"正在处理表: {table_name}")
 
                         # 获取所有表的初始化语句
-                        cursor.execute(f"show create TABLE `{table_name}`")
+                        cursor.execute(f"SHOW CREATE TABLE `{table_name}`")
                         create_sentences = cursor.fetchall()
-                        fields = str(create_sentences).split(r'\n')
+                        fields = str(create_sentences).split(r'\n')[1:][:-1]
+
+                        # 获取所有的表级别注释
+                        cursor.execute(f"SHOW TABLE STATUS LIKE '{table_name}'")
+                        table_status = cursor.fetchone()
+                        table_comment = table_status[17] if table_status else None
+
+                        # 使用正则表达式单独分组COMMENT之前和之后的内容，方便分开处理格式规范
+                        processed_fields = []
+                        comments = []
+                        for field in fields:
+                            match = re.match(r"^(.*?)( COMMENT '.*')?,?$", field.strip())
+                            if match:
+                                base_definition = match.group(1)
+                                comment_part = match.group(2) if match.group(2) else ""
+                                processed_fields.append(base_definition)
+                                comments.append(comment_part)
 
                         # 获取所有字段的字符串并初步规范格式
-                        sentences = str(fields[2:][:-1]).replace("  ", "").replace(',"', '"').split(", ")
+                        sentences = str(processed_fields
+                                        ).replace(',"', '"').replace("'`", '"`'
+                                        ).replace("NULL'", 'NULL"').replace("TIMESTAMP'", 'TIMESTAMP"'
+                                        ).replace("longtext'", 'longtext"').split(", ")
+
+                        # 开始生成结构修正语句
                         file.write(f"-- 更新表 {table_name} 所有字段和索引\n")
+                        file.write(f"ALTER TABLE {table_name} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;\n")
+                        file.write(f"ALTER TABLE {table_name} COMMENT = '{table_comment}';\n")
+
                         # 初始化当前表中的字段位置计数器
                         column_id = 0
                         # 储存上一个字段用于编写 after xx
                         column_pre = None
 
-                        for sentence in sentences:
-                            if len(sentence) < 25:
+                        for i, sentence in enumerate(sentences):
+                            if len(sentence) < 20:
                                 continue
                             # 控制添加索引的字段的格式，去除前后引号
                             if sentence[0] != "`":
                                 sentence.replace("'", "")
-                            # 规范所有单句的格式
-                            format_sentence = sentence.replace("[", "").replace("]", "").replace(",", "").replace('"', "").replace("'", '"')
+                            # 规范所有主句部分的格式
+                            processed_format_sentence = sentence.replace("[", "").replace("]", "").replace('"', "").replace("'", '"')
+
+                            # 拼接COMMENT部分
+                            final_sentence = processed_format_sentence + (comments[i].replace("'", '"') if comments[i] else '')
 
                             # 如果检测到当前语句是以字段开头，则开始生成调取存储过程的字段生成语句，否则则生成索引插入语句
-                            if format_sentence[0] == "`":
-                                column_now = format_sentence.split("`")[1]
+                            if final_sentence[0] == "`" or final_sentence.startswith('"`'):
+                                column_now = final_sentence.split("`")[1]
                                 if column_id < 1:
-                                    file.write(f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {format_sentence};');\n")
+                                    file.write(
+                                        f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {final_sentence};');\n")
                                 else:
-                                    file.write(f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {format_sentence} AFTER {column_pre};');\n")
+                                    file.write(
+                                        f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {final_sentence} AFTER {column_pre};');\n")
                                 column_pre = column_now
                                 column_id += 1
-                            elif format_sentence.split(" ")[0] != '"PRIMARY':
-                                key_name = format_sentence.split("`")[1]
-                                key = format_sentence.split("(`")[1].split("`")[0]
-                                file.write(f"CALL add_element_unless_exists('index', '{table_name}', '{key_name}', 'ALTER TABLE {table_name} ADD INDEX {key_name} ({key}) USING BTREE');\n")
+                            elif 'PRIMARY' not in final_sentence:
+                                key_name = final_sentence.split("`")[1]
+                                key = final_sentence.split("(`")[1].split("`")[0]
+                                if "udx" in key_name:
+                                    file.write(f"CALL add_element_unless_exists('index', '{table_name}', '{key_name}', 'ALTER TABLE {table_name} ADD UNIQUE INDEX {key_name} ({key}) USING BTREE');\n")
+                                else:
+                                    file.write(f"CALL add_element_unless_exists('index', '{table_name}', '{key_name}', 'ALTER TABLE {table_name} ADD INDEX {key_name} ({key}) USING BTREE');\n")
                         file.write("\n")
 
         except Exception as e:
@@ -240,18 +276,38 @@ DELIMITER ;
 
         sleep(2)
 
+    def force_copy_file_to(self, dest):
+        """
+        强制复制输出的structure_fix文件到另一个路径，作为依赖文件
+        :param dest: 目标文件路径
+        """
+        src = self.output_file
+
+        try:
+            # 确保目标目录存在
+            dest_dir = os.path.dirname(dest)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+
+            # 复制文件并覆盖目标路径中的同名文件
+            shutil.copy2(src, dest)
+            print(f"文件已复制到 {dest}")
+
+        except Exception as e:
+            print(f"复制文件失败: {e}")
+
 
 if __name__ == "__main__":
-    app = Application(host="localhost", port=5831, user="root", password="Keytop:wabjtam!", database='parking_guidance')
-
-    # 获取标准库结构
-    # app.get_all_tables_and_columns()
+    # 连接云端基线库，只读权限账号，获取3.2.3数据库标准结构
+    app = Application(host="101.91.144.186", port=13049, user="keytop", password="Keytop@2024", database='parking_guidance_3.2.3')
 
     # 写入存储过程
     app.insert_procedure_sentences()
-
     # 获取所有表创建语句并动态生成目标语句
     app.get_all_construct_sentences()
-
     # 获取所有字段和索引动态生成结构修补语句
     app.get_all_column_insert_sentences()
+
+    # 文件动态生成完成后强制同步到update_database_tool项目作为依赖文件
+    destination_file = '../update_database_tool/data/parking_guidance_database_structure_fix.sql'
+    app.force_copy_file_to(destination_file)
