@@ -6,3 +6,4 @@ Others/adb_tool/logs/
 /Others/adb_tool/download_log_*/
 /Others/adb_tool/Update_logs/
 /Others/database_related/*_wanted_structure.txt
+/Others/database_related/update_database_tool/Update_logs/

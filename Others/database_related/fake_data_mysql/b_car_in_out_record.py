@@ -30,7 +30,7 @@ def generate_chinese_license_plate():
 
 # 连接数据库
 connection = pymysql.connect(
-    host="192.168.21.249",
+    host="localhost",
     port=5831,
     user='root',
     password='Keytop:wabjtam!',
