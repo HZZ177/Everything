@@ -63,9 +63,11 @@ class UpdateDatabase:
         self.exe_data_path = os.path.join(self.exe_path, 'data')
         if not os.path.exists(self.exe_data_path):
             os.makedirs(self.exe_data_path)
-        self.old_db_dump_file = os.path.join(self.exe_data_path, 'old_db_backup_file.sql')
-        self.old_db_fixed_dump_file = os.path.join(self.exe_data_path, 'old_db_fixed_file.sql')
-        self.new_db_backup_file = os.path.join(self.exe_data_path, 'new_db_backup_file.sql')
+        self.mysqldump_path = os.path.join(self.project_data_path, 'mysqldump.exe')
+        self.mysql_path = os.path.join(self.project_data_path, 'mysql.exe')
+        self.old_db_dump_file = os.path.join(self.exe_data_path, f'old_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
+        self.old_db_fixed_dump_file = os.path.join(self.exe_data_path, f'old_db_fixed_file.sql_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}')
+        self.new_db_backup_file = os.path.join(self.exe_data_path, f'new_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
         self.db_structure_fix_file = os.path.join(self.project_data_path, 'parking_guidance_database_structure_fix.sql')
 
     def connect_database(self, which):
@@ -115,7 +117,7 @@ class UpdateDatabase:
         try:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行旧服务器数据库备份......")
             print(self.old_db_dump_file)
-            dump_cmd = f"mysqldump --default-character-set=utf8mb4 -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} > {self.old_db_dump_file}"
+            dump_cmd = f"{self.mysqldump_path} --default-character-set=utf8mb4 -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} > {self.old_db_dump_file}"
             process = self.execute_cmd(dump_cmd, log_message)
             stdout, stderr = process.communicate()
             if process.returncode == 0:
@@ -127,13 +129,13 @@ class UpdateDatabase:
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库备份失败！错误信息:\n{e}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库备份失败！错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
             return
 
         # 备份新服务器数据库
         try:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行新服务器数据库备份......")
-            backup_cmd = f"mysqldump -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} > {self.new_db_backup_file}"
+            backup_cmd = f"{self.mysqldump_path} -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} > {self.new_db_backup_file}"
             process = self.execute_cmd(backup_cmd, log_message)
             stdout, stderr = process.communicate()
             if process.returncode == 0:
@@ -145,13 +147,13 @@ class UpdateDatabase:
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
             return
 
         # 两个服务器得数据都备份成功后，通过脚本补齐旧服务器数据库结构并dump下来备用
         try:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行旧服务器数据库结构修正......")
-            fix_cmd = f"mysql -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} < {self.db_structure_fix_file}"
+            fix_cmd = f"{self.mysql_path} -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} < {self.db_structure_fix_file}"
             process = self.execute_cmd(fix_cmd, log_message)
             stdout, stderr = process.communicate()
             if process.returncode == 0:
@@ -163,7 +165,7 @@ class UpdateDatabase:
                     # 修正完成后，将修正后的数据库dump下来
                     try:
                         log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行修正后服务器数据库下载......")
-                        dump_cmd = f"mysqldump -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} > {self.old_db_fixed_dump_file}"
+                        dump_cmd = f"{self.mysqldump_path} -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} > {self.old_db_fixed_dump_file}"
                         process = self.execute_cmd(dump_cmd, log_message)
                         stdout, stderr = process.communicate()
                         if process.returncode == 0:
@@ -175,18 +177,18 @@ class UpdateDatabase:
                         else:
                             raise Exception(stderr.decode())
                     except Exception as e:
-                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载失败，错误信息:\n{e}\n\n升级已中断！！！")
+                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载失败，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
                         return
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库结构修正失败，错误信息:\n{e}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库结构修正失败，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
             return
 
         # 连接新服务器数据库并传输数据
         try:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行数据库升级，正在传输数据......")
-            import_cmd = f"mysql -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} < {self.old_db_fixed_dump_file}"
+            import_cmd = f"{self.mysql_path} -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} < {self.old_db_fixed_dump_file}"
             process = self.execute_cmd(import_cmd, log_message)
             stdout, stderr = process.communicate()
             if process.returncode == 0:
@@ -198,7 +200,7 @@ class UpdateDatabase:
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输失败！，错误信息:\n{e}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输失败！，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
             return
 
 
