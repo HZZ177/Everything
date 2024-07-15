@@ -89,7 +89,7 @@ class Application:
         for i in range(4):
             self.root.grid_rowconfigure(i, weight=1)
 
-        # 新建一个页面用于防止输入框和信息
+        # 新建一个页面用于放置输入框和信息
         self.basic_frame = tk.Frame(self.root)
         self.basic_frame.pack()
 
@@ -101,7 +101,7 @@ class Application:
         tk.Label(self.basic_frame, text="        数据库密码:").grid(row=5, column=0, padx=20, pady=10, sticky='w')
         # 旧服务器输入框以及默认值定义
         self.old_host_entry = tk.Entry(self.basic_frame)
-        self.old_host_entry.insert(0, "localhost")
+        self.old_host_entry.insert(0, "")
         self.old_name_entry = tk.Entry(self.basic_frame)
         self.old_name_entry.insert(0, "parking_guidance")
         self.old_user_entry = tk.Entry(self.basic_frame)

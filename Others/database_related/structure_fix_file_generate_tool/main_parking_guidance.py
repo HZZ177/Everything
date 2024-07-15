@@ -34,7 +34,8 @@ class Application:
         self.connection = None
 
         # 文件路径
-        self.output_file = 'output/parking_guidance_database_structure_fix.sql'
+        self.output_data_path = 'output'
+        self.output_file_path = os.path.join(self.output_data_path, 'parking_guidance_database_structure_fix.sql')
 
     def connect_to_database(self):
         try:
@@ -137,10 +138,15 @@ BEGIN
 END; $$
 DELIMITER ;
 """
+        # 确保输出路径存在
+        if not os.path.exists(self.output_data_path):
+            os.makedirs(self.output_data_path)
 
-        with open(self.output_file, 'w', encoding="utf-8") as file:
-            file.write(f"SET NAMES utf8mb4;\nSET CHARACTER SET utf8mb4;\n\n")
-            file.write(f"-- ============定义存储过程============\n")
+        with open(self.output_file_path, 'w', encoding="utf-8") as file:
+            file.write("SET NAMES utf8mb4;\n")
+            file.write("SET CHARACTER SET utf8mb4;\n")
+            # file.write("ALTER DATABASE parking_guidance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\n\n")
+            file.write("-- ============定义存储过程============\n")
             file.write(f"{procedure_add_element_unless_exists}\n\n")
 
     def get_all_construct_sentences(self):
@@ -157,7 +163,7 @@ DELIMITER ;
                 cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
                 tables = cursor.fetchall()
 
-                with open(self.output_file, 'a', encoding="utf-8") as file:
+                with open(self.output_file_path, 'a', encoding="utf-8") as file:
                     file.write("-- ===============全量创建标准库表===============\n")
                     for table in tables:
                         table_name = table[0]
@@ -196,7 +202,7 @@ DELIMITER ;
                 cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
                 tables = cursor.fetchall()
 
-                with open(self.output_file, 'a', encoding="utf-8") as file:
+                with open(self.output_file_path, 'a', encoding="utf-8") as file:
                     file.write("-- ===============全量更新所有表字段===============\n")
                     for table in tables:
                         table_name = table[0]
@@ -281,7 +287,7 @@ DELIMITER ;
         强制复制输出的structure_fix文件到另一个路径，作为依赖文件
         :param dest: 目标文件路径
         """
-        src = self.output_file
+        src = self.output_file_path
 
         try:
             # 确保目标目录存在
