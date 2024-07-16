@@ -101,7 +101,7 @@ class Application:
         tk.Label(self.basic_frame, text="        数据库密码:").grid(row=5, column=0, padx=20, pady=10, sticky='w')
         # 旧服务器输入框以及默认值定义
         self.old_host_entry = tk.Entry(self.basic_frame)
-        self.old_host_entry.insert(0, "")
+        self.old_host_entry.insert(0, "localhost")
         self.old_name_entry = tk.Entry(self.basic_frame)
         self.old_name_entry.insert(0, "parking_guidance")
         self.old_user_entry = tk.Entry(self.basic_frame)
