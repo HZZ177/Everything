@@ -66,7 +66,7 @@ class UpdateDatabase:
         self.mysqldump_path = os.path.join(self.project_data_path, 'mysqldump.exe')
         self.mysql_path = os.path.join(self.project_data_path, 'mysql.exe')
         self.old_db_dump_file = os.path.join(self.exe_data_path, f'old_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
-        self.old_db_fixed_dump_file = os.path.join(self.exe_data_path, f'old_db_fixed_file.sql_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}')
+        self.old_db_fixed_dump_file = os.path.join(self.exe_data_path, f'old_db_fixed_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
         self.new_db_backup_file = os.path.join(self.exe_data_path, f'new_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
         self.db_structure_fix_file = os.path.join(self.project_data_path, 'parking_guidance_database_structure_fix.sql')
 
