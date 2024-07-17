@@ -1293,8 +1293,8 @@ CREATE TABLE IF NOT EXISTS `warn_time` (
 
 -- ===============全量更新所有表字段===============
 -- 更新表 api_access_info 所有字段和索引
-ALTER TABLE api_access_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE api_access_info COMMENT = 'api接入表';
+ALTER TABLE api_access_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'api_access_info', 'id', 'ALTER TABLE api_access_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'api_access_info', 'app_code', 'ALTER TABLE api_access_info ADD COLUMN `app_code` varchar(64) DEFAULT "" COMMENT "租户编码" AFTER id;');
 CALL add_element_unless_exists('column', 'api_access_info', 'secret', 'ALTER TABLE api_access_info ADD COLUMN `secret` varchar(64) DEFAULT "" COMMENT "秘钥" AFTER app_code;');
@@ -1310,8 +1310,8 @@ CALL add_element_unless_exists('column', 'api_access_info', 'updater', 'ALTER TA
 CALL add_element_unless_exists('index', 'api_access_info', 'index_app_code', 'ALTER TABLE api_access_info ADD INDEX index_app_code (app_code) USING BTREE');
 
 -- 更新表 api_push_info 所有字段和索引
-ALTER TABLE api_push_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE api_push_info COMMENT = '推送信息';
+ALTER TABLE api_push_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'api_push_info', 'id', 'ALTER TABLE api_push_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'api_push_info', 'app_code', 'ALTER TABLE api_push_info ADD COLUMN `app_code` varchar(64) DEFAULT "" COMMENT "租户编码" AFTER id;');
 CALL add_element_unless_exists('column', 'api_push_info', 'secret', 'ALTER TABLE api_push_info ADD COLUMN `secret` varchar(64) DEFAULT "" COMMENT "秘钥" AFTER app_code;');
@@ -1329,8 +1329,8 @@ CALL add_element_unless_exists('index', 'api_push_info', 'idx_func_module', 'ALT
 CALL add_element_unless_exists('index', 'api_push_info', 'index_app_code', 'ALTER TABLE api_push_info ADD INDEX index_app_code (app_code) USING BTREE');
 
 -- 更新表 api_supplementary_push 所有字段和索引
-ALTER TABLE api_supplementary_push CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE api_supplementary_push COMMENT = '补推信息表';
+ALTER TABLE api_supplementary_push ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'id', 'ALTER TABLE api_supplementary_push ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'url', 'ALTER TABLE api_supplementary_push ADD COLUMN `url` varchar(255) DEFAULT NULL COMMENT "补推完整路径地址" AFTER id;');
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'header', 'ALTER TABLE api_supplementary_push ADD COLUMN `header` varchar(255) DEFAULT NULL COMMENT "请求头相关信息" AFTER url;');
@@ -1341,8 +1341,8 @@ CALL add_element_unless_exists('column', 'api_supplementary_push', 'req_id', 'AL
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'create_time', 'ALTER TABLE api_supplementary_push ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER req_id;');
 
 -- 更新表 area_camera 所有字段和索引
-ALTER TABLE area_camera CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE area_camera COMMENT = '区域相机';
+ALTER TABLE area_camera ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'area_camera', 'id', 'ALTER TABLE area_camera ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'area_camera', 'camera_ip', 'ALTER TABLE area_camera ADD COLUMN `camera_ip` varchar(255) DEFAULT NULL COMMENT "相机ip" AFTER id;');
 CALL add_element_unless_exists('column', 'area_camera', 'remark', 'ALTER TABLE area_camera ADD COLUMN `remark` varchar(255) DEFAULT NULL COMMENT "备注" AFTER camera_ip;');
@@ -1353,8 +1353,8 @@ CALL add_element_unless_exists('column', 'area_camera', 'update_time', 'ALTER TA
 CALL add_element_unless_exists('column', 'area_camera', 'updater', 'ALTER TABLE area_camera ADD COLUMN `updater` datetime DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 area_camera_relate 所有字段和索引
-ALTER TABLE area_camera_relate CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE area_camera_relate COMMENT = '区域相机关联区域表';
+ALTER TABLE area_camera_relate ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'area_camera_relate', 'id', 'ALTER TABLE area_camera_relate ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'area_camera_relate', 'area_camera_id', 'ALTER TABLE area_camera_relate ADD COLUMN `area_camera_id` int(11) DEFAULT NULL COMMENT "区域相机id" AFTER id;');
 CALL add_element_unless_exists('column', 'area_camera_relate', 'floor_id', 'ALTER TABLE area_camera_relate ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER area_camera_id;');
@@ -1365,8 +1365,8 @@ CALL add_element_unless_exists('column', 'area_camera_relate', 'create_time', 'A
 CALL add_element_unless_exists('column', 'area_camera_relate', 'creater', 'ALTER TABLE area_camera_relate ADD COLUMN `creater` varchar(50) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 
 -- 更新表 area_info 所有字段和索引
-ALTER TABLE area_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE area_info COMMENT = '区域信息';
+ALTER TABLE area_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'area_info', 'id', 'ALTER TABLE area_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'area_info', 'name', 'ALTER TABLE area_info ADD COLUMN `name` varchar(255) DEFAULT NULL COMMENT "区域名称" AFTER id;');
 CALL add_element_unless_exists('column', 'area_info', 'lot_id', 'ALTER TABLE area_info ADD COLUMN `lot_id` int(11) NOT NULL COMMENT "车场id" AFTER name;');
@@ -1384,8 +1384,8 @@ CALL add_element_unless_exists('column', 'area_info', 'park_space_camera_unique_
 CALL add_element_unless_exists('column', 'area_info', 'detector_park_addr_list', 'ALTER TABLE area_info ADD COLUMN `detector_park_addr_list` varchar(1024) DEFAULT NULL COMMENT "立体车位关联探测器车位唯一标识，以英文,分隔开" AFTER park_space_camera_unique_id;');
 
 -- 更新表 b_car_in_out_record 所有字段和索引
-ALTER TABLE b_car_in_out_record CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE b_car_in_out_record COMMENT = '历史进出车记录表';
+ALTER TABLE b_car_in_out_record ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'b_car_in_out_record', 'id', 'ALTER TABLE b_car_in_out_record ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'b_car_in_out_record', 'lot_id', 'ALTER TABLE b_car_in_out_record ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'b_car_in_out_record', 'area_id', 'ALTER TABLE b_car_in_out_record ADD COLUMN `area_id` int(11) DEFAULT NULL COMMENT "区域id" AFTER lot_id;');
@@ -1418,8 +1418,8 @@ CALL add_element_unless_exists('index', 'b_car_in_out_record', 'index_park_no', 
 CALL add_element_unless_exists('index', 'b_car_in_out_record', 'index_plate_no', 'ALTER TABLE b_car_in_out_record ADD INDEX index_plate_no (plate_no) USING BTREE');
 
 -- 更新表 b_car_in_out_record_area 所有字段和索引
-ALTER TABLE b_car_in_out_record_area CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE b_car_in_out_record_area COMMENT = '车辆进出车记录（区域相机）';
+ALTER TABLE b_car_in_out_record_area ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'id', 'ALTER TABLE b_car_in_out_record_area ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'area_camera_id', 'ALTER TABLE b_car_in_out_record_area ADD COLUMN `area_camera_id` int(11) DEFAULT NULL COMMENT "区域相机id" AFTER id;');
 CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'area_camera_ip', 'ALTER TABLE b_car_in_out_record_area ADD COLUMN `area_camera_ip` varchar(255) DEFAULT NULL COMMENT "区域相机ip" AFTER area_camera_id;');
@@ -1441,8 +1441,8 @@ CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'updater', 
 CALL add_element_unless_exists('index', 'b_car_in_out_record_area', 'idx_create_time', 'ALTER TABLE b_car_in_out_record_area ADD INDEX idx_create_time (create_time) USING BTREE');
 
 -- 更新表 b_present_car_plate_record 所有字段和索引
-ALTER TABLE b_present_car_plate_record CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE b_present_car_plate_record COMMENT = '在场车车牌记录表';
+ALTER TABLE b_present_car_plate_record ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'b_present_car_plate_record', 'id', 'ALTER TABLE b_present_car_plate_record ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'b_present_car_plate_record', 'present_car_record_id', 'ALTER TABLE b_present_car_plate_record ADD COLUMN `present_car_record_id` int(11) DEFAULT NULL COMMENT "在场车记录id" AFTER id;');
 CALL add_element_unless_exists('column', 'b_present_car_plate_record', 'plate_no', 'ALTER TABLE b_present_car_plate_record ADD COLUMN `plate_no` varchar(64) DEFAULT "" COMMENT "车牌号" AFTER present_car_record_id;');
@@ -1457,8 +1457,8 @@ CALL add_element_unless_exists('column', 'b_present_car_plate_record', 'recognit
 CALL add_element_unless_exists('column', 'b_present_car_plate_record', 'charge_status', 'ALTER TABLE b_present_car_plate_record ADD COLUMN `charge_status` tinyint(1) DEFAULT "0" COMMENT "收费系统比对状态，0：未比对  1：已比对" AFTER recognition_number;');
 
 -- 更新表 b_present_car_record 所有字段和索引
-ALTER TABLE b_present_car_record CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE b_present_car_record COMMENT = '在场车辆表';
+ALTER TABLE b_present_car_record ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'b_present_car_record', 'id', 'ALTER TABLE b_present_car_record ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'b_present_car_record', 'lot_id', 'ALTER TABLE b_present_car_record ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'b_present_car_record', 'area_id', 'ALTER TABLE b_present_car_record ADD COLUMN `area_id` int(11) DEFAULT NULL COMMENT "区域id" AFTER lot_id;');
@@ -1479,8 +1479,8 @@ CALL add_element_unless_exists('index', 'b_present_car_record', 'index_element_p
 CALL add_element_unless_exists('index', 'b_present_car_record', 'index_plate_no', 'ALTER TABLE b_present_car_record ADD INDEX index_plate_no (plate_no) USING BTREE');
 
 -- 更新表 b_present_car_record_area 所有字段和索引
-ALTER TABLE b_present_car_record_area CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE b_present_car_record_area COMMENT = '在场车辆表（区域相机使用）';
+ALTER TABLE b_present_car_record_area ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'id', 'ALTER TABLE b_present_car_record_area ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'area_camera_id', 'ALTER TABLE b_present_car_record_area ADD COLUMN `area_camera_id` int(11) DEFAULT NULL COMMENT "区域相机id" AFTER id;');
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'area_camera_ip', 'ALTER TABLE b_present_car_record_area ADD COLUMN `area_camera_ip` varchar(255) DEFAULT NULL COMMENT "区域相机ip" AFTER area_camera_id;');
@@ -1499,8 +1499,8 @@ CALL add_element_unless_exists('column', 'b_present_car_record_area', 'updater',
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'data_source', 'ALTER TABLE b_present_car_record_area ADD COLUMN `data_source` tinyint(1) DEFAULT "0" COMMENT "数据来源 0：区域相机 1：立体车位" AFTER updater;');
 
 -- 更新表 b_recognition_record 所有字段和索引
-ALTER TABLE b_recognition_record CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE b_recognition_record COMMENT = '识别记录表';
+ALTER TABLE b_recognition_record ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'b_recognition_record', 'id', 'ALTER TABLE b_recognition_record ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'b_recognition_record', 'park_addr', 'ALTER TABLE b_recognition_record ADD COLUMN `park_addr` int(11) DEFAULT NULL COMMENT "车位地址" AFTER id;');
 CALL add_element_unless_exists('column', 'b_recognition_record', 'plate_no', 'ALTER TABLE b_recognition_record ADD COLUMN `plate_no` varchar(64) DEFAULT NULL COMMENT "车牌" AFTER park_addr;');
@@ -1509,8 +1509,8 @@ CALL add_element_unless_exists('column', 'b_recognition_record', 'plate_no_relia
 CALL add_element_unless_exists('column', 'b_recognition_record', 'create_time', 'ALTER TABLE b_recognition_record ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER plate_no_reliability;');
 
 -- 更新表 berth_rate_info 所有字段和索引
-ALTER TABLE berth_rate_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE berth_rate_info COMMENT = '泊位使用率信息表';
+ALTER TABLE berth_rate_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'berth_rate_info', 'id', 'ALTER TABLE berth_rate_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'berth_rate_info', 'time', 'ALTER TABLE berth_rate_info ADD COLUMN `time` datetime NOT NULL COMMENT "时间" AFTER id;');
 CALL add_element_unless_exists('column', 'berth_rate_info', 'all_park_number', 'ALTER TABLE berth_rate_info ADD COLUMN `all_park_number` int(11) DEFAULT NULL COMMENT "当前车场全部车位数" AFTER time;');
@@ -1521,8 +1521,8 @@ CALL add_element_unless_exists('column', 'berth_rate_info', 'create_time', 'ALTE
 CALL add_element_unless_exists('column', 'berth_rate_info', 'update_time', 'ALTER TABLE berth_rate_info ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
 
 -- 更新表 color_transparency_styles 所有字段和索引
-ALTER TABLE color_transparency_styles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE color_transparency_styles COMMENT = '颜色透明度配置表';
+ALTER TABLE color_transparency_styles ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'color_transparency_styles', 'id', 'ALTER TABLE color_transparency_styles ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'color_transparency_styles', 'map_styles_id', 'ALTER TABLE color_transparency_styles ADD COLUMN `map_styles_id` int(11) NOT NULL COMMENT "地图样式id" AFTER id;');
 CALL add_element_unless_exists('column', 'color_transparency_styles', 'occupy_flash', 'ALTER TABLE color_transparency_styles ADD COLUMN `occupy_flash` int(11) DEFAULT NULL COMMENT "占用时车位闪烁 0 不闪烁 1 闪烁" AFTER map_styles_id;');
@@ -1544,8 +1544,8 @@ CALL add_element_unless_exists('column', 'color_transparency_styles', 'occupy_fi
 CALL add_element_unless_exists('index', 'color_transparency_styles', 'index_map_styles_id', 'ALTER TABLE color_transparency_styles ADD INDEX index_map_styles_id (map_styles_id) USING BTREE');
 
 -- 更新表 coordinate 所有字段和索引
-ALTER TABLE coordinate CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE coordinate COMMENT = '元素坐标表';
+ALTER TABLE coordinate ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'coordinate', 'id', 'ALTER TABLE coordinate ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "自增，主键";');
 CALL add_element_unless_exists('column', 'coordinate', 'lot_id', 'ALTER TABLE coordinate ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER id;');
 CALL add_element_unless_exists('column', 'coordinate', 'element_id', 'ALTER TABLE coordinate ADD COLUMN `element_id` int(11) DEFAULT NULL COMMENT "元素id" AFTER lot_id;');
@@ -1559,8 +1559,8 @@ CALL add_element_unless_exists('column', 'coordinate', 'create_time', 'ALTER TAB
 CALL add_element_unless_exists('index', 'coordinate', 'idx_element_id', 'ALTER TABLE coordinate ADD INDEX idx_element_id (element_id) USING BTREE');
 
 -- 更新表 device_escalation 所有字段和索引
-ALTER TABLE device_escalation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE device_escalation COMMENT = '设备信息上报表';
+ALTER TABLE device_escalation ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'device_escalation', 'id', 'ALTER TABLE device_escalation ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'device_escalation', 'device_ip', 'ALTER TABLE device_escalation ADD COLUMN `device_ip` varchar(255) DEFAULT NULL COMMENT "上报设备IP" AFTER id;');
 CALL add_element_unless_exists('column', 'device_escalation', 'device_port', 'ALTER TABLE device_escalation ADD COLUMN `device_port` int(11) DEFAULT NULL COMMENT "上报设备端口" AFTER device_ip;');
@@ -1572,8 +1572,8 @@ CALL add_element_unless_exists('column', 'device_escalation', 'update_time', 'AL
 CALL add_element_unless_exists('column', 'device_escalation', 'exception', 'ALTER TABLE device_escalation ADD COLUMN `exception` tinyint(1) DEFAULT "0" COMMENT "异常问题(0：正常， 1：车位编号重复， 2：无车位编号)" AFTER update_time;');
 
 -- 更新表 element_beacon 所有字段和索引
-ALTER TABLE element_beacon CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_beacon COMMENT = '蓝牙信标';
+ALTER TABLE element_beacon ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_beacon', 'id', 'ALTER TABLE element_beacon ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'element_beacon', 'lot_id', 'ALTER TABLE element_beacon ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_beacon', 'floor_id', 'ALTER TABLE element_beacon ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1588,8 +1588,8 @@ CALL add_element_unless_exists('column', 'element_beacon', 'updater', 'ALTER TAB
 CALL add_element_unless_exists('column', 'element_beacon', 'update_time', 'ALTER TABLE element_beacon ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER updater;');
 
 -- 更新表 element_column 所有字段和索引
-ALTER TABLE element_column CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_column COMMENT = '柱子元素表';
+ALTER TABLE element_column ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_column', 'id', 'ALTER TABLE element_column ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_column', 'lot_id', 'ALTER TABLE element_column ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_column', 'floor_id', 'ALTER TABLE element_column ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1602,8 +1602,8 @@ CALL add_element_unless_exists('column', 'element_column', 'updater', 'ALTER TAB
 CALL add_element_unless_exists('column', 'element_column', 'update_time', 'ALTER TABLE element_column ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER updater;');
 
 -- 更新表 element_connector 所有字段和索引
-ALTER TABLE element_connector CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_connector COMMENT = '通行设施';
+ALTER TABLE element_connector ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_connector', 'id', 'ALTER TABLE element_connector ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'element_connector', 'lot_id', 'ALTER TABLE element_connector ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_connector', 'floor_id', 'ALTER TABLE element_connector ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1618,8 +1618,8 @@ CALL add_element_unless_exists('column', 'element_connector', 'updater', 'ALTER 
 CALL add_element_unless_exists('index', 'element_connector', 'index_map_floor_id', 'ALTER TABLE element_connector ADD INDEX index_map_floor_id (floor_id) USING BTREE');
 
 -- 更新表 element_custom 所有字段和索引
-ALTER TABLE element_custom CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_custom COMMENT = '自定义元素表';
+ALTER TABLE element_custom ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_custom', 'id', 'ALTER TABLE element_custom ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_custom', 'lot_id', 'ALTER TABLE element_custom ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_custom', 'name', 'ALTER TABLE element_custom ADD COLUMN `name` varchar(255) DEFAULT "" COMMENT "名称" AFTER lot_id;');
@@ -1633,8 +1633,8 @@ CALL add_element_unless_exists('column', 'element_custom', 'update_time', 'ALTER
 CALL add_element_unless_exists('index', 'element_custom', 'idx_lot_id', 'ALTER TABLE element_custom ADD INDEX idx_lot_id (lot_id) USING BTREE');
 
 -- 更新表 element_custom_detail 所有字段和索引
-ALTER TABLE element_custom_detail CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_custom_detail COMMENT = '自定义元素详情表';
+ALTER TABLE element_custom_detail ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_custom_detail', 'id', 'ALTER TABLE element_custom_detail ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_custom_detail', 'element_custom_id', 'ALTER TABLE element_custom_detail ADD COLUMN `element_custom_id` int(11) DEFAULT NULL COMMENT "自定义元素id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_custom_detail', 'lot_id', 'ALTER TABLE element_custom_detail ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER element_custom_id;');
@@ -1650,8 +1650,8 @@ CALL add_element_unless_exists('index', 'element_custom_detail', 'idx_floor_id',
 CALL add_element_unless_exists('index', 'element_custom_detail', 'idx_lot_id', 'ALTER TABLE element_custom_detail ADD INDEX idx_lot_id (lot_id) USING BTREE');
 
 -- 更新表 element_ground 所有字段和索引
-ALTER TABLE element_ground CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_ground COMMENT = '地面元素表';
+ALTER TABLE element_ground ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_ground', 'id', 'ALTER TABLE element_ground ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_ground', 'lot_id', 'ALTER TABLE element_ground ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_ground', 'floor_id', 'ALTER TABLE element_ground ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1665,8 +1665,8 @@ CALL add_element_unless_exists('column', 'element_ground', 'update_time', 'ALTER
 CALL add_element_unless_exists('index', 'element_ground', 'index_map_floor_id', 'ALTER TABLE element_ground ADD INDEX index_map_floor_id (floor_id) USING BTREE');
 
 -- 更新表 element_impassable_path 所有字段和索引
-ALTER TABLE element_impassable_path CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_impassable_path COMMENT = '不可通行路线';
+ALTER TABLE element_impassable_path ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_impassable_path', 'id', 'ALTER TABLE element_impassable_path ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'element_impassable_path', 'lot_id', 'ALTER TABLE element_impassable_path ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_impassable_path', 'floor_id', 'ALTER TABLE element_impassable_path ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1679,8 +1679,8 @@ CALL add_element_unless_exists('index', 'element_impassable_path', 'idx_floor_id
 CALL add_element_unless_exists('index', 'element_impassable_path', 'idx_lot_id', 'ALTER TABLE element_impassable_path ADD INDEX idx_lot_id (lot_id) USING BTREE');
 
 -- 更新表 element_machine 所有字段和索引
-ALTER TABLE element_machine CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_machine COMMENT = '找车机';
+ALTER TABLE element_machine ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_machine', 'id', 'ALTER TABLE element_machine ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'element_machine', 'lot_id', 'ALTER TABLE element_machine ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_machine', 'floor_id', 'ALTER TABLE element_machine ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1697,8 +1697,8 @@ CALL add_element_unless_exists('column', 'element_machine', 'updater', 'ALTER TA
 CALL add_element_unless_exists('index', 'element_machine', 'index_ip', 'ALTER TABLE element_machine ADD INDEX index_ip (ip) USING BTREE');
 
 -- 更新表 element_model 所有字段和索引
-ALTER TABLE element_model CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_model COMMENT = '模型';
+ALTER TABLE element_model ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_model', 'id', 'ALTER TABLE element_model ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT";');
 CALL add_element_unless_exists('column', 'element_model', 'lot_id', 'ALTER TABLE element_model ADD COLUMN `lot_id` int(11) NOT NULL COMMENT "车场id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_model', 'floor_id', 'ALTER TABLE element_model ADD COLUMN `floor_id` int(11) NOT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1717,8 +1717,8 @@ CALL add_element_unless_exists('index', 'element_model', 'idx_floor_id', 'ALTER 
 CALL add_element_unless_exists('index', 'element_model', 'idx_lot_id', 'ALTER TABLE element_model ADD INDEX idx_lot_id (lot_id) USING BTREE');
 
 -- 更新表 element_park 所有字段和索引
-ALTER TABLE element_park CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_park COMMENT = '车位';
+ALTER TABLE element_park ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_park', 'id', 'ALTER TABLE element_park ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_park', 'lot_id', 'ALTER TABLE element_park ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_park', 'floor_id', 'ALTER TABLE element_park ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1751,8 +1751,8 @@ CALL add_element_unless_exists('index', 'element_park', 'index_area_id', 'ALTER 
 CALL add_element_unless_exists('index', 'element_park', 'index_park_no', 'ALTER TABLE element_park ADD INDEX index_park_no (park_no) USING BTREE');
 
 -- 更新表 element_path 所有字段和索引
-ALTER TABLE element_path CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_path COMMENT = '路网';
+ALTER TABLE element_path ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_path', 'id', 'ALTER TABLE element_path ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'element_path', 'lot_id', 'ALTER TABLE element_path ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_path', 'floor_id', 'ALTER TABLE element_path ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1770,8 +1770,8 @@ CALL add_element_unless_exists('column', 'element_path', 'updater', 'ALTER TABLE
 CALL add_element_unless_exists('index', 'element_path', 'index_floor_id', 'ALTER TABLE element_path ADD INDEX index_floor_id (floor_id) USING BTREE');
 
 -- 更新表 element_screen 所有字段和索引
-ALTER TABLE element_screen CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_screen COMMENT = '屏';
+ALTER TABLE element_screen ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_screen', 'id', 'ALTER TABLE element_screen ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'element_screen', 'lot_id', 'ALTER TABLE element_screen ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_screen', 'floor_id', 'ALTER TABLE element_screen ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
@@ -1791,8 +1791,8 @@ CALL add_element_unless_exists('column', 'element_screen', 'direction', 'ALTER T
 CALL add_element_unless_exists('index', 'element_screen', 'index_screen_addr', 'ALTER TABLE element_screen ADD INDEX index_screen_addr (screen_addr) USING BTREE');
 
 -- 更新表 element_screen_child 所有字段和索引
-ALTER TABLE element_screen_child CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_screen_child COMMENT = '子屏表';
+ALTER TABLE element_screen_child ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_screen_child', 'id', 'ALTER TABLE element_screen_child ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_screen_child', 'parent_id', 'ALTER TABLE element_screen_child ADD COLUMN `parent_id` int(11) DEFAULT NULL COMMENT "主屏id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'floor_id', 'ALTER TABLE element_screen_child ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id  冗余字段  屏配置好后不能更改楼层，所以冗余这个字段" AFTER parent_id;');
@@ -1820,8 +1820,8 @@ CALL add_element_unless_exists('index', 'element_screen_child', 'index_parent_id
 CALL add_element_unless_exists('index', 'element_screen_child', 'index_screen_addr', 'ALTER TABLE element_screen_child ADD INDEX index_screen_addr (screen_addr) USING BTREE');
 
 -- 更新表 element_screen_park_relation 所有字段和索引
-ALTER TABLE element_screen_park_relation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE element_screen_park_relation COMMENT = '屏和车位的关系表';
+ALTER TABLE element_screen_park_relation ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'element_screen_park_relation', 'id', 'ALTER TABLE element_screen_park_relation ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'element_screen_park_relation', 'screen_id', 'ALTER TABLE element_screen_park_relation ADD COLUMN `screen_id` int(11) DEFAULT NULL COMMENT "子屏id  element_screen_child表的id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_screen_park_relation', 'park_id', 'ALTER TABLE element_screen_park_relation ADD COLUMN `park_id` int(11) DEFAULT NULL COMMENT "车位id  element_park表的id" AFTER screen_id;');
@@ -1831,8 +1831,8 @@ CALL add_element_unless_exists('index', 'element_screen_park_relation', 'idx_scr
 CALL add_element_unless_exists('index', 'element_screen_park_relation', 'idx_park_id', 'ALTER TABLE element_screen_park_relation ADD INDEX idx_park_id (park_id) USING BTREE');
 
 -- 更新表 f_config 所有字段和索引
-ALTER TABLE f_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE f_config COMMENT = '系统配置表';
+ALTER TABLE f_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'f_config', 'id', 'ALTER TABLE f_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'f_config', 'config_code', 'ALTER TABLE f_config ADD COLUMN `config_code` varchar(64) DEFAULT "" COMMENT "配置编码" AFTER id;');
 CALL add_element_unless_exists('column', 'f_config', 'config_value', 'ALTER TABLE f_config ADD COLUMN `config_value` varchar(64) DEFAULT "" COMMENT "配置值" AFTER config_code;');
@@ -1849,8 +1849,8 @@ CALL add_element_unless_exists('column', 'f_config', 'channel_swagger_switch', '
 CALL add_element_unless_exists('index', 'f_config', 'idx_config_code', 'ALTER TABLE f_config ADD INDEX idx_config_code (config_code) USING BTREE');
 
 -- 更新表 face_info 所有字段和索引
-ALTER TABLE face_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE face_info COMMENT = '人脸信息表';
+ALTER TABLE face_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'face_info', 'id', 'ALTER TABLE face_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT";');
 CALL add_element_unless_exists('column', 'face_info', 'plate_no', 'ALTER TABLE face_info ADD COLUMN `plate_no` varchar(50) DEFAULT "" COMMENT "车牌号码" AFTER id;');
 CALL add_element_unless_exists('column', 'face_info', 'face_info', 'ALTER TABLE face_info ADD COLUMN `face_info` longtext COMMENT "人脸信息数据" AFTER plate_no;');
@@ -1861,8 +1861,8 @@ CALL add_element_unless_exists('column', 'face_info', 'create_time', 'ALTER TABL
 CALL add_element_unless_exists('column', 'face_info', 'update_time', 'ALTER TABLE face_info ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
 
 -- 更新表 floor_info 所有字段和索引
-ALTER TABLE floor_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE floor_info COMMENT = '楼层信息';
+ALTER TABLE floor_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'floor_info', 'id', 'ALTER TABLE floor_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'floor_info', 'lot_id', 'ALTER TABLE floor_info ADD COLUMN `lot_id` int(11) NOT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'floor_info', 'floor_name', 'ALTER TABLE floor_info ADD COLUMN `floor_name` varchar(255) NOT NULL COMMENT "楼层名称" AFTER lot_id;');
@@ -1880,8 +1880,8 @@ CALL add_element_unless_exists('column', 'floor_info', 'floor_capture', 'ALTER T
 CALL add_element_unless_exists('column', 'floor_info', 'capture_source', 'ALTER TABLE floor_info ADD COLUMN `capture_source` tinyint(1) DEFAULT "0" COMMENT "楼层底图来源方式，0:3D手动截图 1:2D地图照片迁移" AFTER floor_capture;');
 
 -- 更新表 general_config 所有字段和索引
-ALTER TABLE general_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE general_config COMMENT = '通用参数配置信息表';
+ALTER TABLE general_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'general_config', 'id', 'ALTER TABLE general_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'general_config', 'config_key', 'ALTER TABLE general_config ADD COLUMN `config_key` varchar(255) DEFAULT NULL COMMENT "字段唯一标识，禁止重复" AFTER id;');
 CALL add_element_unless_exists('column', 'general_config', 'description', 'ALTER TABLE general_config ADD COLUMN `description` varchar(255) DEFAULT NULL COMMENT "字段详细作用描述" AFTER config_key;');
@@ -1890,8 +1890,8 @@ CALL add_element_unless_exists('column', 'general_config', 'create_time', 'ALTER
 CALL add_element_unless_exists('column', 'general_config', 'update_time', 'ALTER TABLE general_config ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
 
 -- 更新表 image_styles 所有字段和索引
-ALTER TABLE image_styles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE image_styles COMMENT = '图标配置表';
+ALTER TABLE image_styles ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'image_styles', 'id', 'ALTER TABLE image_styles ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'image_styles', 'map_styles_id', 'ALTER TABLE image_styles ADD COLUMN `map_styles_id` int(11) NOT NULL COMMENT "地图样式id" AFTER id;');
 CALL add_element_unless_exists('column', 'image_styles', 'record_beacon', 'ALTER TABLE image_styles ADD COLUMN `record_beacon` varchar(255) DEFAULT NULL COMMENT "已录入蓝牙图标url" AFTER map_styles_id;');
@@ -1914,8 +1914,8 @@ CALL add_element_unless_exists('column', 'image_styles', 'update_time', 'ALTER T
 CALL add_element_unless_exists('index', 'image_styles', 'index_map_styles_id', 'ALTER TABLE image_styles ADD INDEX index_map_styles_id (map_styles_id) USING BTREE');
 
 -- 更新表 info_across_floor 所有字段和索引
-ALTER TABLE info_across_floor CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE info_across_floor COMMENT = '跨层寻车用指引设置表';
+ALTER TABLE info_across_floor ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'info_across_floor', 'id', 'ALTER TABLE info_across_floor ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT";');
 CALL add_element_unless_exists('column', 'info_across_floor', 'start_id', 'ALTER TABLE info_across_floor ADD COLUMN `start_id` int(11) DEFAULT NULL COMMENT "起点楼层ID" AFTER id;');
 CALL add_element_unless_exists('column', 'info_across_floor', 'end_id', 'ALTER TABLE info_across_floor ADD COLUMN `end_id` int(11) DEFAULT NULL COMMENT "终点楼层ID" AFTER start_id;');
@@ -1932,8 +1932,8 @@ CALL add_element_unless_exists('column', 'info_across_floor', 'updater', 'ALTER 
 CALL add_element_unless_exists('column', 'info_across_floor', 'update_time', 'ALTER TABLE info_across_floor ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER updater;');
 
 -- 更新表 info_machine_config 所有字段和索引
-ALTER TABLE info_machine_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE info_machine_config COMMENT = '找车机常用参数表';
+ALTER TABLE info_machine_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'info_machine_config', 'id', 'ALTER TABLE info_machine_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT";');
 CALL add_element_unless_exists('column', 'info_machine_config', 'inquire_ways', 'ALTER TABLE info_machine_config ADD COLUMN `inquire_ways` varchar(200) DEFAULT NULL COMMENT "查询方式" AFTER id;');
 CALL add_element_unless_exists('column', 'info_machine_config', 'empty_plate_record_count', 'ALTER TABLE info_machine_config ADD COLUMN `empty_plate_record_count` int(11) DEFAULT "25" COMMENT "空车牌查询显示记录上限" AFTER inquire_ways;');
@@ -1958,8 +1958,8 @@ CALL add_element_unless_exists('column', 'info_machine_config', 'route_qr_type',
 CALL add_element_unless_exists('column', 'info_machine_config', 'route_qr_url', 'ALTER TABLE info_machine_config ADD COLUMN `route_qr_url` varchar(255) DEFAULT NULL COMMENT "找车路线二维码图片路径" AFTER route_qr_type;');
 
 -- 更新表 ini_config 所有字段和索引
-ALTER TABLE ini_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE ini_config COMMENT = 'C++参数配置表';
+ALTER TABLE ini_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'ini_config', 'id', 'ALTER TABLE ini_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'ini_config', 'dsp_recog', 'ALTER TABLE ini_config ADD COLUMN `dsp_recog` tinyint(1) DEFAULT "0" COMMENT "控制软识别与硬识别 0 软识别, 1 硬识别" AFTER id;');
 CALL add_element_unless_exists('column', 'ini_config', 'witch', 'ALTER TABLE ini_config ADD COLUMN `witch` tinyint(1) DEFAULT "0" COMMENT "控制故障状态的设备的开关 0 关闭， 1 开启" AFTER dsp_recog;');
@@ -1973,8 +1973,8 @@ CALL add_element_unless_exists('column', 'ini_config', 'updater', 'ALTER TABLE i
 CALL add_element_unless_exists('column', 'ini_config', 'update_time', 'ALTER TABLE ini_config ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER updater;');
 
 -- 更新表 internationalization 所有字段和索引
-ALTER TABLE internationalization CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE internationalization COMMENT = '国际化';
+ALTER TABLE internationalization ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'internationalization', 'id', 'ALTER TABLE internationalization ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'internationalization', 'code', 'ALTER TABLE internationalization ADD COLUMN `code` varchar(100) NOT NULL COMMENT "代码，前缀是front.的为前端，前缀是server.的为后端" AFTER id;');
 CALL add_element_unless_exists('column', 'internationalization', 'description', 'ALTER TABLE internationalization ADD COLUMN `description` varchar(100) DEFAULT NULL COMMENT "描述" AFTER code;');
@@ -1990,8 +1990,8 @@ CALL add_element_unless_exists('column', 'internationalization', 'update_time', 
 CALL add_element_unless_exists('index', 'internationalization', 'udx_code', 'ALTER TABLE internationalization ADD UNIQUE INDEX udx_code (code) USING BTREE');
 
 -- 更新表 internationalization_relation 所有字段和索引
-ALTER TABLE internationalization_relation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE internationalization_relation COMMENT = '国际化字段与语言关系表';
+ALTER TABLE internationalization_relation ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'internationalization_relation', 'id', 'ALTER TABLE internationalization_relation ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'internationalization_relation', 'name', 'ALTER TABLE internationalization_relation ADD COLUMN `name` varchar(100) DEFAULT "待配置" COMMENT "语言名称，用于显示在前端用于选择语言" AFTER id;');
 CALL add_element_unless_exists('column', 'internationalization_relation', 'field', 'ALTER TABLE internationalization_relation ADD COLUMN `field` varchar(100) DEFAULT NULL COMMENT "internationalization表的字段名" AFTER name;');
@@ -2003,8 +2003,8 @@ CALL add_element_unless_exists('column', 'internationalization_relation', 'creat
 CALL add_element_unless_exists('column', 'internationalization_relation', 'update_time', 'ALTER TABLE internationalization_relation ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
 
 -- 更新表 lcd_advertisement_config 所有字段和索引
-ALTER TABLE lcd_advertisement_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE lcd_advertisement_config COMMENT = 'LCD屏广告配置表';
+ALTER TABLE lcd_advertisement_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'lcd_advertisement_config', 'id', 'ALTER TABLE lcd_advertisement_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'lcd_advertisement_config', 'lcd_advertisement_scheme_id', 'ALTER TABLE lcd_advertisement_config ADD COLUMN `lcd_advertisement_scheme_id` int(11) DEFAULT NULL COMMENT "LCD屏广告方案id" AFTER id;');
 CALL add_element_unless_exists('column', 'lcd_advertisement_config', 'remark', 'ALTER TABLE lcd_advertisement_config ADD COLUMN `remark` varchar(255) DEFAULT "" COMMENT "备注" AFTER lcd_advertisement_scheme_id;');
@@ -2018,8 +2018,8 @@ CALL add_element_unless_exists('column', 'lcd_advertisement_config', 'updater', 
 CALL add_element_unless_exists('index', 'lcd_advertisement_config', 'index_lcd_advertisement_scheme_id', 'ALTER TABLE lcd_advertisement_config ADD INDEX index_lcd_advertisement_scheme_id (lcd_advertisement_scheme_id) USING BTREE');
 
 -- 更新表 lcd_advertisement_scheme 所有字段和索引
-ALTER TABLE lcd_advertisement_scheme CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE lcd_advertisement_scheme COMMENT = 'LCD屏广告方案表';
+ALTER TABLE lcd_advertisement_scheme ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'id', 'ALTER TABLE lcd_advertisement_scheme ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'name', 'ALTER TABLE lcd_advertisement_scheme ADD COLUMN `name` varchar(255) DEFAULT "" COMMENT "方案名称" AFTER id;');
 CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'species', 'ALTER TABLE lcd_advertisement_scheme ADD COLUMN `species` tinyint(4) DEFAULT NULL COMMENT "类型 1：图片 2：视频" AFTER name;');
@@ -2031,8 +2031,8 @@ CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'update_tim
 CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'updater', 'ALTER TABLE lcd_advertisement_scheme ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 lcd_screen_config 所有字段和索引
-ALTER TABLE lcd_screen_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE lcd_screen_config COMMENT = 'LCD屏配置';
+ALTER TABLE lcd_screen_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'id', 'ALTER TABLE lcd_screen_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'element_screen_id', 'ALTER TABLE lcd_screen_config ADD COLUMN `element_screen_id` int(11) DEFAULT NULL COMMENT "主屏id" AFTER id;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'show_type', 'ALTER TABLE lcd_screen_config ADD COLUMN `show_type` tinyint(4) DEFAULT NULL COMMENT "显示内容 1：引导内容 2：广告" AFTER element_screen_id;');
@@ -2047,8 +2047,8 @@ CALL add_element_unless_exists('column', 'lcd_screen_config', 'updater', 'ALTER 
 CALL add_element_unless_exists('index', 'lcd_screen_config', 'index_element_screen_id', 'ALTER TABLE lcd_screen_config ADD INDEX index_element_screen_id (element_screen_id) USING BTREE');
 
 -- 更新表 light_scheme_plan 所有字段和索引
-ALTER TABLE light_scheme_plan CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE light_scheme_plan COMMENT = '车位灯方案下发计划';
+ALTER TABLE light_scheme_plan ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'id', 'ALTER TABLE light_scheme_plan ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'name', 'ALTER TABLE light_scheme_plan ADD COLUMN `name` varchar(50) DEFAULT NULL COMMENT "方案名称" AFTER id;');
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'system_type', 'ALTER TABLE light_scheme_plan ADD COLUMN `system_type` tinyint(4) DEFAULT "1" COMMENT "设备类型  0-DSP车位相机   1-NODE节点控制器" AFTER name;');
@@ -2064,8 +2064,8 @@ CALL add_element_unless_exists('column', 'light_scheme_plan', 'update_time', 'AL
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'updater', 'ALTER TABLE light_scheme_plan ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 light_scheme_plan_park_relation 所有字段和索引
-ALTER TABLE light_scheme_plan_park_relation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE light_scheme_plan_park_relation COMMENT = '车位灯方案下发计划与车位关系表';
+ALTER TABLE light_scheme_plan_park_relation ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'light_scheme_plan_park_relation', 'id', 'ALTER TABLE light_scheme_plan_park_relation ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'light_scheme_plan_park_relation', 'plan_id', 'ALTER TABLE light_scheme_plan_park_relation ADD COLUMN `plan_id` int(11) DEFAULT NULL COMMENT "车位灯方案下发计划id" AFTER id;');
 CALL add_element_unless_exists('column', 'light_scheme_plan_park_relation', 'element_park_id', 'ALTER TABLE light_scheme_plan_park_relation ADD COLUMN `element_park_id` int(11) DEFAULT NULL COMMENT "车位id" AFTER plan_id;');
@@ -2073,8 +2073,8 @@ CALL add_element_unless_exists('column', 'light_scheme_plan_park_relation', 'cre
 CALL add_element_unless_exists('column', 'light_scheme_plan_park_relation', 'creator', 'ALTER TABLE light_scheme_plan_park_relation ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 
 -- 更新表 lot_info 所有字段和索引
-ALTER TABLE lot_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE lot_info COMMENT = '车场信息';
+ALTER TABLE lot_info ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'lot_info', 'id', 'ALTER TABLE lot_info ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'lot_info', 'lot_code', 'ALTER TABLE lot_info ADD COLUMN `lot_code` varchar(100) DEFAULT NULL COMMENT "车场编码" AFTER id;');
 CALL add_element_unless_exists('column', 'lot_info', 'lot_name', 'ALTER TABLE lot_info ADD COLUMN `lot_name` varchar(255) NOT NULL COMMENT "车场名称" AFTER lot_code;');
@@ -2095,8 +2095,8 @@ CALL add_element_unless_exists('column', 'lot_info', 'lisence_authorize_code', '
 CALL add_element_unless_exists('column', 'lot_info', 'lisence_trial_period', 'ALTER TABLE lot_info ADD COLUMN `lisence_trial_period` datetime DEFAULT NULL COMMENT "Lisence首次默认30天试用期(寻车服务首次启动时，开始生效)，开始试用时间" AFTER lisence_authorize_code;');
 
 -- 更新表 machine_advertisement_config 所有字段和索引
-ALTER TABLE machine_advertisement_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE machine_advertisement_config COMMENT = '找车机广告配置';
+ALTER TABLE machine_advertisement_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'machine_advertisement_config', 'id', 'ALTER TABLE machine_advertisement_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'machine_advertisement_config', 'machine_ad_scheme_id', 'ALTER TABLE machine_advertisement_config ADD COLUMN `machine_ad_scheme_id` int(11) DEFAULT NULL COMMENT "找车机广告方案id" AFTER id;');
 CALL add_element_unless_exists('column', 'machine_advertisement_config', 'screen_ad_scheme_id', 'ALTER TABLE machine_advertisement_config ADD COLUMN `screen_ad_scheme_id` int(11) DEFAULT NULL COMMENT "广告屏广告方案id" AFTER machine_ad_scheme_id;');
@@ -2111,8 +2111,8 @@ CALL add_element_unless_exists('index', 'machine_advertisement_config', 'idx_mac
 CALL add_element_unless_exists('index', 'machine_advertisement_config', 'idx_screen_ad_scheme_id', 'ALTER TABLE machine_advertisement_config ADD INDEX idx_screen_ad_scheme_id (screen_ad_scheme_id) USING BTREE');
 
 -- 更新表 map_styles 所有字段和索引
-ALTER TABLE map_styles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE map_styles COMMENT = '地图样式配置表';
+ALTER TABLE map_styles ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'map_styles', 'id', 'ALTER TABLE map_styles ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'map_styles', 'lot_id', 'ALTER TABLE map_styles ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER id;');
 CALL add_element_unless_exists('column', 'map_styles', 'name', 'ALTER TABLE map_styles ADD COLUMN `name` varchar(32) NOT NULL COMMENT "样式名称" AFTER lot_id;');
@@ -2125,8 +2125,8 @@ CALL add_element_unless_exists('column', 'map_styles', 'create_time', 'ALTER TAB
 CALL add_element_unless_exists('column', 'map_styles', 'update_time', 'ALTER TABLE map_styles ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
 
 -- 更新表 node_device 所有字段和索引
-ALTER TABLE node_device CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE node_device COMMENT = '节点设备';
+ALTER TABLE node_device ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'node_device', 'id', 'ALTER TABLE node_device ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'node_device', 'addr', 'ALTER TABLE node_device ADD COLUMN `addr` int(11) DEFAULT NULL COMMENT "IPCAM总地址|DSP总地址" AFTER id;');
 CALL add_element_unless_exists('column', 'node_device', 'device_type', 'ALTER TABLE node_device ADD COLUMN `device_type` int(11) DEFAULT NULL COMMENT "节点设备类型：1：相机  2：485节点 3：网络4字节 4：网络8字节 5：网络10 字节" AFTER addr;');
@@ -2144,8 +2144,8 @@ CALL add_element_unless_exists('column', 'node_device', 'deleted', 'ALTER TABLE 
 CALL add_element_unless_exists('column', 'node_device', 'floor_id', 'ALTER TABLE node_device ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER deleted;');
 
 -- 更新表 node_device_relate 所有字段和索引
-ALTER TABLE node_device_relate CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE node_device_relate COMMENT = '区域设备与区域的关系表';
+ALTER TABLE node_device_relate ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'node_device_relate', 'id', 'ALTER TABLE node_device_relate ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'node_device_relate', 'area_device_id', 'ALTER TABLE node_device_relate ADD COLUMN `area_device_id` int(11) DEFAULT NULL COMMENT "区域设备id  node_device表的id" AFTER id;');
 CALL add_element_unless_exists('column', 'node_device_relate', 'floor_id', 'ALTER TABLE node_device_relate ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER area_device_id;');
@@ -2154,8 +2154,8 @@ CALL add_element_unless_exists('column', 'node_device_relate', 'entrance_exit', 
 CALL add_element_unless_exists('column', 'node_device_relate', 'entrance_exit_name', 'ALTER TABLE node_device_relate ADD COLUMN `entrance_exit_name` varchar(255) DEFAULT NULL COMMENT "枚举类型：  入口   出口  出入口" AFTER entrance_exit;');
 
 -- 更新表 parking_light_area_relation 所有字段和索引
-ALTER TABLE parking_light_area_relation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE parking_light_area_relation COMMENT = '车位灯方案和区域的关系表';
+ALTER TABLE parking_light_area_relation ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'parking_light_area_relation', 'id', 'ALTER TABLE parking_light_area_relation ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'parking_light_area_relation', 'parking_light_scheme_id', 'ALTER TABLE parking_light_area_relation ADD COLUMN `parking_light_scheme_id` int(11) DEFAULT NULL COMMENT "车位灯方案id" AFTER id;');
 CALL add_element_unless_exists('column', 'parking_light_area_relation', 'area_id', 'ALTER TABLE parking_light_area_relation ADD COLUMN `area_id` int(11) DEFAULT NULL COMMENT "区域id" AFTER parking_light_scheme_id;');
@@ -2168,8 +2168,8 @@ CALL add_element_unless_exists('index', 'parking_light_area_relation', 'index_ar
 CALL add_element_unless_exists('index', 'parking_light_area_relation', 'index_parking_light_scheme_id', 'ALTER TABLE parking_light_area_relation ADD INDEX index_parking_light_scheme_id (parking_light_scheme_id) USING BTREE');
 
 -- 更新表 parking_light_scheme 所有字段和索引
-ALTER TABLE parking_light_scheme CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE parking_light_scheme COMMENT = '车位灯方案';
+ALTER TABLE parking_light_scheme ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'parking_light_scheme', 'id', 'ALTER TABLE parking_light_scheme ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'parking_light_scheme', 'name', 'ALTER TABLE parking_light_scheme ADD COLUMN `name` varchar(255) DEFAULT "" COMMENT "名称" AFTER id;');
 CALL add_element_unless_exists('column', 'parking_light_scheme', 'lot_id', 'ALTER TABLE parking_light_scheme ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id" AFTER name;');
@@ -2188,8 +2188,8 @@ CALL add_element_unless_exists('column', 'parking_light_scheme', 'custom_warning
 CALL add_element_unless_exists('column', 'parking_light_scheme', 'custom_free_color', 'ALTER TABLE parking_light_scheme ADD COLUMN `custom_free_color` varchar(32) DEFAULT NULL COMMENT "自定义空闲颜色" AFTER custom_warning_color;');
 
 -- 更新表 permissions 所有字段和索引
-ALTER TABLE permissions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE permissions COMMENT = '权限';
+ALTER TABLE permissions ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'permissions', 'id', 'ALTER TABLE permissions ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'permissions', 'name', 'ALTER TABLE permissions ADD COLUMN `name` varchar(255) DEFAULT NULL COMMENT "名称" AFTER id;');
 CALL add_element_unless_exists('column', 'permissions', 'router', 'ALTER TABLE permissions ADD COLUMN `router` varchar(255) DEFAULT NULL COMMENT "路由" AFTER name;');
@@ -2207,8 +2207,8 @@ CALL add_element_unless_exists('column', 'permissions', 'update_time', 'ALTER TA
 CALL add_element_unless_exists('column', 'permissions', 'updator', 'ALTER TABLE permissions ADD COLUMN `updator` varchar(255) DEFAULT NULL COMMENT "更新人" AFTER update_time;');
 
 -- 更新表 role 所有字段和索引
-ALTER TABLE role CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE role COMMENT = '角色';
+ALTER TABLE role ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'role', 'id', 'ALTER TABLE role ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'role', 'name', 'ALTER TABLE role ADD COLUMN `name` varchar(255) DEFAULT NULL COMMENT "角色名称" AFTER id;');
 CALL add_element_unless_exists('column', 'role', 'description', 'ALTER TABLE role ADD COLUMN `description` varchar(255) DEFAULT NULL COMMENT "备注" AFTER name;');
@@ -2220,8 +2220,8 @@ CALL add_element_unless_exists('column', 'role', 'update_time', 'ALTER TABLE rol
 CALL add_element_unless_exists('column', 'role', 'updater', 'ALTER TABLE role ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 role_permission_relation 所有字段和索引
-ALTER TABLE role_permission_relation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE role_permission_relation COMMENT = '角色权限关系表';
+ALTER TABLE role_permission_relation ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'role_permission_relation', 'id', 'ALTER TABLE role_permission_relation ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'role_permission_relation', 'role_id', 'ALTER TABLE role_permission_relation ADD COLUMN `role_id` int(11) DEFAULT NULL COMMENT "角色id" AFTER id;');
 CALL add_element_unless_exists('column', 'role_permission_relation', 'permission_id', 'ALTER TABLE role_permission_relation ADD COLUMN `permission_id` int(11) DEFAULT NULL COMMENT "权限id" AFTER role_id;');
@@ -2229,8 +2229,8 @@ CALL add_element_unless_exists('column', 'role_permission_relation', 'create_tim
 CALL add_element_unless_exists('column', 'role_permission_relation', 'creator', 'ALTER TABLE role_permission_relation ADD COLUMN `creator` varchar(50) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 
 -- 更新表 schedule_config 所有字段和索引
-ALTER TABLE schedule_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE schedule_config COMMENT = '参数配置表';
+ALTER TABLE schedule_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'schedule_config', 'id', 'ALTER TABLE schedule_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'schedule_config', 'create_time', 'ALTER TABLE schedule_config ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "更新时间" AFTER id;');
 CALL add_element_unless_exists('column', 'schedule_config', 'update_time', 'ALTER TABLE schedule_config ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
@@ -2272,8 +2272,8 @@ CALL add_element_unless_exists('column', 'schedule_config', 'clean_area_picture'
 CALL add_element_unless_exists('column', 'schedule_config', 'warn_switch', 'ALTER TABLE schedule_config ADD COLUMN `warn_switch` int(11) NOT NULL DEFAULT "1" COMMENT "告警开关 1=开 0=关" AFTER clean_area_picture;');
 
 -- 更新表 t_access_config 所有字段和索引
-ALTER TABLE t_access_config CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE t_access_config COMMENT = 'C++重构配置信息表';
+ALTER TABLE t_access_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 't_access_config', 'id', 'ALTER TABLE t_access_config ADD COLUMN `id` int(10) unsigned NOT NULL AUTO_INCREMENT" COMMENT "唯一id";');
 CALL add_element_unless_exists('column', 't_access_config', 'dsp_port', 'ALTER TABLE t_access_config ADD COLUMN `dsp_port` int(11) DEFAULT NULL COMMENT "dsp 连接端口" AFTER id;');
 CALL add_element_unless_exists('column', 't_access_config', 'node_port', 'ALTER TABLE t_access_config ADD COLUMN `node_port` int(11) DEFAULT NULL COMMENT "node tcp节点连接端口" AFTER dsp_port;');
@@ -2313,8 +2313,8 @@ CALL add_element_unless_exists('column', 't_access_config', 'recognition_switch'
 CALL add_element_unless_exists('column', 't_access_config', 'free_occupy_switch', 'ALTER TABLE t_access_config ADD COLUMN `free_occupy_switch` tinyint(1) DEFAULT "0" COMMENT "找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)" AFTER recognition_switch;');
 
 -- 更新表 t_car_in_out_statistics 所有字段和索引
-ALTER TABLE t_car_in_out_statistics CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE t_car_in_out_statistics COMMENT = '出入车流量统计';
+ALTER TABLE t_car_in_out_statistics ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 't_car_in_out_statistics', 'id', 'ALTER TABLE t_car_in_out_statistics ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 't_car_in_out_statistics', 'floor_id', 'ALTER TABLE t_car_in_out_statistics ADD COLUMN `floor_id` int(11) NOT NULL COMMENT "楼层id" AFTER id;');
 CALL add_element_unless_exists('column', 't_car_in_out_statistics', 'floor_name', 'ALTER TABLE t_car_in_out_statistics ADD COLUMN `floor_name` varchar(64) DEFAULT NULL COMMENT "楼层名称" AFTER floor_id;');
@@ -2330,8 +2330,8 @@ CALL add_element_unless_exists('column', 't_car_in_out_statistics', 'updater', '
 CALL add_element_unless_exists('index', 't_car_in_out_statistics', 'idx_record_time', 'ALTER TABLE t_car_in_out_statistics ADD INDEX idx_record_time (record_end_time) USING BTREE');
 
 -- 更新表 t_login_log 所有字段和索引
-ALTER TABLE t_login_log CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE t_login_log COMMENT = '登陆日志表';
+ALTER TABLE t_login_log ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 't_login_log', 'id', 'ALTER TABLE t_login_log ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 't_login_log', 'user_name', 'ALTER TABLE t_login_log ADD COLUMN `user_name` varchar(64) DEFAULT "" COMMENT "用户名" AFTER id;');
 CALL add_element_unless_exists('column', 't_login_log', 'user_account', 'ALTER TABLE t_login_log ADD COLUMN `user_account` varchar(64) DEFAULT "" COMMENT "用户账号" AFTER user_name;');
@@ -2347,8 +2347,8 @@ CALL add_element_unless_exists('index', 't_login_log', 'idx_user_account', 'ALTE
 CALL add_element_unless_exists('index', 't_login_log', 'idx_user_name', 'ALTER TABLE t_login_log ADD INDEX idx_user_name (user_name) USING BTREE');
 
 -- 更新表 t_server_log 所有字段和索引
-ALTER TABLE t_server_log CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE t_server_log COMMENT = '服务日志表';
+ALTER TABLE t_server_log ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 't_server_log', 'id', 'ALTER TABLE t_server_log ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 't_server_log', 'file_name', 'ALTER TABLE t_server_log ADD COLUMN `file_name` varchar(64) DEFAULT "" COMMENT "文件名" AFTER id;');
 CALL add_element_unless_exists('column', 't_server_log', 'file_path', 'ALTER TABLE t_server_log ADD COLUMN `file_path` varchar(255) DEFAULT "" COMMENT "文件路径" AFTER file_name;');
@@ -2362,8 +2362,8 @@ CALL add_element_unless_exists('index', 't_server_log', 'idx_file_name', 'ALTER 
 CALL add_element_unless_exists('index', 't_server_log', 'idx_log_time', 'ALTER TABLE t_server_log ADD INDEX idx_log_time (log_time) USING BTREE');
 
 -- 更新表 user 所有字段和索引
-ALTER TABLE user CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE user COMMENT = '用户';
+ALTER TABLE user ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'user', 'id', 'ALTER TABLE user ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'user', 'name', 'ALTER TABLE user ADD COLUMN `name` varchar(50) DEFAULT NULL COMMENT "用户名" AFTER id;');
 CALL add_element_unless_exists('column', 'user', 'account', 'ALTER TABLE user ADD COLUMN `account` varchar(50) DEFAULT NULL COMMENT "账号" AFTER name;');
@@ -2385,8 +2385,8 @@ CALL add_element_unless_exists('column', 'user', 'update_time', 'ALTER TABLE use
 CALL add_element_unless_exists('column', 'user', 'password_record', 'ALTER TABLE user ADD COLUMN `password_record` varchar(255) DEFAULT NULL COMMENT "密码修改信息记录(默认保存最近5条更新数据)" AFTER update_time;');
 
 -- 更新表 warn_illegal_park 所有字段和索引
-ALTER TABLE warn_illegal_park CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE warn_illegal_park COMMENT = '车辆违停告警配置';
+ALTER TABLE warn_illegal_park ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'warn_illegal_park', 'id', 'ALTER TABLE warn_illegal_park ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'warn_illegal_park', 'plate_no', 'ALTER TABLE warn_illegal_park ADD COLUMN `plate_no` varchar(50) DEFAULT NULL COMMENT "车牌号" AFTER id;');
 CALL add_element_unless_exists('column', 'warn_illegal_park', 'bind_type', 'ALTER TABLE warn_illegal_park ADD COLUMN `bind_type` tinyint(4) DEFAULT NULL COMMENT "绑定类型  1：绑定车位  2：绑定区域" AFTER plate_no;');
@@ -2397,8 +2397,8 @@ CALL add_element_unless_exists('column', 'warn_illegal_park', 'update_time', 'AL
 CALL add_element_unless_exists('column', 'warn_illegal_park', 'updater', 'ALTER TABLE warn_illegal_park ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 warn_illegal_park_relate 所有字段和索引
-ALTER TABLE warn_illegal_park_relate CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE warn_illegal_park_relate COMMENT = '车辆违停告警配置关系表';
+ALTER TABLE warn_illegal_park_relate ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'warn_illegal_park_relate', 'id', 'ALTER TABLE warn_illegal_park_relate ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'warn_illegal_park_relate', 'warn_illegal_park_id', 'ALTER TABLE warn_illegal_park_relate ADD COLUMN `warn_illegal_park_id` int(11) DEFAULT NULL COMMENT "warn_illegal_park表的id" AFTER id;');
 CALL add_element_unless_exists('column', 'warn_illegal_park_relate', 'park_area_id', 'ALTER TABLE warn_illegal_park_relate ADD COLUMN `park_area_id` int(11) DEFAULT NULL COMMENT "车位id或者区域id，具体要看绑定类型" AFTER warn_illegal_park_id;');
@@ -2408,8 +2408,8 @@ CALL add_element_unless_exists('column', 'warn_illegal_park_relate', 'update_tim
 CALL add_element_unless_exists('column', 'warn_illegal_park_relate', 'updater', 'ALTER TABLE warn_illegal_park_relate ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 warn_log 所有字段和索引
-ALTER TABLE warn_log CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE warn_log COMMENT = '告警记录';
+ALTER TABLE warn_log ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'warn_log', 'id', 'ALTER TABLE warn_log ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'warn_log', 'park_id', 'ALTER TABLE warn_log ADD COLUMN `park_id` int(11) DEFAULT NULL COMMENT "车位id" AFTER id;');
 CALL add_element_unless_exists('column', 'warn_log', 'park_no', 'ALTER TABLE warn_log ADD COLUMN `park_no` varchar(50) DEFAULT NULL COMMENT "车位编号" AFTER park_id;');
@@ -2431,8 +2431,8 @@ CALL add_element_unless_exists('index', 'warn_log', 'idx_park_id', 'ALTER TABLE 
 CALL add_element_unless_exists('index', 'warn_log', 'idx_present_car_record_id', 'ALTER TABLE warn_log ADD INDEX idx_present_car_record_id (present_car_record_id) USING BTREE');
 
 -- 更新表 warn_space_occupy 所有字段和索引
-ALTER TABLE warn_space_occupy CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE warn_space_occupy COMMENT = '车位占用告警配置';
+ALTER TABLE warn_space_occupy ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'warn_space_occupy', 'id', 'ALTER TABLE warn_space_occupy ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'warn_space_occupy', 'park_id', 'ALTER TABLE warn_space_occupy ADD COLUMN `park_id` int(11) DEFAULT NULL COMMENT "车位id" AFTER id;');
 CALL add_element_unless_exists('column', 'warn_space_occupy', 'plate_no', 'ALTER TABLE warn_space_occupy ADD COLUMN `plate_no` varchar(1024) DEFAULT NULL COMMENT "绑定车牌号，多个车牌号中间用英文分号隔开" AFTER park_id;');
@@ -2443,8 +2443,8 @@ CALL add_element_unless_exists('column', 'warn_space_occupy', 'update_time', 'AL
 CALL add_element_unless_exists('column', 'warn_space_occupy', 'updater', 'ALTER TABLE warn_space_occupy ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 warn_special_car 所有字段和索引
-ALTER TABLE warn_special_car CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE warn_special_car COMMENT = '特殊车辆配置';
+ALTER TABLE warn_special_car ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'warn_special_car', 'id', 'ALTER TABLE warn_special_car ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'warn_special_car', 'plate_no', 'ALTER TABLE warn_special_car ADD COLUMN `plate_no` varchar(50) DEFAULT NULL COMMENT "车牌号" AFTER id;');
 CALL add_element_unless_exists('column', 'warn_special_car', 'remark', 'ALTER TABLE warn_special_car ADD COLUMN `remark` varchar(255) DEFAULT NULL COMMENT "备注" AFTER plate_no;');
@@ -2457,8 +2457,8 @@ CALL add_element_unless_exists('column', 'warn_special_car', 'update_time', 'ALT
 CALL add_element_unless_exists('column', 'warn_special_car', 'updater', 'ALTER TABLE warn_special_car ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
 -- 更新表 warn_time 所有字段和索引
-ALTER TABLE warn_time CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE warn_time COMMENT = '固定车绑定告警时间';
+ALTER TABLE warn_time ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'warn_time', 'id', 'ALTER TABLE warn_time ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
 CALL add_element_unless_exists('column', 'warn_time', 'warn_config_id', 'ALTER TABLE warn_time ADD COLUMN `warn_config_id` int(11) DEFAULT NULL COMMENT "关联的配置表的id （warn_occupy，warn_park，warn_spacial）表的id" AFTER id;');
 CALL add_element_unless_exists('column', 'warn_time', 'warn_config_type', 'ALTER TABLE warn_time ADD COLUMN `warn_config_type` tinyint(4) DEFAULT NULL COMMENT "关联类型  1：warn_occupy车位占用告警   2：warn_park车辆违停告警  3：warn_spacial特殊车告警" AFTER warn_config_id;');
@@ -2470,11 +2470,3 @@ CALL add_element_unless_exists('column', 'warn_time', 'creator', 'ALTER TABLE wa
 CALL add_element_unless_exists('column', 'warn_time', 'update_time', 'ALTER TABLE warn_time ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'warn_time', 'updater', 'ALTER TABLE warn_time ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
-TRUNCATE TABLE f_config;
-TRUNCATE TABLE ini_config;
-TRUNCATE TABLE schedule_config;
-TRUNCATE TABLE t_access_config;
-INSERT INTO `parking_guidance`.`ini_config` (`id`, `dsp_recog`, `witch`, `comname`, `ret`, `province`, `pic_switch`, `creator`, `create_time`, `updater`, `update_time`) VALUES (1, 0, 1, 'COM3', 0, NULL, 0, NULL, NULL, NULL, '2024-01-25 10:53:13');
-INSERT INTO `parking_guidance`.`schedule_config` (`id`, `create_time`, `update_time`, `park_img_duration`, `area_park_img_duration`, `in_car_push_switch`, `out_car_push_switch`, `update_plate_push_switch`, `empty_park_push_switch`, `empty_park_push_lot`, `empty_park_push_url`, `park_change_push_switch`, `park_change_push_lot`, `park_change_push_url`, `creator`, `url_prefix_config`, `free_space_num_switch`, `image_upload_switch`, `unified_image_prefix`, `post_bus_in_out`, `post_node_device_status`, `clean_stereoscopic_park_switch`, `free_space_switch`, `post_node_device_url`, `clean_stereoscopic_park_duration`, `car_loc_info_switch`, `area_push_switch`, `tank_warn_push_switch`, `light_scheme_duration`, `grpc_switch`, `screen_cmd_interval`, `screen_cmd_interval_fast`, `statistic_screen_type`, `query_recognize_record`, `plate_match_rule`, `clean_temp_picture`, `clean_recognition_table`, `clean_area_picture`, `warn_switch`) VALUES (1, NULL, '2024-02-07 14:10:30', 30, 1, 0, 1, 0, 1, NULL, NULL, 1, NULL, NULL, NULL, 'http://localhost:8083', 1, 0, 'http://localhost:8083', 1, 1, 1, 1, NULL, 30, 1, 1, 1, 60, 1, 30, 8, 1, 0, 1, 1, 30, 1, 1);
-INSERT INTO `parking_guidance`.`t_access_config` (`id`, `dsp_port`, `node_port`, `ip_Pre`, `broadcast_times`, `broadcast_interval`, `channel_http`, `serial_port`, `baud_rate`, `A`, `B`, `C`, `pr_num`, `army_car`, `police_car`, `wujing_car`, `farm_car`, `embassy_car`, `personality_car`, `civil_car`, `new_energy_car`, `type_pr_num`, `set_lr_num`, `set_lpr_cs`, `province`, `set_priority`, `original_picture_path`, `front_save_path`, `temp_rcv_path`, `recognition_path`, `recognition_lib_path`, `switch_serial_port`, `region_picture_path`, `snap_picture_path`, `quality_inspection_picture_path`, `recognition_switch`, `free_occupy_switch`) VALUES (1, 7799, 7777, '172.10', 3, 5, 'http://127.0.0.1:7072', '/dev/ttyS0', 9600, 1, 1, 1, 9, 1, 1, 0, 1, 1, 1, 1, 1, 9, 2, 1, '川', 0, '/home/findcar/FindCarServer/original', '/home/findcar/ParkingGuidance/carImage', '/home/findcar/FindCarServer/temp', '/home/findcar/FindCarServer/recognition', '/home/findcar/FindCarServer/lib/', 0, '/home/findcar/ParkingGuidance/snappedImage', '/home/findcar/ParkingGuidance/carImage/snap', '/home/findcar/FindCarServer/qualityInspectionCenter', 0, 0);
-INSERT INTO `parking_guidance`.`f_config` (`id`, `config_code`, `config_value`, `config_desc`, `attribute`, `deleted`, `create_time`, `creator`, `update_time`, `updater`, `aws_enable_switch`, `guidance_swagger_switch`, `channel_swagger_switch`) VALUES (1, 'tanker_expel_switch', '1', '油车违停告警开关', '', 0, '2024-01-25 10:53:13', '系统管理员', '2024-01-25 10:53:13', '系统管理员', 0, 0, 0);

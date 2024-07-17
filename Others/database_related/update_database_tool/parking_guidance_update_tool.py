@@ -147,8 +147,27 @@ class UpdateDatabase:
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
             return
+
+        # 先清理表b_car_in_out_record和表b_recognition_record的历史数据
+        connection = None
+        try:
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行旧服务器数据库大表清理......")
+            connection = self.connect_database('old')
+            with connection.cursor() as cursor:
+                truncate_sqls = [
+                    "TRUNCATE TABLE b_car_in_out_record;",
+                    "TRUNCATE TABLE b_recognition_record;"
+                ]
+                for sql in truncate_sqls:
+                    cursor.execute(sql)
+                connection.commit()
+                log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库大表清理成功！")
+        except Exception as e:
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} Warning- {e}")
+        finally:
+            connection.close()
 
         # 两个服务器得数据都备份成功后，通过脚本补齐旧服务器数据库结构并dump下来备用
         try:
@@ -177,12 +196,12 @@ class UpdateDatabase:
                         else:
                             raise Exception(stderr.decode())
                     except Exception as e:
-                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载失败，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
+                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
                         return
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库结构修正失败，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库结构修正失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
             return
 
         # 连接新服务器数据库并传输数据
@@ -196,17 +215,56 @@ class UpdateDatabase:
                     log_message(stdout.decode())
                     raise Exception(stderr.decode())
                 else:
-                    log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输成功！\n\n寻车服务器升级完成！！！")
+                    log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输成功！")
+
+                    # 执行truncate和insert语句
+                    connection = None
+                    try:
+                        connection = self.connect_database('new')
+                        with connection.cursor() as cursor:
+                            log_message(
+                                f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始初始化config配置表......")
+
+                            truncate_sqls = [
+                                "TRUNCATE TABLE f_config;",
+                                "TRUNCATE TABLE ini_config;",
+                                "TRUNCATE TABLE schedule_config;",
+                                "TRUNCATE TABLE t_access_config;"
+                            ]
+                            insert_sqls = [
+                                "INSERT INTO `ini_config` (`id`, `dsp_recog`, `witch`, `comname`, `ret`, `province`, `pic_switch`, `creator`, `create_time`, `updater`, `update_time`) VALUES (1, 0, 1, 'COM3', 0, NULL, 0, NULL, NULL, NULL, '2024-01-25 10:53:13');",
+                                "INSERT INTO `schedule_config` (`id`, `create_time`, `update_time`, `park_img_duration`, `area_park_img_duration`, `in_car_push_switch`, `out_car_push_switch`, `update_plate_push_switch`, `empty_park_push_switch`, `empty_park_push_lot`, `empty_park_push_url`, `park_change_push_switch`, `park_change_push_lot`, `park_change_push_url`, `creator`, `url_prefix_config`, `free_space_num_switch`, `image_upload_switch`, `unified_image_prefix`, `post_bus_in_out`, `post_node_device_status`, `clean_stereoscopic_park_switch`, `free_space_switch`, `post_node_device_url`, `clean_stereoscopic_park_duration`, `car_loc_info_switch`, `area_push_switch`, `tank_warn_push_switch`, `light_scheme_duration`, `grpc_switch`, `screen_cmd_interval`, `screen_cmd_interval_fast`, `statistic_screen_type`, `query_recognize_record`, `plate_match_rule`, `clean_temp_picture`, `clean_recognition_table`, `clean_area_picture`, `warn_switch`) VALUES (1, NULL, '2024-02-07 14:10:30', 30, 1, 0, 1, 0, 1, NULL, NULL, 1, NULL, NULL, NULL, 'http://localhost:8083', 1, 0, 'http://localhost:8083', 1, 1, 1, 1, NULL, 30, 1, 1, 1, 60, 1, 30, 8, 1, 0, 1, 1, 30, 1, 1)",
+                                "INSERT INTO `t_access_config` (`id`, `dsp_port`, `node_port`, `ip_Pre`, `broadcast_times`, `broadcast_interval`, `channel_http`, `serial_port`, `baud_rate`, `A`, `B`, `C`, `pr_num`, `army_car`, `police_car`, `wujing_car`, `farm_car`, `embassy_car`, `personality_car`, `civil_car`, `new_energy_car`, `type_pr_num`, `set_lr_num`, `set_lpr_cs`, `province`, `set_priority`, `original_picture_path`, `front_save_path`, `temp_rcv_path`, `recognition_path`, `recognition_lib_path`, `switch_serial_port`, `region_picture_path`, `snap_picture_path`, `quality_inspection_picture_path`, `recognition_switch`, `free_occupy_switch`) VALUES (1, 7799, 7777, '172.10', 3, 5, 'http://127.0.0.1:7072', '/dev/ttyS0', 9600, 1, 1, 1, 9, 1, 1, 0, 1, 1, 1, 1, 1, 9, 2, 1, '川', 0, '/home/findcar/FindCarServer/original', '/home/findcar/ParkingGuidance/carImage', '/home/findcar/FindCarServer/temp', '/home/findcar/FindCarServer/recognition', '/home/findcar/FindCarServer/lib/', 0, '/home/findcar/ParkingGuidance/snappedImage', '/home/findcar/ParkingGuidance/carImage/snap', '/home/findcar/FindCarServer/qualityInspectionCenter', 0, 0);",
+                                "INSERT INTO `f_config` (`id`, `config_code`, `config_value`, `config_desc`, `attribute`, `deleted`, `create_time`, `creator`, `update_time`, `updater`, `aws_enable_switch`, `guidance_swagger_switch`, `channel_swagger_switch`) VALUES (1, 'tanker_expel_switch', '1', '油车违停告警开关', '', 0, '2024-01-25 10:53:13', '系统管理员', '2024-01-25 10:53:13', '系统管理员', 0, 0, 0);"
+                            ]
+                            alter_sqls = [
+                                "ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+                            ]
+
+                            for sql in truncate_sqls:
+                                cursor.execute(sql)
+                            for sql in insert_sqls:
+                                cursor.execute(sql)
+                            for sql in alter_sqls:
+                                cursor.execute(sql)
+
+                            connection.commit()
+                            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 初始化config配置表成功！\n\n寻车服务器升级完成！！！")
+                    except Exception as e:
+                        log_message(
+                            f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 初始化config配置表失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
+                    finally:
+                        connection.close()
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输失败！，错误信息:\n{e}n{stderr}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输失败！，错误信息:\n{e}]\n{stderr}\n\n升级已中断！！！")
             return
 
 
 if __name__ == '__main__':
     # 测试用！！ 清理数据库结构
-    #delete_database_structure()
+    # delete_database_structure()
     print("\n================================================================\n")
 
     # 连接数据库并更新结构
