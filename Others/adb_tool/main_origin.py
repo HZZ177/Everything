@@ -385,7 +385,7 @@ class Application:
 
         # 定义链接设备按钮，触发adb connect
         self.btn_connect = tk.Button(self.main_frame, text="连接设备",
-                                command=lambda: self.entry_select_function_page(self.entry_ip.get()))
+                                command=lambda: self.entry_select_function_page(self.entry_ip.get() if ":" in self.entry_ip.get() else self.entry_ip.get()+":5555"))
         self.btn_connect.pack(pady=(5, 20))
 
         # 固定在页面左上角，返回主页面按钮
@@ -745,7 +745,8 @@ class Application:
         """工具函数，判断传入ip是否合法"""
 
         # ip地址元素拆分
-        segments = ip.split('.')
+        ip_part = ip.split(':')[0]
+        segments = ip_part.split('.')
         if segments[0] == "":
             return "ip地址不能为空！请重新输入"
         elif len(segments) != 4:
