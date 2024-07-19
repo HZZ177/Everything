@@ -68,6 +68,7 @@ class UpdateDatabase:
         self.old_db_dump_file = os.path.join(self.exe_data_path, f'old_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
         self.old_db_fixed_dump_file = os.path.join(self.exe_data_path, f'old_db_fixed_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
         self.new_db_backup_file = os.path.join(self.exe_data_path, f'new_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
+        self.new_db_internation_backup_file = os.path.join(self.exe_data_path, f'new_db_internation_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql')
         self.db_structure_fix_file = os.path.join(self.project_data_path, 'parking_guidance_database_structure_fix.sql')
 
     def connect_database(self, which):
@@ -148,6 +149,26 @@ class UpdateDatabase:
                 raise Exception(stderr.decode())
         except Exception as e:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
+            return
+
+        # 备份新服务器国际化表
+        try:
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始备份国际化......")
+            backup_internationalization_cmd = f"{self.mysqldump_path} -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} internationalization> {self.new_db_internation_backup_file}"
+            process = self.execute_cmd(backup_internationalization_cmd, log_message)
+            stdout, stderr = process.communicate()
+            if process.returncode == 0:
+                if "ERROR" in stdout.decode() or "error" in stdout.decode():
+                    log_message(stdout.decode())
+                    raise Exception(stderr.decode())
+                else:
+                    log_message(
+                        f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 国际化备份成功，备份文件路径：{self.new_db_internation_backup_file}")
+            else:
+                raise Exception(stderr.decode())
+        except Exception as e:
+            log_message(
+                f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 国际化备份失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
             return
 
         # 先清理表b_car_in_out_record和表b_recognition_record的历史数据
@@ -388,7 +409,7 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
                                 cursor.execute(sql)
 
                             connection.commit()
-                            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 初始化config配置表成功！\n\n寻车服务器升级完成！！！")
+                            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 初始化config配置表成功！")
                     except Exception as e:
                         log_message(
                             f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 初始化config配置表失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
@@ -399,6 +420,25 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
         except Exception as e:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输失败！，错误信息:\n{e}]\n{stderr}\n\n升级已中断！！！")
             return
+
+        # 重置国际化
+        try:
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行国际化覆盖......")
+            internation_cmd = f"{self.mysql_path} -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} < {self.new_db_internation_backup_file}"
+            process = self.execute_cmd(internation_cmd, log_message)
+            stdout, stderr = process.communicate()
+            if process.returncode == 0:
+                if "ERROR" in stdout.decode() or "error" in stdout.decode():
+                    log_message(stdout.decode())
+                    raise Exception(stderr.decode())
+                else:
+                    log_message(
+                        f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 国际化覆盖成功\n\n寻车服务器升级完成！！！")
+            else:
+                raise Exception(stderr.decode())
+        except Exception as e:
+            log_message(
+                f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}\n{stderr}\n\n请升级完成后手动检查国际化表")
 
 
 if __name__ == '__main__':

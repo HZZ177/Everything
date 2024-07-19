@@ -45,7 +45,8 @@ class Application:
         self.fccc_logfile = "/sdcard/Android/data/com.keytop.fccc/files/log"  # fcc收费一体机
         self.fsfp_logfile = "/sdcard/Android/data/com.keytop.fsfp/files/log"  # fsfp立式人脸找车机
         self.frsa_logfile = "/sdcard/Android/data/com.keytop.frsa/files/log"  # frsa壁挂式人脸找车机
-        self.lcdgs_logfile = "/sdcard/Android/data/com.keytop.lcdgs/files/log"  # LCD显示屏
+        self.lcdgs_logfile = "/sdcard/Android/data/com.keytop.lcdgs/files/log"  # LCD一体屏
+        self.lcdsgs_logfile = "/sdcard/Android/data/com.keytop.lcdsgs/files/log"  # LCD双拼接屏
 
         # 保存设备日志文件路径
         self.download_log_path = self.base_path
@@ -480,7 +481,8 @@ class Application:
             "fcc收费一体机": lambda: self.download_log_choose_page(self.top_download_log, self.fccc_logfile),
             "fsfp立式人脸找车机": lambda: self.download_log_choose_page(self.top_download_log, self.fsfp_logfile),
             "frsa壁挂式人脸找车机": lambda: self.download_log_choose_page(self.top_download_log, self.frsa_logfile),
-            "Lcd显示屏": lambda: self.download_log_choose_page(self.top_download_log, self.lcdgs_logfile)
+            "Lcd一体屏": lambda: self.download_log_choose_page(self.top_download_log, self.lcdgs_logfile),
+            "Lcd双拼接屏": lambda: self.download_log_choose_page(self.top_download_log, self.lcdsgs_logfile)
         }
 
         row_index = 1  # 从第二行开始放置按钮
