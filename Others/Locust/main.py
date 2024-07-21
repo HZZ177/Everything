@@ -10,7 +10,7 @@ import locust
 
 
 class Test(locust.HttpUser):
-    host = "http://127.0.0.1:8000"
+    host = "http://192.168.31.177:8083"
     wait_time = locust.between(1, 2)
 
     @locust.task
