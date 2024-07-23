@@ -14,7 +14,7 @@ import re
 # base_url = 'http://119.3.77.222:35017'
 
 # 内网固定base_url
-base_url = 'http://192.168.7.58:8083'
+base_url = 'http://192.168.21.249:8083'
 
 # 拼接Swagger文档URL
 swagger_url = base_url + '/v2/api-docs?group=3D%E5%AF%BB%E8%BD%A6%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E5%8F%A3'
@@ -25,10 +25,10 @@ try:
     response.raise_for_status()
     swagger_data = response.json()
 except requests.RequestException as e:
-    print(f"Error fetching Swagger data: {e}")
+    print(f"请求失败: {e}")
     exit(1)
 except json.JSONDecodeError as e:
-    print(f"Error decoding JSON: {e}")
+    print(f"解析JSON失败: {e}")
     exit(1)
 
 # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
@@ -44,9 +44,12 @@ type_mapping = {
     'object': 'dict'
 }
 
+
 # 动态生成请求函数
 def create_request_functions(swagger_data, base_url):
-    functions_code = ""
+    functions_code = "class AdminAPI:\n"
+    functions_code += "    def __init__(self, base_url):\n"
+    functions_code += "        self.base_url = base_url\n\n"
 
     # 提取接口路径和方法
     for path, path_item in swagger_data['paths'].items():
@@ -112,25 +115,25 @@ def create_request_functions(swagger_data, base_url):
             all_param_list = param_list + default_param_list
             param_str = ", ".join(all_param_list)
             param_annotations_str = "\n    ".join(param_annotations)
-            function_code = f"def {function_name}({param_str}):\n"
-            function_code += f'    """\n    {summary}\n    {param_annotations_str}\n    """\n'
-            function_code += f"    url = '{base_url}' + '{path}'\n"
+            function_code = f"    def {function_name}(self, {param_str}):\n"
+            function_code += f'        """\n        {summary}\n        {param_annotations_str}\n        """\n'
+            function_code += f"        url = self.base_url + '{path}'\n"
 
             # 构建请求参数字典
-            function_code += "    params = {\n"
+            function_code += "        params = {\n"
             for param_name in param_names:
                 if param_name != 'access_token':
-                    function_code += f"        '{param_name}': {param_name},\n"
-            function_code += "    }\n"
+                    function_code += f"            '{param_name}': {param_name},\n"
+            function_code += "        }\n"
 
             # 构建请求头
-            function_code += "    headers = {\n"
-            function_code += "        'Accesstoken': f'{access_token}'\n"
-            function_code += "    }\n"
+            function_code += "        headers = {\n"
+            function_code += "            'Accesstoken': f'{access_token}'\n"
+            function_code += "        }\n"
 
             # 添加发送请求的代码
-            function_code += f"    response = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
-            function_code += "    return response.json()\n"
+            function_code += f"        response = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
+            function_code += "        return response.json()\n"
             function_code += "\n\n"
 
             functions_code += function_code
@@ -142,5 +145,5 @@ request_functions_code = create_request_functions(swagger_data, base_url)
 
 # 将生成的函数代码保存到文件
 with open('generated_request_functions.py', 'w', encoding='utf-8') as f:
-    f.write("import requests\n\n#############################\n\n\n")
+    f.write("import requests\n\n\n")
     f.write(request_functions_code)
