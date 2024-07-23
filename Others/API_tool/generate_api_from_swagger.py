@@ -17,12 +17,22 @@ class App:
     def __init__(self):
 
         # 从环境变量中获取环境类型，默认为开发环境
-        self.env = os.getenv('ENV', 'dev')       # dev 开发环境/ tem 临时环境
+        self.env = os.getenv('ENV', 'temp')       # dev 开发环境/ temp 临时环境
         self.service = 'admin'     # channel、admin、findcar
         self.config = ConfigLoader(self.env).config
-        self.base_url = self.config['base_url']+':'+self.config['port'][self.service]
+
+        # 基本参数
+        self.base_url = self.config['base_url'] + ':' + self.config['port'][self.service]
         self.swagger_url = self.base_url + self.config['swagger_path'][self.service]
         self.swagger_data = None
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.data_path = os.path.join(self.current_path, 'data')
+        self.json_file_path = os.path.join(self.data_path, f'{self.service}_swagger_data.json')
+        self.function_file_path = os.path.join(self.data_path, f'{self.service}_generated_functions.py')
+
+        # 确保目录存在
+        if not os.path.exists(self.data_path):
+            os.makedirs(self.data_path)
 
         # swagger到python的数据类型映射
         self.type_mapping = {
@@ -46,9 +56,9 @@ class App:
             print(f"解析JSON失败: {e}")
             exit(1)
 
-        # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
-        with open(f'{self.service}_swagger_data.json', 'w', encoding='utf-8') as f:
-            json.dump(self.swagger_data, f, ensure_ascii=False, indent=2)
+        # # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
+        # with open(f'{self.json_file_path}', 'w', encoding='utf-8') as f:
+        #     json.dump(self.swagger_data, f, ensure_ascii=False, indent=2)
 
     # 动态生成请求函数
     def create_request_functions(self):
@@ -72,7 +82,6 @@ class App:
                     function_name = path_parts[-1].lower()
 
                 summary = operation.get('summary', 'No summary provided').replace('\n', ' ')
-
                 params = operation.get('parameters', [])
 
                 # 动态生成函数代码
@@ -120,7 +129,7 @@ class App:
 
                 all_param_list = param_list + default_param_list
                 param_str = ", ".join(all_param_list)
-                param_annotations_str = "\n    ".join(param_annotations)
+                param_annotations_str = "\n        ".join(param_annotations)
                 function_code = f"    def {function_name}(self, {param_str}):\n"
                 function_code += f'        """\n        {summary}\n        {param_annotations_str}\n        """\n'
                 function_code += f"        url = self.base_url + '{path}'\n"
@@ -140,18 +149,18 @@ class App:
                 # 添加发送请求的代码
                 function_code += f"        response = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
                 function_code += "        return response.json()\n"
-                function_code += "\n\n"
+                function_code += "\n"
 
                 functions_code += function_code
 
         return functions_code
 
-    def generate(self) -> None:
+    def generate(self):
         # 动态生成的请求函数代码
         request_functions_code = self.create_request_functions()
 
         # 将生成的函数代码保存到文件
-        with open(f'generated_{self.service}_functions.py', 'w', encoding='utf-8') as f:
+        with open(f'{self.function_file_path}', 'w', encoding='utf-8') as f:
             f.write("import requests\n\n\n")
             f.write(request_functions_code)
 

@@ -11,7 +11,8 @@ import os
 
 class ConfigLoader:
     def __init__(self, env='dev'):
-        config_file = os.path.join(os.path.dirname(__file__), f"../config_{env}.yml")
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        config_file = os.path.join(self.current_path, f"..\config_{env}.yml")
         self.config = self._load_config(config_file)
 
     @staticmethod

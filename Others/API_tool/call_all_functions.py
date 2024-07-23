@@ -1,4 +1,4 @@
-import generated_request_functions as api
+import data.admin_generated_functions as api
 
 
 def call_all_functions(access_token):
