@@ -61,12 +61,12 @@
       "description": "Emergency Mode Controller"
     },
     {
-      "name": "统一接口",
-      "description": "Unified Controller"
-    },
-    {
       "name": "节点设备相关",
       "description": "Node Device Controller"
+    },
+    {
+      "name": "设备信息查询",
+      "description": "Device Info Open Controller"
     },
     {
       "name": "车位灯方案接口",
@@ -496,6 +496,105 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/deviceInfoOpen/getDeviceInfoStatus": {
+      "post": {
+        "tags": [
+          "设备信息查询"
+        ],
+        "summary": "查询设备的实时状态",
+        "operationId": "getDeviceInfoStatusUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "baseReqVO",
+            "description": "baseReqVO",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/设备状态实时查询参数",
+              "originalRef": "设备状态实时查询参数"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/设备状态列表返回对象",
+                "originalRef": "设备状态列表返回对象"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/deviceInfoOpen/selectPageList": {
+      "post": {
+        "tags": [
+          "设备信息查询"
+        ],
+        "summary": "查询设备的实时状态分页查询",
+        "operationId": "selectPageListUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "vo",
+            "description": "vo",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/设备状态分页查询参数实体",
+              "originalRef": "设备状态分页查询参数实体"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PageResultDTO«设备状态列表返回对象»",
+              "originalRef": "PageResultDTO«设备状态列表返回对象»"
+            }
           },
           "201": {
             "description": "Created"
@@ -2380,6 +2479,32 @@
         }
       }
     },
+    "/tool/deviceStatusTest": {
+      "get": {
+        "tags": [
+          "工具接口"
+        ],
+        "summary": "/设备状态测试接口",
+        "operationId": "deviceStatusTestUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/tool/sendCommandToAllScreen": {
       "get": {
         "tags": [
@@ -2590,8 +2715,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UniteApiReqVo",
-              "originalRef": "UniteApiReqVo"
+              "$ref": "#/definitions/UniteApiReqTestVo",
+              "originalRef": "UniteApiReqTestVo"
             }
           }
         ],
@@ -2658,89 +2783,19 @@
         }
       }
     },
-    "/unified/getCarLocInfo": {
-      "post": {
+    "/tool/测试接口-lhs": {
+      "get": {
         "tags": [
-          "统一接口"
+          "工具接口"
         ],
-        "summary": "车辆停放位置查询接口(精准)",
-        "operationId": "getCarLocInfoUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
+        "summary": "测试接口-lhs",
+        "operationId": "testLhsUsingGET",
         "produces": [
           "*/*"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "carLocInfoReqDTO",
-            "description": "carLocInfoReqDTO",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/车辆停放位置查询接口",
-              "originalRef": "车辆停放位置查询接口"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/统一返回参数",
-              "originalRef": "统一返回参数"
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/unified/getParkListByPlateNo": {
-      "post": {
-        "tags": [
-          "统一接口"
-        ],
-        "summary": "车辆停放位置查询接口(模糊)",
-        "operationId": "getParkListByPlateNoUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "*/*"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "getParkListByPlateNoReqDTO",
-            "description": "getParkListByPlateNoReqDTO",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/根据车牌查车位（模糊）",
-              "originalRef": "根据车牌查车位（模糊）"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/统一返回参数",
-              "originalRef": "统一返回参数"
-            }
-          },
-          "201": {
-            "description": "Created"
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -3112,6 +3167,14 @@
           "type": "string",
           "description": "车牌号"
         },
+        "recognitionTimeEnd": {
+          "type": "string",
+          "description": "查询识别记录结束日期"
+        },
+        "recognitionTimeStart": {
+          "type": "string",
+          "description": "查询识别记录开始日期"
+        },
         "reqId": {
           "type": "string",
           "description": "请求唯一id"
@@ -3119,6 +3182,14 @@
         "spaceNo": {
           "type": "string",
           "description": "车位编号"
+        },
+        "spaceSchemeParam": {
+          "type": "array",
+          "description": "车位灯指令",
+          "items": {
+            "$ref": "#/definitions/SpaceSchemeParam",
+            "originalRef": "SpaceSchemeParam"
+          }
         },
         "systemType": {
           "type": "integer",
@@ -3195,6 +3266,10 @@
         },
         "deleted": {
           "type": "boolean"
+        },
+        "deviceType": {
+          "type": "integer",
+          "format": "int32"
         },
         "floorId": {
           "type": "integer",
@@ -3654,6 +3729,49 @@
       },
       "title": "PageResultDTO«ListLcdScreenDTO»"
     },
+    "PageResultDTO«设备状态列表返回对象»": {
+      "type": "object",
+      "properties": {
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "每页条目数"
+        },
+        "recordSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "结果集的数量"
+        },
+        "records": {
+          "type": "array",
+          "description": "结果集",
+          "items": {
+            "$ref": "#/definitions/设备状态列表返回对象",
+            "originalRef": "设备状态列表返回对象"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 10000,
+          "description": "总条目数"
+        },
+        "totalPage": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "总页数"
+        }
+      },
+      "title": "PageResultDTO«设备状态列表返回对象»"
+    },
     "ParamContent": {
       "type": "object",
       "properties": {
@@ -3964,14 +4082,47 @@
       },
       "title": "SendLightCommandOfGuidanceReqDTO"
     },
-    "UniteApiReqVo": {
+    "SpaceSchemeParam": {
+      "type": "object",
+      "properties": {
+        "deviceAddr": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "freeColor": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "invokeTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "occupyColor": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "spaceId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "spaceUuid": {
+          "type": "string"
+        }
+      },
+      "title": "SpaceSchemeParam"
+    },
+    "UniteApiReqTestVo": {
       "type": "object",
       "properties": {
         "appId": {
-          "type": "string"
+          "type": "object",
+          "example": 11681,
+          "description": "租户id"
         },
         "appSecret": {
-          "type": "string"
+          "type": "string",
+          "example": "7a216f04e543418f9b6378dddd1dd9e3",
+          "description": "租户密钥"
         },
         "params": {
           "type": "object",
@@ -3981,17 +4132,66 @@
           }
         },
         "parkId": {
-          "type": "string"
+          "type": "object",
+          "example": 9081,
+          "description": "车场id"
         },
         "serviceCode": {
-          "type": "string"
+          "type": "string",
+          "example": "getFloorList",
+          "description": "代码"
         },
         "uri": {
           "type": "string",
+          "example": "GetFloorList",
           "description": "接口uri"
         },
         "version": {
           "type": "string",
+          "example": "2.0.0",
+          "description": "请求头里的version 一般为1.0.0"
+        }
+      },
+      "title": "UniteApiReqTestVo"
+    },
+    "UniteApiReqVo": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "object",
+          "example": 11168,
+          "description": "租户id"
+        },
+        "appSecret": {
+          "type": "string",
+          "example": "890539996dc440bbb1151199c79bd3dc",
+          "description": "租户密钥"
+        },
+        "params": {
+          "type": "object",
+          "description": "接口的额外参数 用json字符串传入",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "parkId": {
+          "type": "object",
+          "example": 999508322,
+          "description": "车场id"
+        },
+        "serviceCode": {
+          "type": "string",
+          "example": "getFloorList",
+          "description": "代码"
+        },
+        "uri": {
+          "type": "string",
+          "example": "GetFloorList",
+          "description": "接口uri"
+        },
+        "version": {
+          "type": "string",
+          "example": "1.0.0",
           "description": "请求头里的version 一般为1.0.0"
         }
       },
@@ -4086,6 +4286,14 @@
     "历史进出车明细参数": {
       "type": "object",
       "properties": {
+        "carInOutRecordEndTableName": {
+          "type": "string",
+          "description": "查询入车结束时间对应表名"
+        },
+        "carInOutRecordStartTableName": {
+          "type": "string",
+          "description": "查询入车开始时间对应表名"
+        },
         "inTimeEnd": {
           "type": "string",
           "description": "查询入车结束时间（必填，时间跨度最长30天）"
@@ -4093,6 +4301,14 @@
         "inTimeStart": {
           "type": "string",
           "description": "查询入车开始时间（必填，时间跨度最长30天）"
+        },
+        "outTimeEnd": {
+          "type": "string",
+          "description": "出车时间结束（必填，时间跨度最长30天）"
+        },
+        "outTimeStart": {
+          "type": "string",
+          "description": "出车时间开始（必填，时间跨度最长30天）"
         },
         "pageIndex": {
           "type": "integer",
@@ -4213,28 +4429,6 @@
       },
       "title": "根据车位编号修改车位类型参数"
     },
-    "根据车牌查车位（模糊）": {
-      "type": "object",
-      "properties": {
-        "pageIndex": {
-          "type": "integer",
-          "format": "int32",
-          "example": 1,
-          "description": "页数"
-        },
-        "pageSize": {
-          "type": "integer",
-          "format": "int32",
-          "example": 100,
-          "description": "每页条目数"
-        },
-        "plateNo": {
-          "type": "string",
-          "description": "车牌号（必填，不限制位数，支持带汉字和不带汉字）"
-        }
-      },
-      "title": "根据车牌查车位（模糊）"
-    },
     "统一返回参数": {
       "type": "object",
       "properties": {
@@ -4257,6 +4451,121 @@
         }
       },
       "title": "统一返回参数"
+    },
+    "设备状态分页查询参数实体": {
+      "type": "object",
+      "properties": {
+        "deviceAddrIp": {
+          "type": "string",
+          "description": "设备地址（IP或者拨码）"
+        },
+        "deviceType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备类型 0=未知  1=车位相机  2=超声波探测器  3=LED屏  4=找车机  5=车位灯 6 LCD屏  7节点设备"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "主键id"
+        },
+        "nodeDeviceAddr": {
+          "type": "string",
+          "description": "节点设备地址"
+        },
+        "onlineStatus": {
+          "type": "integer",
+          "format": "int32",
+          "description": "在线状态  0=离线  1=在线"
+        },
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "页数"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "每页条目数"
+        },
+        "protocolType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备协议类型"
+        }
+      },
+      "title": "设备状态分页查询参数实体"
+    },
+    "设备状态列表返回对象": {
+      "type": "object",
+      "properties": {
+        "communicateType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "通讯方式  1=TCP  2=485"
+        },
+        "connectType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "连接方式  1=直连  2=间连"
+        },
+        "deviceAddrIp": {
+          "type": "string",
+          "description": "设备地址（IP或者拨码）"
+        },
+        "deviceType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备类型  0=未知  1=车位相机  2=超声波探测器  3=LED屏  4=找车机  5=车位灯 6 LCD屏  7节点设备"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "设备ID"
+        },
+        "nodeDeviceAddr": {
+          "type": "string",
+          "description": "节点设备地址"
+        },
+        "onlineStatus": {
+          "type": "integer",
+          "format": "int32",
+          "description": "在线状态  0=离线  1=在线"
+        },
+        "protocolType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "设备协议类型\n101=车位相机\n201=超声波\n301=TCP网络屏  302=485屏\n401=FCCC\n501=相机车位灯  502=引导双色灯  503=引导多彩灯\n601 LCD屏\n701 TCP-4字节  702 8字节  703 10字节\n711 485"
+        },
+        "remark": {
+          "type": "string",
+          "description": "备注"
+        }
+      },
+      "title": "设备状态列表返回对象"
+    },
+    "设备状态实时查询参数": {
+      "type": "object",
+      "properties": {
+        "deviceAddrs": {
+          "type": "array",
+          "description": "设备地址集合",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deviceIds": {
+          "type": "array",
+          "description": "设备id集合",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "title": "设备状态实时查询参数"
     },
     "车位状态更新请求参数": {
       "type": "object",
@@ -4334,28 +4643,6 @@
         }
       },
       "title": "车位相机上报信息0"
-    },
-    "车辆停放位置查询接口": {
-      "type": "object",
-      "properties": {
-        "pageIndex": {
-          "type": "integer",
-          "format": "int32",
-          "example": 1,
-          "description": "页数"
-        },
-        "pageSize": {
-          "type": "integer",
-          "format": "int32",
-          "example": 100,
-          "description": "每页条目数"
-        },
-        "plateNo": {
-          "type": "string",
-          "description": "车牌号码"
-        }
-      },
-      "title": "车辆停放位置查询接口"
     }
   }
 }

@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "title": "3D寻车后台管理 API文档"
   },
-  "host": "192.168.7.58:8083",
+  "host": "192.168.21.249:8083",
   "basePath": "/",
   "tags": [
     {
@@ -316,8 +316,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AccessConfig",
-              "originalRef": "AccessConfig"
+              "originalRef": "AccessConfig",
+              "$ref": "#/definitions/AccessConfig"
             }
           },
           "401": {
@@ -352,8 +352,8 @@
             "description": "accessConfig",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AccessConfig",
-              "originalRef": "AccessConfig"
+              "originalRef": "AccessConfig",
+              "$ref": "#/definitions/AccessConfig"
             }
           }
         ],
@@ -395,8 +395,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ApiAccessInfo对象0",
-                "originalRef": "ApiAccessInfo对象0"
+                "originalRef": "ApiAccessInfo对象0",
+                "$ref": "#/definitions/ApiAccessInfo对象0"
               }
             }
           },
@@ -476,8 +476,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ApiAccessInfo对象",
-              "originalRef": "ApiAccessInfo对象"
+              "originalRef": "ApiAccessInfo对象",
+              "$ref": "#/definitions/ApiAccessInfo对象"
             }
           }
         ],
@@ -516,8 +516,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/上行接口返回实体",
-                "originalRef": "上行接口返回实体"
+                "originalRef": "上行接口返回实体",
+                "$ref": "#/definitions/上行接口返回实体"
               }
             }
           },
@@ -553,8 +553,8 @@
             "description": "apiReportManageSwitchReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/接口上报管理开关请求实体",
-              "originalRef": "接口上报管理开关请求实体"
+              "originalRef": "接口上报管理开关请求实体",
+              "$ref": "#/definitions/接口上报管理开关请求实体"
             }
           }
         ],
@@ -597,8 +597,8 @@
             "description": "apiReportManageAndOtherDTO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/上行接口返回实体",
-              "originalRef": "上行接口返回实体"
+              "originalRef": "上行接口返回实体",
+              "$ref": "#/definitions/上行接口返回实体"
             }
           }
         ],
@@ -688,8 +688,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaCameraRequestVO",
-              "originalRef": "AreaCameraRequestVO"
+              "originalRef": "AreaCameraRequestVO",
+              "$ref": "#/definitions/AreaCameraRequestVO"
             }
           }
         ],
@@ -732,8 +732,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaCameraPageRequestVO",
-              "originalRef": "AreaCameraPageRequestVO"
+              "originalRef": "AreaCameraPageRequestVO",
+              "$ref": "#/definitions/AreaCameraPageRequestVO"
             }
           }
         ],
@@ -741,8 +741,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«AreaCameraResponseVO»",
-              "originalRef": "PageResultVO«AreaCameraResponseVO»"
+              "originalRef": "PageResultVO«AreaCameraResponseVO»",
+              "$ref": "#/definitions/PageResultVO«AreaCameraResponseVO»"
             }
           },
           "201": {
@@ -780,8 +780,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaCameraRequestVO",
-              "originalRef": "AreaCameraRequestVO"
+              "originalRef": "AreaCameraRequestVO",
+              "$ref": "#/definitions/AreaCameraRequestVO"
             }
           }
         ],
@@ -862,8 +862,8 @@
             "description": "paramVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddAreaDeviceParamDTO",
-              "originalRef": "AddAreaDeviceParamDTO"
+              "originalRef": "AddAreaDeviceParamDTO",
+              "$ref": "#/definitions/AddAreaDeviceParamDTO"
             }
           }
         ],
@@ -909,8 +909,8 @@
             "description": "paramVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaDeviceParamVO",
-              "originalRef": "AreaDeviceParamVO"
+              "originalRef": "AreaDeviceParamVO",
+              "$ref": "#/definitions/AreaDeviceParamVO"
             }
           }
         ],
@@ -918,8 +918,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«区域设备»",
-              "originalRef": "PageResultVO«区域设备»"
+              "originalRef": "PageResultVO«区域设备»",
+              "$ref": "#/definitions/PageResultVO«区域设备»"
             }
           },
           "201": {
@@ -957,8 +957,8 @@
             "description": "paramVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddAreaDeviceParamDTO",
-              "originalRef": "AddAreaDeviceParamDTO"
+              "originalRef": "AddAreaDeviceParamDTO",
+              "$ref": "#/definitions/AddAreaDeviceParamDTO"
             }
           }
         ],
@@ -1004,8 +1004,8 @@
             "description": "reqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaParkSpaceReqVO",
-              "originalRef": "AreaParkSpaceReqVO"
+              "originalRef": "AreaParkSpaceReqVO",
+              "$ref": "#/definitions/AreaParkSpaceReqVO"
             }
           }
         ],
@@ -1118,8 +1118,8 @@
             "description": "areaAddParamVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/区域新增信息",
-              "originalRef": "区域新增信息"
+              "originalRef": "区域新增信息",
+              "$ref": "#/definitions/区域新增信息"
             }
           }
         ],
@@ -1168,8 +1168,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/RelatedFloorVO对象",
-                "originalRef": "RelatedFloorVO对象"
+                "originalRef": "RelatedFloorVO对象",
+                "$ref": "#/definitions/RelatedFloorVO对象"
               }
             }
           },
@@ -1205,8 +1205,8 @@
             "description": "reqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParkAreaRelationReqVO",
-              "originalRef": "ParkAreaRelationReqVO"
+              "originalRef": "ParkAreaRelationReqVO",
+              "$ref": "#/definitions/ParkAreaRelationReqVO"
             }
           }
         ],
@@ -1245,8 +1245,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/AreaInfo",
-                "originalRef": "AreaInfo"
+                "originalRef": "AreaInfo",
+                "$ref": "#/definitions/AreaInfo"
               }
             }
           },
@@ -1286,8 +1286,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AreaInfo",
-              "originalRef": "AreaInfo"
+              "originalRef": "AreaInfo",
+              "$ref": "#/definitions/AreaInfo"
             }
           },
           "401": {
@@ -1328,8 +1328,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/区域列表查询值",
-                "originalRef": "区域列表查询值"
+                "originalRef": "区域列表查询值",
+                "$ref": "#/definitions/区域列表查询值"
               }
             }
           },
@@ -1371,8 +1371,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/AreaInfo",
-                "originalRef": "AreaInfo"
+                "originalRef": "AreaInfo",
+                "$ref": "#/definitions/AreaInfo"
               }
             }
           },
@@ -1408,8 +1408,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaInfoListParamVO",
-              "originalRef": "AreaInfoListParamVO"
+              "originalRef": "AreaInfoListParamVO",
+              "$ref": "#/definitions/AreaInfoListParamVO"
             }
           }
         ],
@@ -1417,8 +1417,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«区域列表查询值»",
-              "originalRef": "PageResultVO«区域列表查询值»"
+              "originalRef": "PageResultVO«区域列表查询值»",
+              "$ref": "#/definitions/PageResultVO«区域列表查询值»"
             }
           },
           "201": {
@@ -1456,8 +1456,8 @@
             "description": "reqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParkListByAreaReqVO",
-              "originalRef": "ParkListByAreaReqVO"
+              "originalRef": "ParkListByAreaReqVO",
+              "$ref": "#/definitions/ParkListByAreaReqVO"
             }
           }
         ],
@@ -1467,8 +1467,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ParkListByAreaResponseVO",
-                "originalRef": "ParkListByAreaResponseVO"
+                "originalRef": "ParkListByAreaResponseVO",
+                "$ref": "#/definitions/ParkListByAreaResponseVO"
               }
             }
           },
@@ -1507,8 +1507,8 @@
             "description": "reqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaParkSpaceListReqVO",
-              "originalRef": "AreaParkSpaceListReqVO"
+              "originalRef": "AreaParkSpaceListReqVO",
+              "$ref": "#/definitions/AreaParkSpaceListReqVO"
             }
           }
         ],
@@ -1516,8 +1516,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«AreaInfoDTO»",
-              "originalRef": "PageResultVO«AreaInfoDTO»"
+              "originalRef": "PageResultVO«AreaInfoDTO»",
+              "$ref": "#/definitions/PageResultVO«AreaInfoDTO»"
             }
           },
           "201": {
@@ -1555,8 +1555,8 @@
             "description": "areaUpdateParamVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/区域更新信息",
-              "originalRef": "区域更新信息"
+              "originalRef": "区域更新信息",
+              "$ref": "#/definitions/区域更新信息"
             }
           }
         ],
@@ -1599,8 +1599,8 @@
             "description": "reqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AreaParkSpaceReqVO",
-              "originalRef": "AreaParkSpaceReqVO"
+              "originalRef": "AreaParkSpaceReqVO",
+              "$ref": "#/definitions/AreaParkSpaceReqVO"
             }
           }
         ],
@@ -1646,8 +1646,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LoginSuccessVO",
-              "originalRef": "LoginSuccessVO"
+              "originalRef": "LoginSuccessVO",
+              "$ref": "#/definitions/LoginSuccessVO"
             }
           },
           "401": {
@@ -1699,8 +1699,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LoginSuccessVO",
-              "originalRef": "LoginSuccessVO"
+              "originalRef": "LoginSuccessVO",
+              "$ref": "#/definitions/LoginSuccessVO"
             }
           },
           "401": {
@@ -1738,8 +1738,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LoginSuccessVO",
-              "originalRef": "LoginSuccessVO"
+              "originalRef": "LoginSuccessVO",
+              "$ref": "#/definitions/LoginSuccessVO"
             }
           },
           "401": {
@@ -1855,8 +1855,8 @@
             "description": "berthRateRecordRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/BerthRateRecordRequestVO",
-              "originalRef": "BerthRateRecordRequestVO"
+              "originalRef": "BerthRateRecordRequestVO",
+              "$ref": "#/definitions/BerthRateRecordRequestVO"
             }
           }
         ],
@@ -1899,8 +1899,8 @@
             "description": "berthRateRecordRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/BerthRateRecordRequestVO",
-              "originalRef": "BerthRateRecordRequestVO"
+              "originalRef": "BerthRateRecordRequestVO",
+              "$ref": "#/definitions/BerthRateRecordRequestVO"
             }
           }
         ],
@@ -1952,8 +1952,8 @@
             "description": "carInOutPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutPageRequestVO对象",
-              "originalRef": "CarInOutPageRequestVO对象"
+              "originalRef": "CarInOutPageRequestVO对象",
+              "$ref": "#/definitions/CarInOutPageRequestVO对象"
             }
           }
         ],
@@ -1996,8 +1996,8 @@
             "description": "carInOutPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutPageRequestVO对象",
-              "originalRef": "CarInOutPageRequestVO对象"
+              "originalRef": "CarInOutPageRequestVO对象",
+              "$ref": "#/definitions/CarInOutPageRequestVO对象"
             }
           }
         ],
@@ -2005,8 +2005,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«CarInOutResponseVO对象»",
-              "originalRef": "PageResultVO«CarInOutResponseVO对象»"
+              "originalRef": "PageResultVO«CarInOutResponseVO对象»",
+              "$ref": "#/definitions/PageResultVO«CarInOutResponseVO对象»"
             }
           },
           "201": {
@@ -2044,8 +2044,8 @@
             "description": "carInOutStatisticsReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutStatisticsReqVO",
-              "originalRef": "CarInOutStatisticsReqVO"
+              "originalRef": "CarInOutStatisticsReqVO",
+              "$ref": "#/definitions/CarInOutStatisticsReqVO"
             }
           }
         ],
@@ -2088,8 +2088,8 @@
             "description": "carInOutStatisticsReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutStatisticsReqVO",
-              "originalRef": "CarInOutStatisticsReqVO"
+              "originalRef": "CarInOutStatisticsReqVO",
+              "$ref": "#/definitions/CarInOutStatisticsReqVO"
             }
           }
         ],
@@ -2132,8 +2132,8 @@
             "description": "carInOutStatisticsReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutStatisticsReqVO",
-              "originalRef": "CarInOutStatisticsReqVO"
+              "originalRef": "CarInOutStatisticsReqVO",
+              "$ref": "#/definitions/CarInOutStatisticsReqVO"
             }
           }
         ],
@@ -2145,8 +2145,8 @@
               "additionalProperties": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/CarInOutStatisticsByFloorDTO",
-                  "originalRef": "CarInOutStatisticsByFloorDTO"
+                  "originalRef": "CarInOutStatisticsByFloorDTO",
+                  "$ref": "#/definitions/CarInOutStatisticsByFloorDTO"
                 }
               }
             }
@@ -2234,8 +2234,8 @@
             "description": "carInOutStatisticsPageReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutStatisticsPageReqVO",
-              "originalRef": "CarInOutStatisticsPageReqVO"
+              "originalRef": "CarInOutStatisticsPageReqVO",
+              "$ref": "#/definitions/CarInOutStatisticsPageReqVO"
             }
           }
         ],
@@ -2243,8 +2243,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«CarInOutStatisticsRespVO»",
-              "originalRef": "PageResultVO«CarInOutStatisticsRespVO»"
+              "originalRef": "PageResultVO«CarInOutStatisticsRespVO»",
+              "$ref": "#/definitions/PageResultVO«CarInOutStatisticsRespVO»"
             }
           },
           "201": {
@@ -2282,8 +2282,8 @@
             "description": "carInOutStatisticsReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutStatisticsReqVO",
-              "originalRef": "CarInOutStatisticsReqVO"
+              "originalRef": "CarInOutStatisticsReqVO",
+              "$ref": "#/definitions/CarInOutStatisticsReqVO"
             }
           }
         ],
@@ -2293,8 +2293,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/CarInOutStatistics对象",
-                "originalRef": "CarInOutStatistics对象"
+                "originalRef": "CarInOutStatistics对象",
+                "$ref": "#/definitions/CarInOutStatistics对象"
               }
             }
           },
@@ -2333,8 +2333,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CarInOutRecordAreaPageRequestVO",
-              "originalRef": "CarInOutRecordAreaPageRequestVO"
+              "originalRef": "CarInOutRecordAreaPageRequestVO",
+              "$ref": "#/definitions/CarInOutRecordAreaPageRequestVO"
             }
           }
         ],
@@ -2342,8 +2342,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«CarInOutRecordAreaResponseVO»",
-              "originalRef": "PageResultVO«CarInOutRecordAreaResponseVO»"
+              "originalRef": "PageResultVO«CarInOutRecordAreaResponseVO»",
+              "$ref": "#/definitions/PageResultVO«CarInOutRecordAreaResponseVO»"
             }
           },
           "201": {
@@ -2383,8 +2383,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ColorTransparencyStylesAddRequestVO对象",
-                "originalRef": "ColorTransparencyStylesAddRequestVO对象"
+                "originalRef": "ColorTransparencyStylesAddRequestVO对象",
+                "$ref": "#/definitions/ColorTransparencyStylesAddRequestVO对象"
               }
             }
           }
@@ -2535,8 +2535,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementResponseVO",
-              "originalRef": "ElementResponseVO"
+              "originalRef": "ElementResponseVO",
+              "$ref": "#/definitions/ElementResponseVO"
             }
           },
           "401": {
@@ -2615,8 +2615,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -2624,8 +2624,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»",
-              "originalRef": "PageResultVO«ElementInfoDTO»"
+              "originalRef": "PageResultVO«ElementInfoDTO»",
+              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»"
             }
           },
           "201": {
@@ -2663,8 +2663,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementRequestVO",
-              "originalRef": "ElementRequestVO"
+              "originalRef": "ElementRequestVO",
+              "$ref": "#/definitions/ElementRequestVO"
             }
           }
         ],
@@ -2701,8 +2701,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/IniConfig对象0",
-              "originalRef": "IniConfig对象0"
+              "originalRef": "IniConfig对象0",
+              "$ref": "#/definitions/IniConfig对象0"
             }
           },
           "401": {
@@ -2731,8 +2731,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/RegistIdentlibResp对象",
-              "originalRef": "RegistIdentlibResp对象"
+              "originalRef": "RegistIdentlibResp对象",
+              "$ref": "#/definitions/RegistIdentlibResp对象"
             }
           },
           "401": {
@@ -2802,8 +2802,8 @@
             "description": "iniConfigReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/IniConfig对象",
-              "originalRef": "IniConfig对象"
+              "originalRef": "IniConfig对象",
+              "$ref": "#/definitions/IniConfig对象"
             }
           }
         ],
@@ -2945,8 +2945,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/接口返回统一对象«int»",
-              "originalRef": "接口返回统一对象«int»"
+              "originalRef": "接口返回统一对象«int»",
+              "$ref": "#/definitions/接口返回统一对象«int»"
             }
           },
           "401": {
@@ -2981,8 +2981,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementQueryVO",
-              "originalRef": "ElementQueryVO"
+              "originalRef": "ElementQueryVO",
+              "$ref": "#/definitions/ElementQueryVO"
             }
           }
         ],
@@ -2992,8 +2992,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementQueryResponseVO",
-                "originalRef": "ElementQueryResponseVO"
+                "originalRef": "ElementQueryResponseVO",
+                "$ref": "#/definitions/ElementQueryResponseVO"
               }
             }
           },
@@ -3032,8 +3032,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/QuickQueryReqVO",
-              "originalRef": "QuickQueryReqVO"
+              "originalRef": "QuickQueryReqVO",
+              "$ref": "#/definitions/QuickQueryReqVO"
             }
           }
         ],
@@ -3043,8 +3043,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/QuickQueryResponseVO",
-                "originalRef": "QuickQueryResponseVO"
+                "originalRef": "QuickQueryResponseVO",
+                "$ref": "#/definitions/QuickQueryResponseVO"
               }
             }
           },
@@ -3104,8 +3104,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -3172,8 +3172,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -3232,8 +3232,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -3292,8 +3292,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -3331,8 +3331,8 @@
             "description": "pageParamVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PageParamVO",
-              "originalRef": "PageParamVO"
+              "originalRef": "PageParamVO",
+              "$ref": "#/definitions/PageParamVO"
             }
           }
         ],
@@ -3340,8 +3340,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«设备上报返回信息»",
-              "originalRef": "PageResultVO«设备上报返回信息»"
+              "originalRef": "PageResultVO«设备上报返回信息»",
+              "$ref": "#/definitions/PageResultVO«设备上报返回信息»"
             }
           },
           "201": {
@@ -3379,8 +3379,8 @@
             "description": "deviceEscalationRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/设备信息上报查询参数",
-              "originalRef": "设备信息上报查询参数"
+              "originalRef": "设备信息上报查询参数",
+              "$ref": "#/definitions/设备信息上报查询参数"
             }
           }
         ],
@@ -3388,8 +3388,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«设备上报返回信息»",
-              "originalRef": "PageResultVO«设备上报返回信息»"
+              "originalRef": "PageResultVO«设备上报返回信息»",
+              "$ref": "#/definitions/PageResultVO«设备上报返回信息»"
             }
           },
           "201": {
@@ -3491,8 +3491,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/设备状态分页查询参数实体",
-              "originalRef": "设备状态分页查询参数实体"
+              "originalRef": "设备状态分页查询参数实体",
+              "$ref": "#/definitions/设备状态分页查询参数实体"
             }
           }
         ],
@@ -3563,8 +3563,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/DeviceInfoDTO",
-                "originalRef": "DeviceInfoDTO"
+                "originalRef": "DeviceInfoDTO",
+                "$ref": "#/definitions/DeviceInfoDTO"
               }
             }
           },
@@ -3640,8 +3640,8 @@
             "description": "addNodeDeviceParam",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddNodeDeviceParamVO",
-              "originalRef": "AddNodeDeviceParamVO"
+              "originalRef": "AddNodeDeviceParamVO",
+              "$ref": "#/definitions/AddNodeDeviceParamVO"
             }
           }
         ],
@@ -3687,8 +3687,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/DeviceEventPageRequestVO",
-              "originalRef": "DeviceEventPageRequestVO"
+              "originalRef": "DeviceEventPageRequestVO",
+              "$ref": "#/definitions/DeviceEventPageRequestVO"
             }
           }
         ],
@@ -3696,8 +3696,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«DeviceEventResponseVO»",
-              "originalRef": "PageResultVO«DeviceEventResponseVO»"
+              "originalRef": "PageResultVO«DeviceEventResponseVO»",
+              "$ref": "#/definitions/PageResultVO«DeviceEventResponseVO»"
             }
           },
           "201": {
@@ -3735,8 +3735,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/设备状态分页查询参数实体",
-              "originalRef": "设备状态分页查询参数实体"
+              "originalRef": "设备状态分页查询参数实体",
+              "$ref": "#/definitions/设备状态分页查询参数实体"
             }
           }
         ],
@@ -3744,8 +3744,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«设备分页查询响应实体»",
-              "originalRef": "PageResultVO«设备分页查询响应实体»"
+              "originalRef": "PageResultVO«设备分页查询响应实体»",
+              "$ref": "#/definitions/PageResultVO«设备分页查询响应实体»"
             }
           },
           "201": {
@@ -3783,8 +3783,8 @@
             "description": "addNodeDeviceParam",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddNodeDeviceParamVO",
-              "originalRef": "AddNodeDeviceParamVO"
+              "originalRef": "AddNodeDeviceParamVO",
+              "$ref": "#/definitions/AddNodeDeviceParamVO"
             }
           }
         ],
@@ -3850,8 +3850,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -3957,8 +3957,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementConnectorResponseVO",
-              "originalRef": "ElementConnectorResponseVO"
+              "originalRef": "ElementConnectorResponseVO",
+              "$ref": "#/definitions/ElementConnectorResponseVO"
             }
           },
           "401": {
@@ -4045,8 +4045,8 @@
             "description": "elementConnectorAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementConnectorAddRequestVO",
-              "originalRef": "ElementConnectorAddRequestVO"
+              "originalRef": "ElementConnectorAddRequestVO",
+              "$ref": "#/definitions/ElementConnectorAddRequestVO"
             }
           }
         ],
@@ -4099,8 +4099,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementConnectorJointNameResponseVO",
-                "originalRef": "ElementConnectorJointNameResponseVO"
+                "originalRef": "ElementConnectorJointNameResponseVO",
+                "$ref": "#/definitions/ElementConnectorJointNameResponseVO"
               }
             }
           },
@@ -4150,8 +4150,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementConnectorResponseVO",
-                "originalRef": "ElementConnectorResponseVO"
+                "originalRef": "ElementConnectorResponseVO",
+                "$ref": "#/definitions/ElementConnectorResponseVO"
               }
             }
           },
@@ -4187,8 +4187,8 @@
             "description": "elementConnectorPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementConnectorPageRequestVO",
-              "originalRef": "ElementConnectorPageRequestVO"
+              "originalRef": "ElementConnectorPageRequestVO",
+              "$ref": "#/definitions/ElementConnectorPageRequestVO"
             }
           }
         ],
@@ -4196,8 +4196,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementConnectorResponseVO»",
-              "originalRef": "PageResultVO«ElementConnectorResponseVO»"
+              "originalRef": "PageResultVO«ElementConnectorResponseVO»",
+              "$ref": "#/definitions/PageResultVO«ElementConnectorResponseVO»"
             }
           },
           "201": {
@@ -4235,8 +4235,8 @@
             "description": "elementConnectorEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementConnectorEditRequestVO",
-              "originalRef": "ElementConnectorEditRequestVO"
+              "originalRef": "ElementConnectorEditRequestVO",
+              "$ref": "#/definitions/ElementConnectorEditRequestVO"
             }
           }
         ],
@@ -4279,8 +4279,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddBatchCustomElementDTO",
-              "originalRef": "AddBatchCustomElementDTO"
+              "originalRef": "AddBatchCustomElementDTO",
+              "$ref": "#/definitions/AddBatchCustomElementDTO"
             }
           }
         ],
@@ -4402,8 +4402,8 @@
             "description": "elementRequestParamVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -4530,8 +4530,8 @@
             "description": "elementCustomDetailAddReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementCustomDetailAddReqVO",
-              "originalRef": "ElementCustomDetailAddReqVO"
+              "originalRef": "ElementCustomDetailAddReqVO",
+              "$ref": "#/definitions/ElementCustomDetailAddReqVO"
             }
           }
         ],
@@ -4574,8 +4574,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -4583,8 +4583,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»",
-              "originalRef": "PageResultVO«ElementInfoDTO»"
+              "originalRef": "PageResultVO«ElementInfoDTO»",
+              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»"
             }
           },
           "201": {
@@ -4622,8 +4622,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -4631,8 +4631,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»",
-              "originalRef": "PageResultVO«ElementInfoDTO»"
+              "originalRef": "PageResultVO«ElementInfoDTO»",
+              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»"
             }
           },
           "201": {
@@ -4670,8 +4670,8 @@
             "description": "elementCustomDetailEditReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementCustomDetailEditReqVO",
-              "originalRef": "ElementCustomDetailEditReqVO"
+              "originalRef": "ElementCustomDetailEditReqVO",
+              "$ref": "#/definitions/ElementCustomDetailEditReqVO"
             }
           }
         ],
@@ -4750,8 +4750,8 @@
             "description": "elementCustomEditReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementCustomEditReqVO",
-              "originalRef": "ElementCustomEditReqVO"
+              "originalRef": "ElementCustomEditReqVO",
+              "$ref": "#/definitions/ElementCustomEditReqVO"
             }
           }
         ],
@@ -4794,8 +4794,8 @@
             "description": "elementCustomAddReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementCustomAddReqVO",
-              "originalRef": "ElementCustomAddReqVO"
+              "originalRef": "ElementCustomAddReqVO",
+              "$ref": "#/definitions/ElementCustomAddReqVO"
             }
           }
         ],
@@ -4838,8 +4838,8 @@
             "description": "elementCustomReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementCustomReqVO",
-              "originalRef": "ElementCustomReqVO"
+              "originalRef": "ElementCustomReqVO",
+              "$ref": "#/definitions/ElementCustomReqVO"
             }
           }
         ],
@@ -4849,8 +4849,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementCustomRespVO",
-                "originalRef": "ElementCustomRespVO"
+                "originalRef": "ElementCustomRespVO",
+                "$ref": "#/definitions/ElementCustomRespVO"
               }
             }
           },
@@ -4889,8 +4889,8 @@
             "description": "elementCustomReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementCustomReqVO",
-              "originalRef": "ElementCustomReqVO"
+              "originalRef": "ElementCustomReqVO",
+              "$ref": "#/definitions/ElementCustomReqVO"
             }
           }
         ],
@@ -4902,8 +4902,8 @@
               "additionalProperties": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/ElementCustomDTO",
-                  "originalRef": "ElementCustomDTO"
+                  "originalRef": "ElementCustomDTO",
+                  "$ref": "#/definitions/ElementCustomDTO"
                 }
               }
             }
@@ -4978,8 +4978,8 @@
             "description": "elementMachineRouteConfigRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementMachineRouteConfigRequestVO对象",
-              "originalRef": "ElementMachineRouteConfigRequestVO对象"
+              "originalRef": "ElementMachineRouteConfigRequestVO对象",
+              "$ref": "#/definitions/ElementMachineRouteConfigRequestVO对象"
             }
           }
         ],
@@ -5018,8 +5018,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementMachineRouteConfigResponseVO对象",
-                "originalRef": "ElementMachineRouteConfigResponseVO对象"
+                "originalRef": "ElementMachineRouteConfigResponseVO对象",
+                "$ref": "#/definitions/ElementMachineRouteConfigResponseVO对象"
               }
             }
           },
@@ -5049,8 +5049,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementMachineConfigResponseVO对象",
-              "originalRef": "ElementMachineConfigResponseVO对象"
+              "originalRef": "ElementMachineConfigResponseVO对象",
+              "$ref": "#/definitions/ElementMachineConfigResponseVO对象"
             }
           },
           "401": {
@@ -5085,8 +5085,8 @@
             "description": "elementMachineRouteConfigRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementMachineRouteConfigRequestVO对象",
-              "originalRef": "ElementMachineRouteConfigRequestVO对象"
+              "originalRef": "ElementMachineRouteConfigRequestVO对象",
+              "$ref": "#/definitions/ElementMachineRouteConfigRequestVO对象"
             }
           }
         ],
@@ -5133,8 +5133,8 @@
             "description": "elementMachineConfigRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementMachineConfigRequestVO对象",
-              "originalRef": "ElementMachineConfigRequestVO对象"
+              "originalRef": "ElementMachineConfigRequestVO对象",
+              "$ref": "#/definitions/ElementMachineConfigRequestVO对象"
             }
           }
         ],
@@ -5284,8 +5284,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementMachineResponseVO",
-              "originalRef": "ElementMachineResponseVO"
+              "originalRef": "ElementMachineResponseVO",
+              "$ref": "#/definitions/ElementMachineResponseVO"
             }
           },
           "401": {
@@ -5372,8 +5372,8 @@
             "description": "elementMachineAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementMachineAddRequestVO",
-              "originalRef": "ElementMachineAddRequestVO"
+              "originalRef": "ElementMachineAddRequestVO",
+              "$ref": "#/definitions/ElementMachineAddRequestVO"
             }
           }
         ],
@@ -5467,8 +5467,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementMachineResponseVO",
-                "originalRef": "ElementMachineResponseVO"
+                "originalRef": "ElementMachineResponseVO",
+                "$ref": "#/definitions/ElementMachineResponseVO"
               }
             }
           },
@@ -5504,8 +5504,8 @@
             "description": "elementMachinePageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementMachinePageRequestVO",
-              "originalRef": "ElementMachinePageRequestVO"
+              "originalRef": "ElementMachinePageRequestVO",
+              "$ref": "#/definitions/ElementMachinePageRequestVO"
             }
           }
         ],
@@ -5513,8 +5513,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementMachineResponseVO»",
-              "originalRef": "PageResultVO«ElementMachineResponseVO»"
+              "originalRef": "PageResultVO«ElementMachineResponseVO»",
+              "$ref": "#/definitions/PageResultVO«ElementMachineResponseVO»"
             }
           },
           "201": {
@@ -5552,8 +5552,8 @@
             "description": "elementMachineEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementMachineEditRequestVO",
-              "originalRef": "ElementMachineEditRequestVO"
+              "originalRef": "ElementMachineEditRequestVO",
+              "$ref": "#/definitions/ElementMachineEditRequestVO"
             }
           }
         ],
@@ -5640,8 +5640,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/接口返回统一对象«ElementPathDTO»",
-              "originalRef": "接口返回统一对象«ElementPathDTO»"
+              "originalRef": "接口返回统一对象«ElementPathDTO»",
+              "$ref": "#/definitions/接口返回统一对象«ElementPathDTO»"
             }
           },
           "401": {
@@ -5720,8 +5720,8 @@
             "description": "elementPathRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementPathRequestVO",
-              "originalRef": "ElementPathRequestVO"
+              "originalRef": "ElementPathRequestVO",
+              "$ref": "#/definitions/ElementPathRequestVO"
             }
           }
         ],
@@ -5874,8 +5874,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementScreenResponseVO对象",
-              "originalRef": "ElementScreenResponseVO对象"
+              "originalRef": "ElementScreenResponseVO对象",
+              "$ref": "#/definitions/ElementScreenResponseVO对象"
             }
           },
           "401": {
@@ -5914,8 +5914,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementScreenAndLcdConfigRespVO",
-              "originalRef": "ElementScreenAndLcdConfigRespVO"
+              "originalRef": "ElementScreenAndLcdConfigRespVO",
+              "$ref": "#/definitions/ElementScreenAndLcdConfigRespVO"
             }
           },
           "401": {
@@ -5953,8 +5953,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementScreenAndLcdConfigRespVO",
-              "originalRef": "ElementScreenAndLcdConfigRespVO"
+              "originalRef": "ElementScreenAndLcdConfigRespVO",
+              "$ref": "#/definitions/ElementScreenAndLcdConfigRespVO"
             }
           },
           "401": {
@@ -6000,8 +6000,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementScreenOfLcdH5RespVO",
-              "originalRef": "ElementScreenOfLcdH5RespVO"
+              "originalRef": "ElementScreenOfLcdH5RespVO",
+              "$ref": "#/definitions/ElementScreenOfLcdH5RespVO"
             }
           },
           "401": {
@@ -6036,8 +6036,8 @@
             "description": "elementScreenAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreenAddRequestVO对象",
-              "originalRef": "ElementScreenAddRequestVO对象"
+              "originalRef": "ElementScreenAddRequestVO对象",
+              "$ref": "#/definitions/ElementScreenAddRequestVO对象"
             }
           }
         ],
@@ -6120,8 +6120,8 @@
             "description": "elementScreenEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreenEditRequestVO对象",
-              "originalRef": "ElementScreenEditRequestVO对象"
+              "originalRef": "ElementScreenEditRequestVO对象",
+              "$ref": "#/definitions/ElementScreenEditRequestVO对象"
             }
           }
         ],
@@ -6164,8 +6164,8 @@
             "description": "elementScreenAndLcdConfigReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreen对象0",
-              "originalRef": "ElementScreen对象0"
+              "originalRef": "ElementScreen对象0",
+              "$ref": "#/definitions/ElementScreen对象0"
             }
           }
         ],
@@ -6222,8 +6222,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenResponseVO对象",
-                "originalRef": "ElementScreenResponseVO对象"
+                "originalRef": "ElementScreenResponseVO对象",
+                "$ref": "#/definitions/ElementScreenResponseVO对象"
               }
             }
           },
@@ -6259,8 +6259,8 @@
             "description": "elementScreenPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreenPageRequestVO对象",
-              "originalRef": "ElementScreenPageRequestVO对象"
+              "originalRef": "ElementScreenPageRequestVO对象",
+              "$ref": "#/definitions/ElementScreenPageRequestVO对象"
             }
           }
         ],
@@ -6268,8 +6268,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementScreenResponseVO对象»",
-              "originalRef": "PageResultVO«ElementScreenResponseVO对象»"
+              "originalRef": "PageResultVO«ElementScreenResponseVO对象»",
+              "$ref": "#/definitions/PageResultVO«ElementScreenResponseVO对象»"
             }
           },
           "201": {
@@ -6307,8 +6307,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreenPageRequestVO对象",
-              "originalRef": "ElementScreenPageRequestVO对象"
+              "originalRef": "ElementScreenPageRequestVO对象",
+              "$ref": "#/definitions/ElementScreenPageRequestVO对象"
             }
           }
         ],
@@ -6316,8 +6316,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementScreen对象»",
-              "originalRef": "PageResultVO«ElementScreen对象»"
+              "originalRef": "PageResultVO«ElementScreen对象»",
+              "$ref": "#/definitions/PageResultVO«ElementScreen对象»"
             }
           },
           "201": {
@@ -6355,8 +6355,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LcdSocketMessageVO",
-              "originalRef": "LcdSocketMessageVO"
+              "originalRef": "LcdSocketMessageVO",
+              "$ref": "#/definitions/LcdSocketMessageVO"
             }
           }
         ],
@@ -6399,8 +6399,8 @@
             "description": "elementScreenEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreenEditRequestVO对象",
-              "originalRef": "ElementScreenEditRequestVO对象"
+              "originalRef": "ElementScreenEditRequestVO对象",
+              "$ref": "#/definitions/ElementScreenEditRequestVO对象"
             }
           }
         ],
@@ -6487,8 +6487,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementModelVO",
-              "originalRef": "ElementModelVO"
+              "originalRef": "ElementModelVO",
+              "$ref": "#/definitions/ElementModelVO"
             }
           },
           "401": {
@@ -6523,8 +6523,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementModelVO",
-              "originalRef": "ElementModelVO"
+              "originalRef": "ElementModelVO",
+              "$ref": "#/definitions/ElementModelVO"
             }
           }
         ],
@@ -6532,8 +6532,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementModelVO",
-              "originalRef": "ElementModelVO"
+              "originalRef": "ElementModelVO",
+              "$ref": "#/definitions/ElementModelVO"
             }
           },
           "201": {
@@ -6585,8 +6585,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementModelVO",
-                "originalRef": "ElementModelVO"
+                "originalRef": "ElementModelVO",
+                "$ref": "#/definitions/ElementModelVO"
               }
             }
           },
@@ -6622,8 +6622,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementModelVO",
-              "originalRef": "ElementModelVO"
+              "originalRef": "ElementModelVO",
+              "$ref": "#/definitions/ElementModelVO"
             }
           }
         ],
@@ -6737,8 +6737,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementBeaconReqVO",
-              "originalRef": "ElementBeaconReqVO"
+              "originalRef": "ElementBeaconReqVO",
+              "$ref": "#/definitions/ElementBeaconReqVO"
             }
           }
         ],
@@ -6787,8 +6787,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/LotBeaconResponseVO",
-                "originalRef": "LotBeaconResponseVO"
+                "originalRef": "LotBeaconResponseVO",
+                "$ref": "#/definitions/LotBeaconResponseVO"
               }
             }
           },
@@ -6828,8 +6828,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementBeaconResponseVO",
-              "originalRef": "ElementBeaconResponseVO"
+              "originalRef": "ElementBeaconResponseVO",
+              "$ref": "#/definitions/ElementBeaconResponseVO"
             }
           },
           "401": {
@@ -6885,8 +6885,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -6945,8 +6945,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -7057,8 +7057,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -7096,8 +7096,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementBeaconRequestVO",
-              "originalRef": "ElementBeaconRequestVO"
+              "originalRef": "ElementBeaconRequestVO",
+              "$ref": "#/definitions/ElementBeaconRequestVO"
             }
           }
         ],
@@ -7105,8 +7105,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/接口返回统一对象«int»",
-              "originalRef": "接口返回统一对象«int»"
+              "originalRef": "接口返回统一对象«int»",
+              "$ref": "#/definitions/接口返回统一对象«int»"
             }
           },
           "201": {
@@ -7165,8 +7165,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/接口返回统一对象«int»",
-              "originalRef": "接口返回统一对象«int»"
+              "originalRef": "接口返回统一对象«int»",
+              "$ref": "#/definitions/接口返回统一对象«int»"
             }
           },
           "201": {
@@ -7218,8 +7218,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementBeaconResponseVO",
-                "originalRef": "ElementBeaconResponseVO"
+                "originalRef": "ElementBeaconResponseVO",
+                "$ref": "#/definitions/ElementBeaconResponseVO"
               }
             }
           },
@@ -7255,8 +7255,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementBeaconPageRequestVO",
-              "originalRef": "ElementBeaconPageRequestVO"
+              "originalRef": "ElementBeaconPageRequestVO",
+              "$ref": "#/definitions/ElementBeaconPageRequestVO"
             }
           }
         ],
@@ -7264,8 +7264,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementBeaconResponseVO»",
-              "originalRef": "PageResultVO«ElementBeaconResponseVO»"
+              "originalRef": "PageResultVO«ElementBeaconResponseVO»",
+              "$ref": "#/definitions/PageResultVO«ElementBeaconResponseVO»"
             }
           },
           "201": {
@@ -7303,8 +7303,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementBeaconRequestVO",
-              "originalRef": "ElementBeaconRequestVO"
+              "originalRef": "ElementBeaconRequestVO",
+              "$ref": "#/definitions/ElementBeaconRequestVO"
             }
           }
         ],
@@ -7347,8 +7347,8 @@
             "description": "elementImpassablePathRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementImpassablePathRequestVO",
-              "originalRef": "ElementImpassablePathRequestVO"
+              "originalRef": "ElementImpassablePathRequestVO",
+              "$ref": "#/definitions/ElementImpassablePathRequestVO"
             }
           }
         ],
@@ -7518,8 +7518,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementImpassablePathDTO",
-              "originalRef": "ElementImpassablePathDTO"
+              "originalRef": "ElementImpassablePathDTO",
+              "$ref": "#/definitions/ElementImpassablePathDTO"
             }
           },
           "401": {
@@ -7598,8 +7598,8 @@
             "description": "elementImpassablePathRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementImpassablePathRequestVO",
-              "originalRef": "ElementImpassablePathRequestVO"
+              "originalRef": "ElementImpassablePathRequestVO",
+              "$ref": "#/definitions/ElementImpassablePathRequestVO"
             }
           }
         ],
@@ -7652,8 +7652,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/NewImpassablePathDTO",
-                "originalRef": "NewImpassablePathDTO"
+                "originalRef": "NewImpassablePathDTO",
+                "$ref": "#/definitions/NewImpassablePathDTO"
               }
             }
           },
@@ -7685,8 +7685,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenChildByFloorIdResponseVO",
-                "originalRef": "ElementScreenChildByFloorIdResponseVO"
+                "originalRef": "ElementScreenChildByFloorIdResponseVO",
+                "$ref": "#/definitions/ElementScreenChildByFloorIdResponseVO"
               }
             }
           },
@@ -7728,8 +7728,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenChildByFloorIdResponseVO",
-                "originalRef": "ElementScreenChildByFloorIdResponseVO"
+                "originalRef": "ElementScreenChildByFloorIdResponseVO",
+                "$ref": "#/definitions/ElementScreenChildByFloorIdResponseVO"
               }
             }
           },
@@ -7769,8 +7769,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementScreenChildResponseVO",
-              "originalRef": "ElementScreenChildResponseVO"
+              "originalRef": "ElementScreenChildResponseVO",
+              "$ref": "#/definitions/ElementScreenChildResponseVO"
             }
           },
           "401": {
@@ -7811,8 +7811,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenChildCollectionResponseVO",
-                "originalRef": "ElementScreenChildCollectionResponseVO"
+                "originalRef": "ElementScreenChildCollectionResponseVO",
+                "$ref": "#/definitions/ElementScreenChildCollectionResponseVO"
               }
             }
           },
@@ -7854,8 +7854,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenChildOptionRespVO",
-                "originalRef": "ElementScreenChildOptionRespVO"
+                "originalRef": "ElementScreenChildOptionRespVO",
+                "$ref": "#/definitions/ElementScreenChildOptionRespVO"
               }
             }
           },
@@ -7891,8 +7891,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementScreenChildRequestVO",
-              "originalRef": "ElementScreenChildRequestVO"
+              "originalRef": "ElementScreenChildRequestVO",
+              "$ref": "#/definitions/ElementScreenChildRequestVO"
             }
           }
         ],
@@ -7937,8 +7937,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenChildRequestVO",
-                "originalRef": "ElementScreenChildRequestVO"
+                "originalRef": "ElementScreenChildRequestVO",
+                "$ref": "#/definitions/ElementScreenChildRequestVO"
               }
             }
           }
@@ -8031,8 +8031,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ParkSelectedDOInfo",
-                "originalRef": "ParkSelectedDOInfo"
+                "originalRef": "ParkSelectedDOInfo",
+                "$ref": "#/definitions/ParkSelectedDOInfo"
               }
             }
           },
@@ -8068,8 +8068,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UpdateScreenParkRequestVO",
-              "originalRef": "UpdateScreenParkRequestVO"
+              "originalRef": "UpdateScreenParkRequestVO",
+              "$ref": "#/definitions/UpdateScreenParkRequestVO"
             }
           }
         ],
@@ -8176,8 +8176,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/FloorInfoSynchronizationRequestVO",
-                "originalRef": "FloorInfoSynchronizationRequestVO"
+                "originalRef": "FloorInfoSynchronizationRequestVO",
+                "$ref": "#/definitions/FloorInfoSynchronizationRequestVO"
               }
             }
           }
@@ -8225,8 +8225,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FloorInfoResponseVO",
-              "originalRef": "FloorInfoResponseVO"
+              "originalRef": "FloorInfoResponseVO",
+              "$ref": "#/definitions/FloorInfoResponseVO"
             }
           },
           "401": {
@@ -8261,8 +8261,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/FloorInfoAddRequestVO",
-              "originalRef": "FloorInfoAddRequestVO"
+              "originalRef": "FloorInfoAddRequestVO",
+              "$ref": "#/definitions/FloorInfoAddRequestVO"
             }
           }
         ],
@@ -8310,8 +8310,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/FloorInfoResponseVO",
-                "originalRef": "FloorInfoResponseVO"
+                "originalRef": "FloorInfoResponseVO",
+                "$ref": "#/definitions/FloorInfoResponseVO"
               }
             }
           },
@@ -8347,8 +8347,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/FloorInfoPageRequestVO",
-              "originalRef": "FloorInfoPageRequestVO"
+              "originalRef": "FloorInfoPageRequestVO",
+              "$ref": "#/definitions/FloorInfoPageRequestVO"
             }
           }
         ],
@@ -8356,8 +8356,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«FloorInfoResponseVO»",
-              "originalRef": "PageResultVO«FloorInfoResponseVO»"
+              "originalRef": "PageResultVO«FloorInfoResponseVO»",
+              "$ref": "#/definitions/PageResultVO«FloorInfoResponseVO»"
             }
           },
           "201": {
@@ -8395,8 +8395,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/FloorInfoEditRequestVO",
-              "originalRef": "FloorInfoEditRequestVO"
+              "originalRef": "FloorInfoEditRequestVO",
+              "$ref": "#/definitions/FloorInfoEditRequestVO"
             }
           }
         ],
@@ -8439,8 +8439,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/FloorInfoUpdateScrollRatioReqVO",
-              "originalRef": "FloorInfoUpdateScrollRatioReqVO"
+              "originalRef": "FloorInfoUpdateScrollRatioReqVO",
+              "$ref": "#/definitions/FloorInfoUpdateScrollRatioReqVO"
             }
           }
         ],
@@ -8479,8 +8479,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/通用信息配置参数表",
-                "originalRef": "通用信息配置参数表"
+                "originalRef": "通用信息配置参数表",
+                "$ref": "#/definitions/通用信息配置参数表"
               }
             }
           },
@@ -8519,8 +8519,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/GeneralConfigResponseVO",
-              "originalRef": "GeneralConfigResponseVO"
+              "originalRef": "GeneralConfigResponseVO",
+              "$ref": "#/definitions/GeneralConfigResponseVO"
             }
           },
           "401": {
@@ -8555,8 +8555,8 @@
             "description": "generalConfigDTO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/通用信息配置参数表",
-              "originalRef": "通用信息配置参数表"
+              "originalRef": "通用信息配置参数表",
+              "$ref": "#/definitions/通用信息配置参数表"
             }
           }
         ],
@@ -8599,8 +8599,8 @@
             "description": "generalConfigDTO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/通用信息配置参数表",
-              "originalRef": "通用信息配置参数表"
+              "originalRef": "通用信息配置参数表",
+              "$ref": "#/definitions/通用信息配置参数表"
             }
           }
         ],
@@ -8643,8 +8643,8 @@
             "description": "generalConfigVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GeneralConfigRequestVO",
-              "originalRef": "GeneralConfigRequestVO"
+              "originalRef": "GeneralConfigRequestVO",
+              "$ref": "#/definitions/GeneralConfigRequestVO"
             }
           }
         ],
@@ -8794,8 +8794,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementResponseVO",
-              "originalRef": "ElementResponseVO"
+              "originalRef": "ElementResponseVO",
+              "$ref": "#/definitions/ElementResponseVO"
             }
           },
           "401": {
@@ -8874,8 +8874,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -8883,8 +8883,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»",
-              "originalRef": "PageResultVO«ElementInfoDTO»"
+              "originalRef": "PageResultVO«ElementInfoDTO»",
+              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»"
             }
           },
           "201": {
@@ -8922,8 +8922,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementRequestVO",
-              "originalRef": "ElementRequestVO"
+              "originalRef": "ElementRequestVO",
+              "$ref": "#/definitions/ElementRequestVO"
             }
           }
         ],
@@ -8966,8 +8966,8 @@
             "description": "updateGroundCoordinate",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/重新生成地面坐标信息",
-              "originalRef": "重新生成地面坐标信息"
+              "originalRef": "重新生成地面坐标信息",
+              "$ref": "#/definitions/重新生成地面坐标信息"
             }
           }
         ],
@@ -9036,8 +9036,8 @@
             "description": "imageStylesAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ImageStylesAddRequestVO对象",
-              "originalRef": "ImageStylesAddRequestVO对象"
+              "originalRef": "ImageStylesAddRequestVO对象",
+              "$ref": "#/definitions/ImageStylesAddRequestVO对象"
             }
           }
         ],
@@ -9080,8 +9080,8 @@
             "description": "imageStylesEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ImageStylesEditRequestVO对象",
-              "originalRef": "ImageStylesEditRequestVO对象"
+              "originalRef": "ImageStylesEditRequestVO对象",
+              "$ref": "#/definitions/ImageStylesEditRequestVO对象"
             }
           }
         ],
@@ -9238,8 +9238,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -9278,8 +9278,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/InternationalizationResponseVO",
-              "originalRef": "InternationalizationResponseVO"
+              "originalRef": "InternationalizationResponseVO",
+              "$ref": "#/definitions/InternationalizationResponseVO"
             }
           },
           "401": {
@@ -9314,8 +9314,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InternationalizationRequestVO",
-              "originalRef": "InternationalizationRequestVO"
+              "originalRef": "InternationalizationRequestVO",
+              "$ref": "#/definitions/InternationalizationRequestVO"
             }
           }
         ],
@@ -9390,8 +9390,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InternationalizationPageRequestVO",
-              "originalRef": "InternationalizationPageRequestVO"
+              "originalRef": "InternationalizationPageRequestVO",
+              "$ref": "#/definitions/InternationalizationPageRequestVO"
             }
           }
         ],
@@ -9399,8 +9399,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«InternationalizationResponseVO»",
-              "originalRef": "PageResultVO«InternationalizationResponseVO»"
+              "originalRef": "PageResultVO«InternationalizationResponseVO»",
+              "$ref": "#/definitions/PageResultVO«InternationalizationResponseVO»"
             }
           },
           "201": {
@@ -9438,8 +9438,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InternationalizationRequestVO",
-              "originalRef": "InternationalizationRequestVO"
+              "originalRef": "InternationalizationRequestVO",
+              "$ref": "#/definitions/InternationalizationRequestVO"
             }
           }
         ],
@@ -9602,8 +9602,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/InternationalizationRelationResponseVO",
-              "originalRef": "InternationalizationRelationResponseVO"
+              "originalRef": "InternationalizationRelationResponseVO",
+              "$ref": "#/definitions/InternationalizationRelationResponseVO"
             }
           },
           "401": {
@@ -9632,8 +9632,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«InternationalizationRelationResponseVO»",
-              "originalRef": "PageResultVO«InternationalizationRelationResponseVO»"
+              "originalRef": "PageResultVO«InternationalizationRelationResponseVO»",
+              "$ref": "#/definitions/PageResultVO«InternationalizationRelationResponseVO»"
             }
           },
           "401": {
@@ -9664,8 +9664,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/InternationalizationRelationResponseVO",
-                "originalRef": "InternationalizationRelationResponseVO"
+                "originalRef": "InternationalizationRelationResponseVO",
+                "$ref": "#/definitions/InternationalizationRelationResponseVO"
               }
             }
           },
@@ -9701,8 +9701,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/InternationalizationRelationRequestVO",
-              "originalRef": "InternationalizationRelationRequestVO"
+              "originalRef": "InternationalizationRelationRequestVO",
+              "$ref": "#/definitions/InternationalizationRelationRequestVO"
             }
           }
         ],
@@ -9827,8 +9827,8 @@
             "description": "lcdAdvertisementConfigAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LCD屏广告配置添加参数",
-              "originalRef": "LCD屏广告配置添加参数"
+              "originalRef": "LCD屏广告配置添加参数",
+              "$ref": "#/definitions/LCD屏广告配置添加参数"
             }
           }
         ],
@@ -9875,8 +9875,8 @@
             "description": "lcdAdvertisementConfigPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LCD屏广告配置分页查询参数",
-              "originalRef": "LCD屏广告配置分页查询参数"
+              "originalRef": "LCD屏广告配置分页查询参数",
+              "$ref": "#/definitions/LCD屏广告配置分页查询参数"
             }
           }
         ],
@@ -9884,8 +9884,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«LCD屏广告配置响应»",
-              "originalRef": "PageResultVO«LCD屏广告配置响应»"
+              "originalRef": "PageResultVO«LCD屏广告配置响应»",
+              "$ref": "#/definitions/PageResultVO«LCD屏广告配置响应»"
             }
           },
           "201": {
@@ -9923,8 +9923,8 @@
             "description": "lcdAdvertisementConfigEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LCD屏广告配置编辑参数",
-              "originalRef": "LCD屏广告配置编辑参数"
+              "originalRef": "LCD屏广告配置编辑参数",
+              "$ref": "#/definitions/LCD屏广告配置编辑参数"
             }
           }
         ],
@@ -10002,8 +10002,8 @@
             "description": "lcdAdvertisementSchemeAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LCD屏广告方案添加参数",
-              "originalRef": "LCD屏广告方案添加参数"
+              "originalRef": "LCD屏广告方案添加参数",
+              "$ref": "#/definitions/LCD屏广告方案添加参数"
             }
           }
         ],
@@ -10050,8 +10050,8 @@
             "description": "lcdAdvertisementSchemePageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LCD屏广告方案分页查询参数",
-              "originalRef": "LCD屏广告方案分页查询参数"
+              "originalRef": "LCD屏广告方案分页查询参数",
+              "$ref": "#/definitions/LCD屏广告方案分页查询参数"
             }
           }
         ],
@@ -10059,8 +10059,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«LCD屏广告方案响应»",
-              "originalRef": "PageResultVO«LCD屏广告方案响应»"
+              "originalRef": "PageResultVO«LCD屏广告方案响应»",
+              "$ref": "#/definitions/PageResultVO«LCD屏广告方案响应»"
             }
           },
           "201": {
@@ -10098,8 +10098,8 @@
             "description": "lcdAdvertisementSchemeEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LCD屏广告方案编辑参数",
-              "originalRef": "LCD屏广告方案编辑参数"
+              "originalRef": "LCD屏广告方案编辑参数",
+              "$ref": "#/definitions/LCD屏广告方案编辑参数"
             }
           }
         ],
@@ -10189,8 +10189,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementScreenChildIpDTO",
-                "originalRef": "ElementScreenChildIpDTO"
+                "originalRef": "ElementScreenChildIpDTO",
+                "$ref": "#/definitions/ElementScreenChildIpDTO"
               }
             }
           },
@@ -10263,8 +10263,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10293,8 +10293,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10323,8 +10323,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10353,8 +10353,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10383,8 +10383,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10413,8 +10413,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10443,8 +10443,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -10515,8 +10515,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CopyLightSchemeParam",
-              "originalRef": "CopyLightSchemeParam"
+              "originalRef": "CopyLightSchemeParam",
+              "$ref": "#/definitions/CopyLightSchemeParam"
             }
           }
         ],
@@ -10559,8 +10559,8 @@
             "description": "parm",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/车位灯方案配置",
-              "originalRef": "车位灯方案配置"
+              "originalRef": "车位灯方案配置",
+              "$ref": "#/definitions/车位灯方案配置"
             }
           }
         ],
@@ -10603,8 +10603,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/灯方案查询参数",
-              "originalRef": "灯方案查询参数"
+              "originalRef": "灯方案查询参数",
+              "$ref": "#/definitions/灯方案查询参数"
             }
           }
         ],
@@ -10612,8 +10612,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«LightSchemeListDTO»",
-              "originalRef": "PageResultVO«LightSchemeListDTO»"
+              "originalRef": "PageResultVO«LightSchemeListDTO»",
+              "$ref": "#/definitions/PageResultVO«LightSchemeListDTO»"
             }
           },
           "201": {
@@ -10651,8 +10651,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/车位灯方案配置",
-              "originalRef": "车位灯方案配置"
+              "originalRef": "车位灯方案配置",
+              "$ref": "#/definitions/车位灯方案配置"
             }
           }
         ],
@@ -10746,8 +10746,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LightSchemeGroupResponseVO",
-              "originalRef": "LightSchemeGroupResponseVO"
+              "originalRef": "LightSchemeGroupResponseVO",
+              "$ref": "#/definitions/LightSchemeGroupResponseVO"
             }
           },
           "401": {
@@ -10782,8 +10782,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LightSchemeGroupRequestVO",
-              "originalRef": "LightSchemeGroupRequestVO"
+              "originalRef": "LightSchemeGroupRequestVO",
+              "$ref": "#/definitions/LightSchemeGroupRequestVO"
             }
           }
         ],
@@ -10826,8 +10826,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LightSchemeGroupPageRequestVO",
-              "originalRef": "LightSchemeGroupPageRequestVO"
+              "originalRef": "LightSchemeGroupPageRequestVO",
+              "$ref": "#/definitions/LightSchemeGroupPageRequestVO"
             }
           }
         ],
@@ -10835,8 +10835,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«LightSchemeGroupResponseVO»",
-              "originalRef": "PageResultVO«LightSchemeGroupResponseVO»"
+              "originalRef": "PageResultVO«LightSchemeGroupResponseVO»",
+              "$ref": "#/definitions/PageResultVO«LightSchemeGroupResponseVO»"
             }
           },
           "201": {
@@ -10880,8 +10880,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ParkSelectedDOInfo",
-                "originalRef": "ParkSelectedDOInfo"
+                "originalRef": "ParkSelectedDOInfo",
+                "$ref": "#/definitions/ParkSelectedDOInfo"
               }
             }
           },
@@ -10917,8 +10917,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LightSchemeGroupRequestVO",
-              "originalRef": "LightSchemeGroupRequestVO"
+              "originalRef": "LightSchemeGroupRequestVO",
+              "$ref": "#/definitions/LightSchemeGroupRequestVO"
             }
           }
         ],
@@ -10961,8 +10961,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UpdateParkRelateReqVO",
-              "originalRef": "UpdateParkRelateReqVO"
+              "originalRef": "UpdateParkRelateReqVO",
+              "$ref": "#/definitions/UpdateParkRelateReqVO"
             }
           }
         ],
@@ -11005,8 +11005,8 @@
             "description": "loginLogReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LoginLog对象",
-              "originalRef": "LoginLog对象"
+              "originalRef": "LoginLog对象",
+              "$ref": "#/definitions/LoginLog对象"
             }
           }
         ],
@@ -11014,8 +11014,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«LoginLog对象»",
-              "originalRef": "PageResultVO«LoginLog对象»"
+              "originalRef": "PageResultVO«LoginLog对象»",
+              "$ref": "#/definitions/PageResultVO«LoginLog对象»"
             }
           },
           "201": {
@@ -11092,8 +11092,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LotInfoResponseVO",
-              "originalRef": "LotInfoResponseVO"
+              "originalRef": "LotInfoResponseVO",
+              "$ref": "#/definitions/LotInfoResponseVO"
             }
           },
           "401": {
@@ -11131,8 +11131,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LotInfoResponseVO",
-              "originalRef": "LotInfoResponseVO"
+              "originalRef": "LotInfoResponseVO",
+              "$ref": "#/definitions/LotInfoResponseVO"
             }
           },
           "401": {
@@ -11167,8 +11167,8 @@
             "description": "lotInfo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LotInfo对象",
-              "originalRef": "LotInfo对象"
+              "originalRef": "LotInfo对象",
+              "$ref": "#/definitions/LotInfo对象"
             }
           }
         ],
@@ -11215,8 +11215,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/车场配置检测项",
-              "originalRef": "车场配置检测项"
+              "originalRef": "车场配置检测项",
+              "$ref": "#/definitions/车场配置检测项"
             }
           },
           "401": {
@@ -11251,8 +11251,8 @@
             "description": "lotInfoEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LotInfoEditRequestVO",
-              "originalRef": "LotInfoEditRequestVO"
+              "originalRef": "LotInfoEditRequestVO",
+              "$ref": "#/definitions/LotInfoEditRequestVO"
             }
           }
         ],
@@ -11299,8 +11299,8 @@
             "description": "lotInfoParam",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LotInfoParam",
-              "originalRef": "LotInfoParam"
+              "originalRef": "LotInfoParam",
+              "$ref": "#/definitions/LotInfoParam"
             }
           }
         ],
@@ -11308,8 +11308,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«LotInfoMultiVO»",
-              "originalRef": "PageResultVO«LotInfoMultiVO»"
+              "originalRef": "PageResultVO«LotInfoMultiVO»",
+              "$ref": "#/definitions/PageResultVO«LotInfoMultiVO»"
             }
           },
           "201": {
@@ -11347,8 +11347,8 @@
             "description": "lotInfo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LotInfo对象",
-              "originalRef": "LotInfo对象"
+              "originalRef": "LotInfo对象",
+              "$ref": "#/definitions/LotInfo对象"
             }
           }
         ],
@@ -11464,8 +11464,8 @@
             "description": "machineAdvertisementConfigEditReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/MachineAdvertisementConfigEditReqVO",
-              "originalRef": "MachineAdvertisementConfigEditReqVO"
+              "originalRef": "MachineAdvertisementConfigEditReqVO",
+              "$ref": "#/definitions/MachineAdvertisementConfigEditReqVO"
             }
           }
         ],
@@ -11508,8 +11508,8 @@
             "description": "machineAdvertisementConfigPageReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/MachineAdvertisementConfigPageReqVO",
-              "originalRef": "MachineAdvertisementConfigPageReqVO"
+              "originalRef": "MachineAdvertisementConfigPageReqVO",
+              "$ref": "#/definitions/MachineAdvertisementConfigPageReqVO"
             }
           }
         ],
@@ -11517,8 +11517,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«MachineAdvertisementConfigPageReqVO»",
-              "originalRef": "PageResultVO«MachineAdvertisementConfigPageReqVO»"
+              "originalRef": "PageResultVO«MachineAdvertisementConfigPageReqVO»",
+              "$ref": "#/definitions/PageResultVO«MachineAdvertisementConfigPageReqVO»"
             }
           },
           "201": {
@@ -11757,8 +11757,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/MapStylesDetailResponseVO对象",
-              "originalRef": "MapStylesDetailResponseVO对象"
+              "originalRef": "MapStylesDetailResponseVO对象",
+              "$ref": "#/definitions/MapStylesDetailResponseVO对象"
             }
           },
           "401": {
@@ -11837,8 +11837,8 @@
             "description": "mapStylesAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/MapStylesAddRequestVO对象",
-              "originalRef": "MapStylesAddRequestVO对象"
+              "originalRef": "MapStylesAddRequestVO对象",
+              "$ref": "#/definitions/MapStylesAddRequestVO对象"
             }
           }
         ],
@@ -11913,8 +11913,8 @@
             "description": "mapStylesPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/MapStylesPageRequestVO对象",
-              "originalRef": "MapStylesPageRequestVO对象"
+              "originalRef": "MapStylesPageRequestVO对象",
+              "$ref": "#/definitions/MapStylesPageRequestVO对象"
             }
           }
         ],
@@ -11922,8 +11922,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«MapStylesResponseVO对象»",
-              "originalRef": "PageResultVO«MapStylesResponseVO对象»"
+              "originalRef": "PageResultVO«MapStylesResponseVO对象»",
+              "$ref": "#/definitions/PageResultVO«MapStylesResponseVO对象»"
             }
           },
           "201": {
@@ -11961,8 +11961,8 @@
             "description": "mapStylesEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/MapStylesEditRequestVO对象",
-              "originalRef": "MapStylesEditRequestVO对象"
+              "originalRef": "MapStylesEditRequestVO对象",
+              "$ref": "#/definitions/MapStylesEditRequestVO对象"
             }
           }
         ],
@@ -12115,8 +12115,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/车场地图数据",
-              "originalRef": "车场地图数据"
+              "originalRef": "车场地图数据",
+              "$ref": "#/definitions/车场地图数据"
             }
           },
           "401": {
@@ -12161,8 +12161,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/车场地图数据",
-              "originalRef": "车场地图数据"
+              "originalRef": "车场地图数据",
+              "$ref": "#/definitions/车场地图数据"
             }
           },
           "401": {
@@ -12402,8 +12402,8 @@
             "description": "addNodeDeviceParam",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddNodeDeviceParamVO",
-              "originalRef": "AddNodeDeviceParamVO"
+              "originalRef": "AddNodeDeviceParamVO",
+              "$ref": "#/definitions/AddNodeDeviceParamVO"
             }
           }
         ],
@@ -12449,8 +12449,8 @@
             "description": "paramVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/节点设备列表查询参数",
-              "originalRef": "节点设备列表查询参数"
+              "originalRef": "节点设备列表查询参数",
+              "$ref": "#/definitions/节点设备列表查询参数"
             }
           }
         ],
@@ -12458,8 +12458,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«节点设备列表返回值»",
-              "originalRef": "PageResultVO«节点设备列表返回值»"
+              "originalRef": "PageResultVO«节点设备列表返回值»",
+              "$ref": "#/definitions/PageResultVO«节点设备列表返回值»"
             }
           },
           "201": {
@@ -12497,8 +12497,8 @@
             "description": "addNodeDeviceParam",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddNodeDeviceParamVO",
-              "originalRef": "AddNodeDeviceParamVO"
+              "originalRef": "AddNodeDeviceParamVO",
+              "$ref": "#/definitions/AddNodeDeviceParamVO"
             }
           }
         ],
@@ -12538,8 +12538,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -12574,8 +12574,8 @@
             "description": "requestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/分页查询过夜车请求参数",
-              "originalRef": "分页查询过夜车请求参数"
+              "originalRef": "分页查询过夜车请求参数",
+              "$ref": "#/definitions/分页查询过夜车请求参数"
             }
           }
         ],
@@ -12618,8 +12618,8 @@
             "description": "requestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/区域分组查询参数",
-              "originalRef": "区域分组查询参数"
+              "originalRef": "区域分组查询参数",
+              "$ref": "#/definitions/区域分组查询参数"
             }
           }
         ],
@@ -12631,8 +12631,8 @@
               "additionalProperties": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/过夜车统计区域数据",
-                  "originalRef": "过夜车统计区域数据"
+                  "originalRef": "过夜车统计区域数据",
+                  "$ref": "#/definitions/过夜车统计区域数据"
                 }
               }
             }
@@ -12672,8 +12672,8 @@
             "description": "requestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/过夜车基本请求参数信息",
-              "originalRef": "过夜车基本请求参数信息"
+              "originalRef": "过夜车基本请求参数信息",
+              "$ref": "#/definitions/过夜车基本请求参数信息"
             }
           }
         ],
@@ -12685,8 +12685,8 @@
               "additionalProperties": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/过夜车统计楼层数据",
-                  "originalRef": "过夜车统计楼层数据"
+                  "originalRef": "过夜车统计楼层数据",
+                  "$ref": "#/definitions/过夜车统计楼层数据"
                 }
               }
             }
@@ -12726,8 +12726,8 @@
             "description": "requestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/分页查询过夜车请求参数",
-              "originalRef": "分页查询过夜车请求参数"
+              "originalRef": "分页查询过夜车请求参数",
+              "$ref": "#/definitions/分页查询过夜车请求参数"
             }
           }
         ],
@@ -12735,8 +12735,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«过夜车返回数据»",
-              "originalRef": "PageResultVO«过夜车返回数据»"
+              "originalRef": "PageResultVO«过夜车返回数据»",
+              "$ref": "#/definitions/PageResultVO«过夜车返回数据»"
             }
           },
           "201": {
@@ -12774,8 +12774,8 @@
             "description": "addParkParmDTO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AddParkParmDTO",
-              "originalRef": "AddParkParmDTO"
+              "originalRef": "AddParkParmDTO",
+              "$ref": "#/definitions/AddParkParmDTO"
             }
           }
         ],
@@ -12987,8 +12987,8 @@
             "description": "elementRequestParamVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -13027,8 +13027,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ParkInfoFloorDTO",
-                "originalRef": "ParkInfoFloorDTO"
+                "originalRef": "ParkInfoFloorDTO",
+                "$ref": "#/definitions/ParkInfoFloorDTO"
               }
             }
           },
@@ -13060,8 +13060,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ParkInfoFloorDTO",
-                "originalRef": "ParkInfoFloorDTO"
+                "originalRef": "ParkInfoFloorDTO",
+                "$ref": "#/definitions/ParkInfoFloorDTO"
               }
             }
           },
@@ -13101,8 +13101,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementResponseVO",
-              "originalRef": "ElementResponseVO"
+              "originalRef": "ElementResponseVO",
+              "$ref": "#/definitions/ElementResponseVO"
             }
           },
           "401": {
@@ -13141,8 +13141,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ElementParkAndPresentCarResponseVO对象",
-              "originalRef": "ElementParkAndPresentCarResponseVO对象"
+              "originalRef": "ElementParkAndPresentCarResponseVO对象",
+              "$ref": "#/definitions/ElementParkAndPresentCarResponseVO对象"
             }
           },
           "401": {
@@ -13196,8 +13196,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ParkInfo",
-                "originalRef": "ParkInfo"
+                "originalRef": "ParkInfo",
+                "$ref": "#/definitions/ParkInfo"
               }
             }
           },
@@ -13227,8 +13227,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ParkTotalUsageRateResponseVO",
-              "originalRef": "ParkTotalUsageRateResponseVO"
+              "originalRef": "ParkTotalUsageRateResponseVO",
+              "$ref": "#/definitions/ParkTotalUsageRateResponseVO"
             }
           },
           "401": {
@@ -13267,8 +13267,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/车位相机返回信息",
-              "originalRef": "车位相机返回信息"
+              "originalRef": "车位相机返回信息",
+              "$ref": "#/definitions/车位相机返回信息"
             }
           },
           "401": {
@@ -13380,8 +13380,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/JsonResponseVO",
-              "originalRef": "JsonResponseVO"
+              "originalRef": "JsonResponseVO",
+              "$ref": "#/definitions/JsonResponseVO"
             }
           },
           "201": {
@@ -13451,8 +13451,8 @@
             "description": "elementRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementRequestVO",
-              "originalRef": "ElementRequestVO"
+              "originalRef": "ElementRequestVO",
+              "$ref": "#/definitions/ElementRequestVO"
             }
           }
         ],
@@ -13462,8 +13462,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementResponseVO",
-                "originalRef": "ElementResponseVO"
+                "originalRef": "ElementResponseVO",
+                "$ref": "#/definitions/ElementResponseVO"
               }
             }
           },
@@ -13515,8 +13515,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementParkUsageRateResponseVO对象",
-                "originalRef": "ElementParkUsageRateResponseVO对象"
+                "originalRef": "ElementParkUsageRateResponseVO对象",
+                "$ref": "#/definitions/ElementParkUsageRateResponseVO对象"
               }
             }
           },
@@ -13552,8 +13552,8 @@
             "description": "moveParkParamDTO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/2D地图移动车位参数",
-              "originalRef": "2D地图移动车位参数"
+              "originalRef": "2D地图移动车位参数",
+              "$ref": "#/definitions/2D地图移动车位参数"
             }
           }
         ],
@@ -13596,8 +13596,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParkRelateAreaParam",
-              "originalRef": "ParkRelateAreaParam"
+              "originalRef": "ParkRelateAreaParam",
+              "$ref": "#/definitions/ParkRelateAreaParam"
             }
           }
         ],
@@ -13689,8 +13689,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementParkWarningResponseVO",
-                "originalRef": "ElementParkWarningResponseVO"
+                "originalRef": "ElementParkWarningResponseVO",
+                "$ref": "#/definitions/ElementParkWarningResponseVO"
               }
             }
           },
@@ -13732,8 +13732,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementParkWarningResponseVO",
-                "originalRef": "ElementParkWarningResponseVO"
+                "originalRef": "ElementParkWarningResponseVO",
+                "$ref": "#/definitions/ElementParkWarningResponseVO"
               }
             }
           },
@@ -13769,8 +13769,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -13778,8 +13778,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»",
-              "originalRef": "PageResultVO«ElementInfoDTO»"
+              "originalRef": "PageResultVO«ElementInfoDTO»",
+              "$ref": "#/definitions/PageResultVO«ElementInfoDTO»"
             }
           },
           "201": {
@@ -13817,8 +13817,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/元素查询参数",
-              "originalRef": "元素查询参数"
+              "originalRef": "元素查询参数",
+              "$ref": "#/definitions/元素查询参数"
             }
           }
         ],
@@ -13826,8 +13826,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«Map«string,object»»",
-              "originalRef": "PageResultVO«Map«string,object»»"
+              "originalRef": "PageResultVO«Map«string,object»»",
+              "$ref": "#/definitions/PageResultVO«Map«string,object»»"
             }
           },
           "201": {
@@ -13871,8 +13871,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ElementParkWarningResponseVO",
-                "originalRef": "ElementParkWarningResponseVO"
+                "originalRef": "ElementParkWarningResponseVO",
+                "$ref": "#/definitions/ElementParkWarningResponseVO"
               }
             }
           },
@@ -13972,8 +13972,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementRequestVO",
-              "originalRef": "ElementRequestVO"
+              "originalRef": "ElementRequestVO",
+              "$ref": "#/definitions/ElementRequestVO"
             }
           }
         ],
@@ -14018,8 +14018,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/车位更新实体类",
-                "originalRef": "车位更新实体类"
+                "originalRef": "车位更新实体类",
+                "$ref": "#/definitions/车位更新实体类"
               }
             }
           }
@@ -14063,8 +14063,8 @@
             "description": "elementParkControlAndStatusEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ElementParkStatusEditRequestVO对象",
-              "originalRef": "ElementParkStatusEditRequestVO对象"
+              "originalRef": "ElementParkStatusEditRequestVO对象",
+              "$ref": "#/definitions/ElementParkStatusEditRequestVO对象"
             }
           }
         ],
@@ -14107,8 +14107,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/BigScreenParkParam",
-              "originalRef": "BigScreenParkParam"
+              "originalRef": "BigScreenParkParam",
+              "$ref": "#/definitions/BigScreenParkParam"
             }
           }
         ],
@@ -14269,8 +14269,8 @@
             "description": "parkingLightSchemeAddRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParkingLightSchemeAddRequestVO对象",
-              "originalRef": "ParkingLightSchemeAddRequestVO对象"
+              "originalRef": "ParkingLightSchemeAddRequestVO对象",
+              "$ref": "#/definitions/ParkingLightSchemeAddRequestVO对象"
             }
           }
         ],
@@ -14319,8 +14319,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/RelatedFloorVO对象",
-                "originalRef": "RelatedFloorVO对象"
+                "originalRef": "RelatedFloorVO对象",
+                "$ref": "#/definitions/RelatedFloorVO对象"
               }
             }
           },
@@ -14356,8 +14356,8 @@
             "description": "parkingLightSchemePageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParkingLightSchemePageRequestVO对象",
-              "originalRef": "ParkingLightSchemePageRequestVO对象"
+              "originalRef": "ParkingLightSchemePageRequestVO对象",
+              "$ref": "#/definitions/ParkingLightSchemePageRequestVO对象"
             }
           }
         ],
@@ -14365,8 +14365,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ParkingLightSchemeResponseVO对象»",
-              "originalRef": "PageResultVO«ParkingLightSchemeResponseVO对象»"
+              "originalRef": "PageResultVO«ParkingLightSchemeResponseVO对象»",
+              "$ref": "#/definitions/PageResultVO«ParkingLightSchemeResponseVO对象»"
             }
           },
           "201": {
@@ -14404,8 +14404,8 @@
             "description": "parkingLightSchemeEditRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParkingLightSchemeEditRequestVO对象",
-              "originalRef": "ParkingLightSchemeEditRequestVO对象"
+              "originalRef": "ParkingLightSchemeEditRequestVO对象",
+              "$ref": "#/definitions/ParkingLightSchemeEditRequestVO对象"
             }
           }
         ],
@@ -14520,8 +14520,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PermissionsRequestVO",
-              "originalRef": "PermissionsRequestVO"
+              "originalRef": "PermissionsRequestVO",
+              "$ref": "#/definitions/PermissionsRequestVO"
             }
           }
         ],
@@ -14564,8 +14564,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ChildPermissionsRequestVO",
-              "originalRef": "ChildPermissionsRequestVO"
+              "originalRef": "ChildPermissionsRequestVO",
+              "$ref": "#/definitions/ChildPermissionsRequestVO"
             }
           }
         ],
@@ -14608,8 +14608,8 @@
             "description": "req",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PermissionQueryReqVO",
-              "originalRef": "PermissionQueryReqVO"
+              "originalRef": "PermissionQueryReqVO",
+              "$ref": "#/definitions/PermissionQueryReqVO"
             }
           }
         ],
@@ -14656,8 +14656,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/MenuResponseVO",
-                "originalRef": "MenuResponseVO"
+                "originalRef": "MenuResponseVO",
+                "$ref": "#/definitions/MenuResponseVO"
               }
             }
           },
@@ -14690,8 +14690,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«MenuResponseVO»",
-              "originalRef": "PageResultVO«MenuResponseVO»"
+              "originalRef": "PageResultVO«MenuResponseVO»",
+              "$ref": "#/definitions/PageResultVO«MenuResponseVO»"
             }
           },
           "201": {
@@ -14729,8 +14729,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PermissionsRequestVO",
-              "originalRef": "PermissionsRequestVO"
+              "originalRef": "PermissionsRequestVO",
+              "$ref": "#/definitions/PermissionsRequestVO"
             }
           }
         ],
@@ -14773,8 +14773,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ChildPermissionsRequestVO",
-              "originalRef": "ChildPermissionsRequestVO"
+              "originalRef": "ChildPermissionsRequestVO",
+              "$ref": "#/definitions/ChildPermissionsRequestVO"
             }
           }
         ],
@@ -14823,8 +14823,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/PresentCarPlateResponseVO对象",
-                "originalRef": "PresentCarPlateResponseVO对象"
+                "originalRef": "PresentCarPlateResponseVO对象",
+                "$ref": "#/definitions/PresentCarPlateResponseVO对象"
               }
             }
           },
@@ -14860,8 +14860,8 @@
             "description": "presentCarPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PresentCarPageRequestVO对象",
-              "originalRef": "PresentCarPageRequestVO对象"
+              "originalRef": "PresentCarPageRequestVO对象",
+              "$ref": "#/definitions/PresentCarPageRequestVO对象"
             }
           }
         ],
@@ -14904,8 +14904,8 @@
             "description": "presentCarPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PresentCarPageRequestVO对象",
-              "originalRef": "PresentCarPageRequestVO对象"
+              "originalRef": "PresentCarPageRequestVO对象",
+              "$ref": "#/definitions/PresentCarPageRequestVO对象"
             }
           }
         ],
@@ -14913,8 +14913,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«PresentCarPageResponseVO对象»",
-              "originalRef": "PageResultVO«PresentCarPageResponseVO对象»"
+              "originalRef": "PageResultVO«PresentCarPageResponseVO对象»",
+              "$ref": "#/definitions/PageResultVO«PresentCarPageResponseVO对象»"
             }
           },
           "201": {
@@ -14952,8 +14952,8 @@
             "description": "presentCarPageRequestVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PresentCarPageRequestVO对象",
-              "originalRef": "PresentCarPageRequestVO对象"
+              "originalRef": "PresentCarPageRequestVO对象",
+              "$ref": "#/definitions/PresentCarPageRequestVO对象"
             }
           }
         ],
@@ -14961,8 +14961,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«PresentCarPageResponseVO对象»",
-              "originalRef": "PageResultVO«PresentCarPageResponseVO对象»"
+              "originalRef": "PageResultVO«PresentCarPageResponseVO对象»",
+              "$ref": "#/definitions/PageResultVO«PresentCarPageResponseVO对象»"
             }
           },
           "201": {
@@ -15000,8 +15000,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PresentCarRecordAreaPageRequestVO",
-              "originalRef": "PresentCarRecordAreaPageRequestVO"
+              "originalRef": "PresentCarRecordAreaPageRequestVO",
+              "$ref": "#/definitions/PresentCarRecordAreaPageRequestVO"
             }
           }
         ],
@@ -15009,8 +15009,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«PresentCarRecordAreaResponseVO»",
-              "originalRef": "PageResultVO«PresentCarRecordAreaResponseVO»"
+              "originalRef": "PageResultVO«PresentCarRecordAreaResponseVO»",
+              "$ref": "#/definitions/PageResultVO«PresentCarRecordAreaResponseVO»"
             }
           },
           "201": {
@@ -15151,8 +15151,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/RoleResponseVO",
-                "originalRef": "RoleResponseVO"
+                "originalRef": "RoleResponseVO",
+                "$ref": "#/definitions/RoleResponseVO"
               }
             }
           },
@@ -15192,8 +15192,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/RoleResponseVO",
-              "originalRef": "RoleResponseVO"
+              "originalRef": "RoleResponseVO",
+              "$ref": "#/definitions/RoleResponseVO"
             }
           },
           "401": {
@@ -15228,8 +15228,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/RoleRequestVO",
-              "originalRef": "RoleRequestVO"
+              "originalRef": "RoleRequestVO",
+              "$ref": "#/definitions/RoleRequestVO"
             }
           }
         ],
@@ -15272,8 +15272,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/RoleRequestVO",
-              "originalRef": "RoleRequestVO"
+              "originalRef": "RoleRequestVO",
+              "$ref": "#/definitions/RoleRequestVO"
             }
           }
         ],
@@ -15316,8 +15316,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/SetPermissionsRequestVO",
-              "originalRef": "SetPermissionsRequestVO"
+              "originalRef": "SetPermissionsRequestVO",
+              "$ref": "#/definitions/SetPermissionsRequestVO"
             }
           }
         ],
@@ -15357,8 +15357,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/参数配置",
-              "originalRef": "参数配置"
+              "originalRef": "参数配置",
+              "$ref": "#/definitions/参数配置"
             }
           },
           "201": {
@@ -15428,8 +15428,8 @@
             "description": "ScheduleConfig",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/参数配置",
-              "originalRef": "参数配置"
+              "originalRef": "参数配置",
+              "$ref": "#/definitions/参数配置"
             }
           }
         ],
@@ -15543,8 +15543,8 @@
             "description": "serverLogReqVO",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ServerLog对象",
-              "originalRef": "ServerLog对象"
+              "originalRef": "ServerLog对象",
+              "$ref": "#/definitions/ServerLog对象"
             }
           }
         ],
@@ -15552,8 +15552,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«ServerLog对象»",
-              "originalRef": "PageResultVO«ServerLog对象»"
+              "originalRef": "PageResultVO«ServerLog对象»",
+              "$ref": "#/definitions/PageResultVO«ServerLog对象»"
             }
           },
           "201": {
@@ -15602,8 +15602,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/Coordinate对象",
-                "originalRef": "Coordinate对象"
+                "originalRef": "Coordinate对象",
+                "$ref": "#/definitions/Coordinate对象"
               }
             }
           },
@@ -15670,8 +15670,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/SyncElementParkDataDto",
-                "originalRef": "SyncElementParkDataDto"
+                "originalRef": "SyncElementParkDataDto",
+                "$ref": "#/definitions/SyncElementParkDataDto"
               }
             }
           }
@@ -15827,8 +15827,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -16019,8 +16019,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/DeviceInfoDTO",
-                "originalRef": "DeviceInfoDTO"
+                "originalRef": "DeviceInfoDTO",
+                "$ref": "#/definitions/DeviceInfoDTO"
               }
             }
           },
@@ -16526,8 +16526,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FilePathResponseVO对象",
-              "originalRef": "FilePathResponseVO对象"
+              "originalRef": "FilePathResponseVO对象",
+              "$ref": "#/definitions/FilePathResponseVO对象"
             }
           },
           "201": {
@@ -16585,8 +16585,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Config对象",
-              "originalRef": "Config对象"
+              "originalRef": "Config对象",
+              "$ref": "#/definitions/Config对象"
             }
           },
           "401": {
@@ -16716,8 +16716,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FilePathResponseVO对象",
-              "originalRef": "FilePathResponseVO对象"
+              "originalRef": "FilePathResponseVO对象",
+              "$ref": "#/definitions/FilePathResponseVO对象"
             }
           },
           "201": {
@@ -16772,8 +16772,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FilePathResponseVO对象",
-              "originalRef": "FilePathResponseVO对象"
+              "originalRef": "FilePathResponseVO对象",
+              "$ref": "#/definitions/FilePathResponseVO对象"
             }
           },
           "201": {
@@ -16820,8 +16820,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FilePathResponseVO对象",
-              "originalRef": "FilePathResponseVO对象"
+              "originalRef": "FilePathResponseVO对象",
+              "$ref": "#/definitions/FilePathResponseVO对象"
             }
           },
           "201": {
@@ -16868,8 +16868,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FilePathResponseVO对象",
-              "originalRef": "FilePathResponseVO对象"
+              "originalRef": "FilePathResponseVO对象",
+              "$ref": "#/definitions/FilePathResponseVO对象"
             }
           },
           "201": {
@@ -16942,8 +16942,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/FilePathResponseVO对象",
-              "originalRef": "FilePathResponseVO对象"
+              "originalRef": "FilePathResponseVO对象",
+              "$ref": "#/definitions/FilePathResponseVO对象"
             }
           },
           "201": {
@@ -17033,8 +17033,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ChangePasswordRequestVO",
-              "originalRef": "ChangePasswordRequestVO"
+              "originalRef": "ChangePasswordRequestVO",
+              "$ref": "#/definitions/ChangePasswordRequestVO"
             }
           }
         ],
@@ -17116,8 +17116,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/UserResponseVO",
-              "originalRef": "UserResponseVO"
+              "originalRef": "UserResponseVO",
+              "$ref": "#/definitions/UserResponseVO"
             }
           },
           "401": {
@@ -17152,8 +17152,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UserRequestVO",
-              "originalRef": "UserRequestVO"
+              "originalRef": "UserRequestVO",
+              "$ref": "#/definitions/UserRequestVO"
             }
           }
         ],
@@ -17196,8 +17196,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ResetPasswordRequestVO",
-              "originalRef": "ResetPasswordRequestVO"
+              "originalRef": "ResetPasswordRequestVO",
+              "$ref": "#/definitions/ResetPasswordRequestVO"
             }
           }
         ],
@@ -17240,8 +17240,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UserPageRequestVO",
-              "originalRef": "UserPageRequestVO"
+              "originalRef": "UserPageRequestVO",
+              "$ref": "#/definitions/UserPageRequestVO"
             }
           }
         ],
@@ -17249,8 +17249,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«UserResponseVO»",
-              "originalRef": "PageResultVO«UserResponseVO»"
+              "originalRef": "PageResultVO«UserResponseVO»",
+              "$ref": "#/definitions/PageResultVO«UserResponseVO»"
             }
           },
           "201": {
@@ -17288,8 +17288,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UserRequestVO",
-              "originalRef": "UserRequestVO"
+              "originalRef": "UserRequestVO",
+              "$ref": "#/definitions/UserRequestVO"
             }
           }
         ],
@@ -17332,8 +17332,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/按车牌号查询泊位信息接口 - 请求参数",
-              "originalRef": "按车牌号查询泊位信息接口 - 请求参数"
+              "originalRef": "按车牌号查询泊位信息接口 - 请求参数",
+              "$ref": "#/definitions/按车牌号查询泊位信息接口 - 请求参数"
             }
           }
         ],
@@ -17341,8 +17341,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/API返回结果«List«按车牌号查询泊位信息接口 - 返回值»»",
-              "originalRef": "API返回结果«List«按车牌号查询泊位信息接口 - 返回值»»"
+              "originalRef": "API返回结果«List«按车牌号查询泊位信息接口 - 返回值»»",
+              "$ref": "#/definitions/API返回结果«List«按车牌号查询泊位信息接口 - 返回值»»"
             }
           },
           "201": {
@@ -17380,8 +17380,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/按泊位号查询泊位信息接口 - 请求参数",
-              "originalRef": "按泊位号查询泊位信息接口 - 请求参数"
+              "originalRef": "按泊位号查询泊位信息接口 - 请求参数",
+              "$ref": "#/definitions/按泊位号查询泊位信息接口 - 请求参数"
             }
           }
         ],
@@ -17389,8 +17389,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/API返回结果«List«按泊位号查询泊位信息接口 - 返回值»»",
-              "originalRef": "API返回结果«List«按泊位号查询泊位信息接口 - 返回值»»"
+              "originalRef": "API返回结果«List«按泊位号查询泊位信息接口 - 返回值»»",
+              "$ref": "#/definitions/API返回结果«List«按泊位号查询泊位信息接口 - 返回值»»"
             }
           },
           "201": {
@@ -17428,8 +17428,8 @@
             "description": "param",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/车位信息列表接口-参数",
-              "originalRef": "车位信息列表接口-参数"
+              "originalRef": "车位信息列表接口-参数",
+              "$ref": "#/definitions/车位信息列表接口-参数"
             }
           }
         ],
@@ -17437,8 +17437,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/API返回结果«List«车位信息列表接口 - 返回值»»",
-              "originalRef": "API返回结果«List«车位信息列表接口 - 返回值»»"
+              "originalRef": "API返回结果«List«车位信息列表接口 - 返回值»»",
+              "$ref": "#/definitions/API返回结果«List«车位信息列表接口 - 返回值»»"
             }
           },
           "201": {
@@ -17470,8 +17470,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -17500,8 +17500,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -17530,8 +17530,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -17560,8 +17560,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -17631,8 +17631,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnIllegalParkInsertRequestVO",
-              "originalRef": "WarnIllegalParkInsertRequestVO"
+              "originalRef": "WarnIllegalParkInsertRequestVO",
+              "$ref": "#/definitions/WarnIllegalParkInsertRequestVO"
             }
           }
         ],
@@ -17675,8 +17675,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnIllegalParkPageRequestVO",
-              "originalRef": "WarnIllegalParkPageRequestVO"
+              "originalRef": "WarnIllegalParkPageRequestVO",
+              "$ref": "#/definitions/WarnIllegalParkPageRequestVO"
             }
           }
         ],
@@ -17684,8 +17684,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«WarnIllegalParkResponseVO»",
-              "originalRef": "PageResultVO«WarnIllegalParkResponseVO»"
+              "originalRef": "PageResultVO«WarnIllegalParkResponseVO»",
+              "$ref": "#/definitions/PageResultVO«WarnIllegalParkResponseVO»"
             }
           },
           "201": {
@@ -17723,8 +17723,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnIllegalParkUpdateRequestVO",
-              "originalRef": "WarnIllegalParkUpdateRequestVO"
+              "originalRef": "WarnIllegalParkUpdateRequestVO",
+              "$ref": "#/definitions/WarnIllegalParkUpdateRequestVO"
             }
           }
         ],
@@ -17767,8 +17767,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnLogPageRequestVO",
-              "originalRef": "WarnLogPageRequestVO"
+              "originalRef": "WarnLogPageRequestVO",
+              "$ref": "#/definitions/WarnLogPageRequestVO"
             }
           }
         ],
@@ -17776,8 +17776,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«WarnLogResponseVO»",
-              "originalRef": "PageResultVO«WarnLogResponseVO»"
+              "originalRef": "PageResultVO«WarnLogResponseVO»",
+              "$ref": "#/definitions/PageResultVO«WarnLogResponseVO»"
             }
           },
           "201": {
@@ -17922,8 +17922,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnSpaceOccupyInsertRequestVO",
-              "originalRef": "WarnSpaceOccupyInsertRequestVO"
+              "originalRef": "WarnSpaceOccupyInsertRequestVO",
+              "$ref": "#/definitions/WarnSpaceOccupyInsertRequestVO"
             }
           }
         ],
@@ -17966,8 +17966,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnSpaceOccupyPageRequestVO",
-              "originalRef": "WarnSpaceOccupyPageRequestVO"
+              "originalRef": "WarnSpaceOccupyPageRequestVO",
+              "$ref": "#/definitions/WarnSpaceOccupyPageRequestVO"
             }
           }
         ],
@@ -17975,8 +17975,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«WarnSpaceOccupyResponseVO»",
-              "originalRef": "PageResultVO«WarnSpaceOccupyResponseVO»"
+              "originalRef": "PageResultVO«WarnSpaceOccupyResponseVO»",
+              "$ref": "#/definitions/PageResultVO«WarnSpaceOccupyResponseVO»"
             }
           },
           "201": {
@@ -18014,8 +18014,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnSpaceOccupyUpdateRequestVO",
-              "originalRef": "WarnSpaceOccupyUpdateRequestVO"
+              "originalRef": "WarnSpaceOccupyUpdateRequestVO",
+              "$ref": "#/definitions/WarnSpaceOccupyUpdateRequestVO"
             }
           }
         ],
@@ -18093,8 +18093,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnSpecialCarInsertRequestVO",
-              "originalRef": "WarnSpecialCarInsertRequestVO"
+              "originalRef": "WarnSpecialCarInsertRequestVO",
+              "$ref": "#/definitions/WarnSpecialCarInsertRequestVO"
             }
           }
         ],
@@ -18137,8 +18137,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnSpecialCarPageRequestVO",
-              "originalRef": "WarnSpecialCarPageRequestVO"
+              "originalRef": "WarnSpecialCarPageRequestVO",
+              "$ref": "#/definitions/WarnSpecialCarPageRequestVO"
             }
           }
         ],
@@ -18146,8 +18146,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PageResultVO«WarnSpecialCarResponseVO»",
-              "originalRef": "PageResultVO«WarnSpecialCarResponseVO»"
+              "originalRef": "PageResultVO«WarnSpecialCarResponseVO»",
+              "$ref": "#/definitions/PageResultVO«WarnSpecialCarResponseVO»"
             }
           },
           "201": {
@@ -18185,8 +18185,8 @@
             "description": "vo",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/WarnSpecialCarUpdateRequestVO",
-              "originalRef": "WarnSpecialCarUpdateRequestVO"
+              "originalRef": "WarnSpecialCarUpdateRequestVO",
+              "$ref": "#/definitions/WarnSpecialCarUpdateRequestVO"
             }
           }
         ],
@@ -18223,8 +18223,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/ModelAndView",
-              "originalRef": "ModelAndView"
+              "originalRef": "ModelAndView",
+              "$ref": "#/definitions/ModelAndView"
             }
           },
           "401": {
@@ -18253,8 +18253,8 @@
           "type": "array",
           "description": "移动后新的车位坐标",
           "items": {
-            "$ref": "#/definitions/PointDTO",
-            "originalRef": "PointDTO"
+            "originalRef": "PointDTO",
+            "$ref": "#/definitions/PointDTO"
           }
         }
       },
@@ -18271,8 +18271,8 @@
           "type": "array",
           "description": "业务返回数据",
           "items": {
-            "$ref": "#/definitions/按泊位号查询泊位信息接口 - 返回值",
-            "originalRef": "按泊位号查询泊位信息接口 - 返回值"
+            "originalRef": "按泊位号查询泊位信息接口 - 返回值",
+            "$ref": "#/definitions/按泊位号查询泊位信息接口 - 返回值"
           }
         },
         "msg": {
@@ -18293,8 +18293,8 @@
           "type": "array",
           "description": "业务返回数据",
           "items": {
-            "$ref": "#/definitions/按车牌号查询泊位信息接口 - 返回值",
-            "originalRef": "按车牌号查询泊位信息接口 - 返回值"
+            "originalRef": "按车牌号查询泊位信息接口 - 返回值",
+            "$ref": "#/definitions/按车牌号查询泊位信息接口 - 返回值"
           }
         },
         "msg": {
@@ -18315,8 +18315,8 @@
           "type": "array",
           "description": "业务返回数据",
           "items": {
-            "$ref": "#/definitions/车位信息列表接口 - 返回值",
-            "originalRef": "车位信息列表接口 - 返回值"
+            "originalRef": "车位信息列表接口 - 返回值",
+            "$ref": "#/definitions/车位信息列表接口 - 返回值"
           }
         },
         "msg": {
@@ -18507,8 +18507,8 @@
         "areaDeviceRelations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/RelateAreaDTO",
-            "originalRef": "RelateAreaDTO"
+            "originalRef": "RelateAreaDTO",
+            "$ref": "#/definitions/RelateAreaDTO"
           }
         },
         "id": {
@@ -18532,8 +18532,8 @@
         "customPointContent": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PointGroupDTO",
-            "originalRef": "PointGroupDTO"
+            "originalRef": "PointGroupDTO",
+            "$ref": "#/definitions/PointGroupDTO"
           }
         },
         "elementCustomId": {
@@ -18598,8 +18598,8 @@
         "parkContent": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PointGroupDTO",
-            "originalRef": "PointGroupDTO"
+            "originalRef": "PointGroupDTO",
+            "$ref": "#/definitions/PointGroupDTO"
           }
         }
       },
@@ -18818,51 +18818,6 @@
       },
       "title": "AreaCameraPageRequestVO"
     },
-    "AreaCameraRelateDO": {
-      "type": "object",
-      "properties": {
-        "areaCameraId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "区域相机id"
-        },
-        "areaId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "区域id"
-        },
-        "comeBind": {
-          "type": "integer",
-          "format": "int32",
-          "description": "来车绑定   1=入车   2=出车"
-        },
-        "createTime": {
-          "type": "string",
-          "format": "date-time",
-          "description": "创建时间"
-        },
-        "creater": {
-          "type": "string",
-          "description": "创建者"
-        },
-        "floorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "楼层id"
-        },
-        "goBind": {
-          "type": "integer",
-          "format": "int32",
-          "description": "去车绑定   1=入车   2=出车"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "主键"
-        }
-      },
-      "title": "AreaCameraRelateDO"
-    },
     "AreaCameraRelateDTO": {
       "type": "object",
       "properties": {
@@ -18921,8 +18876,8 @@
           "type": "array",
           "description": "区域相机关联信息",
           "items": {
-            "$ref": "#/definitions/AreaCameraRelateDO",
-            "originalRef": "AreaCameraRelateDO"
+            "originalRef": "AreaCameraRelateDTO",
+            "$ref": "#/definitions/AreaCameraRelateDTO"
           }
         },
         "cameraDirection": {
@@ -18953,8 +18908,8 @@
           "type": "array",
           "description": "区域相机关联信息",
           "items": {
-            "$ref": "#/definitions/AreaCameraRelateDTO",
-            "originalRef": "AreaCameraRelateDTO"
+            "originalRef": "AreaCameraRelateDTO",
+            "$ref": "#/definitions/AreaCameraRelateDTO"
           }
         },
         "cameraDirection": {
@@ -20200,8 +20155,8 @@
       "properties": {
         "param": {
           "description": "模板层页面参数",
-          "$ref": "#/definitions/ParamContent",
-          "originalRef": "ParamContent"
+          "originalRef": "ParamContent",
+          "$ref": "#/definitions/ParamContent"
         },
         "pushTime": {
           "type": "integer",
@@ -20855,8 +20810,8 @@
         "elementCustomCoordinateList": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ElementCustomCoordinateDTO",
-            "originalRef": "ElementCustomCoordinateDTO"
+            "originalRef": "ElementCustomCoordinateDTO",
+            "$ref": "#/definitions/ElementCustomCoordinateDTO"
           }
         },
         "height": {
@@ -20977,8 +20932,8 @@
         "elementCustomCoordinateList": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ElementCustomCoordinateDTO",
-            "originalRef": "ElementCustomCoordinateDTO"
+            "originalRef": "ElementCustomCoordinateDTO",
+            "$ref": "#/definitions/ElementCustomCoordinateDTO"
           }
         },
         "height": {
@@ -21023,8 +20978,8 @@
         "pathList": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ImpassablePathDTO",
-            "originalRef": "ImpassablePathDTO"
+            "originalRef": "ImpassablePathDTO",
+            "$ref": "#/definitions/ImpassablePathDTO"
           }
         }
       },
@@ -21047,8 +21002,8 @@
           "type": "array",
           "description": "路网集合",
           "items": {
-            "$ref": "#/definitions/ImpassablePathRequestVO",
-            "originalRef": "ImpassablePathRequestVO"
+            "originalRef": "ImpassablePathRequestVO",
+            "$ref": "#/definitions/ImpassablePathRequestVO"
           }
         }
       },
@@ -21888,8 +21843,8 @@
           "type": "array",
           "description": "识别车牌集合",
           "items": {
-            "$ref": "#/definitions/PresentCarPlateRecordDTO",
-            "originalRef": "PresentCarPlateRecordDTO"
+            "originalRef": "PresentCarPlateRecordDTO",
+            "$ref": "#/definitions/PresentCarPlateRecordDTO"
           }
         },
         "presentCarRecordId": {
@@ -22077,8 +22032,8 @@
         "pathList": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PathDTO",
-            "originalRef": "PathDTO"
+            "originalRef": "PathDTO",
+            "$ref": "#/definitions/PathDTO"
           }
         }
       },
@@ -22101,8 +22056,8 @@
           "type": "array",
           "description": "路网集合",
           "items": {
-            "$ref": "#/definitions/PathRequestVO",
-            "originalRef": "PathRequestVO"
+            "originalRef": "PathRequestVO",
+            "$ref": "#/definitions/PathRequestVO"
           }
         }
       },
@@ -22399,8 +22354,8 @@
           "type": "array",
           "description": "子屏参数",
           "items": {
-            "$ref": "#/definitions/ElementScreenChildRequestVO",
-            "originalRef": "ElementScreenChildRequestVO"
+            "originalRef": "ElementScreenChildRequestVO",
+            "$ref": "#/definitions/ElementScreenChildRequestVO"
           }
         },
         "floorId": {
@@ -22473,8 +22428,8 @@
           "type": "array",
           "description": "LCD屏配置集合",
           "items": {
-            "$ref": "#/definitions/LcdScreenConfig对象",
-            "originalRef": "LcdScreenConfig对象"
+            "originalRef": "LcdScreenConfig对象",
+            "$ref": "#/definitions/LcdScreenConfig对象"
           }
         },
         "name": {
@@ -22570,8 +22525,8 @@
           "type": "array",
           "description": "子屏信息集合（有序的）",
           "items": {
-            "$ref": "#/definitions/ElementScreenChildDTO",
-            "originalRef": "ElementScreenChildDTO"
+            "originalRef": "ElementScreenChildDTO",
+            "$ref": "#/definitions/ElementScreenChildDTO"
           }
         },
         "parentId": {
@@ -23036,8 +22991,8 @@
           "type": "array",
           "description": "子屏参数",
           "items": {
-            "$ref": "#/definitions/ElementScreenChildRequestVO",
-            "originalRef": "ElementScreenChildRequestVO"
+            "originalRef": "ElementScreenChildRequestVO",
+            "$ref": "#/definitions/ElementScreenChildRequestVO"
           }
         },
         "floorId": {
@@ -23106,8 +23061,8 @@
           "type": "array",
           "description": "LCD屏配置集合",
           "items": {
-            "$ref": "#/definitions/LcdScreenConfig对象",
-            "originalRef": "LcdScreenConfig对象"
+            "originalRef": "LcdScreenConfig对象",
+            "$ref": "#/definitions/LcdScreenConfig对象"
           }
         },
         "refreshFlag": {
@@ -23221,8 +23176,8 @@
         "elementScreenChildResponseVOList": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ElementScreenChildResponseVO",
-            "originalRef": "ElementScreenChildResponseVO"
+            "originalRef": "ElementScreenChildResponseVO",
+            "$ref": "#/definitions/ElementScreenChildResponseVO"
           }
         },
         "floorId": {
@@ -23416,8 +23371,8 @@
           "type": "array",
           "description": "LCD屏配置集合",
           "items": {
-            "$ref": "#/definitions/LcdScreenConfig对象",
-            "originalRef": "LcdScreenConfig对象"
+            "originalRef": "LcdScreenConfig对象",
+            "$ref": "#/definitions/LcdScreenConfig对象"
           }
         },
         "lotId": {
@@ -24355,8 +24310,8 @@
           "type": "boolean"
         },
         "keyComparator": {
-          "$ref": "#/definitions/Comparator«string»",
-          "originalRef": "Comparator«string»"
+          "originalRef": "Comparator«string»",
+          "$ref": "#/definitions/Comparator«string»"
         },
         "order": {
           "type": "boolean"
@@ -24391,8 +24346,8 @@
           "type": "array",
           "description": "广告配置信息集合",
           "items": {
-            "$ref": "#/definitions/LCD屏广告配置",
-            "originalRef": "LCD屏广告配置"
+            "originalRef": "LCD屏广告配置",
+            "$ref": "#/definitions/LCD屏广告配置"
           }
         },
         "species": {
@@ -24708,13 +24663,13 @@
         },
         "lcdAdvertisementH5": {
           "description": "广告方案信息",
-          "$ref": "#/definitions/LCD屏广告方案",
-          "originalRef": "LCD屏广告方案"
+          "originalRef": "LCD屏广告方案",
+          "$ref": "#/definitions/LCD屏广告方案"
         },
         "lcdChildScreenH5": {
           "description": "引导内容（子屏信息）",
-          "$ref": "#/definitions/LcdChildScreenH5DTO",
-          "originalRef": "LcdChildScreenH5DTO"
+          "originalRef": "LcdChildScreenH5DTO",
+          "$ref": "#/definitions/LcdChildScreenH5DTO"
         },
         "showSort": {
           "type": "integer",
@@ -24748,8 +24703,8 @@
         },
         "data": {
           "description": "数据体",
-          "$ref": "#/definitions/DataContent",
-          "originalRef": "DataContent"
+          "originalRef": "DataContent",
+          "$ref": "#/definitions/DataContent"
         },
         "ip": {
           "type": "string",
@@ -24974,8 +24929,8 @@
         "elementParkInfos": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ElementParkInfo",
-            "originalRef": "ElementParkInfo"
+            "originalRef": "ElementParkInfo",
+            "$ref": "#/definitions/ElementParkInfo"
           }
         },
         "freeColor": {
@@ -25114,15 +25069,15 @@
       "properties": {
         "currentUserInfo": {
           "description": "当前登录用户",
-          "$ref": "#/definitions/UserResponseVO",
-          "originalRef": "UserResponseVO"
+          "originalRef": "UserResponseVO",
+          "$ref": "#/definitions/UserResponseVO"
         },
         "menu": {
           "type": "array",
           "description": "菜单",
           "items": {
-            "$ref": "#/definitions/MenuResponseVO",
-            "originalRef": "MenuResponseVO"
+            "originalRef": "MenuResponseVO",
+            "$ref": "#/definitions/MenuResponseVO"
           }
         },
         "token": {
@@ -25642,8 +25597,8 @@
           "type": "array",
           "description": "颜色透明度等样式集合",
           "items": {
-            "$ref": "#/definitions/ColorTransparencyStylesDTO对象",
-            "originalRef": "ColorTransparencyStylesDTO对象"
+            "originalRef": "ColorTransparencyStylesDTO对象",
+            "$ref": "#/definitions/ColorTransparencyStylesDTO对象"
           }
         },
         "createTime": {
@@ -25666,8 +25621,8 @@
         },
         "imageStyles": {
           "description": "图片样式",
-          "$ref": "#/definitions/ImageStylesDTO对象",
-          "originalRef": "ImageStylesDTO对象"
+          "originalRef": "ImageStylesDTO对象",
+          "$ref": "#/definitions/ImageStylesDTO对象"
         },
         "isUsing": {
           "type": "integer",
@@ -25810,8 +25765,8 @@
           "type": "array",
           "description": "子菜单",
           "items": {
-            "$ref": "#/definitions/MenuResponseVO",
-            "originalRef": "MenuResponseVO"
+            "originalRef": "MenuResponseVO",
+            "$ref": "#/definitions/MenuResponseVO"
           }
         },
         "icon": {
@@ -25960,8 +25915,8 @@
           ]
         },
         "view": {
-          "$ref": "#/definitions/View",
-          "originalRef": "View"
+          "originalRef": "View",
+          "$ref": "#/definitions/View"
         },
         "viewName": {
           "type": "string"
@@ -26040,8 +25995,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/AreaCameraResponseVO",
-            "originalRef": "AreaCameraResponseVO"
+            "originalRef": "AreaCameraResponseVO",
+            "$ref": "#/definitions/AreaCameraResponseVO"
           }
         },
         "totalCount": {
@@ -26083,8 +26038,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/AreaInfoDTO",
-            "originalRef": "AreaInfoDTO"
+            "originalRef": "AreaInfoDTO",
+            "$ref": "#/definitions/AreaInfoDTO"
           }
         },
         "totalCount": {
@@ -26126,8 +26081,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/CarInOutRecordAreaResponseVO",
-            "originalRef": "CarInOutRecordAreaResponseVO"
+            "originalRef": "CarInOutRecordAreaResponseVO",
+            "$ref": "#/definitions/CarInOutRecordAreaResponseVO"
           }
         },
         "totalCount": {
@@ -26169,8 +26124,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/CarInOutResponseVO对象",
-            "originalRef": "CarInOutResponseVO对象"
+            "originalRef": "CarInOutResponseVO对象",
+            "$ref": "#/definitions/CarInOutResponseVO对象"
           }
         },
         "totalCount": {
@@ -26212,8 +26167,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/CarInOutStatisticsRespVO",
-            "originalRef": "CarInOutStatisticsRespVO"
+            "originalRef": "CarInOutStatisticsRespVO",
+            "$ref": "#/definitions/CarInOutStatisticsRespVO"
           }
         },
         "totalCount": {
@@ -26255,8 +26210,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/DeviceEventResponseVO",
-            "originalRef": "DeviceEventResponseVO"
+            "originalRef": "DeviceEventResponseVO",
+            "$ref": "#/definitions/DeviceEventResponseVO"
           }
         },
         "totalCount": {
@@ -26298,8 +26253,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ElementBeaconResponseVO",
-            "originalRef": "ElementBeaconResponseVO"
+            "originalRef": "ElementBeaconResponseVO",
+            "$ref": "#/definitions/ElementBeaconResponseVO"
           }
         },
         "totalCount": {
@@ -26341,8 +26296,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ElementConnectorResponseVO",
-            "originalRef": "ElementConnectorResponseVO"
+            "originalRef": "ElementConnectorResponseVO",
+            "$ref": "#/definitions/ElementConnectorResponseVO"
           }
         },
         "totalCount": {
@@ -26384,8 +26339,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ElementInfoDTO",
-            "originalRef": "ElementInfoDTO"
+            "originalRef": "ElementInfoDTO",
+            "$ref": "#/definitions/ElementInfoDTO"
           }
         },
         "totalCount": {
@@ -26427,8 +26382,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ElementMachineResponseVO",
-            "originalRef": "ElementMachineResponseVO"
+            "originalRef": "ElementMachineResponseVO",
+            "$ref": "#/definitions/ElementMachineResponseVO"
           }
         },
         "totalCount": {
@@ -26470,8 +26425,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ElementScreenResponseVO对象",
-            "originalRef": "ElementScreenResponseVO对象"
+            "originalRef": "ElementScreenResponseVO对象",
+            "$ref": "#/definitions/ElementScreenResponseVO对象"
           }
         },
         "totalCount": {
@@ -26513,8 +26468,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ElementScreen对象",
-            "originalRef": "ElementScreen对象"
+            "originalRef": "ElementScreen对象",
+            "$ref": "#/definitions/ElementScreen对象"
           }
         },
         "totalCount": {
@@ -26556,8 +26511,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/FloorInfoResponseVO",
-            "originalRef": "FloorInfoResponseVO"
+            "originalRef": "FloorInfoResponseVO",
+            "$ref": "#/definitions/FloorInfoResponseVO"
           }
         },
         "totalCount": {
@@ -26599,8 +26554,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/InternationalizationRelationResponseVO",
-            "originalRef": "InternationalizationRelationResponseVO"
+            "originalRef": "InternationalizationRelationResponseVO",
+            "$ref": "#/definitions/InternationalizationRelationResponseVO"
           }
         },
         "totalCount": {
@@ -26642,8 +26597,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/InternationalizationResponseVO",
-            "originalRef": "InternationalizationResponseVO"
+            "originalRef": "InternationalizationResponseVO",
+            "$ref": "#/definitions/InternationalizationResponseVO"
           }
         },
         "totalCount": {
@@ -26685,8 +26640,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/LCD屏广告方案响应",
-            "originalRef": "LCD屏广告方案响应"
+            "originalRef": "LCD屏广告方案响应",
+            "$ref": "#/definitions/LCD屏广告方案响应"
           }
         },
         "totalCount": {
@@ -26728,8 +26683,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/LCD屏广告配置响应",
-            "originalRef": "LCD屏广告配置响应"
+            "originalRef": "LCD屏广告配置响应",
+            "$ref": "#/definitions/LCD屏广告配置响应"
           }
         },
         "totalCount": {
@@ -26771,8 +26726,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/LightSchemeGroupResponseVO",
-            "originalRef": "LightSchemeGroupResponseVO"
+            "originalRef": "LightSchemeGroupResponseVO",
+            "$ref": "#/definitions/LightSchemeGroupResponseVO"
           }
         },
         "totalCount": {
@@ -26814,8 +26769,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/LightSchemeListDTO",
-            "originalRef": "LightSchemeListDTO"
+            "originalRef": "LightSchemeListDTO",
+            "$ref": "#/definitions/LightSchemeListDTO"
           }
         },
         "totalCount": {
@@ -26857,8 +26812,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/LoginLog对象0",
-            "originalRef": "LoginLog对象0"
+            "originalRef": "LoginLog对象0",
+            "$ref": "#/definitions/LoginLog对象0"
           }
         },
         "totalCount": {
@@ -26900,8 +26855,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/LotInfoMultiVO",
-            "originalRef": "LotInfoMultiVO"
+            "originalRef": "LotInfoMultiVO",
+            "$ref": "#/definitions/LotInfoMultiVO"
           }
         },
         "totalCount": {
@@ -26943,8 +26898,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/MachineAdvertisementConfigPageReqVO0",
-            "originalRef": "MachineAdvertisementConfigPageReqVO0"
+            "originalRef": "MachineAdvertisementConfigPageReqVO0",
+            "$ref": "#/definitions/MachineAdvertisementConfigPageReqVO0"
           }
         },
         "totalCount": {
@@ -26986,8 +26941,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/MapStylesResponseVO对象",
-            "originalRef": "MapStylesResponseVO对象"
+            "originalRef": "MapStylesResponseVO对象",
+            "$ref": "#/definitions/MapStylesResponseVO对象"
           }
         },
         "totalCount": {
@@ -27074,8 +27029,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/MenuResponseVO",
-            "originalRef": "MenuResponseVO"
+            "originalRef": "MenuResponseVO",
+            "$ref": "#/definitions/MenuResponseVO"
           }
         },
         "totalCount": {
@@ -27117,8 +27072,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ParkingLightSchemeResponseVO对象",
-            "originalRef": "ParkingLightSchemeResponseVO对象"
+            "originalRef": "ParkingLightSchemeResponseVO对象",
+            "$ref": "#/definitions/ParkingLightSchemeResponseVO对象"
           }
         },
         "totalCount": {
@@ -27160,8 +27115,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/PresentCarPageResponseVO对象",
-            "originalRef": "PresentCarPageResponseVO对象"
+            "originalRef": "PresentCarPageResponseVO对象",
+            "$ref": "#/definitions/PresentCarPageResponseVO对象"
           }
         },
         "totalCount": {
@@ -27203,8 +27158,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/PresentCarRecordAreaResponseVO",
-            "originalRef": "PresentCarRecordAreaResponseVO"
+            "originalRef": "PresentCarRecordAreaResponseVO",
+            "$ref": "#/definitions/PresentCarRecordAreaResponseVO"
           }
         },
         "totalCount": {
@@ -27246,8 +27201,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/ServerLog对象0",
-            "originalRef": "ServerLog对象0"
+            "originalRef": "ServerLog对象0",
+            "$ref": "#/definitions/ServerLog对象0"
           }
         },
         "totalCount": {
@@ -27289,8 +27244,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/UserResponseVO",
-            "originalRef": "UserResponseVO"
+            "originalRef": "UserResponseVO",
+            "$ref": "#/definitions/UserResponseVO"
           }
         },
         "totalCount": {
@@ -27332,8 +27287,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/WarnIllegalParkResponseVO",
-            "originalRef": "WarnIllegalParkResponseVO"
+            "originalRef": "WarnIllegalParkResponseVO",
+            "$ref": "#/definitions/WarnIllegalParkResponseVO"
           }
         },
         "totalCount": {
@@ -27375,8 +27330,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/WarnLogResponseVO",
-            "originalRef": "WarnLogResponseVO"
+            "originalRef": "WarnLogResponseVO",
+            "$ref": "#/definitions/WarnLogResponseVO"
           }
         },
         "totalCount": {
@@ -27418,8 +27373,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/WarnSpaceOccupyResponseVO",
-            "originalRef": "WarnSpaceOccupyResponseVO"
+            "originalRef": "WarnSpaceOccupyResponseVO",
+            "$ref": "#/definitions/WarnSpaceOccupyResponseVO"
           }
         },
         "totalCount": {
@@ -27461,8 +27416,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/WarnSpecialCarResponseVO",
-            "originalRef": "WarnSpecialCarResponseVO"
+            "originalRef": "WarnSpecialCarResponseVO",
+            "$ref": "#/definitions/WarnSpecialCarResponseVO"
           }
         },
         "totalCount": {
@@ -27504,8 +27459,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/区域列表查询值",
-            "originalRef": "区域列表查询值"
+            "originalRef": "区域列表查询值",
+            "$ref": "#/definitions/区域列表查询值"
           }
         },
         "totalCount": {
@@ -27547,8 +27502,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/区域设备",
-            "originalRef": "区域设备"
+            "originalRef": "区域设备",
+            "$ref": "#/definitions/区域设备"
           }
         },
         "totalCount": {
@@ -27590,8 +27545,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/节点设备列表返回值",
-            "originalRef": "节点设备列表返回值"
+            "originalRef": "节点设备列表返回值",
+            "$ref": "#/definitions/节点设备列表返回值"
           }
         },
         "totalCount": {
@@ -27633,8 +27588,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/设备上报返回信息",
-            "originalRef": "设备上报返回信息"
+            "originalRef": "设备上报返回信息",
+            "$ref": "#/definitions/设备上报返回信息"
           }
         },
         "totalCount": {
@@ -27676,8 +27631,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/设备分页查询响应实体",
-            "originalRef": "设备分页查询响应实体"
+            "originalRef": "设备分页查询响应实体",
+            "$ref": "#/definitions/设备分页查询响应实体"
           }
         },
         "totalCount": {
@@ -27719,8 +27674,8 @@
           "type": "array",
           "description": "结果集",
           "items": {
-            "$ref": "#/definitions/过夜车返回数据",
-            "originalRef": "过夜车返回数据"
+            "originalRef": "过夜车返回数据",
+            "$ref": "#/definitions/过夜车返回数据"
           }
         },
         "totalCount": {
@@ -27743,8 +27698,8 @@
       "properties": {
         "ad": {
           "description": "广告配置内容",
-          "$ref": "#/definitions/LCD屏广告方案",
-          "originalRef": "LCD屏广告方案"
+          "originalRef": "LCD屏广告方案",
+          "$ref": "#/definitions/LCD屏广告方案"
         },
         "appUrl": {
           "type": "string"
@@ -27765,8 +27720,8 @@
           "type": "array",
           "description": "引导子屏内容",
           "items": {
-            "$ref": "#/definitions/LcdChildScreenH5DTO",
-            "originalRef": "LcdChildScreenH5DTO"
+            "originalRef": "LcdChildScreenH5DTO",
+            "$ref": "#/definitions/LcdChildScreenH5DTO"
           }
         },
         "updateType": {
@@ -27839,8 +27794,8 @@
         "elementParkDTOS": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ParkInfoElementParkDTO",
-            "originalRef": "ParkInfoElementParkDTO"
+            "originalRef": "ParkInfoElementParkDTO",
+            "$ref": "#/definitions/ParkInfoElementParkDTO"
           }
         }
       },
@@ -27889,8 +27844,8 @@
         "areaInfoDTOS": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ParkInfoAreaInfoDTO",
-            "originalRef": "ParkInfoAreaInfoDTO"
+            "originalRef": "ParkInfoAreaInfoDTO",
+            "$ref": "#/definitions/ParkInfoAreaInfoDTO"
           }
         },
         "floorId": {
@@ -28118,8 +28073,8 @@
           "type": "array",
           "description": "车位灯方案和区域的关系列表",
           "items": {
-            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象",
-            "originalRef": "ParkingLightAreaRelationDTO对象"
+            "originalRef": "ParkingLightAreaRelationDTO对象",
+            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象"
           }
         },
         "type": {
@@ -28172,8 +28127,8 @@
           "type": "array",
           "description": "车位灯方案和区域的关系列表",
           "items": {
-            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象",
-            "originalRef": "ParkingLightAreaRelationDTO对象"
+            "originalRef": "ParkingLightAreaRelationDTO对象",
+            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象"
           }
         },
         "type": {
@@ -28228,8 +28183,8 @@
           "type": "array",
           "description": "车位灯方案和区域的关系列表",
           "items": {
-            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象",
-            "originalRef": "ParkingLightAreaRelationDTO对象"
+            "originalRef": "ParkingLightAreaRelationDTO对象",
+            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象"
           }
         },
         "startTime": {
@@ -28289,8 +28244,8 @@
           "type": "array",
           "description": "车位灯方案和区域的关系列表",
           "items": {
-            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象",
-            "originalRef": "ParkingLightAreaRelationDTO对象"
+            "originalRef": "ParkingLightAreaRelationDTO对象",
+            "$ref": "#/definitions/ParkingLightAreaRelationDTO对象"
           }
         },
         "type": {
@@ -28516,8 +28471,8 @@
         "points": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PointDTO",
-            "originalRef": "PointDTO"
+            "originalRef": "PointDTO",
+            "$ref": "#/definitions/PointDTO"
           }
         }
       },
@@ -28961,8 +28916,8 @@
           "type": "array",
           "description": "区域信息的集合",
           "items": {
-            "$ref": "#/definitions/RelatedAreaDTO",
-            "originalRef": "RelatedAreaDTO"
+            "originalRef": "RelatedAreaDTO",
+            "$ref": "#/definitions/RelatedAreaDTO"
           }
         }
       },
@@ -29318,8 +29273,8 @@
         },
         "lotInfo": {
           "description": "车场信息",
-          "$ref": "#/definitions/LotInfo对象",
-          "originalRef": "LotInfo对象"
+          "originalRef": "LotInfo对象",
+          "$ref": "#/definitions/LotInfo对象"
         },
         "name": {
           "type": "string",
@@ -29387,8 +29342,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeRequestVO",
-            "originalRef": "WarnTimeRequestVO"
+            "originalRef": "WarnTimeRequestVO",
+            "$ref": "#/definitions/WarnTimeRequestVO"
           }
         }
       },
@@ -29479,8 +29434,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeResponseVO",
-            "originalRef": "WarnTimeResponseVO"
+            "originalRef": "WarnTimeResponseVO",
+            "$ref": "#/definitions/WarnTimeResponseVO"
           }
         }
       },
@@ -29515,8 +29470,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeRequestVO",
-            "originalRef": "WarnTimeRequestVO"
+            "originalRef": "WarnTimeRequestVO",
+            "$ref": "#/definitions/WarnTimeRequestVO"
           }
         }
       },
@@ -29668,8 +29623,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeRequestVO",
-            "originalRef": "WarnTimeRequestVO"
+            "originalRef": "WarnTimeRequestVO",
+            "$ref": "#/definitions/WarnTimeRequestVO"
           }
         }
       },
@@ -29746,8 +29701,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeResponseVO",
-            "originalRef": "WarnTimeResponseVO"
+            "originalRef": "WarnTimeResponseVO",
+            "$ref": "#/definitions/WarnTimeResponseVO"
           }
         }
       },
@@ -29774,8 +29729,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeRequestVO",
-            "originalRef": "WarnTimeRequestVO"
+            "originalRef": "WarnTimeRequestVO",
+            "$ref": "#/definitions/WarnTimeRequestVO"
           }
         }
       },
@@ -29800,8 +29755,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeRequestVO",
-            "originalRef": "WarnTimeRequestVO"
+            "originalRef": "WarnTimeRequestVO",
+            "$ref": "#/definitions/WarnTimeRequestVO"
           }
         },
         "warnType": {
@@ -29891,8 +29846,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeResponseVO",
-            "originalRef": "WarnTimeResponseVO"
+            "originalRef": "WarnTimeResponseVO",
+            "$ref": "#/definitions/WarnTimeResponseVO"
           }
         },
         "warnType": {
@@ -29927,8 +29882,8 @@
           "type": "array",
           "description": "告警时间",
           "items": {
-            "$ref": "#/definitions/WarnTimeRequestVO",
-            "originalRef": "WarnTimeRequestVO"
+            "originalRef": "WarnTimeRequestVO",
+            "$ref": "#/definitions/WarnTimeRequestVO"
           }
         },
         "warnType": {
@@ -29984,8 +29939,8 @@
         "apiPushInfoDTOList": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ApiPushWithReportManageDTO",
-            "originalRef": "ApiPushWithReportManageDTO"
+            "originalRef": "ApiPushWithReportManageDTO",
+            "$ref": "#/definitions/ApiPushWithReportManageDTO"
           }
         },
         "cmd": {
@@ -30326,8 +30281,8 @@
         "areaDeviceRelations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/AreaDeviceRelation",
-            "originalRef": "AreaDeviceRelation"
+            "originalRef": "AreaDeviceRelation",
+            "$ref": "#/definitions/AreaDeviceRelation"
           }
         },
         "congestionStatus": {
@@ -30367,15 +30322,15 @@
         },
         "elementImpassablePath": {
           "description": "不可到达区域",
-          "$ref": "#/definitions/ElementImpassablePathDTO",
-          "originalRef": "ElementImpassablePathDTO"
+          "originalRef": "ElementImpassablePathDTO",
+          "$ref": "#/definitions/ElementImpassablePathDTO"
         },
         "elementModelList": {
           "type": "array",
           "description": "3D模型",
           "items": {
-            "$ref": "#/definitions/ElementModelDTO",
-            "originalRef": "ElementModelDTO"
+            "originalRef": "ElementModelDTO",
+            "$ref": "#/definitions/ElementModelDTO"
           }
         },
         "floorName": {
@@ -30389,8 +30344,8 @@
         },
         "jsonData": {
           "description": "附加信息",
-          "$ref": "#/definitions/附加信息",
-          "originalRef": "附加信息"
+          "originalRef": "附加信息",
+          "$ref": "#/definitions/附加信息"
         },
         "scrollRatio": {
           "type": "integer",
@@ -30493,8 +30448,8 @@
           "type": "array",
           "description": "标准上报接口配置(车位进出车、区域进出车、油车告警 这个三个标准上报接口)",
           "items": {
-            "$ref": "#/definitions/ApiPushBaseInfoDTO",
-            "originalRef": "ApiPushBaseInfoDTO"
+            "originalRef": "ApiPushBaseInfoDTO",
+            "$ref": "#/definitions/ApiPushBaseInfoDTO"
           }
         },
         "postBusInOut": {
@@ -30542,8 +30497,8 @@
           "type": "array",
           "description": "屏附加信息",
           "items": {
-            "$ref": "#/definitions/屏附加信息",
-            "originalRef": "屏附加信息"
+            "originalRef": "屏附加信息",
+            "$ref": "#/definitions/屏附加信息"
           }
         }
       },
@@ -30591,8 +30546,8 @@
           "type": "array",
           "description": "找车机附加信息",
           "items": {
-            "$ref": "#/definitions/找车机附加信息",
-            "originalRef": "找车机附加信息"
+            "originalRef": "找车机附加信息",
+            "$ref": "#/definitions/找车机附加信息"
           }
         }
       },
@@ -30766,8 +30721,8 @@
           "description": "code"
         },
         "data": {
-          "$ref": "#/definitions/ElementPathDTO",
-          "originalRef": "ElementPathDTO"
+          "originalRef": "ElementPathDTO",
+          "$ref": "#/definitions/ElementPathDTO"
         },
         "message": {
           "type": "string"
@@ -30800,8 +30755,8 @@
           "type": "array",
           "description": "柱子附加信息",
           "items": {
-            "$ref": "#/definitions/柱子附加信息",
-            "originalRef": "柱子附加信息"
+            "originalRef": "柱子附加信息",
+            "$ref": "#/definitions/柱子附加信息"
           }
         },
         "h": {
@@ -31013,8 +30968,8 @@
           "type": "array",
           "description": "蓝牙信标附件信息",
           "items": {
-            "$ref": "#/definitions/蓝牙信标附加信息",
-            "originalRef": "蓝牙信标附加信息"
+            "originalRef": "蓝牙信标附加信息",
+            "$ref": "#/definitions/蓝牙信标附加信息"
           }
         }
       },
@@ -31255,8 +31210,8 @@
           "type": "array",
           "description": "附加信息",
           "items": {
-            "$ref": "#/definitions/路网附件信息",
-            "originalRef": "路网附件信息"
+            "originalRef": "路网附件信息",
+            "$ref": "#/definitions/路网附件信息"
           }
         }
       },
@@ -31293,8 +31248,8 @@
           "type": "array",
           "description": "车位附加信息",
           "items": {
-            "$ref": "#/definitions/车位附加信息",
-            "originalRef": "车位附加信息"
+            "originalRef": "车位附加信息",
+            "$ref": "#/definitions/车位附加信息"
           }
         },
         "h": {
@@ -31527,8 +31482,8 @@
           "additionalProperties": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/ElementCustomDTO",
-              "originalRef": "ElementCustomDTO"
+              "originalRef": "ElementCustomDTO",
+              "$ref": "#/definitions/ElementCustomDTO"
             }
           }
         },
@@ -31536,8 +31491,8 @@
           "type": "array",
           "description": "楼层数据集合",
           "items": {
-            "$ref": "#/definitions/单个楼层地图数据",
-            "originalRef": "单个楼层地图数据"
+            "originalRef": "单个楼层地图数据",
+            "$ref": "#/definitions/单个楼层地图数据"
           }
         },
         "machineDebug": {
@@ -31760,8 +31715,8 @@
           "type": "array",
           "description": "通行设施附加信息",
           "items": {
-            "$ref": "#/definitions/通行设施附加信息",
-            "originalRef": "通行设施附加信息"
+            "originalRef": "通行设施附加信息",
+            "$ref": "#/definitions/通行设施附加信息"
           }
         }
       },
@@ -31803,8 +31758,8 @@
           "type": "array",
           "description": "坐标列表",
           "items": {
-            "$ref": "#/definitions/PointDTO",
-            "originalRef": "PointDTO"
+            "originalRef": "PointDTO",
+            "$ref": "#/definitions/PointDTO"
           }
         },
         "lotId": {
@@ -31820,43 +31775,43 @@
       "properties": {
         "beacon": {
           "description": "蓝牙信息",
-          "$ref": "#/definitions/蓝牙信标",
-          "originalRef": "蓝牙信标"
+          "originalRef": "蓝牙信标",
+          "$ref": "#/definitions/蓝牙信标"
         },
         "connector": {
           "description": "通行设置",
-          "$ref": "#/definitions/通行设施",
-          "originalRef": "通行设施"
+          "originalRef": "通行设施",
+          "$ref": "#/definitions/通行设施"
         },
         "floor": {
           "description": "地面信息",
-          "$ref": "#/definitions/地面",
-          "originalRef": "地面"
+          "originalRef": "地面",
+          "$ref": "#/definitions/地面"
         },
         "machine": {
           "description": "找车机",
-          "$ref": "#/definitions/找车机",
-          "originalRef": "找车机"
+          "originalRef": "找车机",
+          "$ref": "#/definitions/找车机"
         },
         "park": {
           "description": "车位信息",
-          "$ref": "#/definitions/车位",
-          "originalRef": "车位"
+          "originalRef": "车位",
+          "$ref": "#/definitions/车位"
         },
         "path": {
           "description": "路网信息",
-          "$ref": "#/definitions/路网",
-          "originalRef": "路网"
+          "originalRef": "路网",
+          "$ref": "#/definitions/路网"
         },
         "pillar": {
           "description": "柱子信息",
-          "$ref": "#/definitions/柱子",
-          "originalRef": "柱子"
+          "originalRef": "柱子",
+          "$ref": "#/definitions/柱子"
         },
         "screen": {
           "description": "屏",
-          "$ref": "#/definitions/屏幕",
-          "originalRef": "屏幕"
+          "originalRef": "屏幕",
+          "$ref": "#/definitions/屏幕"
         }
       },
       "title": "附加信息"
