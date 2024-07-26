@@ -17,8 +17,8 @@ class App:
     def __init__(self):
 
         # 从环境变量中获取环境类型，默认为开发环境
-        self.env = os.getenv('ENV', 'temp')       # dev 开发环境/ temp 临时环境
-        self.service = 'admin'     # channel、admin、findcar
+        self.env = os.getenv('ENV', 'dev')       # dev 开发环境/ temp 临时环境
+        self.service = 'channel'     # channel、admin、findcar
         self.config = ConfigLoader(self.env).config
 
         # 基本参数
@@ -56,9 +56,9 @@ class App:
             print(f"解析JSON失败: {e}")
             exit(1)
 
-        # # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
-        # with open(f'{self.json_file_path}', 'w', encoding='utf-8') as f:
-        #     json.dump(self.swagger_data, f, ensure_ascii=False, indent=2)
+        # 保存json到文件，ensure_ascii=False表示不自动转ASCII码
+        with open(f'{self.json_file_path}', 'w', encoding='utf-8') as f:
+            json.dump(self.swagger_data, f, ensure_ascii=False, indent=2)
 
     # 动态生成请求函数
     def create_request_functions(self):
