@@ -33,6 +33,25 @@ def add_marker():
     save_markers(markers)
     return jsonify(success=True)
 
+@app.route('/delete_marker', methods=['POST'])
+def delete_marker():
+    marker_id = request.json['id']
+    markers = load_markers()
+    markers = [marker for marker in markers if marker['id'] != marker_id]
+    save_markers(markers)
+    return jsonify(success=True)
+
+@app.route('/edit_marker', methods=['POST'])
+def edit_marker():
+    updated_marker = request.json
+    markers = load_markers()
+    for marker in markers:
+        if marker['id'] == updated_marker['id']:
+            marker['description'] = updated_marker['description']
+            break
+    save_markers(markers)
+    return jsonify(success=True)
+
 @app.route('/get_markers', methods=['GET'])
 def get_markers():
     markers = load_markers()
