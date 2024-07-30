@@ -18,7 +18,7 @@ class App:
 
         # 从环境变量中获取环境类型，默认为开发环境
         self.env = os.getenv('ENV', 'dev')       # dev 开发环境/ temp 临时环境
-        self.service = 'channel'     # channel、admin、findCar
+        self.service = 'channel'     # channel、admin、findCarApi
         self.config = ConfigLoader(self.env).config
 
         # 基本参数
