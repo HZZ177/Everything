@@ -18,7 +18,7 @@ class CreatTestFile:
     park_outcar = ("INFO  http-nio-7072-exec-7 c.k.stc.cs.controller.ParkController.leave:45 - "
                    "[车位状态更新接口][找车系统][出车] body={'list':[2523601],'reqId':'25bb21acee4849898074569eb973f7b9'}\n")
     plate_change = ("INFO  http-nio-7072-exec-3 c.k.stc.cs.controller.ParkController.updatePlateNo:52 - "
-                    "[更新车牌接口][有效数据] body={'list':[{'addr':2523601,'carImageUrl':'/home/findcar/FindCarServer/"
+                    "[更新车牌接口][有效数据] body={'list':[{'addr':2523601,'carImageUrl':'/home/findCar/FindCarServer/"
                     "recognition/20231123/2523601/09/2523601_20231123092540.jpg','plateNo':'蓝渝G83666',"
                     "'plateNoReliability':820}],"
                     "'reqId':'bf2cabdf4f8b419288bca9281b41c79a'}\n")
