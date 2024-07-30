@@ -13,8 +13,6 @@ def test_request(setup):
     token = setup
     print(token)
 
-def
-
 
 if __name__ == "__main__":
     pytest.main([__file__])
