@@ -1,6 +1,7 @@
 url:
-  base_url: "http://192.168.21.249"
-  login_url: "http://192.168.21.249/web/login"
+  base_url: "http://119.3.77.222"
+  login_url: "http://119.3.77.222:35002/web/login"
+  login_api: "http://119.3.77.222:35002/auth/login"
 
 port:
   "admin": "8083"
@@ -14,4 +15,4 @@ swagger_path:
 
 account:
   "username": "admin@keytop.com"
-  "password": "keytop2022"
+  "password": "keytop123456"

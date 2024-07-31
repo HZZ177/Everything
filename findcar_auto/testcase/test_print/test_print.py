@@ -17,7 +17,6 @@ logger = logging.getLogger('test_print_module')
 
 class Testprint:
     def test_print(self):
-        print("22")
         logger.info("666")
 
 

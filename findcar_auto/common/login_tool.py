@@ -1,3 +1,5 @@
+from time import sleep
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -7,7 +9,13 @@ from selenium.webdriver.edge.options import Options
 from findcar_auto.common import baidu_ocr_api
 import base64
 import json
+import os
 from findcar_auto.common import file_path
+from loguru import logger
+
+
+class VerificationCodeError(Exception):
+    pass
 
 
 class LogInTool:
@@ -20,7 +28,7 @@ class LogInTool:
         self.username = username
         self.password = password
         # 设定保存验证码图片目录
-        self.save_path = file_path.verify_picture_path
+        self.save_path = file_path.verify_picture_path+r"\verify_code.png"
 
     def open_web(self):
         # 打开网页
@@ -39,7 +47,8 @@ class LogInTool:
             jsessionid = [cookie["value"] for cookie in cookies if cookie["name"] == "JSESSIONID"][0]
             return jsessionid
         else:
-            return "获取jsessionid时，页面加载出现未知异常，10秒内捕获验证码图片失败，请检查！"
+            logger.error("获取jsessionid时，页面加载出现未知异常，10秒内捕获验证码图片失败，请检查！")
+            return
 
     def get_picture_src(self):
         """
@@ -61,13 +70,25 @@ class LogInTool:
         """
         # 定位验证码图片
         wait = WebDriverWait(self.driver, 5)
-        picture_element = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "h-full")))
-        # picture_element = self.driver.find_element(By.CLASS_NAME, "h-full")
-        result = picture_element.screenshot(self.save_path)
-        if result:
-            print(f"成功获取验证码图片，保存在{file_path.verify_picture_path}")
-        else:
-            print("验证码图片保存失败，请检查！")
+        try:
+            picture_element = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "h-full")))
+            # logger.info(f"保存路径: {self.save_path}")
+
+            # 检查路径是否存在，不存在则创建
+            save_dir = os.path.dirname(self.save_path)
+            if not os.path.exists(save_dir):
+                logger.info(f"路径不存在，创建路径: {save_dir}")
+                os.makedirs(save_dir)
+
+            result = picture_element.screenshot(self.save_path)
+            if result:
+                logger.info(f"成功获取验证码图片，保存在{self.save_path}")
+            else:
+                logger.info("验证码图片保存失败，请检查路径和写权限")
+                raise VerificationCodeError("验证码图片保存失败")
+        except Exception as e:
+            logger.error("获取验证码图片过程中发生错误", exc_info=True)
+            raise VerificationCodeError from e
 
     def get_picture_num_by_baidu_ocr(self):
         # 定位并截图保存验证码图片
@@ -87,7 +108,7 @@ class LogInTool:
         # 取出返回体中的识别结果value
         for words_result in result_json["words_result"]:
             text = text + words_result["words"]
-        print(f"百度ocr识别结果：{text}")
+        logger.info(f"百度ocr识别结果：{text}")
         return text
 
     def login(self):
@@ -117,7 +138,7 @@ def get_login_info(url, username, password):
     count = 0   # 定义最大重试次数
     while True:
         driver.open_web()
-        print("已打开网页，开始获取验证码图片！")
+        logger.info("成功打开登录页面，开始获取验证码图片")
         jsessionid = driver.get_jsessionid()
         verify_code = driver.get_picture_num_by_baidu_ocr()
         if len(verify_code) == 4:   # 如果验证码识别位数为4，则判断是否含有非正整数
@@ -128,7 +149,7 @@ def get_login_info(url, username, password):
                     is_digit = 0
             if is_digit == 0:
                 count += 1
-                print(f"验证码中存在非正整数，即将进行第{count}次重试！")
+                logger.info(f"验证码中存在非正整数，即将进行第{count}次重试")
             else:
                 result = {
                     "jsessionid": jsessionid,
@@ -137,10 +158,11 @@ def get_login_info(url, username, password):
                 return result
         elif count == 3:    # 识别重试三次之后仍然获取不到四位数的识别结果，返回失败信息，手动检查
             driver.driver.close()   # 关闭浏览器
-            raise Exception("==============百度ocr识别已失败三次，请检查！==============")
+            logger.error("==============百度ocr识别已失败三次，请检查==============")
+            raise Exception
         else:  # 如果在重试次数消耗完之前，返回识别结果不是4位数，重新打开页面，获取图片并识别
             count += 1
-            print(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重试!")
+            logger.info(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重试")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ environment229_page = "http://117.173.153.92:57108/web/login"   # 公网地址
 """登录地址"""
 environment250_login = "http://192.168.25.250:8083/auth/login"
 environment249_login = "http://192.168.25.249:8083/auth/login"
-environment229_login = "http://117.173.153.92:57108/auth/login"  # 公网地址
+environment229_login = "http://119.3.77.222:35001/auth/login"  # 公网地址
 
 """一级目录"""  # 项目一级文件夹目录
 project_path = os.path.dirname(os.path.realpath(__file__))  # 当前文件夹目录（Files）
