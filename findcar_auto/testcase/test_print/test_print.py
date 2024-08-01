@@ -7,17 +7,18 @@
 # @description:
 
 import logging
+from time import sleep
+
 import allure
 import pytest
 import os
-
-# 配置 logger 模块
-logger = logging.getLogger('test_print_module')
+from findcar_auto.common.log_tool import logger
 
 
 class Testprint:
     def test_print(self):
-        logger.info("666")
+        logger.info("测试用例啦啦啦")
+        sleep(0.5)
 
 
 if __name__ == '__main__':

@@ -12,3 +12,4 @@ Others/adb_tool/logs/
 
 /findcar_auto/testcase/report/allure-results/*
 /findcar_auto/testcase/report/allure-report/*
+/findcar_auto/testcase/pytest_log/*

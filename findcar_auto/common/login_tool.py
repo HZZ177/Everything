@@ -28,11 +28,13 @@ class LogInTool:
         self.username = username
         self.password = password
         # 设定保存验证码图片目录
-        self.save_path = file_path.verify_picture_path+r"\verify_code.png"
+        self.save_path = rf'{file_path.verify_picture_path}\verify_code.png'
 
     def open_web(self):
         # 打开网页
         self.driver.get(self.url)
+        # 最小化浏览器窗口
+        self.driver.minimize_window()
 
     def get_jsessionid(self):
         """

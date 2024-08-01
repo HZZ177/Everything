@@ -28,7 +28,7 @@ def main():
 
     for step in steps:
         if "allure open" in step:
-            # 使用 Popen 来打开浏览器，不等待它完成
+            # 使用 Popen 来打开浏览器，否则会保持服务一直打开，关不掉
             subprocess.Popen(step, shell=True)
         else:
             result = subprocess.run(step, shell=True)
