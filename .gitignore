@@ -10,5 +10,5 @@ Others/adb_tool/logs/
 /Others/API_tool/data/*
 /Others/map/uploads/*
 
-/findcar_auto/testcase/report/allure-results/
-/findcar_auto/testcase/report/allure-report/
+/findcar_auto/testcase/report/allure-results/*
+/findcar_auto/testcase/report/allure-report/*
