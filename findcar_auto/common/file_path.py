@@ -17,11 +17,12 @@ test_case_path = os.path.abspath(os.path.join(project_path, 'testcase'))
 test_data_path = os.path.abspath(os.path.join(project_path, 'testdata'))
 test_file_path = os.path.abspath(os.path.join(project_path, 'file'))
 pictures_path = os.path.abspath(os.path.join(project_path, 'pictures'))
+run_pytest_path = os.path.abspath(os.path.join(project_path, 'z_run_pytest'))
 
 '''二级目录'''
 config_path = os.path.abspath(os.path.join(test_data_path, 'config'))
 verify_picture_path = os.path.abspath(os.path.join(pictures_path, 'verified_picture'))
-pytest_log_path = os.path.abspath(os.path.join(test_case_path, 'pytest_log'))
+pytest_log_path = os.path.abspath(os.path.join(run_pytest_path, 'pytest_log'))
 
 '''三级目录'''
 test_config_path = os.path.abspath(os.path.join(config_path, 'test_config.yml'))

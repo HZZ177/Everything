@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/7/27 上午2:00
 # @Author  : Heshouyi
-# @File    : run_pytest.py
+# @File    : z_run_pytest.py
 # @Software: PyCharm
 # @description:
 
@@ -11,7 +11,7 @@ import os
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logger = logging.getLogger('run_pytest')
+logger = logging.getLogger('z_run_pytest')
 
 # 设置 LANG 环境变量
 # os.environ['LANG'] = 'zh_CN'
@@ -21,8 +21,8 @@ def main():
     """主函数"""
 
     steps = [
-        "pytest --alluredir report/allure-results --clean-alluredir -p no:warnings",
-        "allure generate report/allure-results -c -o report/allure-report",
+        "pytest --alluredir z_run_pytest/report/allure-results --clean-alluredir -p no:warnings",
+        "allure generate z_run_pytest/report/allure-results -c -o z_run_pytest/report/allure-report",
         # "allure open report/allure-report"
     ]
 

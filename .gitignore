@@ -10,9 +10,9 @@ Others/adb_tool/logs/
 /Others/API_tool/data/*
 /Others/map/uploads/*
 
-/findcar_auto/testcase/report/allure-results/*
-/findcar_auto/testcase/report/allure-report/*
-/findcar_auto/testcase/pytest_log/*
+/findcar_auto/z_run_pytest/report/allure-results/*
+/findcar_auto/z_run_pytest/report/allure-report/*
+/findcar_auto/z_run_pytest/pytest_log/*
 /findcar_auto/pictures/verified_picture/verify_code.png
 /Others/map/markers.json
 /Others/map/interactive_map.html

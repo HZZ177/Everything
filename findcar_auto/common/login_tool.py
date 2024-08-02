@@ -21,7 +21,7 @@ class VerificationCodeError(Exception):
 class LogInTool:
     def __init__(self, url, username, password):
         self.edge_option = Options()
-        self.edge_option.headless = True  # 设置无头浏览器
+        self.edge_option.add_argument("--headless")  # 无头模式
         self.driver = webdriver.Edge(options=self.edge_option)
         self.driver.implicitly_wait(10)
         self.url = url
@@ -33,8 +33,6 @@ class LogInTool:
     def open_web(self):
         # 打开网页
         self.driver.get(self.url)
-        # 最小化浏览器窗口
-        self.driver.minimize_window()
 
     def get_jsessionid(self):
         """
