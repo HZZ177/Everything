@@ -29,9 +29,8 @@ def login(verify_code, jsessionid=''):
     res = requests.get(url, headers=headers, params=params)
     try:
         message = res.json()
-        if message['code'] != "200":
-            logger.info(message)
-            logger.info("接口请求成功但登录失败，请检查账号密码和验证码是否正确")
+        if message['message'] != "成功":
+            logger.info(f"接口请求成功但登录失败，接口返回message:{message['message']}")
         else:
             logger.info(f"登录接口成功！")
         return message

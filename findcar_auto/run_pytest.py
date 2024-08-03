@@ -21,7 +21,7 @@ def main():
     """主函数"""
 
     steps = [
-        "pytest --alluredir z_run_pytest/report/allure-results --clean-alluredir -p no:warnings",
+        "pytest --alluredir z_run_pytest/report/allure-results --clean-alluredir",
         "allure generate z_run_pytest/report/allure-results -c -o z_run_pytest/report/allure-report",
         # "allure open report/allure-report"
     ]
@@ -32,8 +32,8 @@ def main():
             subprocess.Popen(step, shell=True)
         else:
             result = subprocess.run(step, shell=True)
-            if result.returncode != 0:
-                logger.warning(f"执行步骤出错: {step}")
+            if result.returncode in [2,3]:
+                logger.warning(f"pytest执行过程中出错,执行返回状态码：{result.returncode}")
                 break
 
 

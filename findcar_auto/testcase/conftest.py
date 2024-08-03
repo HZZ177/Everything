@@ -18,12 +18,9 @@ config = configger.load_config()
 
 
 @pytest.fixture(scope="session", autouse=True)
-def global_setup_and_teardown():
-    logger.info("===============================【【正在执行global级前置处理 获取超管Token】】===============================")
+def global_setup_and_teardown(request):
+    request.addfinalizer(global_session_teardown)
     global_session_setup()
-    yield
-    logger.info("=================================【【正在执行global级后置处理】】=================================")
-    global_session_teardown()
 
 
 @allure.step("global前置，获取超管token")
@@ -32,6 +29,7 @@ def global_session_setup():
     前置处理，通过selenium打开登录界面拿到关联的参数，之后通过接口登录获取返回的时效性token
     :return:超管Token
     """
+    logger.info("===============================【正在执行global级前置处理 获取超管Token】===============================")
     login_page_url = config['url']['admin_url']+config['url']['login_page_route']   # 定义获取参数路径（网页）
 
     # 先清空yml中的历史Token
@@ -69,7 +67,7 @@ def global_session_setup():
                     logger.info(f"登录成功！获取Token：{token}")
                     configger.update_config("Token", token)
                     logger.info("Token已更新到yml")
-                    return token
+                    break
                 elif message == "验证码错误":
                     count += 1
                     logger.info(f"验证码输入错误，正在进行第{count}次重试，获取登录参数")
@@ -86,9 +84,7 @@ def global_session_setup():
 
 @allure.step("global后置")
 def global_session_teardown():
-
-    logger.info("=================================【【global级后置处理完成】】=================================")
-    return
+    logger.info("=================================【正在执行global级后置处理】=================================")
 
 
 if __name__ == '__main__':

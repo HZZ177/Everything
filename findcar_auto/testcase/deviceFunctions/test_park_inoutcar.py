@@ -13,7 +13,7 @@ from findcar_auto.model.findCarApi import findCar_channel_api
 
 class TestParkInOutCar:
 
-    park_list = [2523601]  # 入车的车位地址列表
+    park_list = [2523603]  # 入车的车位地址列表
     carimageurl = 'http://123'  # 入车图片地址
     plateno = '川ABC123'  # 入车车牌号
     platenoreliability = None  # 入车车牌可信度
@@ -81,3 +81,7 @@ class TestParkInOutCar:
             except Exception:
                 logger.exception(f"出车失败，报错信息：")
             assert message['message'] == '成功', "出车失败，请检查出车接口返回信息"
+
+
+if __name__ == '__main__':
+    pytest.main(['-sv'], ['test_park_inoutcar.py'])
