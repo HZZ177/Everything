@@ -13,8 +13,6 @@ def encrypt_password(message):
     public_key_str = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3aXGhT7IJgwjv09ripaeyqgFVg8Vnp4RzuDc9LCKJNyS7dmOUtotycjddQGLLVXnB3bM4YnLYyeVrQO1LZCJF9dlCw7y9PC/nZ50blCBGM6K0fh2NzEi30eyNi8k70PWmO/sf+VDvnezbfEp4pw+SwJpLZ820db3BP0IBSr9ybQIDAQAB\n-----END PUBLIC KEY-----\n"
     # 公钥字符串格式转换为公钥特殊格式，方便rsa加密调用
     public_key = rsa.PublicKey.load_pkcs1_openssl_pem(public_key_str.encode())
-    # 未加密原始信息
-    message = message
     # 使用公钥加密原始信息，得到rsa加密后的二进制字节串
     crypto_message = rsa.encrypt(message.encode(), public_key)
     # print(crypto_message)
@@ -28,4 +26,5 @@ def encrypt_password(message):
 
 
 if __name__ == '__main__':
-    print(encrypt_password(message="keytop123456"))
+    # print(encrypt_password(message="keytop123456"))
+    pass

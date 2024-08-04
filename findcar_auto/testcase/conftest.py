@@ -45,7 +45,7 @@ def global_session_setup():
     logger.info("正在尝试使用默认验证码登录")
     try:
         res = findCar_admin_api.login(verify_code)
-        if res['code'] == "200":
+        if res['message'] == "成功":
             token = res['data']['token']
             logger.info(f"默认验证码登录成功！获取Token：{token}")
             return token

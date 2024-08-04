@@ -1,4 +1,4 @@
-base_url: "http://192.168.31.23"
+base_url: "http://192.168.31.78"
 
 port:
   "admin": "8083"

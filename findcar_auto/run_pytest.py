@@ -13,9 +13,6 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger('z_run_pytest')
 
-# 设置 LANG 环境变量
-# os.environ['LANG'] = 'zh_CN'
-
 
 def main():
     """主函数"""
