@@ -10,7 +10,7 @@ import pytest
 from findcar_auto.common.log_tool import logger
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def module_setupandteardown(request):
     request.addfinalizer(teardown_module)
     setup_module()

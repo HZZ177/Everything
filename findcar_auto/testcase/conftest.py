@@ -48,6 +48,8 @@ def global_session_setup():
         if res['message'] == "成功":
             token = res['data']['token']
             logger.info(f"默认验证码登录成功！获取Token：{token}")
+            configger.update_config("Token", token)
+            logger.info("Token已更新到yml")
             return token
         else:
             logger.info("使用默认验证码登录失败，尝试ocr识别登录")
