@@ -6,23 +6,22 @@
 # @Software: PyCharm
 # @description:
 import os
-import requests
 import json
 import re
-from tool.config_loader import ConfigLoader
+import requests
+from findcar_auto.common.config_loader import configger
 
 
 class App:
 
     def __init__(self, service):
-
         # 从环境变量中获取环境类型，默认为开发环境
         self.env = os.getenv('ENV', 'dev')       # dev 开发环境/ temp 临时环境
         self.service = service  # 服务名称
-        self.config = ConfigLoader(self.env).config
+        self.config = configger.load_config()
 
         # 基本参数
-        self.base_url = self.config['base_url'] + ':' + self.config['port'][self.service]
+        self.base_url = self.config['url'][self.service + '_url']
         self.swagger_url = self.base_url + self.config['swagger_path'][self.service]
         self.swagger_data = None
         self.current_path = os.path.abspath(os.path.dirname(__file__))
@@ -104,63 +103,50 @@ class App:
                 param_list.append(f"{param_name}: {param_type}")
                 param_names.append(param_name)
                 param_annotations.append(
-                    f":param {param_type} {param_name}: {param.get('description', 'No description')}")
+                    f":param {param_type} {param_name}: {param.get('description', '暂无参数描述')}")
 
         param_list.append("access_token: str")
         param_names.append("access_token")
-        param_annotations.append(":param str access_token: The access token for authentication")
+        param_annotations.append(":param str access_token: 接口请求Token")
 
         param_str = ", ".join(param_list)
-        param_annotations_str = "\n        ".join(param_annotations)
-        function_code = f"    def {function_name}(self, {param_str}):\n"
-        function_code += f'        """\n        {summary}\n        {param_annotations_str}\n        """\n'
-        function_code += f"        url = self.base_url + '{path}'\n"
+        param_annotations_str = "\n    ".join(param_annotations)
+        function_code = f"def {function_name}({param_str}):\n"
+        function_code += f'    """\n    {summary}\n    {param_annotations_str}\n    """\n'
+        function_code += f"    url = config['url']['{self.service}_url'] + '{path}'\n"
 
         # 构建请求参数字典
-        function_code += "        params = {\n"
+        function_code += "    params = {\n"
         for param_name in param_names:
             if param_name != 'access_token':
-                function_code += f"            '{param_name}': {param_name},\n"
-        function_code += "        }\n"
+                function_code += f"        '{param_name}': {param_name},\n"
+        function_code += "    }\n"
 
         # 构建请求头
-        function_code += "        headers = {\n"
-        function_code += "            'Accesstoken': f'{access_token}'\n"
-        function_code += "        }\n"
+        function_code += "    headers = {\n"
+        function_code += "        'Accesstoken': f'{access_token}'\n"
+        function_code += "    }\n"
 
-        # 添加发送请求的代码
-        function_code += f"        response = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
-        function_code += "        return response.json()\n"
-        function_code += "\n"
+        # 添加发送请求的固定式代码
+        function_code += f"    res = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
+        function_code += "    try:\n"
+        function_code += "      message = res.json()\n"
+        function_code += "      if message['message'] != '成功':\n"
+        function_code += "          logger.info(f'接口返回失败，接口返回message:{message['message']}')\n"
+        function_code += "      else:\n"
+        function_code += "          logger.info(f'接口返回成功！')\n"
+        function_code += "      return message\n"
+        function_code += "    except Exception:\n"
+        function_code += "      logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')\n"
+        function_code += "\n\n"
 
         return function_code
-
-    def create_request_functions(self):
-        format_service = self.service.capitalize()
-        functions_code = f"class {format_service}API:\n"
-        functions_code += "    def __init__(self, base_url):\n"
-        functions_code += "        self.base_url = base_url\n\n"
-
-        # 提取接口路径和方法
-        for path, path_item in self.swagger_data['paths'].items():
-            # 跳过包含 **、{xxx} 和中文字符的路径
-            if '**' in path or '{' in path or re.search('[\u4e00-\u9fff]', path):
-                continue
-
-            for method, operation in path_item.items():
-                function_code = self.create_request_function(path, method, operation)
-                functions_code += function_code
-
-        return functions_code
 
     def generate_functions_for_paths(self, paths, custom_function_names=None):
         if custom_function_names is None:
             custom_function_names = {}
 
-        format_service = self.service.capitalize()
-        functions_code = f"class {format_service}API:\n"
-        functions_code += "    def __init__(self, base_url):\n"
-        functions_code += "        self.base_url = base_url\n\n"
+        functions_code = ""
 
         for path in paths:
             path_item = self.swagger_data['paths'].get(path)
@@ -175,16 +161,18 @@ class App:
         return functions_code
 
     def generate(self, functions_code):
-
         # 将生成的函数代码保存到文件
         with open(f'{self.function_file_path}', 'w', encoding='utf-8') as f:
-            f.write("import requests\n\n\n")
+            f.write("import requests\n")
+            f.write("from findcar_auto.common.config_loader import configger\n\n")
+            f.write("from findcar_auto.common.log_tool import logger\n\n")
+            f.write("config = configger.load_config()\n\n\n")
             f.write(functions_code)
 
 
 if __name__ == '__main__':
 
-    app = App('channel')
+    app = App('')
     app.get_json_data()
 
     # 生成多个路径的请求函数
@@ -192,8 +180,8 @@ if __name__ == '__main__':
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
         '/park/enter': 'enter',
-        '/park/updatePlateNo': 'updateplate'
+        '/park/updatePlateNo': 'updateplateno'
     }
 
     functions_code = app.generate_functions_for_paths(paths, custom_function_names)
-    app.generate(functions_code)  # 生成代码输出到文件
+    app.generate(functions_code)
