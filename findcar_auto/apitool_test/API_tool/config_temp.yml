@@ -1,0 +1,10 @@
+base_url: "http://119.3.77.222"
+
+port:
+  "admin": "35038"
+  "channel": "7072"
+  "findcar": "8080"
+
+swagger_path:
+  "admin": "/v2/api-docs?group=3D%E5%AF%BB%E8%BD%A6%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E5%8F%A3"
+  "channel": "/v2/api-docs?group=front-api"
