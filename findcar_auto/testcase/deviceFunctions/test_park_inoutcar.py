@@ -7,8 +7,13 @@
 # @description:
 import allure
 import pytest
+
+from findcar_auto.common.config_loader import configger
 from findcar_auto.common.log_tool import logger
 from findcar_auto.model.findCarApi import findCar_channel_api
+
+config = configger.load_config()
+token = config['Token']
 
 
 class TestParkInOutCar:
@@ -27,7 +32,7 @@ class TestParkInOutCar:
         logger.info("===========================【正在执行用例】===========================")
         message = None
         with allure.step(f"对车位{self.park_list}入车"):
-            res = findCar_channel_api.park_enter(self.park_list)
+            res = findCar_channel_api.park_enter(self.park_list, token=token)
         with allure.step(f"判断入车结果"):
             try:
                 message = res.json()
@@ -49,7 +54,7 @@ class TestParkInOutCar:
         message = None
         for car_addr in self.park_list:
             with allure.step(f"更新车位{car_addr}车牌号"):
-                res = findCar_channel_api.park_updateplateno(addr=car_addr, carimageurl=self.carimageurl, plateno=self.plateno, platenoreliability=self.platenoreliability)
+                res = findCar_channel_api.park_updateplateno(addr=car_addr, carimageurl=self.carimageurl, plateno=self.plateno, platenoreliability=self.platenoreliability, token=token)
             with allure.step("判断更新车牌号结果"):
                 try:
                     message = res.json()
@@ -70,7 +75,7 @@ class TestParkInOutCar:
         logger.info("===========================【正在执行用例】===========================")
         message = None
         with allure.step(f"对车位{self.park_list}出车"):
-            res = findCar_channel_api.park_leave(self.park_list)
+            res = findCar_channel_api.park_leave(self.park_list, token=token)
         with allure.step(f"判断出车结果"):
             try:
                 message = res.json()

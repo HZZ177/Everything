@@ -1,9 +1,9 @@
 # 一些基础url定义
 url:
-  base_url: http://192.168.31.78
-  admin_url: http://192.168.31.78:8083
-  channel_url: http://192.168.31.78:7072
-  findcar_url: http://192.168.31.78:8080
+  base_url: http://192.168.21.249
+  admin_url: http://192.168.21.249:8083
+  channel_url: http://192.168.21.249:7072
+  findcar_url: http://192.168.21.249:8080
   login_page_route: /web/login
 
 # 各服务端口

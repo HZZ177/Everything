@@ -17,7 +17,7 @@ config = configger.load_config()
 
 
 @allure.step('车位入车')
-def park_enter(parklist: list):
+def park_enter(parklist: list, Token):
     """
         入车接口
         :param parklist: 入车的车位地址列表
@@ -26,7 +26,7 @@ def park_enter(parklist: list):
     # 检查并添加新的Token到 header 中
     url = config['url']['channel_url'] + "/park/enter"
     headers = {
-        'Token': config['Token']
+        'Token': Token
     }
     params = {
         'list': parklist,
@@ -38,7 +38,7 @@ def park_enter(parklist: list):
 
 
 @allure.step('车位出车')
-def park_leave(parklist: list):
+def park_leave(parklist: list, Token):
     """
         入车接口
         :param parklist: 出车的车位地址列表
@@ -47,7 +47,7 @@ def park_leave(parklist: list):
     # 检查并添加新的Token到 header 中
     url = config['url']['channel_url'] + "/park/leave"
     headers = {
-        'Token': config['Token']
+        'Token': Token
     }
     params = {
         'list': parklist,
@@ -59,7 +59,7 @@ def park_leave(parklist: list):
 
 
 @allure.step('车位更新车牌')
-def park_updateplateno(addr, carimageurl, plateno, platenoreliability=900):
+def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900):
     """
     更新车牌号
     :param addr: 需要更新车牌的车位地址
@@ -71,7 +71,7 @@ def park_updateplateno(addr, carimageurl, plateno, platenoreliability=900):
     # 检查并添加新的Token到 header 中
     url = config['url']['channel_url'] + "/park/updatePlateNo"
     headers = {
-        'Token': config['Token']
+        'Token': Token
     }
     params = {
         'list': [

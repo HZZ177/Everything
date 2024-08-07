@@ -70,7 +70,7 @@ class App:
             else:
                 function_name = path_parts[-1].lower()
 
-        summary = operation.get('summary', 'No summary provided').replace('\n', ' ')
+        summary = operation.get('summary', '暂无参数描述').replace('\n', ' ')
         params = operation.get('parameters', [])
 
         # 动态生成函数代码
@@ -97,7 +97,7 @@ class App:
                     param_list.append(f"{prop_name}: {prop_type}")
                     param_names.append(prop_name)
                     param_annotations.append(
-                        f":param {prop_type} {prop_name}: {prop_details.get('description', 'No description')}")
+                        f":param {prop_type} {prop_name}: {prop_details.get('description', '暂无参数描述')}")
             else:
                 param_type = self.type_mapping.get(param.get('type', 'string'), 'str')
                 param_list.append(f"{param_name}: {param_type}")
@@ -105,9 +105,9 @@ class App:
                 param_annotations.append(
                     f":param {param_type} {param_name}: {param.get('description', '暂无参数描述')}")
 
-        param_list.append("access_token: str")
-        param_names.append("access_token")
-        param_annotations.append(":param str access_token: 接口请求Token")
+        param_list.append("token: str")
+        param_names.append("token")
+        param_annotations.append(":param str token: 接口请求Token")
 
         param_str = ", ".join(param_list)
         param_annotations_str = "\n    ".join(param_annotations)
@@ -118,26 +118,26 @@ class App:
         # 构建请求参数字典
         function_code += "    params = {\n"
         for param_name in param_names:
-            if param_name != 'access_token':
+            if param_name != 'token':
                 function_code += f"        '{param_name}': {param_name},\n"
         function_code += "    }\n"
 
         # 构建请求头
         function_code += "    headers = {\n"
-        function_code += "        'Accesstoken': f'{access_token}'\n"
+        function_code += "        'Token': f'{token}'\n"
         function_code += "    }\n"
 
         # 添加发送请求的固定式代码
         function_code += f"    res = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
         function_code += "    try:\n"
-        function_code += "      message = res.json()\n"
-        function_code += "      if message['message'] != '成功':\n"
-        function_code += "          logger.info(f'接口返回失败，接口返回message:{message['message']}')\n"
-        function_code += "      else:\n"
-        function_code += "          logger.info(f'接口返回成功！')\n"
-        function_code += "      return message\n"
+        function_code += "        message = res.json()\n"
+        function_code += "        if message['message'] != '成功':\n"
+        function_code += "            logger.info(f'接口返回失败，接口返回message：{message['message']}')\n"
+        function_code += "        else:\n"
+        function_code += "            logger.info(f'接口返回成功！')\n"
+        function_code += "        return message\n"
         function_code += "    except Exception:\n"
-        function_code += "      logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')\n"
+        function_code += "        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')\n"
         function_code += "\n\n"
 
         return function_code
@@ -160,6 +160,10 @@ class App:
 
         return functions_code
 
+    def generate_all_functions(self):
+        paths = list(self.swagger_data['paths'].keys())
+        return self.generate_functions_for_paths(paths)
+
     def generate(self, functions_code):
         # 将生成的函数代码保存到文件
         with open(f'{self.function_file_path}', 'w', encoding='utf-8') as f:
@@ -172,16 +176,18 @@ class App:
 
 if __name__ == '__main__':
 
-    app = App('')
+    app = App('channel')
     app.get_json_data()
 
-    # 生成多个路径的请求函数
-    paths = ['/park/enter', '/park/updatePlateNo']  # 接口的实际路由列表
-    # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
-    custom_function_names = {
-        '/park/enter': 'enter',
-        '/park/updatePlateNo': 'updateplateno'
-    }
-
-    functions_code = app.generate_functions_for_paths(paths, custom_function_names)
-    app.generate(functions_code)
+    # # 生成多个路径的请求函数
+    # paths = ['/park/enter', '/park/updatePlateNo']  # 接口的实际路由列表
+    # # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
+    # custom_function_names = {
+    #     '/park/enter': 'enter',
+    #     '/park/updatePlateNo': 'updateplateno'
+    # }
+    #
+    # functions_code = app.generate_functions_for_paths(paths, custom_function_names)
+    # app.generate(functions_code)
+    res = app.generate_all_functions()
+    app.generate(res)
