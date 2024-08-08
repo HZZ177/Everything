@@ -16,7 +16,6 @@ from findcar_auto.common.log_tool import logger
 config = configger.load_config()
 
 
-@allure.step('车位入车')
 def park_enter(parklist: list, Token):
     """
         入车接口
@@ -34,10 +33,17 @@ def park_enter(parklist: list, Token):
     }
 
     res = requests.post(url, headers=headers, json=params)
-    return res
+    try:
+        message = res.json()
+        if message['message'] != '成功':
+            logger.info(f'接口返回失败，接口返回message：{message['message']}')
+        else:
+            logger.info(f'接口返回成功！')
+        return message
+    except Exception:
+        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
 
-@allure.step('车位出车')
 def park_leave(parklist: list, Token):
     """
         入车接口
@@ -55,10 +61,17 @@ def park_leave(parklist: list, Token):
     }
 
     res = requests.post(url, headers=headers, json=params)
-    return res
+    try:
+        message = res.json()
+        if message['message'] != '成功':
+            logger.info(f'接口返回失败，接口返回message：{message['message']}')
+        else:
+            logger.info(f'接口返回成功！')
+        return message
+    except Exception:
+        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
 
-@allure.step('车位更新车牌')
 def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900):
     """
     更新车牌号
@@ -86,4 +99,12 @@ def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900
     }
 
     res = requests.post(url, headers=headers, json=params)
-    return res
+    try:
+        message = res.json()
+        if message['message'] != '成功':
+            logger.info(f'接口返回失败，接口返回message：{message['message']}')
+        else:
+            logger.info(f'接口返回成功！')
+        return message
+    except Exception:
+        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')

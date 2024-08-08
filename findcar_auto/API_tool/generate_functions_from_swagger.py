@@ -85,8 +85,16 @@ class App:
             param_name = param['name'].lower()
             if param['in'] == 'query':
                 query_params.append(param_name)
+                param_list.append(f"{param_name}: {self.type_mapping.get(param.get('type', 'string'), 'str')}")
+                param_names.append(param_name)
+                param_annotations.append(
+                    f":param {self.type_mapping.get(param.get('type', 'string'), 'str')} {param_name}: {param.get('description', '暂无参数描述')}")
             elif param['in'] == 'path':
                 path_params.append(param_name)
+                param_list.append(f"{param_name}: {self.type_mapping.get(param.get('type', 'string'), 'str')}")
+                param_names.append(param_name)
+                param_annotations.append(
+                    f":param {self.type_mapping.get(param.get('type', 'string'), 'str')} {param_name}: {param.get('description', '暂无参数描述')}")
             elif param['in'] == 'body' and '$ref' in param['schema']:
                 ref = param['schema']['$ref'].split('/')[-1]
                 definition = self.swagger_data['definitions'][ref]
@@ -105,9 +113,9 @@ class App:
                 param_annotations.append(
                     f":param {param_type} {param_name}: {param.get('description', '暂无参数描述')}")
 
-        param_list.append("token: str")
+        param_list.append("token=''")
         param_names.append("token")
-        param_annotations.append(":param str token: 接口请求Token")
+        param_annotations.append(":param token: 接口请求Token")
 
         param_str = ", ".join(param_list)
         param_annotations_str = "\n    ".join(param_annotations)
@@ -115,20 +123,35 @@ class App:
         function_code += f'    """\n    {summary}\n    {param_annotations_str}\n    """\n'
         function_code += f"    url = config['url']['{self.service}_url'] + '{path}'\n"
 
-        # 构建请求参数字典
-        function_code += "    params = {\n"
-        for param_name in param_names:
-            if param_name != 'token':
-                function_code += f"        '{param_name}': {param_name},\n"
-        function_code += "    }\n"
-
         # 构建请求头
         function_code += "    headers = {\n"
         function_code += "        'Token': f'{token}'\n"
         function_code += "    }\n"
 
-        # 添加发送请求的固定式代码
-        function_code += f"    res = requests.request('{method.upper()}', url, json=params, headers=headers)\n"
+        # 处理 path 参数
+        for param_name in path_params:
+            function_code += f"    url = url.replace('{{{param_name}}}', str({param_name}))\n"
+
+        # 构建请求参数字典 (仅在GET请求中使用)
+        if method.upper() == 'GET':
+            function_code += "    params = {\n"
+            for param_name in query_params:
+                function_code += f"        '{param_name}': {param_name},\n"
+            function_code += "    }\n"
+
+        # 添加发送请求的固定代码
+        if method.upper() == 'POST':
+            function_code += "    data = {\n"
+            for param_name in param_names:
+                if param_name not in path_params and param_name != 'token':
+                    function_code += f"        '{param_name}': {param_name},\n"
+            function_code += "    }\n"
+            function_code += f"    res = requests.request('{method.upper()}', url, json=data, headers=headers)\n"
+        elif method.upper() == 'GET':
+            function_code += f"    res = requests.request('{method.upper()}', url, params=params, headers=headers)\n"
+        else:
+            function_code += f"    raise ValueError('Unsupported method: {method}')\n"
+
         function_code += "    try:\n"
         function_code += "        message = res.json()\n"
         function_code += "        if message['message'] != '成功':\n"
@@ -151,7 +174,7 @@ class App:
         for path in paths:
             path_item = self.swagger_data['paths'].get(path)
             if not path_item:
-                raise ValueError(f"No such path: {path}")
+                raise ValueError(f"路径不存在: {path}")
 
             for method, operation in path_item.items():
                 custom_function_name = custom_function_names.get(path)
@@ -168,26 +191,31 @@ class App:
         # 将生成的函数代码保存到文件
         with open(f'{self.function_file_path}', 'w', encoding='utf-8') as f:
             f.write("import requests\n")
-            f.write("from findcar_auto.common.config_loader import configger\n\n")
+            f.write("from findcar_auto.common.config_loader import configger\n")
             f.write("from findcar_auto.common.log_tool import logger\n\n")
             f.write("config = configger.load_config()\n\n\n")
             f.write(functions_code)
+            f.write("if __name__ == '__main__':\n")
+            f.write("    pass\n")
 
 
 if __name__ == '__main__':
 
-    app = App('channel')
+    app = App('admin')
     app.get_json_data()
 
-    # # 生成多个路径的请求函数
-    # paths = ['/park/enter', '/park/updatePlateNo']  # 接口的实际路由列表
-    # # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
-    # custom_function_names = {
-    #     '/park/enter': 'enter',
-    #     '/park/updatePlateNo': 'updateplateno'
-    # }
-    #
-    # functions_code = app.generate_functions_for_paths(paths, custom_function_names)
-    # app.generate(functions_code)
-    res = app.generate_all_functions()
-    app.generate(res)
+    # 生成多个路径的请求函数
+    paths = [
+        '/lot-info/save',
+        '/lot-info/lotInfoCheck'
+    ]  # 接口的实际路由列表
+    # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
+    custom_function_names = {
+        '/lot-info/save': 'save_lotinfo',
+        '/lot-info/lotInfoCheck': 'check_lotinfo'
+    }
+
+    functions_code = app.generate_functions_for_paths(paths, custom_function_names)
+    app.generate(functions_code)
+    # res = app.generate_all_functions()
+    # app.generate(res)

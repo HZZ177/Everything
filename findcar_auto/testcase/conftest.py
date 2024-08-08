@@ -69,6 +69,7 @@ def global_session_setup():
                     logger.info(f"登录成功！获取Token：{token}")
                     configger.update_config("Token", token)
                     logger.info("Token已更新到yml")
+                    assert 1
                     break
                 elif message == "验证码错误":
                     count += 1
