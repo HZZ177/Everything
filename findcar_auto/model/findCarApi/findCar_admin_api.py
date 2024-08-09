@@ -46,7 +46,7 @@ def get_lotinfo_byid(id: int, token=''):
     """
     url = config['url']['admin_url'] + '/lot-info/getById'
     headers = {
-        'Token': f'{token}'
+        'Accesstoken': f'{token}'
     }
     params = {
         'id': id,
@@ -81,7 +81,7 @@ def save_lotinfo(addr: str, defaultshowmaptype: int, deviceipprefix: str, id: in
     """
     url = config['url']['admin_url'] + '/lot-info/save'
     headers = {
-        'Token': f'{token}'
+        'Accesstoken': f'{token}'
     }
     data = {
         'addr': addr,
@@ -116,10 +116,10 @@ def check_lotinfo(lotid: int, token=''):
     """
     url = config['url']['admin_url'] + '/lot-info/lotInfoCheck'
     headers = {
-        'Token': f'{token}'
+        'Accesstoken': f'{token}'
     }
     params = {
-        'lotid': lotid,
+        'lotId': lotid,
     }
     res = requests.request('GET', url, params=params, headers=headers)
     try:

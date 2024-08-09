@@ -82,7 +82,7 @@ class App:
         body_params = {}
 
         for param in params:
-            param_name = param['name'].lower()
+            param_name = param['name']
             if param['in'] == 'query':
                 query_params.append(param_name)
                 param_list.append(f"{param_name}: {self.type_mapping.get(param.get('type', 'string'), 'str')}")
@@ -99,7 +99,7 @@ class App:
                 ref = param['schema']['$ref'].split('/')[-1]
                 definition = self.swagger_data['definitions'][ref]
                 for prop, prop_details in definition['properties'].items():
-                    prop_name = prop.lower()
+                    prop_name = prop
                     prop_type = self.type_mapping.get(prop_details.get('type', 'string'), 'str')
                     body_params[prop_name] = prop_type
                     param_list.append(f"{prop_name}: {prop_type}")
@@ -125,7 +125,7 @@ class App:
 
         # 构建请求头
         function_code += "    headers = {\n"
-        function_code += "        'Token': f'{token}'\n"
+        function_code += "        'Accesstoken': f'{token}'\n"
         function_code += "    }\n"
 
         # 处理 path 参数
@@ -206,12 +206,12 @@ if __name__ == '__main__':
 
     # 生成多个路径的请求函数
     paths = [
-        '/lot-info/save',
+        '/lot-info/update',
         '/lot-info/lotInfoCheck'
     ]  # 接口的实际路由列表
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/lot-info/save': 'save_lotinfo',
+        '/lot-info/update': 'save_lotinfos',
         '/lot-info/lotInfoCheck': 'check_lotinfo'
     }
 

@@ -13,7 +13,6 @@ from findcar_auto.common.log_tool import logger
 from findcar_auto.model.findCarApi import findCar_channel_api
 
 config = configger.load_config()
-token = config['Token']
 
 
 class TestParkInOutCar:
@@ -31,7 +30,7 @@ class TestParkInOutCar:
         """
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"对车位{self.park_list}入车"):
-            message = findCar_channel_api.park_enter(self.park_list, Token=token)
+            message = findCar_channel_api.park_enter(self.park_list, Token=config['Token'])
         with allure.step(f"判断入车结果"):
             assert message['message'] == '成功', f"入车失败，请检查入车接口返回信息：{message}"
 
@@ -44,7 +43,7 @@ class TestParkInOutCar:
         logger.info("===========================【正在执行用例】===========================")
         for car_addr in self.park_list:
             with allure.step(f"更新车位{car_addr}车牌号"):
-                message = findCar_channel_api.park_updateplateno(addr=car_addr, carimageurl=self.carimageurl, plateno=self.plateno, platenoreliability=self.platenoreliability, Token=token)
+                message = findCar_channel_api.park_updateplateno(addr=car_addr, carimageurl=self.carimageurl, plateno=self.plateno, platenoreliability=self.platenoreliability, Token=config['Token'])
             with allure.step("判断更新车牌号结果"):
                 assert message['message'] == '成功', f"更新车牌号失败，请检查更新车牌号接口返回信息：{message}"
 
@@ -56,7 +55,7 @@ class TestParkInOutCar:
         """
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"对车位{self.park_list}出车"):
-            message = findCar_channel_api.park_leave(self.park_list, Token=token)
+            message = findCar_channel_api.park_leave(self.park_list, Token=config['Token'])
         with allure.step(f"判断出车结果"):
             assert message['message'] == '成功', f"出车失败，请检查出车接口返回信息：{message}"
 

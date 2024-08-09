@@ -25,7 +25,7 @@ def park_enter(parklist: list, Token):
     # 检查并添加新的Token到 header 中
     url = config['url']['channel_url'] + "/park/enter"
     headers = {
-        'Token': Token
+        'Accesstoken': Token
     }
     params = {
         'list': parklist,
@@ -53,7 +53,7 @@ def park_leave(parklist: list, Token):
     # 检查并添加新的Token到 header 中
     url = config['url']['channel_url'] + "/park/leave"
     headers = {
-        'Token': Token
+        'Accesstoken': Token
     }
     params = {
         'list': parklist,
@@ -84,7 +84,7 @@ def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900
     # 检查并添加新的Token到 header 中
     url = config['url']['channel_url'] + "/park/updatePlateNo"
     headers = {
-        'Token': Token
+        'Accesstoken': Token
     }
     params = {
         'list': [
