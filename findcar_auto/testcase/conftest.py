@@ -19,6 +19,11 @@ config = configger.load_config()
 
 @pytest.fixture(scope="session", autouse=True)
 def global_setup_and_teardown(request):
+    """
+    全局前置和后置处理
+    :param request:
+    :return:
+    """
     request.addfinalizer(global_session_teardown)
     global_session_setup()
 
@@ -26,9 +31,10 @@ def global_setup_and_teardown(request):
 @allure.step("global前置，获取超管token")
 def global_session_setup():
     """
-    前置处理，通过selenium打开登录界面拿到关联的参数，之后通过接口登录获取返回的时效性token
+    全局前置处理，通过selenium打开登录界面拿到关联的参数，之后通过接口登录获取返回的时效性token
     :return:超管Token
     """
+    logger.info("\n\n")
     logger.info("===============================【正在执行global级前置处理 获取超管Token】===============================")
     login_page_url = config['url']['admin_url']+config['url']['login_page_route']   # 定义获取参数路径（网页）
 
@@ -87,6 +93,10 @@ def global_session_setup():
 
 @allure.step("global后置")
 def global_session_teardown():
+    """
+    全局后置处理
+    :return:
+    """
     logger.info("=================================【正在执行global级后置处理】=================================")
 
 

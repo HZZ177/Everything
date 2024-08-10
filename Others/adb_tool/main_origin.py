@@ -554,10 +554,13 @@ class Application:
                 messagebox.showinfo("下载完成", f"文件已保存到当前目录的/{save_file_name}路径下")
             elif "does not exist" in result.stdout:
                 messagebox.showerror("下载失败", "目标文件不存在，请检查文件日期是否正确！")
+                log_choose_top.focus_set()  # 保持焦点在下载日志的页面
             else:
                 messagebox.showerror("下载失败", "文件下载失败,请检查设备类型或设备地址！\n" + result.stderr)
+                log_choose_top.focus_set()  # 保持焦点在下载日志的页面
         except Exception as e:
             messagebox.showerror("错误", "执行下载时发生错误!\n" + str(e))
+            log_choose_top.focus_set()  # 保持焦点在下载日志的页面
 
     def download_specific_log(self, log_choose_top, log_file_path):
         """下载自定义日期的日志"""

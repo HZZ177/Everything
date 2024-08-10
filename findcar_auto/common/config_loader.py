@@ -4,7 +4,7 @@
 # @Author  : Heshouyi
 # @File    : config_loader.py
 # @Software: PyCharm
-# @description:
+# @description: 加载config类
 
 from ruamel.yaml import YAML
 from findcar_auto.common.file_path import test_config_path

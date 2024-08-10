@@ -4,7 +4,7 @@
 # @Author  : Heshouyi
 # @File    : file_path.py
 # @Software: PyCharm
-# @description:
+# @description: 项目各级文件路径
 
 import os
 

@@ -1,20 +1,27 @@
-from time import sleep
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2024/8/2 上午5:13
+# @Author  : Heshouyi
+# @File    : login_tool.py
+# @Software: PyCharm
+# @description: 登录工具
 
+import os
+import json
+import base64
+from loguru import logger
 from bs4 import BeautifulSoup
+from findcar_auto.common import file_path
+from findcar_auto.common import baidu_ocr_api
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.edge.options import Options
-from findcar_auto.common import baidu_ocr_api
-import base64
-import json
-import os
-from findcar_auto.common import file_path
-from loguru import logger
 
 
 class VerificationCodeError(Exception):
+    """验证码类型异常"""
     pass
 
 

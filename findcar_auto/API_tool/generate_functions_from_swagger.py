@@ -7,7 +7,6 @@
 # @description:
 import os
 import json
-import re
 import requests
 from findcar_auto.common.config_loader import configger
 
@@ -16,7 +15,7 @@ class App:
 
     def __init__(self, service):
         # 从环境变量中获取环境类型，默认为开发环境
-        self.env = os.getenv('ENV', 'dev')       # dev 开发环境/ temp 临时环境
+        # self.env = os.getenv('ENV', 'dev')       # dev 开发环境/ temp 临时环境
         self.service = service  # 服务名称
         self.config = configger.load_config()
 
@@ -83,38 +82,47 @@ class App:
 
         for param in params:
             param_name = param['name']
+            param_name_lower = param_name.lower()
+            param_required = param.get('required', False)
+            param_type = self.type_mapping.get(param.get('type', 'string'), 'str')
+            param_default = "None" if not param_required else "''"
+            param_str = f"{param_name_lower}: {param_type} = {param_default}"
+
             if param['in'] == 'query':
-                query_params.append(param_name)
-                param_list.append(f"{param_name}: {self.type_mapping.get(param.get('type', 'string'), 'str')}")
-                param_names.append(param_name)
+                query_params.append(param_name_lower)
+                param_list.append(param_str)
+                param_names.append((param_name, param_name_lower))
                 param_annotations.append(
-                    f":param {self.type_mapping.get(param.get('type', 'string'), 'str')} {param_name}: {param.get('description', '暂无参数描述')}")
+                    f":param {param_type} {param_name_lower}: {param.get('description', '暂无参数描述')}")
             elif param['in'] == 'path':
-                path_params.append(param_name)
-                param_list.append(f"{param_name}: {self.type_mapping.get(param.get('type', 'string'), 'str')}")
-                param_names.append(param_name)
+                path_params.append((param_name, param_name_lower))
+                param_list.append(f"{param_name_lower}: {param_type}")
+                param_names.append((param_name, param_name_lower))
                 param_annotations.append(
-                    f":param {self.type_mapping.get(param.get('type', 'string'), 'str')} {param_name}: {param.get('description', '暂无参数描述')}")
+                    f":param {param_type} {param_name_lower}: {param.get('description', '暂无参数描述')}")
             elif param['in'] == 'body' and '$ref' in param['schema']:
                 ref = param['schema']['$ref'].split('/')[-1]
                 definition = self.swagger_data['definitions'][ref]
                 for prop, prop_details in definition['properties'].items():
                     prop_name = prop
+                    prop_name_lower = prop_name.lower()
                     prop_type = self.type_mapping.get(prop_details.get('type', 'string'), 'str')
+                    prop_required = prop_details.get('required', False)
+                    prop_default = "None" if not prop_required else "''"
                     body_params[prop_name] = prop_type
-                    param_list.append(f"{prop_name}: {prop_type}")
-                    param_names.append(prop_name)
+                    param_list.append(f"{prop_name_lower}: {prop_type} = {prop_default}")
+                    param_names.append((prop_name, prop_name_lower))
                     param_annotations.append(
-                        f":param {prop_type} {prop_name}: {prop_details.get('description', '暂无参数描述')}")
+                        f":param {prop_type} {prop_name_lower}: {prop_details.get('description', '暂无参数描述')}")
             else:
                 param_type = self.type_mapping.get(param.get('type', 'string'), 'str')
-                param_list.append(f"{param_name}: {param_type}")
-                param_names.append(param_name)
+                param_list.append(param_str)
+                param_names.append((param_name, param_name_lower))
                 param_annotations.append(
-                    f":param {param_type} {param_name}: {param.get('description', '暂无参数描述')}")
+                    f":param {param_type} {param_name_lower}: {param.get('description', '暂无参数描述')}")
 
-        param_list.append("token=''")
-        param_names.append("token")
+        param_list.append("token: str = ''")
+        param_names.append(("token", "token"))
         param_annotations.append(":param token: 接口请求Token")
 
         param_str = ", ".join(param_list)
@@ -129,22 +137,22 @@ class App:
         function_code += "    }\n"
 
         # 处理 path 参数
-        for param_name in path_params:
-            function_code += f"    url = url.replace('{{{param_name}}}', str({param_name}))\n"
+        for param_name, param_name_lower in path_params:
+            function_code += f"    url = url.replace('{{{param_name}}}', str({param_name_lower}))\n"
 
         # 构建请求参数字典 (仅在GET请求中使用)
         if method.upper() == 'GET':
             function_code += "    params = {\n"
-            for param_name in query_params:
-                function_code += f"        '{param_name}': {param_name},\n"
+            for param_name_lower in query_params:
+                function_code += f"        '{param_name_lower}': {param_name_lower},\n"
             function_code += "    }\n"
 
         # 添加发送请求的固定代码
         if method.upper() == 'POST':
             function_code += "    data = {\n"
-            for param_name in param_names:
-                if param_name not in path_params and param_name != 'token':
-                    function_code += f"        '{param_name}': {param_name},\n"
+            for param_name, param_name_lower in param_names:
+                if param_name_lower not in [p[1] for p in path_params] and param_name_lower != 'token':
+                    function_code += f"        '{param_name}': {param_name_lower},\n"
             function_code += "    }\n"
             function_code += f"    res = requests.request('{method.upper()}', url, json=data, headers=headers)\n"
         elif method.upper() == 'GET':
@@ -166,12 +174,14 @@ class App:
         return function_code
 
     def generate_functions_for_paths(self, paths, custom_function_names=None):
-        if custom_function_names is None:
+        if custom_function_names == None:
             custom_function_names = {}
 
         functions_code = ""
 
         for path in paths:
+            if any(char in path for char in "*{") or any('\u4e00' <= char <= '\u9fff' for char in path):
+                continue  # 排除包含特殊字符和中文字符的路径
             path_item = self.swagger_data['paths'].get(path)
             if not path_item:
                 raise ValueError(f"路径不存在: {path}")
@@ -184,8 +194,21 @@ class App:
         return functions_code
 
     def generate_all_functions(self):
-        paths = list(self.swagger_data['paths'].keys())
-        return self.generate_functions_for_paths(paths)
+        """
+        生成Swagger文档中所有路径的请求函数
+        :return: 生成的函数代码字符串
+        """
+        functions_code = ""
+
+        # 遍历所有的路径
+        for path, path_item in self.swagger_data['paths'].items():
+            if any(char in path for char in "*{") or any('\u4e00' <= char <= '\u9fff' for char in path):
+                continue  # 排除包含特殊字符和中文字符的路径
+            for method, operation in path_item.items():
+                function_code = self.create_request_function(path, method, operation)
+                functions_code += function_code
+
+        return functions_code
 
     def generate(self, functions_code):
         # 将生成的函数代码保存到文件
@@ -201,21 +224,23 @@ class App:
 
 if __name__ == '__main__':
 
-    app = App('admin')
+    app = App('findcar')
     app.get_json_data()
 
-    # 生成多个路径的请求函数
+    # 生成多个路径的请求函数，接口的实际路由列表
     paths = [
-        '/lot-info/update',
-        '/lot-info/lotInfoCheck'
-    ]  # 接口的实际路由列表
+        '/lot-info/save',
+    ]
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/lot-info/update': 'save_lotinfos',
-        '/lot-info/lotInfoCheck': 'check_lotinfo'
+        '/lot-info/save': 'test',
     }
 
-    functions_code = app.generate_functions_for_paths(paths, custom_function_names)
+    # 生成函数内容代码
+    # functions_code = app.generate_functions_for_paths(paths, custom_function_names)
+    functions_code = app.generate_all_functions()
+    # 写入生成文件
     app.generate(functions_code)
+
     # res = app.generate_all_functions()
     # app.generate(res)

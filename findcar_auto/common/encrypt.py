@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2024/8/10 下午2:07
+# @Author  : Heshouyi
+# @File    : encrypt.py
+# @Software: PyCharm
+# @description: 加密方法，用于寻车后台登录传参时加密明文密码
+
 import rsa
 import base64
 from urllib.parse import quote
@@ -5,7 +13,7 @@ from urllib.parse import quote
 
 def encrypt_password(message):
     """
-    寻车后台管理登录界面加密：原始密码通过--rsa加密--base64转码--ut8转码--url转码后得到请求中要传参的密文
+    寻车后台管理登录界面加密：原始密码加密顺序：密码明文-->rsa加密-->base64转码-->ut8转码-->经过http请求时自动url转码
     :param message:未加密的原始数据
     :return:原密码加密后的密文
     """

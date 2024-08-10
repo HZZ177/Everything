@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2024/8/10 下午2:07
+# @Author  : Heshouyi
+# @File    : baidu_ocr_api.py
+# @Software: PyCharm
+# @description: 调用百度ocr接口识别图片内容
+
 import sys
 import json
 import base64

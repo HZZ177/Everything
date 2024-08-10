@@ -33,9 +33,10 @@ class TestParkInOutCar:
             message = findCar_channel_api.park_enter(self.park_list, Token=config['Token'])
         with allure.step(f"判断入车结果"):
             assert message['message'] == '成功', f"入车失败，请检查入车接口返回信息：{message}"
+            logger.info(f"车位{self.park_list}入车成功")
 
     @allure.title(f"车位{park_list}更新车牌号")
-    def test_update_plate_number(self):
+    def test_park_updateplateno(self):
         """
         更新占用车位上的车牌号
         :return:
@@ -46,6 +47,7 @@ class TestParkInOutCar:
                 message = findCar_channel_api.park_updateplateno(addr=car_addr, carimageurl=self.carimageurl, plateno=self.plateno, platenoreliability=self.platenoreliability, Token=config['Token'])
             with allure.step("判断更新车牌号结果"):
                 assert message['message'] == '成功', f"更新车牌号失败，请检查更新车牌号接口返回信息：{message}"
+                logger.info(f"车位{self.park_list}更新车牌成功")
 
     @allure.title(f"车位{park_list}出车")
     def test_park_carleave(self):
@@ -58,7 +60,8 @@ class TestParkInOutCar:
             message = findCar_channel_api.park_leave(self.park_list, Token=config['Token'])
         with allure.step(f"判断出车结果"):
             assert message['message'] == '成功', f"出车失败，请检查出车接口返回信息：{message}"
+            logger.info(f"车位{self.park_list}出车成功")
 
 
 if __name__ == '__main__':
-    pytest.main(['-sv'], ['test_park_inoutcar.py'])
+    pytest.main(['-sv', 'test_park_inoutcar.py'])

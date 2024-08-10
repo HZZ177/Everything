@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/7/30 下午10:52
 # @Author  : Heshouyi
-# @File    : findCarApi.py
+# @File    : findCar_channel_api.py
 # @Software: PyCharm
-# @description:
+# @description: channel服务各个封装接口
 
 import allure
 import pytest
