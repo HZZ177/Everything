@@ -43,7 +43,7 @@ def global_session_setup():
     logger.info("已清空历史Token")
 
     # 尝试用默认验证码登录，不行就走ocr
-    verify_code = "999"
+    verify_code = "9999"
     logger.info("正在尝试使用默认验证码登录")
     try:
         res = findCar_admin_api.login(verify_code)

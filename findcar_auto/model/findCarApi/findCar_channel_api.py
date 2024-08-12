@@ -72,6 +72,7 @@ def park_leave(parklist: list, Token):
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
 
+# todo 更新车牌接口不会返回异常，异常数据也会返回成功，在parkingGuidance后续日志中打车位异常的信息，考虑怎么处理
 def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900):
     """
     更新车牌号

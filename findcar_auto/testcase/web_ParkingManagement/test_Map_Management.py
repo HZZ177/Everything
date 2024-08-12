@@ -17,8 +17,8 @@ config = configger.load_config()
 
 class TestMapManagement:
 
-    @allure.story("车场维护-车场地图管理页面")
-    @allure.title("车场维护-车场地图管理页面-默认查询ID前10楼层信息")
+    @allure.story("车场维护-车场地图管理")
+    @allure.title("车场维护-车场地图管理-默认查询ID前10楼层信息")
     def test_query_floor_info(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口查询楼层基础信息"):
@@ -35,8 +35,8 @@ class TestMapManagement:
             logger.info(f"接口查询楼层基础信息成功，查出楼层数：{message['data']['totalCount']},"
                         f"启用楼层共{len(floor_on)}层：{floor_on},未启用楼层共{len(floor_off)}层：{floor_off}")
 
-    @allure.story("车场维护-车场地图管理页面")
-    @allure.title("车场维护-车场地图管理页面-带参数查询车场楼层信息")
+    @allure.story("车场维护-车场地图管理")
+    @allure.title("车场维护-车场地图管理-带参数查询车场楼层信息")
     def test_query_floor_info_by_id(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口带参查询楼层信息"):

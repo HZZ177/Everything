@@ -229,11 +229,11 @@ if __name__ == '__main__':
 
     # 生成多个路径的请求函数，接口的实际路由列表
     paths = [
-        '/auth/verifyCode',
+        '/car-in-out-record/selectPageList',
     ]
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/auth/verifyCode': 'get_verifycode',
+        '/car-in-out-record/selectPageList': 'get_history_car_in_out_record',
     }
 
     # 生成函数内容代码

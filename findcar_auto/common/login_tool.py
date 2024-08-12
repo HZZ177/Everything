@@ -55,7 +55,7 @@ class LogInToolTest:
         """
         # 发送 GET 请求获取图片二进制码
         logger.info("正在获取验证码图片")
-        self.verify_response = findCar_admin_api.get_verifycode()
+        self.verify_response = findCar_admin_api.query_verifycode()
 
         # 获取验证码图片二进制，写入文件
         if self.verify_response.status_code == 200:

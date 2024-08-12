@@ -6,6 +6,7 @@
 # @Software: PyCharm
 # @description: admin服务各个封装接口
 
+
 import pytest
 import requests
 from findcar_auto.common.encrypt import encrypt_password
@@ -319,18 +320,10 @@ def export_deviceList(deviceaddrip: str = None, devicetype: int = None, id: int 
         'workingStatus': workingstatus,
     }
     res = requests.request('POST', url, json=data, headers=headers)
-    try:
-        message = res.json()
-        if message['message'] != '成功':
-            logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
-        return message
-    except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+    return res
 
 
-def get_verifycode(token: str = ''):
+def query_verifycode(token: str = ''):
     """
     生成图形验证码
     :param token: 接口请求Token
@@ -343,6 +336,57 @@ def get_verifycode(token: str = ''):
     }
     res = requests.request('GET', url, params=params, headers=headers)
     return res
+
+
+def query_history_car_in_out_record(areaname: str = None, floorid: int = None, id: int = None, inendtime: str = None, instarttime: str = None, intype: int = None, lotid: int = None, outendtime: str = None, outstarttime: str = None, outtype: int = None, pagenumber: int = None, pagesize: int = None, parkno: str = None, plateno: str = None, token: str = ''):
+    """
+    历史进出车记录 分页查询
+    :param str areaname: 区域名称
+    :param int floorid: 楼层id
+    :param int id: 记录id
+    :param str inendtime: 进车结束时间
+    :param str instarttime: 进车开始时间
+    :param int intype: 操作类型 0-自动入车 1-手动入车
+    :param int lotid: 车场id
+    :param str outendtime: 出车结束时间
+    :param str outstarttime: 出车开始时间
+    :param int outtype: 操作类型 0-自动出车 1-手动出车
+    :param int pagenumber: 页数
+    :param int pagesize: 每页条目数
+    :param str parkno: 车位号
+    :param str plateno: 车牌号
+    :param token: 接口请求Token
+    """
+    url = config['url']['admin_url'] + '/car-in-out-record/selectPageList'
+    headers = {
+        'Accesstoken': f'{token}'
+    }
+    data = {
+        'areaName': areaname,
+        'floorId': floorid,
+        'id': id,
+        'inEndTime': inendtime,
+        'inStartTime': instarttime,
+        'inType': intype,
+        'lotId': lotid,
+        'outEndTime': outendtime,
+        'outStartTime': outstarttime,
+        'outType': outtype,
+        'pageNumber': pagenumber,
+        'pageSize': pagesize,
+        'parkNo': parkno,
+        'plateNo': plateno,
+    }
+    res = requests.request('POST', url, json=data, headers=headers)
+    try:
+        message = res.json()
+        if message['message'] != '成功':
+            logger.info(f'接口返回失败，接口返回message：{message['message']}')
+        else:
+            logger.info(f'接口返回成功！')
+        return message
+    except Exception:
+        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
 
 if __name__ == '__main__':

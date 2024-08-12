@@ -6,8 +6,11 @@
 # @Software: PyCharm
 # @description: 设备列表页面相关功能自动化
 
+import os
 import allure
 import pytest
+from datetime import datetime
+from findcar_auto.common import file_path
 from findcar_auto.common.config_loader import configger
 from findcar_auto.common.log_tool import logger
 from findcar_auto.model.findCarApi import findCar_admin_api
@@ -40,14 +43,21 @@ class TestDeviceList:
 
     @allure.story("车场维护-设备列表")
     @allure.title("车场维护-设备列表-导出设备列表")
-    # todo：导出接口怎么调用？没有设置导出路径，调用直接报错
     def test_export_devicelist(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口触发设备列表导出"):
-            message = findCar_admin_api.export_deviceList(id=1, token=config['Token'])
-        with allure.step(f"判断导出结果"):
-            assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"
-            logger.info(f"导出设备列表成功，接口返回：{message}")
+            res = findCar_admin_api.export_deviceList(id=1, token=config['Token'])
+        with allure.step(f"判断导出结果，若成功保存导出内容为文件"):
+            assert res.status_code == 200, f"查询失败，请检查接口返回信息：{res}"
+            # 尝试保存二进制导出内容为文件
+            today = datetime.today().strftime('%Y%m%d')
+            export_path = os.path.join(file_path.test_file_path, f'device_list_export_{today}.xlsx')
+            try:
+                with open(f'{export_path}', 'wb') as file:
+                    file.write(res.content)
+                logger.info(f'导出设备列表成功，保存文件路径：{export_path}')
+            except Exception as e:
+                logger.error(f'保存文件失败，报错信息：{e}')
 
 
 if __name__ == '__main__':
