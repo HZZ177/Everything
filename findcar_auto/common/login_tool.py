@@ -202,6 +202,7 @@ def get_verify_code():
     logger.info("正在调用百度ocr识别验证码图片")
     count = 0  # 重试次数
     while True:
+        # todo 一直在用同一张图片ocr，需要修改
         verify_code = get_picture_num_by_baidu_ocr()
         if len(verify_code) == 4:  # 如果验证码识别位数为4，进入下一步判断是否含有非正整数
             # 标识是否ocr识别验证码中全部为正整数
