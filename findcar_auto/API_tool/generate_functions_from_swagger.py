@@ -224,21 +224,21 @@ class App:
 
 if __name__ == '__main__':
 
-    app = App('findcar')
+    app = App('admin')
     app.get_json_data()
 
     # 生成多个路径的请求函数，接口的实际路由列表
     paths = [
-        '/lot-info/save',
+        '/auth/verifyCode',
     ]
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/lot-info/save': 'test',
+        '/auth/verifyCode': 'get_verifycode',
     }
 
     # 生成函数内容代码
-    # functions_code = app.generate_functions_for_paths(paths, custom_function_names)
-    functions_code = app.generate_all_functions()
+    functions_code = app.generate_functions_for_paths(paths, custom_function_names)
+    # functions_code = app.generate_all_functions()
     # 写入生成文件
     app.generate(functions_code)
 

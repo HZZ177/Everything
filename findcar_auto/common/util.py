@@ -22,8 +22,8 @@ def get_uuid():
 
 def retry(retries=3):
     """
-    重试装饰器，默认重试3次
-    :param retries: 重试次数，默认3次
+    重试装饰器，需要传参重试次数
+    :param retries: 重试次数
     :return:
     """
     def decorator(func):
@@ -32,13 +32,22 @@ def retry(retries=3):
             count = 0
             while count < retries:
                 try:
-                    logger.info(f"重试第{count}次，重试函数：{func.__name__}")
+                    logger.info(f"函数 <{func.__name__}> 正在进行第{count+1}次重试")
                     return func(*args, **kwargs)
                 except Exception:
                     count += 1
                     if count == retries:
+                        logger.error(f"函数 <{func.__name__}> 经过{retries}次重试后仍然失败")
                         raise
                     time.sleep(1)  # 简单的等待时间，可以根据需要调整或移除
         return wrapper
     return decorator
 
+
+@retry(retries=5)
+def exception_test():
+    raise Exception
+
+
+if __name__ == '__main__':
+    exception_test()

@@ -26,6 +26,7 @@ pytest_log_path = os.path.abspath(os.path.join(run_pytest_path, 'pytest_log'))
 
 '''三级目录'''
 test_config_path = os.path.abspath(os.path.join(config_path, 'test_config.yml'))
+local_config_path = os.path.abspath(os.path.join(config_path, 'local_config.yml'))
 
 
 

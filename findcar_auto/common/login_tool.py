@@ -9,102 +9,28 @@
 import os
 import json
 import base64
-
 import requests
 from findcar_auto.common.log_tool import logger
-from bs4 import BeautifulSoup
 from findcar_auto.common import file_path
 from findcar_auto.common import baidu_ocr_api
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.edge.options import Options
 from findcar_auto.common.config_loader import configger
+from findcar_auto.model.findCarApi import findCar_admin_api
 
 config = configger.load_config()
 
 
-class VerificationCodeError(Exception):
-    """验证码类型异常"""
-    pass
-
-
-class LogInTool:
-    def __init__(self, url, username, password):
-        self.edge_option = Options()
-        self.edge_option.add_argument("--headless")  # 无头模式
-        self.driver = webdriver.Edge(options=self.edge_option)
-        self.driver.implicitly_wait(10)
-        self.url = url
-        self.username = username
-        self.password = password
+class LogInToolTest:
+    def __init__(self):
         # 设定保存验证码图片目录
         self.save_path = rf'{file_path.verify_picture_path}\verify_code.png'
-
-    def open_web(self):
-        # 打开网页
-        self.driver.get(self.url)
-
-    def get_jsessionid(self):
-        """
-        进入登录页面后，页面上获取后端框架提供的jsessionid，用来和验证码做绑定
-        :return:jsessionid
-        """
-        # 以验证码图片加载成功为标志，继续进行后面的操作
-        wait = WebDriverWait(self.driver, 10)
-        element = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "h-full")))
-        if element:
-            cookies = self.driver.get_cookies()
-            jsessionid = [cookie["value"] for cookie in cookies if cookie["name"] == "JSESSIONID"][0]
-            return jsessionid
-        else:
-            logger.error("获取jsessionid时，页面加载出现未知异常，10秒内捕获验证码图片失败，请检查！")
-            return
-
-    def get_picture_src(self):
-        """
-        获取图片源链接（图片标签中的src地址）
-        :return: src
-        """
-        # 通过驱动打开网页获取源码，解析方式为html.parser
-        html = BeautifulSoup(self.driver.page_source, "html.parser")
-        # 定位class为h-full的标签，即为验证码图片
-        tag = html.find(class_="h-full")
-        # 通过标签定位src链接
-        src = tag["src"]
-        return src
-
-    def get_picture(self):
-        """
-        获取验证码图片，方便调用百度OCR识别
-        :return:
-        """
-        # 定位验证码图片
-        wait = WebDriverWait(self.driver, 5)
-        try:
-            picture_element = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "h-full")))
-            # logger.info(f"保存路径: {self.save_path}")
-
-            # 检查路径是否存在，不存在则创建
-            save_dir = os.path.dirname(self.save_path)
-            if not os.path.exists(save_dir):
-                logger.info(f"路径不存在，创建路径: {save_dir}")
-                os.makedirs(save_dir)
-
-            result = picture_element.screenshot(self.save_path)
-            if result:
-                logger.info(f"成功获取验证码图片，保存在{self.save_path}")
-            else:
-                logger.info("验证码图片保存失败，请检查路径和写权限")
-                raise VerificationCodeError("验证码图片保存失败")
-        except Exception as e:
-            logger.error("获取验证码图片过程中发生错误", exc_info=True)
-            raise VerificationCodeError from e
+        # 验证码图片的response对象
+        self.verify_response = None
 
     def get_picture_num_by_baidu_ocr(self):
-        # 定位并截图保存验证码图片
-        self.get_picture()
+        """
+        调用百度ocr接口，识别图片中的内容
+        :return: 识别结果
+        """
         # 获取百度OCR的access token
         token = baidu_ocr_api.fetch_token()
         # 拼接通用文字识别高精度url
@@ -122,148 +48,77 @@ class LogInTool:
         logger.info(f"百度ocr识别结果：{text}")
         return text
 
-    def login(self):
+    def get_verify_pic(self):
         """
-        直接通过页面模拟点击输入，登录管理后台页面（此方法拿不到token）
+        通过接口获取验证码图片的二进制文件，写入为png图片
         :return:
         """
-        self.open_web()
-        # 调用百度ocr识别验证码图片
-        verify_code = self.get_picture_num_by_baidu_ocr()
-        # 输入登录参数，点击登录
-        self.driver.find_element(By.XPATH, "//input[@placeholder = '请输入用户名']").send_keys(self.username)
-        self.driver.find_element(By.XPATH, "//input[@placeholder = '请输入密码']").send_keys(self.password)
-        self.driver.find_element(By.XPATH, "//input[@placeholder = '请输入验证码']").send_keys(verify_code)
-        self.driver.find_element(By.XPATH, "//span[text() = '登 录']").click()
+        # 发送 GET 请求获取图片二进制码
+        logger.info("正在获取验证码图片")
+        self.verify_response = findCar_admin_api.get_verifycode()
 
+        # 获取验证码图片二进制，写入文件
+        if self.verify_response.status_code == 200:
+            # 打开本地文件，用于写入二进制数据
+            with open(f'{self.save_path}', 'wb') as file:
+                file.write(self.verify_response.content)
+            logger.info(f"成功获取验证码图片，保存在{self.save_path}")
 
-def get_login_info(url, username, password):
-    """
-    通过selenium打开登录界面，获取调用登录接口所需的所有参数
-    :param url: 指定打开登录网页地址
-    :param username: 要使用的用户名
-    :param password: 要使用的密码
-    :return: 带有jsessionid和verify_code的一个字典
-    """
-    driver = LogInTool(url, username, password)
-    count = 0   # 定义最大重试次数
-    while True:
-        driver.open_web()
-        logger.info("成功打开登录页面，开始获取验证码图片")
-        jsessionid = driver.get_jsessionid()
-        verify_code = driver.get_picture_num_by_baidu_ocr()
-        if len(verify_code) == 4:   # 如果验证码识别位数为4，则判断是否含有非正整数
-            # 标识是否ocr识别验证码中全部为正整数
-            is_digit = 1
-            for i in verify_code:
-                if not i.isdigit():
-                    is_digit = 0
-            if is_digit == 0:
-                count += 1
-                logger.info(f"验证码中存在非正整数，即将进行第{count}次重试")
-            else:
-                result = {
-                    "jsessionid": jsessionid,
-                    "verify_code": verify_code
-                }
-                return result
-        elif count == 3:    # 识别重试三次之后仍然获取不到四位数的识别结果，返回失败信息，手动检查
-            driver.driver.close()   # 关闭浏览器
-            logger.error("==============百度ocr识别已失败三次，请检查==============")
-            raise Exception
-        else:  # 如果在重试次数消耗完之前，返回识别结果不是4位数，重新打开页面，获取图片并识别
-            count += 1
-            logger.info(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重试")
-
-
-save_path = rf'{file_path.verify_picture_path}\verify_code.png'
-
-
-def get_picture_num_by_baidu_ocr():
-    # 获取百度OCR的access token
-    token = baidu_ocr_api.fetch_token()
-    # 拼接通用文字识别高精度url
-    image_url = baidu_ocr_api.OCR_URL + "?access_token=" + token
-    text = ""
-    # 读取验证码图片
-    file_content = baidu_ocr_api.read_file(save_path)
-    # 调用文字识别服务
-    result = baidu_ocr_api.request(image_url, baidu_ocr_api.urlencode({'image': base64.b64encode(file_content)}))
-    # 解析返回结果
-    result_json = json.loads(result)
-    # 取出返回体中的识别结果value
-    for words_result in result_json["words_result"]:
-        text = text + words_result["words"]
-    logger.info(f"百度ocr识别结果：{text}")
-    return text
-
-
-def get_verify_code():
-    logger.info("正在调用百度ocr识别验证码图片")
-    count = 0  # 重试次数
-    while True:
-        # todo 一直在用同一张图片ocr，需要修改
-        verify_code = get_picture_num_by_baidu_ocr()
-        if len(verify_code) == 4:  # 如果验证码识别位数为4，进入下一步判断是否含有非正整数
-            # 标识是否ocr识别验证码中全部为正整数
-            is_digit = 1
-            for i in verify_code:
-                if not i.isdigit():
-                    is_digit = 0
-            if is_digit == 0:
-                count += 1
-                logger.info(f"验证码中存在非正整数，即将进行第{count}次重试")
-            else:
-                return verify_code
-        elif count == 3:  # 识别重试三次之后仍然获取不到四位数的识别结果，返回失败信息，手动检查
-            logger.error("==============百度ocr识别已失败三次，请检查==============")
-            raise Exception
-        else:  # 如果在重试次数消耗完之前，返回识别结果不是4位数，重新打开页面，获取图片并识别
-            count += 1
-            logger.info(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重试")
-
-
-def get_verifycode_and_jsessionid():
-    # 获取验证码图片的接口地址
-    url = f'{config['url']['admin_url']}/auth/verifyCode'
-
-    # 发送 GET 请求获取图片二进制
-    logger.info("正在请求验证码图片")
-    response = requests.get(url)
-
-    # 获取验证码图片二进制，写入文件
-    if response.status_code == 200:
-        # 打开本地文件，用于写入二进制数据
-        with open(f'{save_path}', 'wb') as file:
-            file.write(response.content)
-        logger.info(f"成功获取验证码图片，保存在{save_path}")
-
-        verify_code = get_verify_code()
-
-        # 获取header中Set-Cookie中的JSESSIONID
-        cookies = response.headers.get('Set-Cookie')
+    def get_jsessionid(self):
+        """
+        获取接口响应头中，set-cookie的jsessionid
+        :return:
+        """
+        cookies = self.verify_response.headers.get('Set-Cookie')
         if cookies:
             for cookie in cookies.split(';'):
                 if 'JSESSIONID' in cookie:
                     jsessionid = cookie.split('=')[1]
                     logger.info(f"成功获取JSESSIONID: {jsessionid}")
-                    result = {
-                        "jsessionid": jsessionid,
-                        "verify_code": verify_code
-                    }
-                    return result
+                    return jsessionid
                 else:
                     logger.info("header中没有JSESSIONID信息，请检查")
-    else:
-        logger.info(f'请求验证码接口失败，请检查')
+        else:
+            logger.info(f'接口返回中没有cookie，请检查')
+
+    def get_verify_code(self):
+        """
+        尝试通过百度ocr识别验证码，每个验证码的返回结果格式容错三次
+        :return:
+        """
+        count = 0  # 重试次数
+        while True:
+            self.get_verify_pic()    # 获取验证码图片
+            logger.info("正在调用百度ocr识别验证码")
+            verify_code = self.get_picture_num_by_baidu_ocr()    # 获取ocr识别结果
+            if len(verify_code) == 4:
+                is_digit = 1    # 标识ocr识别验证码中是否全部为正整数
+                for i in verify_code:
+                    if not i.isdigit():
+                        is_digit = 0
+                if is_digit == 0:
+                    count += 1
+                    logger.info(f"验证码中存在非正整数，即将进行第{count}次重新识别")
+                else:
+                    return verify_code
+            elif count == 3:  # 识别重试三次之后仍然获取不到格式正确的识别结果，返回失败
+                logger.error("==============百度ocr识别已失败三次，请检查==============")
+                raise Exception
+            else:  # 如果在重试次数消耗完之前，返回识别结果不是4位数，重新打开页面，获取图片并识别
+                count += 1
+                logger.info(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重新识别")
+
+    def get_verifycode_and_jsessionid(self):
+        """
+        获取验证码和与其绑定的jsessionid，用于登录获取token
+        :return: verify_code, jsessionid
+        """
+        verify_code = self.get_verify_code()
+        jsessionid = self.get_jsessionid()
+        return verify_code, jsessionid
 
 
 if __name__ == "__main__":
-    get_verifycode_and_jsessionid()
-
-    # username = super_admin['username']
-    # password = super_admin['password']
-    # tool = LogInTool(file_paths.environment229_page, username, password)
-    # tool.open_web()
-
-    # get_login_info(file_paths.environment229_page, username, password)
+    # app = LogInToolTest()
+    # app.get_verifycode_and_jsessionid()
+    pass

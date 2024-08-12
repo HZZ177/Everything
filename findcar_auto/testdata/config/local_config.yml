@@ -1,0 +1,29 @@
+# 一些基础url定义
+url:
+  base_url: http://192.168.31.78
+  admin_url: http://192.168.31.78:8083
+  channel_url: http://192.168.31.78:7072
+  findcar_url: http://192.168.31.78:8080
+  login_page_route: /web/login
+
+# 各服务端口
+port:
+  admin: '8083'
+  channel: '7072'
+  findcar: '8080'
+
+# 各服务的swagger地址
+swagger_path:
+  admin: 
+    /v2/api-docs?group=3D%E5%AF%BB%E8%BD%A6%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E5%8F%A3
+  channel: /v2/api-docs?group=front-api
+  findcar: /device-access/v2/api-docs
+
+# 后台和接口登录用超管账号密码
+account:
+  username: admin@keytop.com
+  password: keytop123456
+
+# Token（一般是超管Token）
+Token: 
+  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjM1NTUwMzcsInVzZXIiOiJ7XCJhY2NvdW50XCI6XCJhZG1pbkBrZXl0b3AuY29tXCIsXCJpZFwiOjEsXCJuYW1lXCI6XCJBZG1pbmlzdHJhdG9yXCIsXCJyb3V0ZXJQZXJtaXNzaW9uc1wiOltcInBhcmstbGlnaHQtY29uZmlnXCIsXCJ0b29sLWxpc3RcIixcInVzZXItY29uZmlnXCIsXCJmaW5kLWNvbmZpZ1wiLFwibGFuZy1jb25maWdcIixcImN1c3RvbWl6ZWQtZmVhdHVyZXNcIixcInNpZ24tbG9nXCIsXCJzeXN0ZW0tY29uZmlnXCIsXCJhcmVhLWNhci1kZXRhaWxzXCIsXCJsY2QtYWQtcGxhblwiLFwibWVudS1jb25maWdcIixcInBhcmstcmVsYXRlLWFyZWFcIixcInBhcmstbGFtcC1zY2hlbWVcIixcImJlcnRoLXV0aWxpemF0aW9uLWRldGFpbHNcIixcImxvZy1jb25maWdcIixcImFyZWEtY2FtZXJhLWxpc3RcIixcInNwZWNpYWwtdmVoaWNsZS1jb25maWdcIixcImxvdC1jb25maWdcIixcImRldmljZS1ldmVudC1saXN0XCIsXCJwYXJhbS1jb25maWdcIixcImxvdC1pbmZvXCIsXCJmaW5kZXItbWFjaGluZS1jb25maWdcIixcImRhdGEtc3RhdGlzdGljc1wiLFwiZ3VpZGUtY29uZmlnXCIsXCJncm91cC1wYXJraW5nLWxpZ2h0c1wiLFwidHJhZmZpYy1mbG93LWRldGFpbHNcIixcInNjcmVlbi1kZXZpY2UtbGlzdFwiLFwibGNkLWNvbmZpZ1wiLFwicm9sZS1jb25maWdcIixcImxvdC1zY3JlZW5cIixcImFyZWEtY29uZmlnXCIsXCJzdGVyZW9zY29waWMtcGFya1wiLFwicGF0aC1wbGFuXCIsXCJwYXJrLW9jY3VweVwiLFwiZGV2aWNlLWxpc3RcIixcIm92ZXJuaWdodC10cmFpblwiLFwid2Fybi1wYXJrLXJlY29yZFwiLFwicGFyay1lcnJvclwiLFwicmVhbC1hcmVhLWRldGFpbHNcIixcIndhcm4tY29uZmlnXCIsXCJtYXAtY29uZmlnXCIsXCJjYXItc2NyZWVuXCIsXCJtYXAtc3R5bGUtbWFuYWdlXCIsXCJoaXN0b3J5LWNhci1kZXRhaWxzXCIsXCJyZWFsLXBhcmtcIl0sXCJ1c2VyVHlwZVwiOjF9IiwiaWF0IjoxNzIzNDY4NjM3fQ.h8J2nm6oKWuxrja7JN-j4N0qV8H2NUIXYIYZG9ZFj1I

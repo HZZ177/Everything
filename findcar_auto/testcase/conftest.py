@@ -38,15 +38,11 @@ def global_session_setup():
     logger.info("===============================【正在执行global级前置处理 获取超管Token】===============================")
     login_page_url = config['url']['admin_url']+config['url']['login_page_route']   # 定义获取参数路径（网页）
 
-    # 先清空yml中的历史Token
+    # 清空yml中的历史Token
     configger.update_config("Token", "")
     logger.info("已清空历史Token")
 
-    # 获取登录用账号密码
-    username = config['account']['username']
-    password = config['account']['password']
-
-    # 先尝试用9999验证码登录
+    # 尝试用默认验证码登录，不行就走ocr
     verify_code = "999"
     logger.info("正在尝试使用默认验证码登录")
     try:
@@ -61,21 +57,20 @@ def global_session_setup():
             logger.info("使用默认验证码登录失败，尝试ocr识别登录")
             count = 0
             while count <= 5:  # 一直重试直到使用验证码登录成功，重试次数上限为五次
-                # 获取jsessionid和验证码，添加到header和请求参数中
-                log_info = login_tool.get_verifycode_and_jsessionid()
-                jsessionid = log_info["jsessionid"]
-                verify_code = log_info["verify_code"]
+                # 获取验证码和绑定的jsessionid
+                logtool = login_tool.LogInToolTest()
+                verify_code, jsessionid = logtool.get_verifycode_and_jsessionid()
 
                 # 通过ocr结果登录
-                logger.info("正在使用识别出的验证码登陆中......")
+                logger.info("正在使用识别出的验证码登陆中...")
                 res = findCar_admin_api.login(verify_code, jsessionid)
                 message = res['message']
                 if message == "成功":
                     token = res['data']['token']
                     logger.info(f"登录成功！获取Token：{token}")
+                    # 更新Token到配置文件
                     configger.update_config("Token", token)
                     logger.info("Token已更新到yml")
-                    assert 1
                     break
                 elif message == "验证码错误":
                     count += 1
@@ -84,7 +79,7 @@ def global_session_setup():
                     count += 1
                     logger.info(f"发生未知错误，正在进行第{count}次重试，获取登录参数")
                 if count == 6:
-                    logger.exception("使用ocr识别结果调用登录接口重试5次后依然失败，请检查！！！")
+                    logger.exception("使用ocr识别结果调用登录接口重试5次后依然失败，请检查")
                     raise Exception
     except Exception:
         logger.exception("登录失败，请检查！报错信息：")

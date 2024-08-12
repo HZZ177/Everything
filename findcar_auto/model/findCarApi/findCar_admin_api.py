@@ -36,7 +36,7 @@ def login(verify_code, jsessionid=''):
     try:
         message = res.json()
         if message['message'] != "成功":
-            logger.info(f"接口请求成功但登录失败，接口返回message:{message['message']}")
+            logger.info(f"登录失败，接口返回message:{message['message']}")
         else:
             logger.info(f"登录接口成功！")
         return message
@@ -329,3 +329,22 @@ def export_deviceList(deviceaddrip: str = None, devicetype: int = None, id: int 
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
+
+def get_verifycode(token: str = ''):
+    """
+    生成图形验证码
+    :param token: 接口请求Token
+    """
+    url = config['url']['admin_url'] + '/auth/verifyCode'
+    headers = {
+        'Accesstoken': f'{token}'
+    }
+    params = {
+    }
+    res = requests.request('GET', url, params=params, headers=headers)
+    return res
+
+
+if __name__ == '__main__':
+    pass
+    # get_verifycode()
