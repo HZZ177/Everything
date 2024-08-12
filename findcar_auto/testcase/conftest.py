@@ -47,7 +47,7 @@ def global_session_setup():
     password = config['account']['password']
 
     # 先尝试用9999验证码登录
-    verify_code = "9999"
+    verify_code = "999"
     logger.info("正在尝试使用默认验证码登录")
     try:
         res = findCar_admin_api.login(verify_code)
@@ -62,7 +62,7 @@ def global_session_setup():
             count = 0
             while count <= 5:  # 一直重试直到使用验证码登录成功，重试次数上限为五次
                 # 获取jsessionid和验证码，添加到header和请求参数中
-                log_info = login_tool.get_login_info(login_page_url, username, password)
+                log_info = login_tool.get_verifycode_and_jsessionid()
                 jsessionid = log_info["jsessionid"]
                 verify_code = log_info["verify_code"]
 
@@ -101,4 +101,4 @@ def global_session_teardown():
 
 
 if __name__ == '__main__':
-    pass
+    global_session_setup()

@@ -9,7 +9,9 @@
 import os
 import json
 import base64
-from loguru import logger
+
+import requests
+from findcar_auto.common.log_tool import logger
 from bs4 import BeautifulSoup
 from findcar_auto.common import file_path
 from findcar_auto.common import baidu_ocr_api
@@ -18,6 +20,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.edge.options import Options
+from findcar_auto.common.config_loader import configger
+
+config = configger.load_config()
 
 
 class VerificationCodeError(Exception):
@@ -105,8 +110,7 @@ class LogInTool:
         # 拼接通用文字识别高精度url
         image_url = baidu_ocr_api.OCR_URL + "?access_token=" + token
         text = ""
-        # print(self.save_path)
-        # 读取测试图片
+        # 读取验证码图片
         file_content = baidu_ocr_api.read_file(self.save_path)
         # 调用文字识别服务
         result = baidu_ocr_api.request(image_url, baidu_ocr_api.urlencode({'image': base64.b64encode(file_content)}))
@@ -172,8 +176,89 @@ def get_login_info(url, username, password):
             logger.info(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重试")
 
 
+save_path = rf'{file_path.verify_picture_path}\verify_code.png'
+
+
+def get_picture_num_by_baidu_ocr():
+    # 获取百度OCR的access token
+    token = baidu_ocr_api.fetch_token()
+    # 拼接通用文字识别高精度url
+    image_url = baidu_ocr_api.OCR_URL + "?access_token=" + token
+    text = ""
+    # 读取验证码图片
+    file_content = baidu_ocr_api.read_file(save_path)
+    # 调用文字识别服务
+    result = baidu_ocr_api.request(image_url, baidu_ocr_api.urlencode({'image': base64.b64encode(file_content)}))
+    # 解析返回结果
+    result_json = json.loads(result)
+    # 取出返回体中的识别结果value
+    for words_result in result_json["words_result"]:
+        text = text + words_result["words"]
+    logger.info(f"百度ocr识别结果：{text}")
+    return text
+
+
+def get_verify_code():
+    logger.info("正在调用百度ocr识别验证码图片")
+    count = 0  # 重试次数
+    while True:
+        verify_code = get_picture_num_by_baidu_ocr()
+        if len(verify_code) == 4:  # 如果验证码识别位数为4，进入下一步判断是否含有非正整数
+            # 标识是否ocr识别验证码中全部为正整数
+            is_digit = 1
+            for i in verify_code:
+                if not i.isdigit():
+                    is_digit = 0
+            if is_digit == 0:
+                count += 1
+                logger.info(f"验证码中存在非正整数，即将进行第{count}次重试")
+            else:
+                return verify_code
+        elif count == 3:  # 识别重试三次之后仍然获取不到四位数的识别结果，返回失败信息，手动检查
+            logger.error("==============百度ocr识别已失败三次，请检查==============")
+            raise Exception
+        else:  # 如果在重试次数消耗完之前，返回识别结果不是4位数，重新打开页面，获取图片并识别
+            count += 1
+            logger.info(f"验证码'{verify_code}'识别结果不是四位数，即将进行第{count}次重试")
+
+
+def get_verifycode_and_jsessionid():
+    # 获取验证码图片的接口地址
+    url = f'{config['url']['admin_url']}/auth/verifyCode'
+
+    # 发送 GET 请求获取图片二进制
+    logger.info("正在请求验证码图片")
+    response = requests.get(url)
+
+    # 获取验证码图片二进制，写入文件
+    if response.status_code == 200:
+        # 打开本地文件，用于写入二进制数据
+        with open(f'{save_path}', 'wb') as file:
+            file.write(response.content)
+        logger.info(f"成功获取验证码图片，保存在{save_path}")
+
+        verify_code = get_verify_code()
+
+        # 获取header中Set-Cookie中的JSESSIONID
+        cookies = response.headers.get('Set-Cookie')
+        if cookies:
+            for cookie in cookies.split(';'):
+                if 'JSESSIONID' in cookie:
+                    jsessionid = cookie.split('=')[1]
+                    logger.info(f"成功获取JSESSIONID: {jsessionid}")
+                    result = {
+                        "jsessionid": jsessionid,
+                        "verify_code": verify_code
+                    }
+                    return result
+                else:
+                    logger.info("header中没有JSESSIONID信息，请检查")
+    else:
+        logger.info(f'请求验证码接口失败，请检查')
+
+
 if __name__ == "__main__":
-    pass
+    get_verifycode_and_jsessionid()
 
     # username = super_admin['username']
     # password = super_admin['password']
