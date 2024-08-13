@@ -1,10 +1,18 @@
+# 服务器信息
+server:
+  ip: 192.168.21.249
+  user: root
+  password: RootKeytop:2020#
+  ChannelService_log_path: /home/findcar/ChannelService/logs/channelService.log
+  ParkingGuidance_log_path: /home/findcar/ParkingGuidance/logs/parkingGuidance.log
+  FindCarServer_log_path: /home/findcar/FindCarServer/logs/findCarServer.log
+
 # 一些基础url定义
 url:
   base_url: http://192.168.21.249
   admin_url: http://192.168.21.249:8083
   channel_url: http://192.168.21.249:7072
   findcar_url: http://192.168.21.249:8080
-  login_page_route: /web/login
 
 # 各服务端口
 port:

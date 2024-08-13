@@ -36,7 +36,6 @@ def global_session_setup():
     """
     logger.info("\n\n")
     logger.info("===============================【正在执行global级前置处理 获取超管Token】===============================")
-    login_page_url = config['url']['admin_url']+config['url']['login_page_route']   # 定义获取参数路径（网页）
 
     # 清空yml中的历史Token
     configger.update_config("Token", "")

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/8/10 下午2:07
 # @Author  : Heshouyi
-# @File    : dbtool.py
+# @File    : db_tool.py
 # @Software: PyCharm
 # @description: 封装各个数据库操作工具
 
