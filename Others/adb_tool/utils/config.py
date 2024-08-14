@@ -27,10 +27,10 @@ class Config:
     # 定义adb和scrcpy的路径
     current_path = os.path.abspath(os.path.dirname(__file__))   # 当前文件路径
     project_path = os.path.abspath(os.path.join(current_path, os.pardir))   # adb_tool项目根目录
-    adb_path = os.path.join(project_path, 'scrcpy_tool', 'adb.exe')
-    scrcpy_path = os.path.join(project_path, 'scrcpy_tool', 'scrcpy.exe')
+    adb_path = os.path.join(project_path, 'scrcpy_tool_bk', 'adb.exe')
+    scrcpy_path = os.path.join(project_path, 'scrcpy_tool_bk', 'scrcpy.exe')
 
-    adb_window_path = os.path.join(temp_dir, 'scrcpy_tool', 'adb.exe')
+    adb_window_path = os.path.join(temp_dir, 'scrcpy_tool_bk', 'adb.exe')
 
     # 定义不同设备的日志路径
     fccc_logfile = "/sdcard/Android/data/com.keytop.fccc/files/log"  # fcc收费一体机

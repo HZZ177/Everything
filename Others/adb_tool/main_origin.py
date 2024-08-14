@@ -158,8 +158,6 @@ class Application:
         upgrade_button = tk.Button(self.basic_frame, text="一键升级", command=self.upgrade_all_devices_pre)
         upgrade_button.pack(side="right", pady=10, padx=20)
 
-
-
         # 固定在页面左上角，返回主页面按钮
         # back_button = tk.Button(self.root, text="返回主页面", command=lambda: self.choose_devices_mode_page(self.root))
         # back_button.place(x=20, y=50)
