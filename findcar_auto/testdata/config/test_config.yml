@@ -34,3 +34,6 @@ account:
 
 # Token（一般是超管Token）
 Token: ''
+
+# 重试相关
+retry_num: 3

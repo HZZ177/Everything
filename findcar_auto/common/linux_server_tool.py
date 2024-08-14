@@ -10,6 +10,7 @@ import paramiko
 import time
 from findcar_auto.common.log_tool import logger
 from findcar_auto.common.config_loader import configger
+from concurrent.futures import ThreadPoolExecutor
 
 config = configger.load_config()
 
@@ -27,6 +28,7 @@ class LinuxServerTool:
         # 服务器连接信息
         self.ssh_client = None
         self.tcp_socket = None
+        self.executor = ThreadPoolExecutor(max_workers=3)   # 创建一个线程池，默认线程池的最大线程数为3
 
     def connect_ssh(self):
         """
@@ -61,13 +63,37 @@ class LinuxServerTool:
             self.ssh_client.close()
             logger.info(f'已断开服务器SSH连接: {self.Linux_server_ip}')
 
-    def tail_log_file(self, channelservice: bool = False, parkingguidance: bool = False, findcarserver: bool = False, timeout=5):
+    def tail_log_file(self, channelservice: bool = False, parkingguidance: bool = False, findcarserver: bool = False,
+                      timeout=10, target_str=None, async_mode=False):
         """
-        通过已有的SSH连接，实时监控特定路径下的日志文件
+        调用内置_tail_log_file方法，通过已有的SSH连接，实时监控指定服务的日志文件，监控到目标string后会提前return
+        该函数有异步和同步两种模式：
+            同步模式：直接监控指定日志，返回list对象
+            异步模式：会开启一个默认最大三线程的线程池，异步监控，适用于启动监控之后异步调用接口，从而实现监控调用后实时
+                    生成的日志，线程池在退出工具类后通过__exit__()自动销毁，返回future对象，可以通过future.result()获取返回值
+
+        :param target_str: 希望监控到的目标内容
         :param channelservice: ChannelService服务
         :param parkingguidance: ParkingGuidance服务
         :param findcarserver: FindCarServer服务
-        :param timeout: 要实时监控的时长，默认5秒
+        :param timeout: 要实时监控的时长，默认10秒
+        :param async_mode: 是否以异步方式执行，默认False
+        :return: 返回监控到的所有日志内容，如果同步执行，返回一个list；如果异步执行，返回Future对象
+        """
+        if async_mode:
+            return self.executor.submit(self._tail_log_file, channelservice, parkingguidance, findcarserver, timeout,
+                                        target_str)
+        else:
+            return self._tail_log_file(channelservice, parkingguidance, findcarserver, timeout, target_str)
+
+    def _tail_log_file(self, channelservice: bool = False, parkingguidance: bool = False, findcarserver: bool = False, timeout=10, target_str=None):
+        """
+        通过已有的SSH连接，实时监控指定服务的日志文件，监控到目标string后会提前return
+        :param target_str: 希望监控到的目标内容
+        :param channelservice: ChannelService服务
+        :param parkingguidance: ParkingGuidance服务
+        :param findcarserver: FindCarServer服务
+        :param timeout: 要实时监控的时长，默认10秒
         :return: 返回监控到的所有日志内容，类型为list
         """
         if not self.ssh_client:
@@ -95,7 +121,9 @@ class LinuxServerTool:
                 if line:
                     log_lines.append(line)
                     logger.info(f"监控到{service_name}日志: {line}")
-            time.sleep(0.1)
+                    if target_str and target_str in line:
+                        break
+            time.sleep(0.1)     # 每隔0.1秒检查并添加一次日志监控结果，防止占用资源过高
 
         stdout.channel.close()
         return log_lines
@@ -107,6 +135,7 @@ class LinuxServerTool:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close_ssh()
+        self.executor.shutdown()
 
 
 if __name__ == "__main__":

@@ -10,6 +10,9 @@ import uuid
 import functools
 import time
 from findcar_auto.common.log_tool import logger
+from findcar_auto.common.config_loader import configger
+
+config = configger.load_config()
 
 
 def get_uuid():
@@ -20,31 +23,26 @@ def get_uuid():
     return str(uuid.uuid4()).replace("-", "")
 
 
-def retry(retries=3):
-    """
-    重试装饰器，需要传参重试次数
-    :param retries: 重试次数
-    :return:
-    """
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            count = 0
-            while count < retries:
-                try:
-                    logger.info(f"函数 <{func.__name__}> 正在进行第{count+1}次重试")
-                    return func(*args, **kwargs)
-                except Exception:
-                    count += 1
-                    if count == retries:
-                        logger.error(f"函数 <{func.__name__}> 经过{retries}次重试后仍然失败")
-                        raise
-                    time.sleep(1)  # 简单的等待时间，可以根据需要调整或移除
-        return wrapper
-    return decorator
+def retry(func):
+    """重试装饰器，从配置文件读取重试次数，默认三次"""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        retries = config['retry_num']
+        count = 0
+        while count < retries:
+            try:
+                logger.info(f"函数 <{func.__name__}> 报错，正在进行第{count+1}次重试")
+                return func(*args, **kwargs)
+            except Exception:
+                count += 1
+                if count == retries:
+                    logger.error(f"函数 <{func.__name__}> 经过{retries}次重试后仍然失败")
+                    raise
+                time.sleep(1)  # 简单的等待时间，可以根据需要调整或移除
+    return wrapper
 
 
-@retry(retries=5)
+@retry
 def exception_test():
     raise Exception
 
