@@ -4,3 +4,4 @@ Others/adb_tool/build/
 Others/adb_tool/logs/
 /Others/adb_tool/logs/
 /Others/adb_tool/download_log_*/
+.idea/
