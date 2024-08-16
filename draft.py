@@ -1,17 +1,32 @@
-import requests
+import serial
 
-# 定义验证码图片的 URL
-url = 'http://192.168.21.249:8083/auth/verifyCode'  # 替换为实际的 URL
 
-# 发送 GET 请求获取图片
-response = requests.get(url)
+def monitor_com_port(port, baudrate):
+    try:
+        # 打开指定的COM端口
+        ser = serial.Serial(port, baudrate, timeout=1)
+        print(f"Listening on {port} at {baudrate} baud rate...")
 
-# 检查响应状态码
-if response.status_code == 200:
-    # 打开本地文件，用于写入二进制数据
-    with open('captcha.jpg', 'wb') as file:
-        # 将响应的内容写入文件
-        file.write(response.content)
-    print('Captcha image saved successfully as captcha.jpg.')
-else:
-    print(f'Failed to retrieve image. Status code: {response.status_code}')
+        while True:
+            # 读取数据
+            data = ser.readline(ser.in_waiting or 1)
+            if data:
+                # 将数据转换为16进制字符串并打印
+                hex_data = data.hex().upper()
+                print(f"Received: {hex_data}")
+
+    except serial.SerialException as e:
+        print(f"Error: {e}")
+    except KeyboardInterrupt:
+        print("Monitoring stopped by user.")
+    finally:
+        if ser.is_open:
+            ser.close()
+
+
+if __name__ == "__main__":
+    # 指定端口号和波特率
+    port = "COM3"  # COM端口
+    baudrate = 9600  # 波特率
+
+    monitor_com_port(port, baudrate)
