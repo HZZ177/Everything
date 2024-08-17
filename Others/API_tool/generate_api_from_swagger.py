@@ -22,8 +22,8 @@ class App:
         self.config = ConfigLoader(self.env).config
 
         # 基本参数
-        self.base_url = self.config['base_url'] + ':' + self.config['port'][self.service]
-        self.swagger_url = self.base_url + self.config['swagger_path'][self.service]
+        self.base_url = self.config.get('base_url') + ':' + self.config.get('port').get(self.service)
+        self.swagger_url = self.base_url + self.config.get('swagger_path').get(self.service)
         self.swagger_data = None
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.data_path = os.path.join(self.current_path, 'data')

@@ -4,4 +4,4 @@
 # @Author  : Heshouyi
 # @File    : test_Device_Event_List.py
 # @Software: PyCharm
-# @description:
+# @description: 设备事件列表页面相关功能自动化

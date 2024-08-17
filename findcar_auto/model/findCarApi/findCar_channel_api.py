@@ -16,16 +16,17 @@ from findcar_auto.common.log_tool import logger
 config = configger.load_config()
 
 
-def park_enter(parklist: list, Token):
+def park_enter(parklist: list, token):
     """
         入车接口
+        :param token: 接口请求Token
         :param parklist: 入车的车位地址列表
         :return:响应参数的json格式
         """
     # 检查并添加新的Token到 header 中
-    url = config['url']['channel_url'] + "/park/enter"
+    url = config.get('url').get('channel_url') + "/park/enter"
     headers = {
-        'Accesstoken': Token
+        'Accesstoken': token
     }
     params = {
         'list': parklist,
@@ -44,16 +45,17 @@ def park_enter(parklist: list, Token):
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
 
-def park_leave(parklist: list, Token):
+def park_leave(parklist: list, token):
     """
         入车接口
+        :param token: 接口请求Token
         :param parklist: 出车的车位地址列表
         :return:响应参数的json格式
         """
     # 检查并添加新的Token到 header 中
-    url = config['url']['channel_url'] + "/park/leave"
+    url = config.get('url').get('channel_url') + "/park/leave"
     headers = {
-        'Accesstoken': Token
+        'Accesstoken': token
     }
     params = {
         'list': parklist,
@@ -72,10 +74,10 @@ def park_leave(parklist: list, Token):
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
 
 
-# todo 更新车牌接口不会返回异常，异常数据也会返回成功，在parkingGuidance后续日志中打车位异常的信息，考虑怎么处理
-def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900):
+def park_updateplateno(addr, token, carimageurl, plateno, platenoreliability=900):
     """
     更新车牌号
+    :param token: 接口请求Token
     :param addr: 需要更新车牌的车位地址
     :param carimageurl: 入车图片地址
     :param plateno: 入车车牌号
@@ -83,9 +85,9 @@ def park_updateplateno(addr, Token, carimageurl, plateno, platenoreliability=900
     :return:
     """
     # 检查并添加新的Token到 header 中
-    url = config['url']['channel_url'] + "/park/updatePlateNo"
+    url = config.get('url').get('channel_url') + "/park/updatePlateNo"
     headers = {
-        'Accesstoken': Token
+        'Accesstoken': token
     }
     params = {
         'list': [

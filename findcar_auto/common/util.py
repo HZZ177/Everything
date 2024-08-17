@@ -27,7 +27,7 @@ def retry(func):
     """重试装饰器，从配置文件读取重试次数，默认三次"""
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        retries = config['retry_num']
+        retries = config.get('retry_num')
         count = 0
         while count < retries:
             try:

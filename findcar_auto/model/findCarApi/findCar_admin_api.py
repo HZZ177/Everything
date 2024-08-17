@@ -23,13 +23,13 @@ def login(verify_code, jsessionid=''):
     :param verify_code: 验证码
     :return:响应参数的json格式
     """
-    url = config['url']['admin_url'] + "/auth/login"
+    url = config.get('url').get('admin_url') + "/auth/login"
     headers = {
         'Cookie': f'JSESSIONID={jsessionid}',
     }
     params = {
-        'account': config['account']['username'],
-        'password': encrypt_password(message=config['account']['password']),
+        'account': config.get('account').get('username'),
+        'password': encrypt_password(message=config.get('account').get('password')),
         'verifyCode': verify_code
     }
 
@@ -52,7 +52,7 @@ def query_lotinfo_byid(id: int, token=''):
     :param int id: 主键
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/lot-info/getById'
+    url = config.get('url').get('admin_url') + '/lot-info/getById'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -88,7 +88,7 @@ def save_lotinfo(addr: str, defaultshowmaptype: int, deviceipprefix: str, id: in
     :param str tel: 联系电话
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/lot-info/save'
+    url = config.get('url').get('admin_url') + '/lot-info/save'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -123,7 +123,7 @@ def check_lotinfo_configure(lotid: int, token=''):
     :param int lotid: lotId
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/lot-info/lotInfoCheck'
+    url = config.get('url').get('admin_url') + '/lot-info/lotInfoCheck'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -157,7 +157,7 @@ def query_floorinfo(endtime: str = '', floorname: str = '', flooruniqueidentific
     :param int status: 启用状态 1启用 2停用
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/floorInfo/selectPageList'
+    url = config.get('url').get('admin_url') + '/floorInfo/selectPageList'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -199,7 +199,7 @@ def query_areainfo(areaid: int = None, areaname: str = None, endtime: str = None
     :param int type: 0:普通区域 1:立体车库区域
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/areaInfo/selectPageList'
+    url = config.get('url').get('admin_url') + '/areaInfo/selectPageList'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -240,7 +240,7 @@ def query_deviceinfo(deviceaddrip: str = None, devicetype: int = None, id: int =
     :param int workingstatus: 工作状态  0=故障  1=正常
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/deviceInfo/selectPageList'
+    url = config.get('url').get('admin_url') + '/deviceInfo/selectPageList'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -272,7 +272,7 @@ def align_devices(token=''):
     设备列表校准
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/deviceInfo/deviceListAlign'
+    url = config.get('url').get('admin_url') + '/deviceInfo/deviceListAlign'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -304,7 +304,7 @@ def export_deviceList(deviceaddrip: str = None, devicetype: int = None, id: int 
     :param int workingstatus: 工作状态  0=故障  1=正常
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/deviceInfo/exportDeviceList'
+    url = config.get('url').get('admin_url') + '/deviceInfo/exportDeviceList'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -328,7 +328,7 @@ def query_verifycode(token: str = ''):
     生成图形验证码
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/auth/verifyCode'
+    url = config.get('url').get('admin_url') + '/auth/verifyCode'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -357,7 +357,7 @@ def query_history_car_in_out_record(areaname: str = None, floorid: int = None, i
     :param str plateno: 车牌号
     :param token: 接口请求Token
     """
-    url = config['url']['admin_url'] + '/car-in-out-record/selectPageList'
+    url = config.get('url').get('admin_url') + '/car-in-out-record/selectPageList'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -376,6 +376,57 @@ def query_history_car_in_out_record(areaname: str = None, floorid: int = None, i
         'pageSize': pagesize,
         'parkNo': parkno,
         'plateNo': plateno,
+    }
+    res = requests.request('POST', url, json=data, headers=headers)
+    try:
+        message = res.json()
+        if message['message'] != '成功':
+            logger.info(f'接口返回失败，接口返回message：{message['message']}')
+        else:
+            logger.info(f'接口返回成功！')
+        return message
+    except Exception:
+        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+
+
+def query_realtime_parkinfo(areaname: str = None, elementparkcontrol: int = None, floorid: int = None, inendtime: str = None, instarttime: str = None, intype: int = None, lotid: int = None, pagenumber: int = None, pagesize: int = None, parkaddr: str = None, parkno: str = None, parkstatus: int = None, plateno: str = None, specialdata: int = None, token: str = ''):
+    """
+    分页查询 - 实时车位报表
+    :param str areaname: 区域名称
+    :param int elementparkcontrol: 车位控制状态 默认为空查全部，下拉选择： 0 自动控制、1 手动控制
+    :param int floorid: 楼层id
+    :param str inendtime: 进车结束时间
+    :param str instarttime: 进车开始时间
+    :param int intype: 操作类型 0-系统进车 1-手动进车
+    :param int lotid: 车场id
+    :param int pagenumber: 页数
+    :param int pagesize: 每页条目数
+    :param str parkaddr: 车位地址
+    :param str parkno: 车位号
+    :param int parkstatus: 车位状态
+    :param str plateno: 车牌号
+    :param int specialdata: 特殊数据筛选查询，默认为空查全部，下拉选择：1:编号重复车位（查询系统内楼层-区域-编号重复的车位）；2:地址重复车位（查询系统车位地址重复的车位）；3:车牌识别失败车位（系统进车，占用状态但车牌为空）
+    :param token: 接口请求Token
+    """
+    url = config.get('url').get('admin_url') + '/present-car-record/selectPageList'
+    headers = {
+        'Accesstoken': f'{token}'
+    }
+    data = {
+        'areaName': areaname,
+        'elementParkControl': elementparkcontrol,
+        'floorId': floorid,
+        'inEndTime': inendtime,
+        'inStartTime': instarttime,
+        'inType': intype,
+        'lotId': lotid,
+        'pageNumber': pagenumber,
+        'pageSize': pagesize,
+        'parkAddr': parkaddr,
+        'parkNo': parkno,
+        'parkStatus': parkstatus,
+        'plateNo': plateno,
+        'specialData': specialdata,
     }
     res = requests.request('POST', url, json=data, headers=headers)
     try:

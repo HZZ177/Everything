@@ -18,13 +18,13 @@ config = configger.load_config()
 class LinuxServerTool:
     def __init__(self):
         # 服务器基础信息
-        self.Linux_server_ip = config['server']['ip']
-        self.Linux_server_user = config['server']['user']
-        self.Linux_server_password = config['server']['password']
+        self.Linux_server_ip = config.get('server').get('ip')
+        self.Linux_server_user = config.get('server').get('user')
+        self.Linux_server_password = config.get('server').get('password')
         # 服务日志路径
-        self.ChannelService_log_path = config['server']['ChannelService_log_path']
-        self.ParkingGuidance_log_path = config['server']['ParkingGuidance_log_path']
-        self.FindCarServer_log_path = config['server']['FindCarServer_log_path']
+        self.ChannelService_log_path = config.get('server').get('ChannelService_log_path')
+        self.ParkingGuidance_log_path = config.get('server').get('ParkingGuidance_log_path')
+        self.FindCarServer_log_path = config.get('server').get('FindCarServer_log_path')
         # 服务器连接信息
         self.ssh_client = None
         self.tcp_socket = None

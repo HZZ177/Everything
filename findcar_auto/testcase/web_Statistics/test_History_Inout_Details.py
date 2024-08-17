@@ -25,7 +25,7 @@ class TestHistoryInoutDetails:
         with allure.step(f"接口查询历史进出车明细"):
             today_start = datetime.today().strftime('%Y-%m-%d 00:00:00')
             today_end = datetime.today().strftime('%Y-%m-%d 23:59:59')
-            message = findCar_admin_api.query_history_car_in_out_record(lotid=1, outstarttime=today_start, outendtime=today_end, pagesize=10, pagenumber=1, token=config['Token'])
+            message = findCar_admin_api.query_history_car_in_out_record(lotid=1, outstarttime=today_start, outendtime=today_end, pagesize=10, pagenumber=1, token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"
             logger.info(f"接口查询当天前十个历史进出车明细成功，查出记录数：{message['data']['totalCount']}")

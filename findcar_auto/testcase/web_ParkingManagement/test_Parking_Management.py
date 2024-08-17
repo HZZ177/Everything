@@ -22,7 +22,7 @@ class TestParkingManagement:
     def test_query_lotinfo(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口查询车场基础信息"):
-            message = findCar_admin_api.query_lotinfo_byid(id=1, token=config['Token'])
+            message = findCar_admin_api.query_lotinfo_byid(id=1, token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"
             logger.info(f"接口查询车场基础信息成功，车场名称：{message['data']['lotName']},车场ID:{message['data']['lotCode']}")
@@ -32,7 +32,7 @@ class TestParkingManagement:
     def test_check_lotinfo_configure(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口检测车场配置信息"):
-            message = findCar_admin_api.check_lotinfo_configure(lotid=1, token=config['Token'])
+            message = findCar_admin_api.check_lotinfo_configure(lotid=1, token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             assert message['message'] == '成功', f"检查配置信息失败，请检查接口返回信息：{message}"
             logger.info(f"检测车场配置成功,{message['data']}")

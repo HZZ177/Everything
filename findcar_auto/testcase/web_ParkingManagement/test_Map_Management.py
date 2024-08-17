@@ -22,7 +22,7 @@ class TestMapManagement:
     def test_query_floor_info(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口查询楼层基础信息"):
-            message = findCar_admin_api.query_floorinfo(lotid=1, pagenumber=1, pagesize=10, floorname='', token=config['Token'])
+            message = findCar_admin_api.query_floorinfo(lotid=1, pagenumber=1, pagesize=10, floorname='', token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"
             floor_on = []
@@ -41,7 +41,7 @@ class TestMapManagement:
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口带参查询楼层信息"):
             wanted_floor_id = 1   # 需要查询的楼层id
-            message = findCar_admin_api.query_floorinfo(lotid=1, id=wanted_floor_id, pagenumber=1, pagesize=10, floorname='', token=config['Token'])
+            message = findCar_admin_api.query_floorinfo(lotid=1, id=wanted_floor_id, pagenumber=1, pagesize=10, floorname='', token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             return_floor_id = message['data']['records'][0]['id']
             assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"

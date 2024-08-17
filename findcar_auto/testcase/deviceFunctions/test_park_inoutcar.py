@@ -35,7 +35,7 @@ class TestParkInOutCar:
         """
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"对车位{self.park_list}入车"):
-            message = findCar_channel_api.park_enter(self.park_list, Token=config['Token'])
+            message = findCar_channel_api.park_enter(self.park_list, token=config.get('Token'))
         with allure.step(f"判断入车结果"):
             assert message['message'] == '成功', f"入车失败，请检查入车接口返回信息：{message}"
             logger.info(f"车位{self.park_list}入车成功")
@@ -58,7 +58,7 @@ class TestParkInOutCar:
                     message = findCar_channel_api.park_updateplateno(addr=car_addr, carimageurl=self.carimageurl,
                                                                      plateno=self.plateno,
                                                                      platenoreliability=self.platenoreliability,
-                                                                     Token=config['Token'])
+                                                                     token=config.get('Token'))
                     # 接口请求发送之后，等待日志监控线程完成
                     logs = future.result()
 
@@ -74,7 +74,7 @@ class TestParkInOutCar:
         """
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"对车位{self.park_list}出车"):
-            message = findCar_channel_api.park_leave(self.park_list, Token=config['Token'])
+            message = findCar_channel_api.park_leave(self.park_list, token=config.get('Token'))
         with allure.step(f"判断出车结果"):
             assert message['message'] == '成功', f"出车失败，请检查出车接口返回信息：{message}"
             logger.info(f"车位{self.park_list}出车成功")

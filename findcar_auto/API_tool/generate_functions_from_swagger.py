@@ -20,8 +20,8 @@ class App:
         self.config = configger.load_config()
 
         # 基本参数
-        self.base_url = self.config['url'][self.service + '_url']
-        self.swagger_url = self.base_url + self.config['swagger_path'][self.service]
+        self.base_url = self.config.get('url').get(self.service + '_url')
+        self.swagger_url = self.base_url + self.config.get('swagger_path').get(self.service)
         self.swagger_data = None
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.data_path = os.path.join(self.current_path, 'data')
@@ -129,7 +129,7 @@ class App:
         param_annotations_str = "\n    ".join(param_annotations)
         function_code = f"def {function_name}({param_str}):\n"
         function_code += f'    """\n    {summary}\n    {param_annotations_str}\n    """\n'
-        function_code += f"    url = config['url']['{self.service}_url'] + '{path}'\n"
+        function_code += f"    url = config.get('url').get('{self.service}_url') + '{path}'\n"
 
         # 构建请求头
         function_code += "    headers = {\n"
@@ -229,11 +229,11 @@ if __name__ == '__main__':
 
     # 生成多个路径的请求函数，接口的实际路由列表
     paths = [
-        '/car-in-out-record/selectPageList',
+        '/present-car-record/selectPageList',
     ]
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/car-in-out-record/selectPageList': 'get_history_car_in_out_record',
+        '/present-car-record/selectPageList': 'query_realtime_parkinfo',
     }
 
     # 生成函数内容代码

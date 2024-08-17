@@ -19,7 +19,7 @@ def device_cmd(lightcmdfordpsreq: str = '', token: str = ''):
     :param str lightcmdfordpsreq: lightCmdForDpsReq
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/cmd'
+    url = config.get('url').get('findcar_url') + '/device-access/device/cmd'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -46,7 +46,7 @@ def device_gdlamp(cmd: str = None, list: list = None, reqid: str = None, token: 
     :param str reqid: 暂无参数描述
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/gdlamp'
+    url = config.get('url').get('findcar_url') + '/device-access/device/gdlamp'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -72,7 +72,7 @@ def device_getallonlinedeviceinfo(token: str = ''):
     获取当前所有在线设备数据
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/getAllOnLineDeviceInfo'
+    url = config.get('url').get('findcar_url') + '/device-access/device/getAllOnLineDeviceInfo'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -96,7 +96,7 @@ def device_getlcdscreendata(ipandtype: str = None, token: str = ''):
     :param str ipandtype: ipAndType
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/getLcdScreenData'
+    url = config.get('url').get('findcar_url') + '/device-access/device/getLcdScreenData'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -121,7 +121,7 @@ def device_getlcdscreenonlinestatus(ipandtype: str = None, token: str = ''):
     :param str ipandtype: ipAndType
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/getLcdScreenOnlineStatus'
+    url = config.get('url').get('findcar_url') + '/device-access/device/getLcdScreenOnlineStatus'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -145,7 +145,7 @@ def device_getregistrationinfo(token: str = ''):
     注册文件信息查询接口
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/getRegistrationInfo'
+    url = config.get('url').get('findcar_url') + '/device-access/device/getRegistrationInfo'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -171,7 +171,7 @@ def device_lamp(cmd: str = None, list: list = None, reqid: str = None, token: st
     :param str reqid: 暂无参数描述
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/lamp'
+    url = config.get('url').get('findcar_url') + '/device-access/device/lamp'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -202,7 +202,7 @@ def device_ledcommandnode(addr: int = None, channeltype: int = None, controlcode
     :param int shownum: 展示数字
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/ledCommandNode'
+    url = config.get('url').get('findcar_url') + '/device-access/device/ledCommandNode'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -231,7 +231,7 @@ def device_log(level: str = '', token: str = ''):
     :param str level: level
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/log'
+    url = config.get('url').get('findcar_url') + '/device-access/device/log'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -256,7 +256,7 @@ def device_recognitiontest(url: str = '', token: str = ''):
     :param str url: url
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/recognitionTest'
+    url = config.get('url').get('findcar_url') + '/device-access/device/recognitionTest'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -287,7 +287,7 @@ def device_sendlcdscreendata(cmd: str = None, data: str = None, ip: str = None, 
     :param int type: 暂无参数描述
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/sendLcdScreenData'
+    url = config.get('url').get('findcar_url') + '/device-access/device/sendLcdScreenData'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -318,7 +318,7 @@ def device_sendlcdscreendatabatch(lcdsocketmessagelist: str = '', token: str = '
     :param str lcdsocketmessagelist: lcdSocketMessageList
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/sendLcdScreenDataBatch'
+    url = config.get('url').get('findcar_url') + '/device-access/device/sendLcdScreenDataBatch'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -344,7 +344,7 @@ def device_snappicture(addrlist: list = None, testingbatchid: str = None, token:
     :param str testingbatchid: 质检中心检测批次ID
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/snapPicture'
+    url = config.get('url').get('findcar_url') + '/device-access/device/snapPicture'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -370,7 +370,7 @@ def device_tankwarncommand(wavcmdlist: str = '', token: str = ''):
     :param str wavcmdlist: wavCmdList
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/tankWarnCommand'
+    url = config.get('url').get('findcar_url') + '/device-access/device/tankWarnCommand'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -395,7 +395,7 @@ def device_updatefindcarstatusswitch(statusswitch: int = '', token: str = ''):
     :param int statusswitch: statusSwitch
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/updateFindCarStatusSwitch'
+    url = config.get('url').get('findcar_url') + '/device-access/device/updateFindCarStatusSwitch'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -419,7 +419,7 @@ def device_updatenodedeviceissue(token: str = ''):
     更新当前485节点设备数据下发
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/updateNodeDeviceIssue'
+    url = config.get('url').get('findcar_url') + '/device-access/device/updateNodeDeviceIssue'
     headers = {
         'Accesstoken': f'{token}'
     }
@@ -447,7 +447,7 @@ def device_warninfocommand(addr: int = None, channeltype: int = None, controlcod
     :param int shownum: 展示数字
     :param token: 接口请求Token
     """
-    url = config['url']['findcar_url'] + '/device-access/device/warnInfoCommand'
+    url = config.get('url').get('findcar_url') + '/device-access/device/warnInfoCommand'
     headers = {
         'Accesstoken': f'{token}'
     }

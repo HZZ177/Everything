@@ -25,7 +25,7 @@ class TestDeviceList:
     def test_query_floor_info(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"默认查询1页10个设备列表"):
-            message = findCar_admin_api.query_deviceinfo(pagenumber=1, pagesize=10, token=config['Token'])
+            message = findCar_admin_api.query_deviceinfo(pagenumber=1, pagesize=10, token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             devices_count = len(message['data']['records'])
             assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"
@@ -36,7 +36,7 @@ class TestDeviceList:
     def test_align_devices(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口触发设备列表校准"):
-            message = findCar_admin_api.align_devices(token=config['Token'])
+            message = findCar_admin_api.align_devices(token=config.get('Token'))
         with allure.step(f"判断查询结果"):
             assert message['message'] == '成功', f"查询失败，请检查接口返回信息：{message}"
             logger.info(f"校准设备列表成功，接口返回：{message}")
@@ -46,7 +46,7 @@ class TestDeviceList:
     def test_export_devicelist(self):
         logger.info("===========================【正在执行用例】===========================")
         with allure.step(f"接口触发设备列表导出"):
-            res = findCar_admin_api.export_deviceList(id=1, token=config['Token'])
+            res = findCar_admin_api.export_deviceList(id=1, token=config.get('Token'))
         with allure.step(f"判断导出结果，若成功保存导出内容为文件"):
             assert res.status_code == 200, f"查询失败，请检查接口返回信息：{res}"
             # 尝试保存二进制导出内容为文件
