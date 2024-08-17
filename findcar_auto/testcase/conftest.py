@@ -48,7 +48,7 @@ def global_session_setup():
         res = findCar_admin_api.login(verify_code)
         if res['message'] == "成功":
             token = res['data']['token']
-            logger.info(f"默认验证码登录成功！获取Token：{token}")
+            logger.info(f"默认验证码登录成功！已获取Token")
             configger.update_config("Token", token)
             logger.info("Token已更新到yml")
             return token
@@ -69,7 +69,7 @@ def global_session_setup():
                     logger.info(f"登录成功！获取Token：{token}")
                     # 更新Token到配置文件
                     configger.update_config("Token", token)
-                    logger.info("Token已更新到yml")
+                    logger.info("Token已更新到配置文件")
                     break
                 elif message == "验证码错误":
                     count += 1

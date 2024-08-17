@@ -7,6 +7,15 @@ server:
   ParkingGuidance_log_path: /home/findcar/ParkingGuidance/logs/parkingGuidance.log
   FindCarServer_log_path: /home/findcar/FindCarServer/logs/findCarServer.log
 
+# 数据库相关
+db:
+  host: 192.168.31.78
+  port: 5831
+  user: root
+  password: Keytop:wabjtam!
+  database: parking_guidance
+
+
 # 一些基础url定义
 url:
   base_url: http://192.168.21.249
@@ -36,4 +45,4 @@ account:
 Token: ''
 
 # 重试相关
-retry_num: 3
+retry_num: 5

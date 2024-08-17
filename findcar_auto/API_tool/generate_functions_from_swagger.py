@@ -164,8 +164,6 @@ class App:
         function_code += "        message = res.json()\n"
         function_code += "        if message['message'] != '成功':\n"
         function_code += "            logger.info(f'接口返回失败，接口返回message：{message['message']}')\n"
-        function_code += "        else:\n"
-        function_code += "            logger.info(f'接口返回成功！')\n"
         function_code += "        return message\n"
         function_code += "    except Exception:\n"
         function_code += "        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')\n"
@@ -224,16 +222,16 @@ class App:
 
 if __name__ == '__main__':
 
-    app = App('admin')
+    app = App('channel')
     app.get_json_data()
 
     # 生成多个路径的请求函数，接口的实际路由列表
     paths = [
-        '/present-car-record/selectPageList',
+        '/park/updatePlateNo',
     ]
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/present-car-record/selectPageList': 'query_realtime_parkinfo',
+        '/park/updatePlateNo': 'park_updateplateno',
     }
 
     # 生成函数内容代码

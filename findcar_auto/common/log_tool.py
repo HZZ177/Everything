@@ -17,7 +17,7 @@ from findcar_auto.common import file_path
 
 # 自定义sink，日志内容同步输出到Allure报告
 def allure_log_sink(message):
-    allure.attach(message, name="log", attachment_type=allure.attachment_type.TEXT)
+    allure.attach(message, name="用例执行日志", attachment_type=allure.attachment_type.TEXT)
 
 
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -38,7 +38,7 @@ logger.configure(
         {
             "sink": sys.stdout,  # 日志输出到标准输出
             "level": "INFO",  # 日志级别
-            "format": "<green>{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module}</green> | <level>{level}</level> | {message}",
+            "format": "<green>{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module}:{line}</green> | <level>{level}</level> | {message}",
             "colorize": True,  # 启用颜色
             "backtrace": False,   # 控制是否追溯详细的回溯信息（即代码调用链和变量状态等详细信息）
             "diagnose": False,    # 控制不会包含详细的诊断信息
@@ -47,7 +47,7 @@ logger.configure(
         {
             "sink": f"{file_path.pytest_log_path}/{current_date}/pytest_{current_hour}.log",  # 指定日志输出到文件
             "level": "INFO",  # 日志级别
-            "format": "{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module} | {level} | {message}",  # 日志格式
+            "format": "{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module}:{line} | {level} | {message}",  # 日志格式
             "rotation": "100 MB",  # 文件大小达到 100 MB 时自动分割日志
             "compression": None,  # 压缩日志文件
             "backtrace": True,   # 控制是否追溯详细的回溯信息（即代码调用链和变量状态等详细信息）

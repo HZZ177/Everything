@@ -38,8 +38,6 @@ def park_enter(parklist: list, token):
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -67,8 +65,6 @@ def park_leave(parklist: list, token):
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -106,8 +102,6 @@ def park_updateplateno(addr, token, carimageurl, plateno, platenoreliability=900
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')

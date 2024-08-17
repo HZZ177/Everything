@@ -15,7 +15,6 @@ logger = logging.getLogger('z_run_pytest')
 
 
 def main():
-    """主函数"""
 
     steps = [
         "pytest --alluredir z_run_pytest/report/allure-results --clean-alluredir",
@@ -25,11 +24,11 @@ def main():
 
     for step in steps:
         if "allure open" in step:
-            # 使用 Popen 来打开浏览器，否则会保持服务一直打开，关不掉
+            # 使用 Popen 来打开浏览器，其他方法会导致启动浏览器的服务一直打开，关不掉
             subprocess.Popen(step, shell=True)
         else:
             result = subprocess.run(step, shell=True)
-            if result.returncode in [2,3]:
+            if result.returncode in [2, 3]:
                 logger.warning(f"pytest执行过程中出错,执行返回状态码：{result.returncode}")
                 break
 

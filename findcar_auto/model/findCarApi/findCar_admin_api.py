@@ -38,8 +38,6 @@ def login(verify_code, jsessionid=''):
         message = res.json()
         if message['message'] != "成功":
             logger.info(f"登录失败，接口返回message:{message['message']}")
-        else:
-            logger.info(f"登录接口成功！")
         return message
     except Exception:
         logger.exception(f"登录接口返回信息格式化失败，请求结果：{res}，报错信息：")
@@ -64,8 +62,6 @@ def query_lotinfo_byid(id: int, token=''):
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -110,8 +106,6 @@ def save_lotinfo(addr: str, defaultshowmaptype: int, deviceipprefix: str, id: in
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -135,8 +129,6 @@ def check_lotinfo_configure(lotid: int, token=''):
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -178,8 +170,6 @@ def query_floorinfo(endtime: str = '', floorname: str = '', flooruniqueidentific
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -219,8 +209,6 @@ def query_areainfo(areaid: int = None, areaname: str = None, endtime: str = None
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -260,8 +248,6 @@ def query_deviceinfo(deviceaddrip: str = None, devicetype: int = None, id: int =
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -283,8 +269,6 @@ def align_devices(token=''):
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -382,8 +366,6 @@ def query_history_car_in_out_record(areaname: str = None, floorid: int = None, i
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
@@ -433,8 +415,6 @@ def query_realtime_parkinfo(areaname: str = None, elementparkcontrol: int = None
         message = res.json()
         if message['message'] != '成功':
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
-        else:
-            logger.info(f'接口返回成功！')
         return message
     except Exception:
         logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')

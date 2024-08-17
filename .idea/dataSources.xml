@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="parking_guidance@localhost" uuid="2952b83e-91ac-4c05-8a34-2b2c0659a606">
+    <data-source source="LOCAL" name="parking_guidance@192.168.31.78" uuid="2952b83e-91ac-4c05-8a34-2b2c0659a606">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:5831/parking_guidance</jdbc-url>
+      <jdbc-url>jdbc:mysql://192.168.31.78:5831/parking_guidance</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
