@@ -33,7 +33,7 @@ def device_cmd(lightcmdfordpsreq: str = '', token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_gdlamp(cmd: str = None, list: list = None, reqid: str = None, token: str = ''):
@@ -60,7 +60,7 @@ def device_gdlamp(cmd: str = None, list: list = None, reqid: str = None, token: 
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_getallonlinedeviceinfo(token: str = ''):
@@ -81,7 +81,7 @@ def device_getallonlinedeviceinfo(token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_getlcdscreendata(ipandtype: str = None, token: str = ''):
@@ -104,7 +104,7 @@ def device_getlcdscreendata(ipandtype: str = None, token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_getlcdscreenonlinestatus(ipandtype: str = None, token: str = ''):
@@ -127,7 +127,7 @@ def device_getlcdscreenonlinestatus(ipandtype: str = None, token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_getregistrationinfo(token: str = ''):
@@ -148,7 +148,7 @@ def device_getregistrationinfo(token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_lamp(cmd: str = None, list: list = None, reqid: str = None, token: str = ''):
@@ -175,7 +175,7 @@ def device_lamp(cmd: str = None, list: list = None, reqid: str = None, token: st
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_ledcommandnode(addr: int = None, channeltype: int = None, controlcode: str = None, screencategory: int = None, shownum: int = None, token: str = ''):
@@ -206,7 +206,7 @@ def device_ledcommandnode(addr: int = None, channeltype: int = None, controlcode
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_log(level: str = '', token: str = ''):
@@ -229,10 +229,10 @@ def device_log(level: str = '', token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
-def device_recognitiontest(url: str = '', token: str = ''):
+def call_recognition(url: str = '', token: str = ''):
     """
     识别库调用接口
     :param str url: url
@@ -252,7 +252,7 @@ def device_recognitiontest(url: str = '', token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口请求失败，请求结果：{res}，报错信息：')
 
 
 def device_sendlcdscreendata(cmd: str = None, data: str = None, ip: str = None, reqid: str = None, scene: str = None, ts: int = None, type: int = None, token: str = ''):
@@ -287,7 +287,7 @@ def device_sendlcdscreendata(cmd: str = None, data: str = None, ip: str = None, 
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_sendlcdscreendatabatch(lcdsocketmessagelist: str = '', token: str = ''):
@@ -310,7 +310,7 @@ def device_sendlcdscreendatabatch(lcdsocketmessagelist: str = '', token: str = '
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_snappicture(addrlist: list = None, testingbatchid: str = None, token: str = ''):
@@ -335,7 +335,7 @@ def device_snappicture(addrlist: list = None, testingbatchid: str = None, token:
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_tankwarncommand(wavcmdlist: str = '', token: str = ''):
@@ -358,7 +358,7 @@ def device_tankwarncommand(wavcmdlist: str = '', token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_updatefindcarstatusswitch(statusswitch: int = '', token: str = ''):
@@ -381,7 +381,7 @@ def device_updatefindcarstatusswitch(statusswitch: int = '', token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_updatenodedeviceissue(token: str = ''):
@@ -402,7 +402,7 @@ def device_updatenodedeviceissue(token: str = ''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def device_warninfocommand(addr: int = None, channeltype: int = None, controlcode: str = None, screencategory: int = None, shownum: int = None, token: str = ''):
@@ -433,4 +433,4 @@ def device_warninfocommand(addr: int = None, channeltype: int = None, controlcod
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')

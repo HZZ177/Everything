@@ -222,16 +222,16 @@ class App:
 
 if __name__ == '__main__':
 
-    app = App('channel')
+    app = App('findcar')
     app.get_json_data()
 
     # 生成多个路径的请求函数，接口的实际路由列表
     paths = [
-        '/park/updatePlateNo',
+        '/device-access/device/recognitionTest',
     ]
     # 自定义函数名对应关系，不传的默认用地址拼接作为函数名
     custom_function_names = {
-        '/park/updatePlateNo': 'park_updateplateno',
+        '/device-access/device/recognitionTest': 'call_recognition',
     }
 
     # 生成函数内容代码

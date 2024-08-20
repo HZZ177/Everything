@@ -40,7 +40,7 @@ def login(verify_code, jsessionid=''):
             logger.info(f"登录失败，接口返回message:{message['message']}")
         return message
     except Exception:
-        logger.exception(f"登录接口返回信息格式化失败，请求结果：{res}，报错信息：")
+        logger.exception(f"登录接口返回失败，请求结果：{res}，报错信息：")
         pytest.fail()
 
 
@@ -64,7 +64,7 @@ def query_lotinfo_byid(id: int, token=''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def save_lotinfo(addr: str, defaultshowmaptype: int, deviceipprefix: str, id: int, lotcode: str, lotname: str,
@@ -108,7 +108,7 @@ def save_lotinfo(addr: str, defaultshowmaptype: int, deviceipprefix: str, id: in
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def check_lotinfo_configure(lotid: int, token=''):
@@ -131,7 +131,7 @@ def check_lotinfo_configure(lotid: int, token=''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def query_floorinfo(endtime: str = '', floorname: str = '', flooruniqueidentification: str = '', id: int = '', lotid: int = '', pagenumber: int = '', pagesize: int = '', sort: int = '', starttime: str = '', status: int = '', token=''):
@@ -172,7 +172,7 @@ def query_floorinfo(endtime: str = '', floorname: str = '', flooruniqueidentific
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def query_areainfo(areaid: int = None, areaname: str = None, endtime: str = None, floorid: int = None, lotid: int = None, pagenumber: int = None, pagesize: int = None, starttime: str = None, type: int = None, token=''):
@@ -211,7 +211,7 @@ def query_areainfo(areaid: int = None, areaname: str = None, endtime: str = None
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def query_deviceinfo(deviceaddrip: str = None, devicetype: int = None, id: int = None, nodedeviceaddr: str = None, onlinestatus: int = None, pagenumber: int = None, pagesize: int = None, protocoltype: int = None, workingstatus: int = None, token=''):
@@ -250,7 +250,7 @@ def query_deviceinfo(deviceaddrip: str = None, devicetype: int = None, id: int =
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def align_devices(token=''):
@@ -271,7 +271,7 @@ def align_devices(token=''):
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def export_deviceList(deviceaddrip: str = None, devicetype: int = None, id: int = None, nodedeviceaddr: str = None, onlinestatus: int = None, pagenumber: int = None, pagesize: int = None, protocoltype: int = None, workingstatus: int = None, token=''):
@@ -368,7 +368,7 @@ def query_history_car_in_out_record(areaname: str = None, floorid: int = None, i
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 def query_realtime_parkinfo(areaname: str = None, elementparkcontrol: int = None, floorid: int = None, inendtime: str = None, instarttime: str = None, intype: int = None, lotid: int = None, pagenumber: int = None, pagesize: int = None, parkaddr: str = None, parkno: str = None, parkstatus: int = None, plateno: str = None, specialdata: int = None, token: str = ''):
@@ -417,7 +417,7 @@ def query_realtime_parkinfo(areaname: str = None, elementparkcontrol: int = None
             logger.info(f'接口返回失败，接口返回message：{message['message']}')
         return message
     except Exception:
-        logger.exception(f'接口返回信息格式化失败，请求结果：{res}，报错信息：')
+        logger.exception(f'接口返回失败，请求结果：{res}，报错信息：')
 
 
 if __name__ == '__main__':

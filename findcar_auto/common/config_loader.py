@@ -7,7 +7,7 @@
 # @description: 加载config类
 
 from ruamel.yaml import YAML
-from findcar_auto.common.file_path import test_config_path,local_config_path
+from findcar_auto.common.file_path import test_config_path, local_config_path
 
 
 class Config:
@@ -42,6 +42,6 @@ class Config:
 
 
 # local_config_path / test_config_path
-configger = Config(local_config_path)
+configger = Config(test_config_path)
 config = configger.load_config()
 config.get('url')
