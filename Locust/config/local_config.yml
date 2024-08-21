@@ -1,0 +1,6 @@
+host: 192.168.7.190
+
+port:
+  admin: 8083
+  channel: 7072
+  findcar: 8080

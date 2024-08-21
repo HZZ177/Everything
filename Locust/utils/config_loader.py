@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# @Time    : 2024/8/21 11:05
+# @Author  : Heshouyi
+# @File    : config_loader.py
+# @Software: PyCharm
+# @description:
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # @Time    : 2024/7/30 下午11:55
 # @Author  : Heshouyi
 # @File    : config_loader.py
@@ -7,7 +15,7 @@
 # @description: 加载config类
 
 from ruamel.yaml import YAML
-from findcar_auto.common.file_path import test_config_path, local_config_path
+from Locust.utils.file_path import local_config_path
 
 
 class Config:
@@ -42,7 +50,5 @@ class Config:
 
 
 # local_config_path / test_config_path
-configger = Config(test_config_path)
-
-# 加载配置文件供其他模块直接调用
+configger = Config(local_config_path)
 config = configger.load_config()
