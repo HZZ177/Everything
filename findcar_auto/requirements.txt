@@ -1,0 +1,9 @@
+allure_python_commons==2.13.5
+loguru==0.7.2
+pandas==2.2.2
+paramiko==3.4.1
+PyMySQL==1.1.1
+pytest==8.2.2
+Requests==2.32.3
+rsa==4.9
+ruamel.base==1.0.0
