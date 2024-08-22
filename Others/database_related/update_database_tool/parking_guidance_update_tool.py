@@ -17,7 +17,7 @@ import pymysql
 
 class UpdateDatabase:
 
-    def __init__(self, old_db_host, new_db_host, old_db_name="parking_guidance", new_db_name="parking_guidance"
+    def __init__(self, old_db_host, new_db_host, old_db_name="parking_guidance", new_db_name="parking_guidance_3.2.3"
                  , old_db_user='root', old_db_password='Keytop:wabjtam!', new_db_user='root', new_db_password='Keytop:wabjtam!'):
         self.old_database_host = old_db_host
         self.new_database_host = new_db_host
@@ -433,12 +433,23 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
                     raise Exception(stderr.decode())
                 else:
                     log_message(
-                        f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 国际化覆盖成功\n\n寻车服务器升级完成！！！")
+                        f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 国际化覆盖成功")
             else:
                 raise Exception(stderr.decode())
         except Exception as e:
             log_message(
                 f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}\n{stderr}\n\n请升级完成后手动检查国际化表")
+
+        # 给lot_info表新增临时到期时间-lisence_trial_period
+        update_sql = 'UPDATE lot_info SET lisence_trial_period = IF(lisence_trial_period IS NULL, DATE_ADD(NOW(), INTERVAL 30 DAY), lisence_trial_period) WHERE id = 1;'
+        try:
+            connection = self.connect_database('new')
+            with connection.cursor() as cursor:
+                affected_rows = cursor.execute(update_sql)
+                connection.commit()  # 提交事务
+                log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} lot_info表更新临时到期时间成功, 影响的行数: {affected_rows}\n\n寻车服务器升级完成！！！")
+        except Exception as e:
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 更新lot_info表临时到期时间失败，错误信息:\n{e}\n{stderr}\n\n请升级完成后手动检查lot_info表到期时间")
 
 
 if __name__ == '__main__':

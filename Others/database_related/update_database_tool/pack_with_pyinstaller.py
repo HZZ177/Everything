@@ -14,7 +14,7 @@ project_path = os.getcwd()  # 项目基础路径
 data_path = os.path.join(project_path, 'data')  # 数据文件夹路径
 script_name = os.path.join(project_path, 'update_gui.py')  # 主脚本路径
 extra_script = os.path.join(project_path, 'parking_guidance_update_tool.py')  # 额外脚本路径
-app_name = "2.0版本寻车数据库升级工具V1.0"  # 打包后的应用程序名称
+app_name = "2.0版本寻车数据库升级工具V1.1"  # 打包后的应用程序名称
 
 
 def clean_data_directory(data_path):
