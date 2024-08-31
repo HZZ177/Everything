@@ -1,0 +1,11 @@
+host: 192.168.21.249
+
+port:
+  admin: 8083
+  channel: 7072
+  findcar: 8080
+
+url:
+  admin_url: http://192.168.21.249:8083
+  channel_url: http://192.168.21.249:7072
+  findcar_url: http://192.168.21.249:8080

@@ -18,3 +18,4 @@ Others/adb_tool/logs/
 /Others/map/markers.json
 /Others/map/interactive_map.html
 /findcar_auto/file/*
+/Locust/log/*

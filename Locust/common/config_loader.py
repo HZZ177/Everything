@@ -1,13 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2024/8/21 11:05
-# @Author  : Heshouyi
-# @File    : config_loader.py
-# @Software: PyCharm
-# @description:
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # @Time    : 2024/7/30 下午11:55
 # @Author  : Heshouyi
 # @File    : config_loader.py
@@ -15,7 +7,7 @@
 # @description: 加载config类
 
 from ruamel.yaml import YAML
-from Locust.utils.file_path import local_config_path
+from Locust.common.file_path import local_config_path, test_config_path
 
 
 class Config:

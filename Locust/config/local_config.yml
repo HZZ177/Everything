@@ -1,6 +1,11 @@
-host: 192.168.7.190
+host: 192.168.31.78
 
 port:
   admin: 8083
   channel: 7072
   findcar: 8080
+
+url:
+  admin_url: http://192.168.31.78:8083
+  channel_url: http://192.168.31.78:7072
+  findcar_url: http://192.168.31.78:8080
