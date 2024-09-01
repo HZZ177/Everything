@@ -15,7 +15,7 @@ from Locust.common.config_loader import config
 from Locust.common.log_tool import logger
 
 
-# 全局变量
+# 全局统计变量
 total_successes = 0     # 识别完全正确数量
 total_failures = 0      # 识别完全错误数量
 chinese_part_fail = 0   # 车牌部分识别正确但汉字错误数量
