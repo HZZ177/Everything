@@ -16,6 +16,7 @@ from Locust.common.log_tool import logger
 
 
 # 全局统计变量
+total_count = 0         # 识别总次数
 total_successes = 0     # 识别完全正确数量
 total_failures = 0      # 识别完全错误数量
 chinese_part_fail = 0   # 车牌部分识别正确但汉字错误数量
@@ -24,16 +25,18 @@ chinese_part_fail_dict = {}     # 车牌部分识别正确但汉字错误字典
 
 
 class MyUser(HttpUser):
+    # 基础参数
     host = config.get('url').get('findcar_url')
-    wait_time = between(1, 1)
+    # wait_time = between(1, 1)
 
     @task
     def plate_recognition(self):
-        global total_successes, chinese_part_fail, total_failures, total_fail_dict, chinese_part_fail_dict
+        global total_successes, chinese_part_fail, total_failures, total_fail_dict, chinese_part_fail_dict, total_count
 
         before = time.time() * 1000    # 请求开始前时间毫秒数
         flag, recognition_plate, target_plate = plate_recognition.identify_plate_randomly(self.client)
         after = time.time() * 1000
+        total_count += 1
         take_time = round(after - before, 2)
 
         if flag == 1:
@@ -51,7 +54,8 @@ class MyUser(HttpUser):
 def summary(environment, **kwargs):
     # 打印测试总结信息
     logger.info('\n\n==================================测试信息总结==================================')
-    logger.info(f"识别完全成功次数：{total_successes}")
+    logger.info(f"识别总次数：{total_count}")
+    logger.info(f"识别完全成功次数：{total_successes}，识别成功率：【{round((total_successes/total_count)*100, 2)}%】")
     logger.info(f"车牌部分识别成功，但汉字识别失败次数：{chinese_part_fail},识别错误列表(正确车牌:识别结果)：{chinese_part_fail_dict}")
     logger.info(f"识别完全失败次数：{total_failures}，识别错误列表(正确车牌:识别结果)：{total_fail_dict}")
 
