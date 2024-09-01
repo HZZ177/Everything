@@ -24,7 +24,7 @@ total_fail_dict = {}    # 识别完全错误字典
 chinese_part_fail_dict = {}     # 车牌部分识别正确但汉字错误字典
 
 
-class MyUser(HttpUser):
+class RecognitionUser(HttpUser):
     # 基础参数
     host = config.get('url').get('findcar_url')
     # wait_time = between(1, 1)

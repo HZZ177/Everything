@@ -20,21 +20,21 @@ def identify_plate_randomly(client):
     target_chinese = plate_map[image_path][0]   # 期望车牌汉字
     result = None
     flag = None
-    try:
-        result = client.get("/device-access/device/recognitionTest", params={'url': 'pictest/' + image_path})
-    except Exception as e:
-        logger.error(f"请求失败，报错信息：{e}")
-        return
-
-    recognition_plate = result.json()['data']['carPlate']   # 完整识别结果
-    if recognition_plate != '':
-        recognition_plate_pure = result.json()['data']['carPlate'][2:]   # 识别出的车牌部分，去除汉字和颜色
-        recognition_chinese = result.json()['data']['carPlate'][1]  # 识别出的车牌汉字
-        if recognition_plate_pure == target_plate_pure:
-            flag = 2    # 2=车牌部分符合但汉字不对
-            if recognition_chinese == target_chinese:
-                flag = 1    # 1=车牌部分和汉字都符合
+    result = client.get("/device-access/device/recognitionTest", params={'url': 'pictest/' + image_path})
+    # 判断是否返回码200
+    if result.status_code != 200:
+        logger.error("调用识别库测试接口失败，返回码：" + str(result.status_code))
+        return None, None, None
     else:
-        flag = 3    # 3=车牌部分不符合
+        recognition_plate = result.json()['data']['carPlate']   # 完整识别结果
+        if recognition_plate != '':
+            recognition_plate_pure = result.json()['data']['carPlate'][2:]   # 识别出的车牌部分，去除汉字和颜色
+            recognition_chinese = result.json()['data']['carPlate'][1]  # 识别出的车牌汉字
+            if recognition_plate_pure == target_plate_pure:
+                flag = 2    # 2=车牌部分符合但汉字不对
+                if recognition_chinese == target_chinese:
+                    flag = 1    # 1=车牌部分和汉字都符合
+        else:
+            flag = 3    # 3=车牌部分不符合
 
-    return flag, recognition_plate, target_plate
+        return flag, recognition_plate, target_plate
