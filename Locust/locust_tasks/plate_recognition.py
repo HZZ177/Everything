@@ -23,7 +23,7 @@ def identify_plate_randomly(client):
     result = client.get("/device-access/device/recognitionTest", params={'url': 'pictest/' + image_path})
     # 判断是否返回码200
     if result.status_code != 200:
-        logger.error("调用识别库测试接口失败，返回码：" + str(result.status_code))
+        logger.error("调用识别库测试接口失败，返回码：" + result.status_code)
         return None, None, None
     else:
         recognition_plate = result.json()['data']['carPlate']   # 完整识别结果
