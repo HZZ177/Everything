@@ -10,7 +10,7 @@ import os
 import time
 
 from locust import HttpUser, task, between, events
-from locust_tasks import plate_recognition
+from locust_tasks import plate_recognition, plate_recognition_increase
 from Locust.common.config_loader import config
 from Locust.common.log_tool import logger
 
@@ -34,7 +34,7 @@ class RecognitionUser(HttpUser):
         global total_successes, chinese_part_fail, total_failures, total_fail_dict, chinese_part_fail_dict, total_count
 
         before = time.time() * 1000    # 请求开始前时间毫秒数
-        flag, recognition_plate, target_plate = plate_recognition.identify_plate_randomly(self.client)
+        flag, recognition_plate, target_plate = plate_recognition_increase.identify_plate_randomly(self.client)
         after = time.time() * 1000
         total_count += 1
         take_time = round(after - before, 2)
