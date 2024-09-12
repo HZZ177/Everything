@@ -7,6 +7,11 @@
 # @description: 车牌号和图片名称对应关系
 
 # 车牌号对应关系
+
+plate_map_one = {
+    'HAA337.jpg': '京HAA337'
+}
+
 plate_map = {
     'HAA337.jpg': '京HAA337',
     'NHJ900.jpg': '京NHJ900',

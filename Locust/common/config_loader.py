@@ -42,5 +42,5 @@ class Config:
 
 
 # local_config_path / test_config_path
-configger = Config(local_config_path)
+configger = Config(test_config_path)
 config = configger.load_config()
