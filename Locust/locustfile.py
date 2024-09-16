@@ -25,8 +25,8 @@ recognition_times = 0  # 识别次数统计
 file_check_fail = 0  # 检查识别切割后文件失败次数
 
 # 任务是否执行标识
-plate_recognition_task = 0  # 随机识别任务
-plate_recognition_and_check_file = 1    # 验证识别后车位切割图任务
+plate_recognition_task = 1  # 随机识别任务
+plate_recognition_and_check_file = 0    # 验证识别后车位切割图任务
 
 
 class RecognitionUser(HttpUser):

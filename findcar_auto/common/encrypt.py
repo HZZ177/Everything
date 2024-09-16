@@ -34,5 +34,5 @@ def encrypt_password(message):
 
 
 if __name__ == '__main__':
-    # print(encrypt_password(message="keytop123456"))
-    pass
+    print(encrypt_password(message="keytop123456"))
+    # pass

@@ -77,7 +77,7 @@ class Application:
         self.device_number = 0   # 多设备ip在数组中的位置
 
         # 定义版本号
-        self.version = "v1.2.2"
+        self.version = "v1.2.4"
 
         # 定义初始化窗口的基本信息
         self.root = base_root
