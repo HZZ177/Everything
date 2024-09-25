@@ -1,4 +1,4 @@
-.idea/
+.idea/*
 dist/
 Others/adb_tool/dist/
 Others/adb_tool/build/
