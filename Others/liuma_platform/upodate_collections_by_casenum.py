@@ -100,13 +100,16 @@ if __name__ == '__main__':
         "lcm5hbWUiOiLkvZXlrojkuIAifQ.vmPgVcl8OYgM4n_5prmvcaHfX-XbtaEc7xyNhOq3a9M"
     )
 
-    case_num_list = [10014, 10029, 10038, 10029]  # 用例序号
+    case_num_list = [10014, 10029, 10038, 10029]  # 用例序号（需要按顺序）
     case_id_list = []       # 查出的用例主键id
     case_name_list = []       # 查出的用例名称
     module_name_list = []     # 对应模块id
-    collection_id = '1e5fb29a-d5c7-42ff-9b3f-0db853cd6ee7'  # 目标集合id
+    collection_id = '1e5fb29a-d5c7-42ff-9b3f-0db853cd6ee7'  # 要录入的集合id
 
     app = App()
+    # 通过用例序号列表转换需要的信息
     app.select_case_info_by_num(case_num_list, case_id_list, case_name_list, module_name_list)
+    # 通过集合查询获取后续保存需要的参数
     collection_case_info = app.get_collection_detail_byid(token, collection_id)
+    # 组装新的collectionCase，拼接到上一步查询出的参数中，调接口保存用例到合集
     app.save_collection_with_new_cases(token, collection_id, collection_case_info, case_id_list, case_name_list, module_name_list)
