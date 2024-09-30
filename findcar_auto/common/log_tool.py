@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/8/2 上午5:13
 # @Author  : Heshouyi
-# @File    : log_tool.py
+# @File    : log_module.py
 # @Software: PyCharm
 # @description: 自定义日志工具封装
 
