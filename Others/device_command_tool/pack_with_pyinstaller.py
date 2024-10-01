@@ -9,14 +9,14 @@ import subprocess
 import shutil
 import os
 
+version = "v1.0.0"  # 打包程序名称中的版本号
+
 # 项目基础路径
 project_path = os.getcwd()
 # 主程序文件路径
 main_script_path = os.path.join(project_path, 'main.py')
-# 打包程序名称中的版本号
-version = "v1.0.0"
 # 打包后的应用程序名称
-app_name = f"TCPClientApp-{version}"
+app_name = f"TCP设备指令模拟工具-{version}"
 
 
 def pack_and_clean_temp(app_name):
@@ -28,23 +28,25 @@ def pack_and_clean_temp(app_name):
     command = [
         "pyinstaller",
         '--onefile',  # 打包成一个独立的可执行文件
-        # '--windowed',  # 不显示控制台窗口（适用于 GUI 应用程序）
+        '--windowed',  # 不显示控制台窗口（适用于 GUI 应用程序）
         '-n', f"{app_name}",  # 指定生成的应用程序名称
-        '--hidden-import=lora_device_page',
-        '--hidden-import=other_device_page',
-        '--hidden-import=tcp_client',
-        '--hidden-import=utils',
+        '--add-data', '"lora_device_page.py;." '
+        '--add-data', '"other_device_page.py;." '
+        '--add-data', '"tcp_client.py;." '
+        '--add-data', '"utils.py;." '
+        '--hidden-import=tkinter',
+        '--hidden-import=tkinter.messagebox',
         'main.py'  # 主程序入口文件
     ]
 
     try:
         print("开始打包...")
-        print("执行命令:", " ".join(command))
+        print("执行打包命令:", " ".join(command))
         # 执行打包命令
-        subprocess.run(command, check=True)
+        subprocess.run(" ".join(command), check=True)
         print("打包完成！")
     except subprocess.CalledProcessError:
-        print("打包过程中出现错误。")
+        print("打包过程中出现错误")
     finally:
         print("开始清理临时文件...")
         # 清理临时文件

@@ -13,7 +13,6 @@ import threading
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import messagebox, filedialog, ttk
-from pack_with_pyinstaller import version
 
 
 class Application:
@@ -78,7 +77,7 @@ class Application:
         self.device_number = 0   # 多设备ip在数组中的位置
 
         # 定义版本号
-        self.version = version  # 从打包脚本中获取版本号，不然两边维护容易忘记改
+        self.version = '1.2.4'  # 从打包脚本中获取版本号，不然两边维护容易忘记改
 
         # 定义初始化窗口的基本信息
         self.root = base_root

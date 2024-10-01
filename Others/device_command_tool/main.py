@@ -6,8 +6,6 @@
 # @Software: PyCharm
 # @description:
 
-
-
 import tkinter as tk
 from tcp_client import TCPClient
 from lora_device_page import LoraDevicePage
