@@ -15,19 +15,17 @@ class TCPClient:
         self.server_socket = None
         self.server_ip = ""
         self.server_port = 0
-        self.detector_id = 1
 
-    def connect_to_server(self, server_ip, server_port, detector_id):
+    def connect_to_server(self, server_ip, server_port):
         """尝试连接到服务器"""
         self.server_ip = server_ip
         self.server_port = int(server_port)
-        self.detector_id = int(detector_id)
 
         try:
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_socket.settimeout(5)  # 设置超时为5秒
             self.server_socket.connect((self.server_ip, self.server_port))
-            messagebox.showinfo("成功", "成功连接到服务器")
+            # messagebox.showinfo("成功", "成功连接到服务器")
             return True  # 成功连接返回True
         except socket.timeout:
             messagebox.showerror("错误", "连接服务器超时，请检查网络连接或服务器状态")
@@ -51,4 +49,9 @@ class TCPClient:
         if self.server_socket:
             self.server_socket.close()
             self.server_socket = None
-            messagebox.showinfo("断开", "已断开与服务器的连接")
+
+    def is_connected(self):
+        if self.server_socket is None:
+            return False
+        else:
+            return True

@@ -9,7 +9,7 @@ import subprocess
 import shutil
 import os
 
-version = "v1.0.0"  # 打包程序名称中的版本号
+version = "v1.0"  # 版本号
 
 # 项目基础路径
 project_path = os.getcwd()
@@ -36,6 +36,7 @@ def pack_and_clean_temp(app_name):
         '--add-data', '"utils.py;." '
         '--hidden-import=tkinter',
         '--hidden-import=tkinter.messagebox',
+        '--hidden-import=tkinter.ttk',
         'main.py'  # 主程序入口文件
     ]
 

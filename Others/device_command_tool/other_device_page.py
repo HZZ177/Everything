@@ -12,6 +12,7 @@ class OtherDevicePage:
     def __init__(self, root, tcp_client, app):
         self.root = root
         self.tcp_client = tcp_client
+        self.app = app
 
     def setup(self):
         self.clear_window()
@@ -30,8 +31,11 @@ class OtherDevicePage:
         send_button.config(state=tk.DISABLED)
         send_button.grid(row=0, column=1, padx=10)
 
-        disconnect_button = tk.Button(button_frame, text="断开连接", command=self.tcp_client.disconnect)
+        disconnect_button = tk.Button(button_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
         disconnect_button.grid(row=0, column=2, padx=10)
+
+        disconnect_button = tk.Button(button_frame, text="断开连接", command=self.disconnect)
+        disconnect_button.grid(row=0, column=3, padx=10)
 
         self.generate_command()
 
@@ -46,3 +50,13 @@ class OtherDevicePage:
 
     def send_command(self):
         self.tcp_client.send_command(self.command)
+
+    def disconnect(self):
+        """断开连接并返回初始界面"""
+        self.tcp_client.disconnect()  # 断开与服务器的连接
+        self.app.create_connection_page()  # 返回初始连接界面
+        self.app.root.title("TCP设备指令模拟工具")
+
+    def back2device_type_selection_page(self):
+        """返回设备类型选择界面"""
+        self.app.create_device_type_selection_page()

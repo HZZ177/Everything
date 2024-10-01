@@ -16,9 +16,12 @@ class TCPClientApp:
     def __init__(self, root):
         self.root = root
         self.center_window(self.root, relative_size=3, calculate_size=10)
-        self.app_name = "TCP设备指令模拟工具-v1.0"
+        self.app_name = "TCP设备指令模拟工具"
         self.root.title(self.app_name)
         self.tcp_client = TCPClient(self)  # 创建TCP客户端实例
+
+        # 绑定窗口关闭事件
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # 初始界面布局
         self.create_connection_page()
@@ -38,10 +41,6 @@ class TCPClientApp:
         self.server_port_entry = tk.Entry(container)
         self.server_port_entry.pack(pady=5)
 
-        tk.Label(container, text="探测器地址:").pack(pady=10)
-        self.detector_id_entry = tk.Entry(container)
-        self.detector_id_entry.pack(pady=5)
-
         self.connect_button = tk.Button(container, text="连接服务器", command=self.connect_to_server)
         self.connect_button.pack(pady=20)
 
@@ -49,10 +48,10 @@ class TCPClientApp:
         """尝试连接到服务器"""
         server_ip = self.server_ip_entry.get().strip()
         server_port = self.server_port_entry.get().strip()
-        detector_id = self.detector_id_entry.get().strip()
+        # detector_id = self.detector_id_entry.get().strip()
 
         # 使用TCP客户端类进行连接
-        if self.tcp_client.connect_to_server(server_ip, server_port, detector_id):
+        if self.tcp_client.connect_to_server(server_ip, server_port):
             # 如果成功连接到服务器，更新窗口标题栏以显示当前IP地址
             self.root.title(f"{self.app_name} - 当前连接服务器：{server_ip}")
 
@@ -113,6 +112,12 @@ class TCPClientApp:
 
         target_window.geometry('%dx%d+%d+%d' % (width, height, x, y))
         target_window.update()
+
+    def on_closing(self):
+        """窗口关闭事件处理"""
+        if self.tcp_client.is_connected():
+            self.tcp_client.disconnect()
+        self.root.destroy()
 
 
 if __name__ == "__main__":
