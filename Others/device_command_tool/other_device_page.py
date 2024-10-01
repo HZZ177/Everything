@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/9/30 17:47
 # @Author  : Heshouyi
-# @File    : other_device_page.py.py
+# @File    : other_device_page.py
 # @Software: PyCharm
 # @description:
 import tkinter as tk
 
+
 class OtherDevicePage:
-    def __init__(self, root, tcp_client):
+    def __init__(self, root, tcp_client, app):
         self.root = root
         self.tcp_client = tcp_client
 
@@ -17,7 +18,7 @@ class OtherDevicePage:
         container = tk.Frame(self.root)
         container.pack(expand=True)
 
-        tk.Label(container, text="其他设备类型页面").pack(pady=10)
+        tk.Label(container, text="其他设备类型页面(暂未实现)").pack(pady=10)
 
         self.command_label = tk.Label(container, text="生成的指令：")
         self.command_label.pack(pady=10)
@@ -26,6 +27,7 @@ class OtherDevicePage:
         button_frame.pack(pady=10)
 
         send_button = tk.Button(button_frame, text="发送指令", command=self.send_command)
+        send_button.config(state=tk.DISABLED)
         send_button.grid(row=0, column=1, padx=10)
 
         disconnect_button = tk.Button(button_frame, text="断开连接", command=self.tcp_client.disconnect)
@@ -39,7 +41,7 @@ class OtherDevicePage:
 
     def generate_command(self):
         """生成其他设备特定指令"""
-        self.command = "(其他设备生成的指令)"
+        self.command = "(滴滴滴滴滴滴)"
         self.command_label.config(text=f"生成的指令：{self.command}")
 
     def send_command(self):

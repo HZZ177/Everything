@@ -8,7 +8,6 @@
 import subprocess
 import shutil
 import os
-import platform
 
 # 项目基础路径
 project_path = os.getcwd()
@@ -19,21 +18,23 @@ version = "v1.0.0"
 # 打包后的应用程序名称
 app_name = f"TCPClientApp-{version}"
 
+
 def pack_and_clean_temp(app_name):
     """
     使用 PyInstaller 打包 TCPClientApp 项目，并在打包完成后清理临时文件。
     app_name: 打包后的应用程序名称
     """
-    # 根据操作系统选择合适的路径分隔符（Windows 使用 ;，Linux/macOS 使用 :）
-    add_data_option = ''
-
     # PyInstaller 命令
     command = [
         "pyinstaller",
         '--onefile',  # 打包成一个独立的可执行文件
-        '--windowed',  # 不显示控制台窗口（适用于 GUI 应用程序）
+        # '--windowed',  # 不显示控制台窗口（适用于 GUI 应用程序）
         '-n', f"{app_name}",  # 指定生成的应用程序名称
-        main_script_path  # 主程序入口文件
+        '--hidden-import=lora_device_page',
+        '--hidden-import=other_device_page',
+        '--hidden-import=tcp_client',
+        '--hidden-import=utils',
+        'main.py'  # 主程序入口文件
     ]
 
     try:
@@ -42,7 +43,9 @@ def pack_and_clean_temp(app_name):
         # 执行打包命令
         subprocess.run(command, check=True)
         print("打包完成！")
-
+    except subprocess.CalledProcessError:
+        print("打包过程中出现错误。")
+    finally:
         print("开始清理临时文件...")
         # 清理临时文件
         if os.path.exists('build'):
@@ -51,8 +54,6 @@ def pack_and_clean_temp(app_name):
         if os.path.exists(spec_file):
             os.remove(spec_file)
         print("临时文件清理完成！")
-    except subprocess.CalledProcessError:
-        print("打包过程中出现错误。")
 
 
 if __name__ == "__main__":

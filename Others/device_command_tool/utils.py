@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/9/30 17:47
 # @Author  : Heshouyi
-# @File    : utils.py.py
+# @File    : utils.py
 # @Software: PyCharm
 # @description:
 import re

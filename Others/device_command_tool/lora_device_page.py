@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/9/30 17:47
 # @Author  : Heshouyi
-# @File    : lora_device_page.py.py
+# @File    : lora_device_page.py
 # @Software: PyCharm
 # @description:
 import tkinter as tk
 from tkinter import messagebox
+
 
 class LoraDevicePage:
     def __init__(self, root, tcp_client, app):
