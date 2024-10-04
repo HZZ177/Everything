@@ -7,6 +7,7 @@
 # @description:
 import socket
 from tkinter import messagebox
+from utils import is_valid_ip
 
 
 class TCPClient:
@@ -16,8 +17,23 @@ class TCPClient:
         self.server_ip = ""
         self.server_port = 0
 
-    def connect_to_server(self, server_ip, server_port):
+    def connect_to_server(self, server_ip, server_port, event=None) -> bool:
         """尝试连接到服务器"""
+        # 验证IP地址格式
+        if not is_valid_ip(server_ip):
+            messagebox.showerror("输入错误", "请输入有效的IP地址。")
+            return False
+
+        # 验证端口号是否为有效的整数且在1-65535之间
+        try:
+            port_num = int(server_port)
+            if not (1 <= port_num <= 65535):
+                messagebox.showerror("输入错误", "请输入有效的端口号（1-65535）")
+                return False
+        except ValueError:
+            messagebox.showerror("输入错误", "端口号必须是整数")
+            return False
+
         self.server_ip = server_ip
         self.server_port = int(server_port)
 
@@ -26,19 +42,25 @@ class TCPClient:
             self.server_socket.settimeout(5)  # 设置超时为5秒
             self.server_socket.connect((self.server_ip, self.server_port))
             # messagebox.showinfo("成功", "成功连接到服务器")
-            return True  # 成功连接返回True
+            return True
         except socket.timeout:
             messagebox.showerror("错误", "连接服务器超时，请检查网络连接或服务器状态")
         except Exception as e:
             messagebox.showerror("错误", f"无法连接到服务器: {e}")
 
-        return False  # 连接失败返回False
+        return False
 
     def send_command(self, command):
         """发送生成的指令到服务器"""
         if self.server_socket:
             try:
-                self.server_socket.sendall(command.encode())
+                # 如果command是字符串，则先encode成bytes，否则直接发送
+                if isinstance(command, str):
+                    command = command.encode()
+
+                # 发送指令到服务器
+                self.server_socket.sendall(command)
+                print(f"已发送指令: {command}")
             except Exception as e:
                 messagebox.showerror("错误", f"发送指令时出错: {e}")
         else:

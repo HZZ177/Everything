@@ -30,7 +30,7 @@ def pack_and_clean_temp(app_name):
         '--onefile',  # 打包成一个独立的可执行文件
         '--windowed',  # 不显示控制台窗口（适用于 GUI 应用程序）
         '-n', f"{app_name}",  # 指定生成的应用程序名称
-        '--add-data', '"lora_device_page.py;." '
+        '--add-data', '"lora_node_device_page.py;." '
         '--add-data', '"other_device_page.py;." '
         '--add-data', '"tcp_client.py;." '
         '--add-data', '"utils.py;." '

@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/9/30 17:47
 # @Author  : Heshouyi
-# @File    : lora_device_page.py
+# @File    : lora_node_device_page.py
 # @Software: PyCharm
-# @description:
+# @description: lora无线节点页面
+
 import threading
 import tkinter as tk
 from tkinter import messagebox
@@ -13,6 +14,15 @@ from tkinter import ttk
 
 class LoraDevicePage:
     def __init__(self, root, tcp_client, app):
+
+        self.address_entry = None  # 地址输入框
+        self.car_status = None  # 车位状态选择框
+        self.fault_status_frame = None  # 故障状态frame
+        self.fault_checkbuttons = None  # 故障状态选择框
+        self.command_label = None  # 显示生成的指令
+        self.send_button = None  # 发送一次指令按钮
+        self.report_switch = None  # 定时上报开关
+
         self.root = root
         self.tcp_client = tcp_client
         self.app = app  # 传入主应用程序引用
@@ -22,7 +32,7 @@ class LoraDevicePage:
         self.is_reporting = tk.BooleanVar(value=False)  # 标记是否正在定时上报
 
     def setup(self):
-        """Lora节点页面的布局"""
+        """Lora节点页面初始化"""
         self.clear_window()
         container = tk.Frame(self.root)
         container.pack(expand=True)
@@ -33,6 +43,7 @@ class LoraDevicePage:
         tk.Label(address_frame, text="请输入探测器地址：").pack(side=tk.LEFT)
         self.address_entry = tk.Entry(address_frame)
         self.address_entry.pack(side=tk.LEFT)
+        # 绑定输入框的键盘释放事件，按任意键时监控输入长度以及生成对应指令
         self.address_entry.bind("<KeyRelease>", self.on_address_entry_change)
 
         # 创建车位状态选择框架
@@ -57,20 +68,23 @@ class LoraDevicePage:
             ("RTC故障", 1, 0), ("通讯故障", 1, 1),
             ("电池低压预警", 1, 2)
         ]
+
         self.faults = {}
-        self.fault_checkbuttons = {}
+        self.fault_checkbuttons = {}    # 故障选项复选框
         for option, row, col in fault_options:
             var = tk.IntVar()
             self.faults[option] = var
+            # 创建一个复选框，设置显示的文本、关联的变量以及触发的命令
             checkbutton = tk.Checkbutton(self.fault_status_frame, text=option, variable=var, command=self.generate_command)
             checkbutton.grid(row=row, column=col, padx=10, pady=5)
+            # 将复选框存储在字典中，以便后续可以通过选项名称直接访问
             self.fault_checkbuttons[option] = checkbutton
 
-        # 显示生成的指令
+        # 显示当前生成的指令
         self.command_label = tk.Label(container, text="生成的指令：")
         self.command_label.pack(pady=10)
 
-        # 底部按钮框架
+        # 底部多个按钮框架
         button_frame = tk.Frame(container)
         button_frame.pack(pady=10)
 
@@ -99,17 +113,27 @@ class LoraDevicePage:
         selected_status = self.car_status.get()
 
         if selected_status in ["有车正常", "无车正常"]:
-            # 禁用所有故障状态复选框，并清除选中状态
+            # 如果选择的是正常的两个状态，禁用所有故障状态复选框，并清除选中状态
             for checkbutton in self.fault_checkbuttons.values():
                 checkbutton.config(state=tk.DISABLED)
                 self.faults[checkbutton.cget('text')].set(0)  # 清除选中状态
         else:
-            # 启用所有故障状态复选框
+            # 反之启用所有故障状态复选框
             for checkbutton in self.fault_checkbuttons.values():
                 checkbutton.config(state=tk.NORMAL)
 
     def generate_command(self):
-        """生成Lora节点的指令"""
+        """
+        根据页面选择组合，生成Lora节点上报的指令
+        1、获取车位状态并映射为单个字符代码
+        2、获取多种故障状态标志，根据当前故障情况组合成一个字节值，并转换为十六进制形式
+            a.根据协议定义字典fault_flags，标记每个故障类型对应的一个二进制标志位
+            b.组合标志位：遍历faults字典，如果某项为真(即被选中)，则取对应故障的标志位和zz进行按位或运算 (|)，最终得到新的故障状态字节值zz
+            c.转换为十六进制：将最终转换出的ZZ值转换为两个字符长度的十六进制字符串zz_hex
+        3、获取探测器地址，若为空或无效，则禁用发送按钮和报告开关，并提示输入有效地址；否则，根据地址和获取的状态信息构造命令字符串
+        4、最终将构造好的命令存储并显示在界面上
+        :return:
+        """
         # 获取车位状态
         car_status = self.car_status.get()
         car_status_code = {
@@ -127,11 +151,12 @@ class LoraDevicePage:
             "电池低压预警": 0x01
         }
         zz = 0x00
+        # 遍历faults字典，如果某项为真(即被选中)，则取对应故障的标志位和zz进行按位或运算 (|)，最终得到新的故障状态字节值zz
         for fault, var in self.faults.items():
             if var.get():
                 zz |= fault_flags[fault]
 
-        # 将ZZ值转换为十六进制
+        # 将最终转换出的ZZ值转换为十六进制
         zz_hex = f"{zz:02X}"
 
         # 获取探测器地址
@@ -157,7 +182,7 @@ class LoraDevicePage:
         self.command_label.config(text=f"生成的指令：{self.command}")
 
     def on_address_entry_change(self, event):
-        """当地址输入框内容改变时调用"""
+        """当地址输入框内容改变时触发的动作"""
         # 获取当前输入框内容
         current_text = self.address_entry.get()
 
@@ -169,7 +194,7 @@ class LoraDevicePage:
         self.generate_command()
 
     def send_command(self):
-        """发送生成的指令到服务器，检测是否选择了至少一个故障"""
+        """检测是否选择了至少一个故障，如果满足，发送生成的指令到服务器"""
         car_status = self.car_status.get()
 
         # 如果是故障状态，检测是否选择了至少一个故障
@@ -185,7 +210,7 @@ class LoraDevicePage:
         """断开连接并返回初始界面"""
         self.tcp_client.disconnect()  # 断开与服务器的连接
         self.app.create_connection_page()  # 返回初始连接界面
-        self.app.root.title("TCP设备指令模拟工具")
+        self.app.root.title("TCP设备指令模拟工具")  # 清除标题中的服务器连接信息
 
     def back2device_type_selection_page(self):
         """返回设备类型选择界面"""
@@ -209,11 +234,11 @@ class LoraDevicePage:
             self.timer = None
 
     def schedule_next_report(self):
-        """上报下一次指令"""
+        """计时上报下一次指令"""
         if self.is_reporting.get():
             self.generate_command()
             self.send_command()
-            # 每隔10s发送一次指令
+            # 通过基于线程的定时器实现，每隔10s发送一次指令
             self.timer = threading.Timer(10, self.schedule_next_report)
             self.timer.daemon = True  # 将计时器线程设置为守护线程
             self.timer.start()
