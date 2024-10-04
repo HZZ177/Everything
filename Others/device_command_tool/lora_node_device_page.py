@@ -208,6 +208,7 @@ class LoraDevicePage:
 
     def disconnect(self):
         """断开连接并返回初始界面"""
+        self.stop_reporting()
         self.tcp_client.disconnect()  # 断开与服务器的连接
         self.app.create_connection_page()  # 返回初始连接界面
         self.app.root.title("TCP设备指令模拟工具")  # 清除标题中的服务器连接信息

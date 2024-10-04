@@ -244,7 +244,7 @@ class ChannelMonitorCameraPage:
         cmd_time = int(time.time())  # 获取当前时间戳
 
         if camera_id:
-            # 构造符合协议的JSON格式注册包
+            # 构造符合协议的登录包，保持字段不变
             register_packet = {
                 "cmd": "cameraLogin",
                 "cmdTime": str(cmd_time),
@@ -252,7 +252,7 @@ class ChannelMonitorCameraPage:
                 "deviceId": camera_id,
                 "deviceVersion": device_version
             }
-            # 将字典转换为字符串并封装成二进制包发送
+            # 将数据封装成二进制包发送
             self.tcp_client.send_command(self.create_packet(register_packet))
             self.root.after(1000, self.start_heartbeat)  # 延迟1秒后启动心跳包
         else:
@@ -277,6 +277,7 @@ class ChannelMonitorCameraPage:
 
     def disconnect(self):
         """断开连接并返回初始界面"""
+        self.stop_heartbeat()  # 停止心跳包的定时器
         self.tcp_client.disconnect()  # 断开与服务器的连接
         self.app.create_connection_page()  # 返回初始连接界面
         self.app.root.title("TCP设备指令模拟工具")  # 清除标题中的服务器连接信息
@@ -325,33 +326,40 @@ class ChannelMonitorCameraPage:
     def create_packet(self, command_data):
         """
         根据协议要求封装指令数据
-        :param command_data: 需要封包的命令数据字符串
+        :param command_data: 需要封包的命令数据字典
         :return: 封装后的二进制数据
         """
-        # 如果传入的命令数据是字典，先转换为字符串格式
-        if isinstance(command_data, dict):
-            command_data = str(command_data)
-
-        # 确保命令数据是字符串后再编码
-        if isinstance(command_data, str):
-            data_bytes = command_data.encode('utf-8')
-        else:
-            data_bytes = command_data
-
-        # 协议部分
-        protocol_head = 0xfb  # 协议头
-        protocol_tail = 0xfe  # 协议尾
+        # 协议头和尾
+        protocol_head = 0xfb
+        protocol_tail = 0xfe
         timestamp = int(time.time())  # 当前时间戳，4字节
-        command_code = 0x01  # 这里可以设置具体命令码
-        total_packets = 1  # 总包数，假设不分包
-        packet_number = 0  # 包序号
-        data_length = len(data_bytes)  # 数据长度
+        command_code = 0x01  # 可以根据不同指令自定义
+        total_packets = 1
+        packet_number = 0
 
-        # 校验码计算
+        # 初始化数据部分为空
+        data_bytes = b''
+
+        # 动态处理 command_data 中的每个键值对，拼接为二进制数据
+        for key, value in command_data.items():
+            if isinstance(value, str):
+                # 如果是字符串，转为 UTF-8 编码后的字节
+                data_bytes += value.encode('utf-8')
+            elif isinstance(value, int):
+                # 如果是整数，按4字节大端格式存储
+                data_bytes += struct.pack('>I', value)
+            else:
+                # 其他类型暂时作为字符串处理
+                data_bytes += str(value).encode('utf-8')
+
+        # 计算数据长度
+        data_length = len(data_bytes)
+
+        # 计算校验和，累加时间戳、命令码、包序号等内容
         checksum_data = struct.pack('>I', timestamp) + struct.pack('>B', command_code) + \
                         struct.pack('>H', total_packets) + struct.pack('>H', packet_number) + \
                         struct.pack('>H', data_length) + data_bytes
-        checksum = sum(checksum_data) & 0xFFFF  # 累加和，取16位
+        checksum = sum(checksum_data) & 0xFFFF  # 取16位
 
         # 组装完整包
         packet = struct.pack('>B', protocol_head) + struct.pack('>I', timestamp) + \
@@ -364,14 +372,23 @@ class ChannelMonitorCameraPage:
 
         return packet
 
-    def escape_packet(self, packet):
+    @staticmethod
+    def escape_packet(packet):
         """
-        根据协议要求对0xfb、0xfe和0xff进行转义
+        根据协议要求对0xFB、0xFE和0xFF进行转义，但不包括协议头和协议尾
         :param packet: 原始封包数据
         :return: 转义后的数据
         """
-        # 按照协议要求对特定字节进行转义
-        escaped_packet = packet.replace(b'\xfb', b'\xff\xbb') \
+        # 协议头是第一个字节，协议尾是最后一个字节
+        protocol_head = packet[0:1]
+        protocol_tail = packet[-1:]
+        # 中间部分是需要转义的数据
+        data_to_escape = packet[1:-1]
+
+        # 进行转义处理
+        escaped_data = data_to_escape.replace(b'\xfb', b'\xff\xbb') \
             .replace(b'\xfe', b'\xff\xee') \
             .replace(b'\xff', b'\xff\xfc')
-        return escaped_packet
+
+        # 返回完整的封包，包括未转义的头和尾
+        return protocol_head + escaped_data + protocol_tail
