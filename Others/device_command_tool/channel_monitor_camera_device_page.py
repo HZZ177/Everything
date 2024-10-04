@@ -2,24 +2,34 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/10/02
 # @Author  : Heshouyi
-# @File    : channel_monitor_camera_page.py
+# @File    : channel_monitor_camera_device_page.py
 # @Software: PyCharm
 # @description: 通道监控相机页面，支持登录、心跳、告警、事件上报等功能，带封包处理
 
-import threading
-import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
 import time
 import struct
+import threading
+import tkinter as tk
+from tkinter import ttk
 
 
 class ChannelMonitorCameraPage:
     def __init__(self, root, tcp_client, app):
+
+        self.command_label = None  # 显示指令的文本标签
+        self.send_button = None    # 发送指令按钮
+        self.report_switch = None  # 持续心跳开关
+        self.alarm_type = None     # 报警类型选择框
+        self.event_type = None     # 事件类型选择框
+        self.vehicle_type = None   # 车辆类型选择框
+        self.plate_color = None    # 车牌颜色选择框
+        self.plate_entry = None    # 车牌号输入框
+        self.confidence_entry = None  # 可信度输入框
+
         self.root = root
         self.tcp_client = tcp_client
         self.app = app  # 传入主应用程序引用
-        self.command = ""
+        self.command = {}
         self.timer = None  # 用于定时发送心跳包的定时器线程
         self.is_reporting = tk.BooleanVar(value=False)  # 标记是否正在定时上报心跳
         self.heartbeat_interval = 10  # 心跳包间隔时间，单位为秒
@@ -60,19 +70,17 @@ class ChannelMonitorCameraPage:
         button_frame.pack(pady=10)
 
         # 确保 send_button 被初始化为类属性
-        self.send_button = tk.Button(button_frame, text="发送一次当前指令", command=self.send_command,
-                                     state=tk.DISABLED)
+        self.send_button = tk.Button(button_frame, text="发送一次当前指令", command=self.send_command, state=tk.DISABLED)
         self.send_button.grid(row=0, column=1, padx=10)
 
-        disconnect_button = tk.Button(button_frame, text="返回设备选择界面",
-                                      command=self.back2device_type_selection_page)
+        disconnect_button = tk.Button(button_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
         disconnect_button.grid(row=0, column=2, padx=10)
 
         disconnect_button = tk.Button(button_frame, text="断开服务器连接", command=self.disconnect)
         disconnect_button.grid(row=0, column=3, padx=10, pady=10)
 
         self.report_switch = ttk.Checkbutton(button_frame, text="定时上报心跳(10s/次)", variable=self.is_reporting,
-                                             command=self.heartbeat_by_time, state=tk.DISABLED)
+                                             command=self.heartbeat_by_time)
         self.report_switch.grid(row=1, column=2, padx=10)
 
         # 设备登录包的初始化发送
@@ -202,32 +210,29 @@ class ChannelMonitorCameraPage:
 
     def generate_command(self, event=None):
         """根据选项生成告警或事件的指令"""
-        try:
-            camera_id_num = int(self.device_id)
+        # 直接使用内置的 device_id，不再依赖输入框内容
+        camera_id = self.device_id
 
-            # 判断当前选中的标签页
-            current_tab = self.get_current_tab()
-            if current_tab == "事件触发":
-                # 获取事件相关参数
-                plate = self.plate_entry.get().strip()
-                vehicle_type = self.vehicle_type.get()
-                confidence = self.confidence_entry.get().strip()
-                plate_color = self.plate_color.get()
+        # 判断当前选中的标签页
+        current_tab = self.get_current_tab()
+        if current_tab == "事件触发":
+            # 获取事件相关参数
+            plate = self.plate_entry.get().strip()
+            vehicle_type = self.vehicle_type.get()
+            confidence = self.confidence_entry.get().strip()
+            plate_color = self.plate_color.get()
 
-                # 构造事件命令
-                self.command = f"(ID:{camera_id_num}, EVENT:{self.event_type.get()}, PLATE:{plate}, " \
-                               f"TYPE:{vehicle_type}, CONF:{confidence}, COLOR:{plate_color})"
-            else:
-                # 告警命令
-                alarm_msg = self.alarm_type.get()
-                self.command = f"(ID:{camera_id_num}, ALARM:{alarm_msg})"
+            # 构造事件命令
+            self.command = f"(ID:{camera_id}, EVENT:{self.event_type.get()}, PLATE:{plate}, " \
+                           f"TYPE:{vehicle_type}, CONF:{confidence}, COLOR:{plate_color})"
+        else:
+            # 告警命令
+            alarm_msg = self.alarm_type.get()
+            self.command = f"(ID:{camera_id}, ALARM:{alarm_msg})"
 
-            self.send_button.config(state=tk.NORMAL)
-            self.report_switch.config(state=tk.NORMAL)
-        except ValueError:
-            self.command = "请输入有效的相机ID"
-            self.send_button.config(state=tk.DISABLED)
-            self.report_switch.config(state=tk.DISABLED)
+        # 使发送按钮和定时任务的启用逻辑不再依赖输入框内容
+        self.send_button.config(state=tk.NORMAL)
+        self.report_switch.config(state=tk.NORMAL)
 
         self.command_label.config(text=f"生成的指令：{self.command}")
 
@@ -306,7 +311,7 @@ class ChannelMonitorCameraPage:
             cmd_time = int(time.time())  # 当前时间戳
             area_state = 0  # 默认区域状态为正常
 
-            # 构造符合协议的JSON格式心跳包
+            # 构造符合协议的心跳包
             heartbeat_packet = {
                 "cmd": "heartbeat",
                 "cmdTime": str(cmd_time),
@@ -323,19 +328,12 @@ class ChannelMonitorCameraPage:
             self.timer.daemon = True
             self.timer.start()
 
-    def create_packet(self, command_data):
+    def create_packet(self, command_data: dict):
         """
         根据协议要求封装指令数据
         :param command_data: 需要封包的命令数据字典
         :return: 封装后的二进制数据
         """
-        # 协议头和尾
-        protocol_head = 0xfb
-        protocol_tail = 0xfe
-        timestamp = int(time.time())  # 当前时间戳，4字节
-        command_code = 0x01  # 可以根据不同指令自定义
-        total_packets = 1
-        packet_number = 0
 
         # 初始化数据部分为空
         data_bytes = b''
@@ -362,16 +360,16 @@ class ChannelMonitorCameraPage:
         data_length = len(data_bytes)  # 数据长度
 
         # 计算校验和，累加时间戳、命令码、包序号等内容
-        checksum_data = struct.pack('>I', timestamp) + struct.pack('>B', command_code) + \
-                        struct.pack('>H', total_packets) + struct.pack('>H', packet_number) + \
-                        struct.pack('>H', data_length) + data_bytes
+        checksum_data = (struct.pack('>I', timestamp) + struct.pack('>B', command_code) +
+                         struct.pack('>H', total_packets) + struct.pack('>H', packet_number) +
+                         struct.pack('>H', data_length) + data_bytes)
         checksum = sum(checksum_data) & 0xFFFF  # 取16位
 
         # 组装完整包
-        packet = struct.pack('>B', protocol_head) + struct.pack('>I', timestamp) + \
-                 struct.pack('>B', command_code) + struct.pack('>H', total_packets) + \
-                 struct.pack('>H', packet_number) + struct.pack('>H', data_length) + \
-                 data_bytes + struct.pack('>H', checksum) + struct.pack('>B', protocol_tail)
+        packet = (struct.pack('>B', protocol_head) + struct.pack('>I', timestamp) +
+                  struct.pack('>B', command_code) + struct.pack('>H', total_packets) +
+                  struct.pack('>H', packet_number) + struct.pack('>H', data_length) +
+                  data_bytes + struct.pack('>H', checksum) + struct.pack('>B', protocol_tail))
 
         # 对特殊字符进行转义
         packet = self.escape_packet(packet)

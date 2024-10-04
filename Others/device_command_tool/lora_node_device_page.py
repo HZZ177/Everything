@@ -54,8 +54,8 @@ class LoraDevicePage:
         self.car_status = tk.StringVar(value="有车正常")
         car_status_options = [("有车正常", 0, 0), ("有车故障", 0, 1), ("无车正常", 1, 0), ("无车故障", 1, 1)]
         for option, row, col in car_status_options:
-            tk.Radiobutton(car_status_frame, text=option, variable=self.car_status, value=option,
-                           command=lambda: [self.update_fault_status(), self.generate_command()]).grid(row=row, column=col, padx=20, pady=5)
+            (tk.Radiobutton(car_status_frame, text=option, variable=self.car_status, value=option,
+                            command=lambda: [self.update_fault_status(), self.generate_command()]).grid(row=row, column=col, padx=20, pady=5))
 
         # 创建故障状态选择框架
         tk.Label(container, text="选择故障状态（可多选）：").pack(pady=10)
@@ -75,7 +75,8 @@ class LoraDevicePage:
             var = tk.IntVar()
             self.faults[option] = var
             # 创建一个复选框，设置显示的文本、关联的变量以及触发的命令
-            checkbutton = tk.Checkbutton(self.fault_status_frame, text=option, variable=var, command=self.generate_command)
+            checkbutton = tk.Checkbutton(self.fault_status_frame, text=option, variable=var,
+                                         command=self.generate_command)
             checkbutton.grid(row=row, column=col, padx=10, pady=5)
             # 将复选框存储在字典中，以便后续可以通过选项名称直接访问
             self.fault_checkbuttons[option] = checkbutton
@@ -97,8 +98,8 @@ class LoraDevicePage:
         disconnect_button = tk.Button(button_frame, text="断开服务器连接", command=self.disconnect)
         disconnect_button.grid(row=0, column=3, padx=10, pady=10)
 
-        self.report_switch = ttk.Checkbutton(button_frame, text="定时上报开关(10s/次)", variable=self.is_reporting,
-                                             command=self.report_by_time, state=tk.DISABLED)
+        self.report_switch = ttk.Checkbutton(button_frame, text="      持续上报开关(10s/次)\n内容为上报时刻界面上选中的状态",
+                                             variable=self.is_reporting, command=self.report_by_time, state=tk.DISABLED)
         self.report_switch.grid(row=1, column=2, padx=10)
 
         self.update_fault_status()  # 初始化时更新故障状态框的状态

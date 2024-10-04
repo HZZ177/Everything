@@ -1,5 +1,5 @@
 # main.py
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Time    : 2024/9/30 17:46
 # @Author  : Heshouyi
@@ -12,10 +12,10 @@ from tkinter import messagebox
 from tcp_client import TCPClient
 from lora_node_device_page import LoraDevicePage
 from other_device_page import OtherDevicePage
-from channel_monitor_camera_page import ChannelMonitorCameraPage
+from channel_monitor_camera_device_page import ChannelMonitorCameraPage
 
 
-class TCPClientApp:
+class App:
     def __init__(self, root: tk.Tk):
         self.server_ip_entry = None  # 服务器IP地址输入框
         self.server_port_entry = None  # 服务器端口输入框
@@ -37,8 +37,8 @@ class TCPClientApp:
         # 定义设备类型到处理函数的映射
         self.device_type_handlers = {
             "Lora节点": self.load_lora_device_page,
-            "通道监控相机": self.load_channel_monitor_camera_page,
-            "其他设备类型": self.load_other_device_page
+            "通道监控相机(功能未实现)": self.load_channel_monitor_camera_page,
+            "其他设备类型(demo)": self.load_other_device_page
         }
 
     def create_connection_page(self):
@@ -84,6 +84,12 @@ class TCPClientApp:
             self.connect_button.config(state=tk.NORMAL)
             self.connect_button.config(text="连接服务器")
 
+    def disconnect(self):
+        """断开连接并返回初始界面"""
+        self.tcp_client.disconnect()  # 断开与服务器的连接
+        self.create_connection_page()  # 返回初始连接界面
+        self.root.title("TCP设备指令模拟工具")  # 清除标题中的服务器连接信息
+
     def create_device_type_selection_page(self):
         """创建设备类型选择页面"""
         self.clear_window()
@@ -103,6 +109,9 @@ class TCPClientApp:
 
         confirm_button = tk.Button(container, text="确认选择", command=self.on_device_type_selected)
         confirm_button.pack(pady=20)
+
+        disconnect_button = tk.Button(container, text="断开服务器连接", command=self.disconnect)
+        disconnect_button.pack(pady=20)
 
     def on_device_type_selected(self):
         """根据选择的设备类型加载对应的设备页面"""
@@ -158,5 +167,5 @@ class TCPClientApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = TCPClientApp(root)
+    app = App(root)
     root.mainloop()
