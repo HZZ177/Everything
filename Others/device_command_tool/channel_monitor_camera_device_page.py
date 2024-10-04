@@ -289,6 +289,7 @@ class ChannelMonitorCameraPage:
 
     def back2device_type_selection_page(self):
         """返回设备类型选择界面"""
+        self.stop_heartbeat()  # 停止心跳包的定时器
         self.app.create_device_type_selection_page()
 
     def heartbeat_by_time(self):
