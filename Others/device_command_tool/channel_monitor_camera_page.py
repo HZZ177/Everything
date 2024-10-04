@@ -72,7 +72,7 @@ class ChannelMonitorCameraPage:
         disconnect_button.grid(row=0, column=3, padx=10, pady=10)
 
         self.report_switch = ttk.Checkbutton(button_frame, text="定时上报心跳(10s/次)", variable=self.is_reporting,
-                                             command=self.report_by_time, state=tk.DISABLED)
+                                             command=self.heartbeat_by_time, state=tk.DISABLED)
         self.report_switch.grid(row=1, column=2, padx=10)
 
         # 设备登录包的初始化发送
@@ -262,7 +262,7 @@ class ChannelMonitorCameraPage:
         """开始定时发送心跳包"""
         if not self.is_reporting.get():  # 如果没有手动启动心跳定时器，则启动它
             self.is_reporting.set(True)
-            self.report_by_time()
+            self.heartbeat_by_time()
 
     def on_camera_id_entry_change(self, event):
         """当相机ID输入框内容改变时触发的动作"""
@@ -286,7 +286,7 @@ class ChannelMonitorCameraPage:
         """返回设备类型选择界面"""
         self.app.create_device_type_selection_page()
 
-    def report_by_time(self):
+    def heartbeat_by_time(self):
         """启动或停止定时上报心跳"""
         if self.is_reporting.get():
             self.schedule_next_heartbeat()
@@ -352,8 +352,14 @@ class ChannelMonitorCameraPage:
                 # 其他类型暂时作为字符串处理
                 data_bytes += str(value).encode('utf-8')
 
-        # 计算数据长度
-        data_length = len(data_bytes)
+        # 协议部分
+        protocol_head = 0xfb  # 协议头
+        protocol_tail = 0xfe  # 协议尾
+        timestamp = int(time.time())  # 当前时间戳，4字节
+        command_code = 0x01  # 具体命令码
+        total_packets = 1  # 总包数，假设不分包
+        packet_number = 0  # 包序号
+        data_length = len(data_bytes)  # 数据长度
 
         # 计算校验和，累加时间戳、命令码、包序号等内容
         checksum_data = struct.pack('>I', timestamp) + struct.pack('>B', command_code) + \
