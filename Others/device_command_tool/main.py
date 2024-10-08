@@ -107,11 +107,11 @@ class App:
         device_type_menu = tk.OptionMenu(container, self.selected_device_type, *device_types)
         device_type_menu.pack(pady=10)
 
-        confirm_button = tk.Button(container, text="确认选择", command=self.on_device_type_selected)
-        confirm_button.pack(pady=20)
-
         disconnect_button = tk.Button(container, text="断开服务器连接", command=self.disconnect)
-        disconnect_button.pack(pady=20)
+        disconnect_button.pack(side='left', padx=20, pady=20)
+
+        confirm_button = tk.Button(container, text="确认选择", command=self.on_device_type_selected)
+        confirm_button.pack(side='right', padx=20, pady=20)
 
     def on_device_type_selected(self):
         """根据选择的设备类型加载对应的设备页面"""

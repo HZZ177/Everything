@@ -11,6 +11,7 @@ import json
 import struct
 import threading
 import tkinter as tk
+import uuid
 from tkinter import ttk, messagebox
 
 
@@ -26,6 +27,9 @@ class ChannelMonitorCameraPage:
         self.plate_color: tk.StringVar = None
         self.plate_entry: tk.Entry = None
         self.confidence_entry: tk.Entry = None
+
+        # 新增的复选框变量
+        self.recovery_var = tk.BooleanVar(value=False)
 
         # 额外的上报事件信息控件
         self.event_specific_frame: tk.Frame = None  # 用于动态显示特定事件的输入控件
@@ -72,30 +76,27 @@ class ChannelMonitorCameraPage:
         self.command_label = tk.Label(container, text="生成的指令：", anchor='center', justify='center')
         self.command_label.pack(pady=10, fill='x')
 
-        # # 绑定窗口大小变化事件，动态调整wraplength
-        # self.root.bind("<Configure>", self.update_wraplength)
-
         # 底部多个按钮框架
-        button_frame = tk.Frame(container)
-        button_frame.pack(pady=10)
+        buttons_frame = tk.Frame(container)
+        buttons_frame.pack(pady=20)
 
         # 发送指令按钮
-        self.send_button = tk.Button(button_frame, text="发送一次当前指令", command=self.send_command)
+        self.send_button = tk.Button(buttons_frame, text="发送一次当前指令", command=self.send_command)
         self.send_button.grid(row=0, column=0, padx=10)
 
         # 返回设备选择界面按钮
-        back_button = tk.Button(button_frame, text="返回设备选择界面",
+        back_button = tk.Button(buttons_frame, text="返回设备选择界面",
                                 command=self.back2device_type_selection_page)
         back_button.grid(row=0, column=1, padx=10)
 
         # 断开服务器连接按钮
-        disconnect_button = tk.Button(button_frame, text="断开服务器连接", command=self.disconnect)
+        disconnect_button = tk.Button(buttons_frame, text="断开服务器连接", command=self.disconnect)
         disconnect_button.grid(row=0, column=2, padx=10, pady=10)
 
         # 定时心跳开关
-        self.report_switch = ttk.Checkbutton(button_frame, text="定时上报心跳(10s/次)", variable=self.is_reporting,
+        self.report_switch = ttk.Checkbutton(container, text="定时心跳(10s/次)", variable=self.is_reporting,
                                              command=self.heartbeat_by_time)
-        self.report_switch.grid(row=1, column=1, padx=10)
+        self.report_switch.pack(pady=10)
 
         # 初始化指令生成
         self.generate_command()
@@ -130,6 +131,15 @@ class ChannelMonitorCameraPage:
         self.more_info_entry = tk.Entry(alarm_page, width=50)
         self.more_info_entry.pack(pady=5)
         self.more_info_entry.bind("<KeyRelease>", self.generate_command)
+
+        # 添加 recovery 复选框
+        self.recovery_checkbox = ttk.Checkbutton(
+            alarm_page,
+            text="告警恢复",
+            variable=self.recovery_var,
+            command=self.generate_command  # 复选框状态变化时重新生成命令
+        )
+        self.recovery_checkbox.pack(pady=10)
 
     def setup_event_page(self, event_page):
         """在事件触发页面设置事件选项"""
@@ -174,22 +184,8 @@ class ChannelMonitorCameraPage:
         for i in range(4):
             input_frame.grid_columnconfigure(i, weight=1)
 
-        # 车牌号输入
-        plate_label = tk.Label(input_frame, text="车牌号：")
-        plate_label.grid(row=0, column=0, padx=5, pady=5, sticky='e')
-        self.plate_entry = tk.Entry(input_frame)
-        self.plate_entry.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
-        self.plate_entry.bind("<KeyRelease>", self.generate_command)
-
-        # 可信度输入
-        confidence_label = tk.Label(input_frame, text="可信度(1-1000)：")
-        confidence_label.grid(row=0, column=2, padx=5, pady=5, sticky='e')
-        self.confidence_entry = tk.Entry(input_frame)
-        self.confidence_entry.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
-        self.confidence_entry.bind("<KeyRelease>", self.generate_command)
-
         # 车辆类型选择框
-        tk.Label(input_frame, text="选择车辆类型：").grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(input_frame, text="选择车辆类型：").grid(row=0, column=0, columnspan=6, padx=5, pady=5)
         self.vehicle_type = tk.StringVar(value="小型车")
         vehicle_options = [
             ("小型车", "小型车"),
@@ -197,11 +193,14 @@ class ChannelMonitorCameraPage:
             ("摩托车", "摩托车"),
             ("其他", "其他")
         ]
-        self.create_radiobuttons_inline(input_frame, vehicle_options, self.vehicle_type, self.generate_command,
-                                        row=1, column=1, max_per_row=4)
+
+        # 创建车辆类型的Radiobuttons，文字和选项分两行
+        vehicle_rb_frame = tk.Frame(input_frame)
+        vehicle_rb_frame.grid(row=1, column=0, columnspan=4, padx=5, pady=5)
+        self.create_radiobuttons(vehicle_rb_frame, vehicle_options, self.vehicle_type, self.generate_command, max_per_row=4)
 
         # 车牌颜色选择框
-        tk.Label(input_frame, text="车牌颜色：").grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        tk.Label(input_frame, text="车牌颜色：").grid(row=2, column=0, columnspan=6, padx=5, pady=5)
         self.plate_color = tk.StringVar(value="蓝色")
         plate_color_options = [
             ("蓝色", "蓝色"),
@@ -210,61 +209,79 @@ class ChannelMonitorCameraPage:
             ("黑色", "黑色"),
             ("绿色", "绿色")
         ]
-        self.create_radiobuttons_inline(input_frame, plate_color_options, self.plate_color, self.generate_command,
-                                        row=2, column=1, max_per_row=5)
+
+        # 创建车牌颜色的Radiobuttons，文字和选项分两行
+        plate_color_rb_frame = tk.Frame(input_frame)
+        plate_color_rb_frame.grid(row=3, column=0, columnspan=4, padx=5, pady=5)
+        self.create_radiobuttons(plate_color_rb_frame, plate_color_options, self.plate_color, self.generate_command, max_per_row=5)
+
+        # 车牌号输入
+        plate_label = tk.Label(input_frame, text="车牌号：")
+        plate_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        self.plate_entry = tk.Entry(input_frame)
+        self.plate_entry.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        self.plate_entry.bind("<KeyRelease>", self.generate_command)
+
+        # 可信度输入
+        confidence_label = tk.Label(input_frame, text="可信度(1-1000)：")
+        confidence_label.grid(row=4, column=2, padx=5, pady=5, sticky='e')
+        self.confidence_entry = tk.Entry(input_frame)
+        self.confidence_entry.grid(row=4, column=3, padx=5, pady=5, sticky='w')
+        self.confidence_entry.bind("<KeyRelease>", self.generate_command)
 
         # 根据事件类型添加额外字段
         if event in ["triggerEvent", "reverseEvent", "exitEvent"]:
             # 事件ID输入
             event_id_label = tk.Label(input_frame, text="事件ID：")
-            event_id_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
+            event_id_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
             self.event_id_entry = tk.Entry(input_frame)
-            self.event_id_entry.grid(row=3, column=1, padx=5, pady=5, sticky='ew')
+            self.event_id_entry.grid(row=5, column=1, padx=5, pady=5, sticky='w')
             self.event_id_entry.bind("<KeyRelease>", self.generate_command)
 
             # 触发标志输入
             trigger_flag_label = tk.Label(input_frame, text="触发标志：")
-            trigger_flag_label.grid(row=3, column=2, padx=5, pady=5, sticky='e')
+            trigger_flag_label.grid(row=5, column=2, padx=5, pady=5, sticky='e')
             self.trigger_flag_entry = tk.Entry(input_frame)
-            self.trigger_flag_entry.grid(row=3, column=3, padx=5, pady=5, sticky='ew')
+            self.trigger_flag_entry.grid(row=5, column=3, padx=5, pady=5, sticky='w')
             self.trigger_flag_entry.bind("<KeyRelease>", self.generate_command)
 
         elif event == "trafficEvent":
             # 区域状态
-            tk.Label(input_frame, text="区域状态：").grid(row=3, column=0, padx=5, pady=5, sticky='e')
+            tk.Label(input_frame, text="区域状态：").grid(row=5, column=0, columnspan=6, padx=5, pady=5)
             self.area_state = tk.StringVar(value="0")
             area_state_options = [
                 ("正常", "0"),
                 ("繁忙", "1"),
                 ("拥堵", "2")
             ]
-            self.create_radiobuttons_inline(input_frame, area_state_options, self.area_state, self.generate_command,
-                                            row=3, column=1, max_per_row=3)
+            area_state_rb_frame = tk.Frame(input_frame)
+            area_state_rb_frame.grid(row=6, column=0, columnspan=4, padx=5, pady=5)
+            self.create_radiobuttons(area_state_rb_frame, area_state_options, self.area_state, self.generate_command, max_per_row=3)
 
             # 区域状态可信度
             area_state_reliability_label = tk.Label(input_frame, text="区域状态可信度：")
-            area_state_reliability_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
+            area_state_reliability_label.grid(row=7, column=0, padx=5, pady=5, sticky='e')
             self.area_state_reliability_entry = tk.Entry(input_frame)
-            self.area_state_reliability_entry.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
+            self.area_state_reliability_entry.grid(row=7, column=1, padx=5, pady=5, sticky='w')
             self.area_state_reliability_entry.bind("<KeyRelease>", self.generate_command)
 
             # 车辆数量
             car_num_label = tk.Label(input_frame, text="车辆数量：")
-            car_num_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
+            car_num_label.grid(row=7, column=2, padx=5, pady=5, sticky='e')
             self.car_num_entry = tk.Entry(input_frame)
-            self.car_num_entry.grid(row=5, column=1, padx=5, pady=5, sticky='ew')
+            self.car_num_entry.grid(row=7, column=3, padx=5, pady=5, sticky='w')
             self.car_num_entry.bind("<KeyRelease>", self.generate_command)
 
         elif event == "illegalParkingEvent":
             # 事件ID输入
             event_id_label = tk.Label(input_frame, text="事件ID：")
-            event_id_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
+            event_id_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
             self.event_id_entry = tk.Entry(input_frame)
-            self.event_id_entry.grid(row=3, column=1, padx=5, pady=5, sticky='ew')
+            self.event_id_entry.grid(row=5, column=1, padx=5, pady=5, sticky='w')
             self.event_id_entry.bind("<KeyRelease>", self.generate_command)
 
             # 违法类型
-            tk.Label(input_frame, text="违法类型：").grid(row=4, column=0, padx=5, pady=5, sticky='e')
+            tk.Label(input_frame, text="违法类型：").grid(row=6, column=0, padx=5, pady=5, sticky='e')
             self.illegal_type = tk.StringVar(value="0")
             illegal_type_options = [
                 ("车辆滞留", "0"),
@@ -272,14 +289,15 @@ class ChannelMonitorCameraPage:
                 ("人员滞留", "2"),
                 ("非机动车滞留", "3")
             ]
-            self.create_radiobuttons_inline(input_frame, illegal_type_options, self.illegal_type, self.generate_command,
-                                            row=4, column=1, max_per_row=4)
+            illegal_type_rb_frame = tk.Frame(input_frame)
+            illegal_type_rb_frame.grid(row=7, column=0, columnspan=4, padx=5, pady=5)
+            self.create_radiobuttons(illegal_type_rb_frame, illegal_type_options, self.illegal_type, self.generate_command, max_per_row=4)
 
             # 违法车辆数量
             illegal_car_num_label = tk.Label(input_frame, text="违法车辆数量：")
-            illegal_car_num_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
+            illegal_car_num_label.grid(row=8, column=0, padx=5, pady=5, sticky='e')
             self.illegal_car_num_entry = tk.Entry(input_frame)
-            self.illegal_car_num_entry.grid(row=5, column=1, padx=5, pady=5, sticky='ew')
+            self.illegal_car_num_entry.grid(row=8, column=1, padx=5, pady=5, sticky='w')
             self.illegal_car_num_entry.bind("<KeyRelease>", self.generate_command)
 
             # 违法车辆信息列表
@@ -291,17 +309,18 @@ class ChannelMonitorCameraPage:
 
         # 添加图片数量输入
         image_num_label = tk.Label(input_frame, text="图片数量：")
-        image_num_label.grid(row=6, column=0, padx=5, pady=5, sticky='e')
+        image_num_label.grid(row=9, column=0, padx=5, pady=5, sticky='e')
         self.image_num_entry = tk.Entry(input_frame)
-        self.image_num_entry.grid(row=6, column=1, padx=5, pady=5, sticky='ew')
+        self.image_num_entry.grid(row=9, column=1, padx=5, pady=5, sticky='w')
         self.image_num_entry.insert(0, "1")
         self.image_num_entry.bind("<KeyRelease>", self.generate_command)
 
         # 当天事件序号
         num_label = tk.Label(input_frame, text="当天事件序号：")
-        num_label.grid(row=6, column=2, padx=5, pady=5, sticky='e')
+        num_label.grid(row=9, column=2, padx=5, pady=5, sticky='e')
         self.num_entry = tk.Entry(input_frame)
-        self.num_entry.grid(row=6, column=3, padx=5, pady=5, sticky='ew')
+        self.num_entry.grid(row=9, column=3, padx=5, pady=5, sticky='w')
+        self.num_entry.insert(0, f"1")
         self.num_entry.bind("<KeyRelease>", self.generate_command)
 
     def add_illegal_car_info(self):
@@ -397,15 +416,20 @@ class ChannelMonitorCameraPage:
             # 获取告警相关参数
             message = self.alarm_type.get()
             more_info = self.more_info_entry.get().strip()
+            is_recovery = self.recovery_var.get()
 
             # 构造告警命令
             command_data = {
                 "cmd": "faultMessage",
                 "cmdTime": str(int(time.time())),
                 "deviceType": "5",
-                "deviceId": camera_id,
-                "message": message
+                "deviceId": camera_id
             }
+
+            if is_recovery:
+                command_data["recovery"] = message
+            else:
+                command_data["message"] = message
 
             if more_info:
                 command_data["moreInfo"] = more_info
@@ -685,15 +709,25 @@ class ChannelMonitorCameraPage:
         self.setup_event_specific_fields()
         self.generate_command()
 
+    def on_device_type_selected(self):
+        """确认选择设备类型后的处理逻辑"""
+        # 这里你需要实现确认选择后的具体逻辑
+        # 例如，获取选择的设备类型并进行相应的处理
+        messagebox.showinfo("确认选择", "设备类型已确认选择！")
+        # 你可以根据实际需求进行更多处理
+        pass
+
 
 if __name__ == "__main__":
     # 测试运行该模块时直接生成界面
     root = tk.Tk()  # 创建根窗口
     root.title("通道监控相机页面 - 调试模式")
 
-
     # 模拟一个TCP客户端（需要根据你的实际实现进行修改）
     class MockTCPClient:
+        def __init__(self):
+            pass
+
         def send_command(self, packet):
             print(f"发送数据包: {packet}")
 
