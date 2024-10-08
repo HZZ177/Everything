@@ -23,7 +23,7 @@ class App:
         self.selected_device_type = None    # 选择的设备类型
 
         self.root = root
-        self.center_window(self.root, relative_size=3, calculate_size=10)
+        self.center_window(self.root, relative_size=2, calculate_size=10)
         self.app_name = "TCP设备指令模拟工具"
         self.root.title(self.app_name)
         self.tcp_client = TCPClient(self)  # 创建TCP客户端实例
@@ -37,7 +37,7 @@ class App:
         # 定义设备类型到处理函数的映射
         self.device_type_handlers = {
             "Lora节点": self.load_lora_device_page,
-            "通道监控相机(功能未实现)": self.load_channel_monitor_camera_page,
+            "通道监控相机(暂时实现注册心跳和故障上报)": self.load_channel_monitor_camera_page,
             "其他设备类型(demo)": self.load_other_device_page
         }
 
@@ -143,7 +143,7 @@ class App:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-    def center_window(self, target_window: tk.Tk, relative_size=4, calculate_size=0):
+    def center_window(self, target_window: tk.Tk, relative_size=3, calculate_size=0):
         """窗口居中"""
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -167,5 +167,6 @@ class App:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.resizable(True, True)  # 允许用户自由调整窗口大小
     app = App(root)
     root.mainloop()
