@@ -17,11 +17,16 @@ class TCPClient:
         self.server_ip = ""
         self.server_port = 0
 
-    def connect_to_server(self, server_ip, server_port, event=None) -> bool:
+    def connect_to_server(self, server_ip, server_port, local_ip, event=None) -> bool:
         """尝试连接到服务器"""
         # 验证IP地址格式
         if not is_valid_ip(server_ip):
-            messagebox.showerror("输入错误", "请输入有效的IP地址。")
+            messagebox.showerror("输入错误", "请输入有效的服务器IP地址。")
+            return False
+
+        # 验证本地IP地址格式
+        if not is_valid_ip(local_ip):
+            messagebox.showerror("输入错误", "请选择有效的本地IP地址。")
             return False
 
         # 验证端口号是否为有效的整数且在1-65535之间
@@ -35,11 +40,19 @@ class TCPClient:
             return False
 
         self.server_ip = server_ip
-        self.server_port = int(server_port)
+        self.server_port = port_num
 
         try:
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_socket.settimeout(5)  # 设置超时为5秒
+
+            # 绑定到指定的本地IP地址
+            # 如果服务器IP是回环地址，绑定本地地址到本地回环地址，否则局域网地址连接回环地址会报错
+            if server_ip == "127.0.0.1":
+                local_ip = "127.0.0.1"
+
+            self.server_socket.bind((local_ip, 0))  # 端口号0表示由系统自动分配
+
             self.server_socket.connect((self.server_ip, self.server_port))
             # messagebox.showinfo("成功", "成功连接到服务器")
             return True

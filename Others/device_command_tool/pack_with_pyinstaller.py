@@ -38,6 +38,8 @@ def pack_and_clean_temp(app_name):
         '--hidden-import=tkinter',
         '--hidden-import=tkinter.messagebox',
         '--hidden-import=tkinter.ttk',
+        '--hidden-import=json',
+        '--hidden-import=uuid',
         'main.py'  # 主程序入口文件
     ]
 

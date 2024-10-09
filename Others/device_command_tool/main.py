@@ -1,5 +1,5 @@
 # main.py
-# !/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Time    : 2024/9/30 17:46
 # @Author  : Heshouyi
@@ -13,17 +13,34 @@ from tcp_client import TCPClient
 from lora_node_device_page import LoraDevicePage
 from other_device_page import OtherDevicePage
 from channel_monitor_camera_device_page import ChannelMonitorCameraPage
+import socket
+
+
+def get_local_ipv4_addresses():
+    """获取本地所有可用的IPv4地址"""
+    ipv4_addresses = []
+    hostname = socket.gethostname()
+    try:
+        # 获取与主机名关联的所有地址
+        for addr_info in socket.getaddrinfo(hostname, None, socket.AF_INET):
+            ip = addr_info[4][0]
+            if ip not in ipv4_addresses:
+                ipv4_addresses.append(ip)
+    except socket.gaierror:
+        pass  # 如果无法获取地址，返回空列表
+    return ipv4_addresses
 
 
 class App:
     def __init__(self, root: tk.Tk):
-        self.server_ip_entry = None  # 服务器IP地址输入框
+        self.server_ip_var = None  # 服务器IP地址下拉框变量
         self.server_port_entry = None  # 服务器端口输入框
         self.connect_button = None  # 连接服务器按钮
         self.selected_device_type = None    # 选择的设备类型
+        self.local_ip_var = None  # 本地IP地址下拉框变量
 
         self.root = root
-        self.center_window(self.root, relative_size=2, calculate_size=10)
+        self.center_window(self.root, relative_size=3, calculate_size=10)
         self.app_name = "TCP设备指令模拟工具"
         self.root.title(self.app_name)
         self.tcp_client = TCPClient(self)  # 创建TCP客户端实例
@@ -37,16 +54,27 @@ class App:
         # 定义设备类型到处理函数的映射
         self.device_type_handlers = {
             "Lora节点": self.load_lora_device_page,
-            "通道监控相机(暂时实现注册心跳和故障上报)": self.load_channel_monitor_camera_page,
+            "通道监控相机": self.load_channel_monitor_camera_page,
             "其他设备类型(demo)": self.load_other_device_page
         }
 
     def create_connection_page(self):
         """创建服务器连接界面"""
         self.clear_window()
+        self.center_window(self.root, relative_size=3, calculate_size=10)
 
         container = tk.Frame(self.root)
         container.pack(expand=True)
+
+        # 获取本地IPv4地址列表
+        local_ips = get_local_ipv4_addresses()
+        if not local_ips:
+            local_ips = ["127.0.0.1"]  # 默认回环地址
+
+        tk.Label(container, text="选择本地IP地址:").pack(pady=10)
+        self.local_ip_var = tk.StringVar(value=local_ips[0])
+        local_ip_menu = tk.OptionMenu(container, self.local_ip_var, *local_ips)
+        local_ip_menu.pack(pady=5)
 
         tk.Label(container, text="服务器IP:").pack(pady=10)
         self.server_ip_entry = tk.Entry(container)
@@ -67,11 +95,16 @@ class App:
 
     def connect_to_server(self, event=None):
         """尝试连接到服务器"""
+        local_ip = self.local_ip_var.get().strip()
         server_ip = self.server_ip_entry.get().strip()
         server_port = self.server_port_entry.get().strip()
 
-        # 调用 TCPClient 的 connect_to_server 方法
-        success = self.tcp_client.connect_to_server(server_ip, server_port, event)
+        if not local_ip:
+            messagebox.showerror("输入错误", "请选择一个本地IP地址。")
+            return
+
+        # 调用 TCPClient 的 connect_to_server 方法，并传递本地IP
+        success = self.tcp_client.connect_to_server(server_ip, server_port, local_ip, event)
 
         if success:
             # 如果成功连接到服务器，更新窗口标题栏以显示当前IP地址

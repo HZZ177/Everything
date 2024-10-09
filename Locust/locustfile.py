@@ -10,7 +10,7 @@ import os
 import time
 
 from locust import HttpUser, task, between, events
-from locust_tasks import plate_recognition, plate_recognition_increase
+from locust_tasks import plate_recognition, plate_recognition_increase, plate_recognition_ARH
 from Locust.common.config_loader import config
 from Locust.common.log_tool import logger
 

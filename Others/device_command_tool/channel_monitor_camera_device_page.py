@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time    : 2024/10/02
-# @Author  : Heshouyi
-# @File    : channel_monitor_camera_device_page.py
-# @Software: PyCharm
-# @description: 通道监控相机页面，支持登录、心跳、告警、事件上报等功能，带封包处理
-
 import time
 import json
 import struct
@@ -42,8 +34,11 @@ class ChannelMonitorCameraPage:
         self.is_reporting = tk.BooleanVar(value=False)  # 标记是否正在定时上报心跳
         self.heartbeat_interval = 10  # 心跳包间隔时间，单位为秒
 
-        self.device_id = "CA19920123"  # 内置的 deviceID
+        self.device_id = "SY17711123"  # 内置的 deviceID
         self.device_version = "RDD.CSA.S1A.1.0"  # 内置的 deviceVersion
+
+        # 绑定窗口大小调整的事件
+        self.root.bind("<Configure>", self.on_window_resize)
 
     def setup(self):
         """通道监控相机页面初始化"""
@@ -103,6 +98,21 @@ class ChannelMonitorCameraPage:
         # 设备登录包的初始化发送
         self.send_register_packet()
 
+    def adjust_window_size(self):
+        """根据当前组件的需求调整窗口大小"""
+        self.root.update_idletasks()  # 确保所有布局都已更新
+
+        # 获取所需的宽度和高度
+        required_width = self.root.winfo_reqwidth()
+        required_height = self.root.winfo_reqheight()
+
+        # 设置窗口大小
+        self.root.geometry(f'{required_width}x{required_height}')
+
+    def on_window_resize(self, event):
+        """防止窗口大小调整事件触发无限循环"""
+        pass  # 可以根据需要实现额外的逻辑
+
     def update_wraplength(self, event):
         """根据窗口宽度动态更新command_label的wraplength"""
         # 设置wraplength为容器宽度的90%
@@ -149,9 +159,9 @@ class ChannelMonitorCameraPage:
         event_type_frame = tk.Frame(event_page)
         event_type_frame.pack(pady=5, fill='x')
 
-        self.event_type = tk.StringVar(value="triggerEvent")
+        self.event_type = tk.StringVar(value="trigerEvent")
         event_options = [
-            ("触发事件", "triggerEvent"),
+            ("触发事件", "trigerEvent"),
             ("车辆后退事件", "reverseEvent"),
             ("车辆离开事件", "exitEvent"),
             ("交通流量事件", "trafficEvent"),
@@ -191,7 +201,7 @@ class ChannelMonitorCameraPage:
             ("小型车", "小型车"),
             ("大型车", "大型车"),
             ("摩托车", "摩托车"),
-            ("其他", "其他")
+            # ("其他", "其他")  # 没有这个类型
         ]
 
         # 创建车辆类型的Radiobuttons，文字和选项分两行
@@ -204,10 +214,10 @@ class ChannelMonitorCameraPage:
         self.plate_color = tk.StringVar(value="蓝色")
         plate_color_options = [
             ("蓝色", "蓝色"),
+            ("绿色", "绿色"),
             ("黄色", "黄色"),
             ("白色", "白色"),
-            ("黑色", "黑色"),
-            ("绿色", "绿色")
+            ("黑色", "黑色")
         ]
 
         # 创建车牌颜色的Radiobuttons，文字和选项分两行
@@ -230,12 +240,13 @@ class ChannelMonitorCameraPage:
         self.confidence_entry.bind("<KeyRelease>", self.generate_command)
 
         # 根据事件类型添加额外字段
-        if event in ["triggerEvent", "reverseEvent", "exitEvent"]:
+        if event in ["trigerEvent", "reverseEvent", "exitEvent"]:
             # 事件ID输入
             event_id_label = tk.Label(input_frame, text="事件ID：")
             event_id_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
             self.event_id_entry = tk.Entry(input_frame)
             self.event_id_entry.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+            self.event_id_entry.insert(0, str(uuid.uuid4()))
             self.event_id_entry.bind("<KeyRelease>", self.generate_command)
 
             # 触发标志输入
@@ -320,7 +331,7 @@ class ChannelMonitorCameraPage:
         num_label.grid(row=9, column=2, padx=5, pady=5, sticky='e')
         self.num_entry = tk.Entry(input_frame)
         self.num_entry.grid(row=9, column=3, padx=5, pady=5, sticky='w')
-        self.num_entry.insert(0, f"1")
+        self.num_entry.insert(0, f"0")
         self.num_entry.bind("<KeyRelease>", self.generate_command)
 
     def add_illegal_car_info(self):
@@ -470,7 +481,7 @@ class ChannelMonitorCameraPage:
                 command_data["carColour"] = plate_color
 
             # 根据事件类型添加特定字段
-            if event_type in ["triggerEvent", "reverseEvent", "exitEvent"]:
+            if event_type in ["trigerEvent", "reverseEvent", "exitEvent"]:
                 event_id = getattr(self, 'event_id_entry', None)
                 trigger_flag = getattr(self, 'trigger_flag_entry', None)
                 if event_id and event_id.get():
@@ -525,6 +536,9 @@ class ChannelMonitorCameraPage:
         command_str = f"生成的指令：{json.dumps(self.command, ensure_ascii=False)}"
         current_width = self.root.winfo_width()  # 获取当前窗口宽度
         self.command_label.config(text=command_str, wraplength=current_width * 0.9)
+
+        # 调整窗口大小
+        self.adjust_window_size()
 
     def get_current_tab(self):
         """获取当前选中的标签页名称"""
