@@ -9,10 +9,10 @@
 # 车牌号对应关系
 
 plate_map_one = {
-    'HAA337.jpg': '京HAA337'
+    'KCH654W.jpg': 'KCH654W'
 }
 
-plate_map = {
+chinese_plate_map = {
     'HAA337.jpg': '京HAA337',
     'NHJ900.jpg': '京NHJ900',
     'J25DE6.jpg': '冀J25DE6',

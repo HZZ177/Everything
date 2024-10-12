@@ -5,11 +5,13 @@
 # @File    : lora_node_device_page.py
 # @Software: PyCharm
 # @description: lora无线节点页面
-
+import json
+import queue
 import threading
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from server_function import ServerFunctions
 
 
 class LoraDevicePage:
@@ -30,6 +32,13 @@ class LoraDevicePage:
         self.faults = {}
         self.timer = None  # 用于定时发送指令的定时器线程
         self.is_reporting = tk.BooleanVar(value=False)  # 标记是否正在定时上报
+
+        # 实例化服务器工具类
+        self.ServerFunctions = ServerFunctions(self.tcp_client.server_ip)
+
+        # 创建队列用于线程通信
+        self.result_queue = queue.Queue()
+        self.root.after(100, self.process_queue)  # 定时检查队列中的消息
 
     def setup(self):
         """Lora节点页面初始化"""
@@ -102,8 +111,69 @@ class LoraDevicePage:
                                              variable=self.is_reporting, command=self.report_by_time, state=tk.DISABLED)
         self.report_switch.grid(row=1, column=2, padx=10)
 
+        # 刷新服务器设备状态的便捷按钮框架
+        additional_button_frame = tk.Frame(container)
+        additional_button_frame.pack(pady=10)
+
+        # 提示文字
+        tk.Label(additional_button_frame, text="-------服务器快捷功能|-_-|-------").grid(row=0, column=0, columnspan=2, padx=10, pady=5)
+
+        get_online_devices_button = tk.Button(
+            additional_button_frame,
+            text="findCar刷新在线设备",
+            command=self.get_all_online_devices
+        )
+        get_online_devices_button.grid(row=1, column=0, padx=10, pady=5)
+
+        device_status_test_button = tk.Button(
+            additional_button_frame,
+            text="channel刷新在线设备",
+            command=self.device_status_test
+        )
+        device_status_test_button.grid(row=1, column=1, padx=10, pady=5)
+
         self.update_fault_status()  # 初始化时更新故障状态框的状态
         self.generate_command()  # 页面加载后生成初始指令
+
+    def get_all_online_devices(self):
+        """findCarServer获取并刷新所有在线设备信息并显示结果"""
+        def task():
+            try:
+                data = self.ServerFunctions.get_all_online_device_info()
+                message = data.get('message')
+                formatted_data = json.dumps(data, ensure_ascii=False, indent=4)
+                self.result_queue.put(("findCarServer刷新在线设备", f"服务器返回：{message}"))
+            except Exception as e:
+                self.result_queue.put(("错误", f"findCarServer刷新在线设备信息失败:\n{e}"))
+
+        threading.Thread(target=task, daemon=True).start()
+
+    def device_status_test(self):
+        """channel刷新所有设备状态并显示结果"""
+        def task():
+            try:
+                data = self.ServerFunctions.device_status_test()
+                message = data.get('message')
+                formatted_data = json.dumps(data, ensure_ascii=False, indent=4)
+                self.result_queue.put(("channel刷新在线设备", f"服务器返回：{message}"))
+            except Exception as e:
+                self.result_queue.put(("错误", f"channel刷新设备状态失败:\n{e}"))
+
+        threading.Thread(target=task, daemon=True).start()
+
+    def process_queue(self):
+        """处理队列中的消息，并更新GUI"""
+        try:
+            while True:
+                title, message = self.result_queue.get_nowait()
+                if title == "错误":
+                    messagebox.showerror(title, message)
+                else:
+                    messagebox.showinfo(title, message)
+        except queue.Empty:
+            pass
+        finally:
+            self.root.after(100, self.process_queue)  # 继续检查队列
 
     def clear_window(self):
         for widget in self.root.winfo_children():

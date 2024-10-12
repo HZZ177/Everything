@@ -25,7 +25,8 @@ recognition_times = 0  # 识别次数统计
 file_check_fail = 0  # 检查识别切割后文件失败次数
 
 # 任务是否执行标识
-plate_recognition_task = 1  # 随机识别任务
+plate_recognition_task = 0  # 随机识别任务
+plate_recognition_arh_third_task = 1  # 第三方加纳识别库路随机识别任务
 plate_recognition_and_check_file = 0    # 验证识别后车位切割图任务
 
 
@@ -87,6 +88,33 @@ class RecognitionUser(HttpUser):
                 chinese_part_fail += 1
                 chinese_part_fail_dict[target_plate] = recognition_plate
             else:  # 其余是车牌部分都识别错误
+                total_failures += 1
+                total_fail_dict[target_plate] = recognition_plate
+
+            logger.info(f"当前次数{recognition_times}，当次识别耗时：{take_time} 毫秒，识别结果：{recognition_plate}")
+
+    @task
+    def plate_recognition_arh_third(self):
+        """
+        调用第三方加纳识别库，随机请求图片池中的车位图，并统计识别信息
+        :return:
+        """
+        if plate_recognition_arh_third_task:
+            global total_successes, chinese_part_fail, total_failures, total_fail_dict, chinese_part_fail_dict, total_count, recognition_times
+
+            before = time.time() * 1000  # 请求开始前时间毫秒数
+            flag, recognition_plate, target_plate = plate_recognition_ARH.identify_plate_randomly(self.client)
+            after = time.time() * 1000
+            total_count += 1
+            take_time = round(after - before, 2)
+            recognition_times += 1
+
+            if flag == 1:
+                total_successes += 1
+            elif flag == 2:
+                chinese_part_fail += 1
+                chinese_part_fail_dict[target_plate] = recognition_plate
+            else:
                 total_failures += 1
                 total_fail_dict[target_plate] = recognition_plate
 

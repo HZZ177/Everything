@@ -30,16 +30,22 @@ def pack_and_clean_temp(app_name):
         '--onefile',  # 打包成一个独立的可执行文件
         '--windowed',  # 不显示控制台窗口（适用于 GUI 应用程序）
         '-n', f"{app_name}",  # 指定生成的应用程序名称
+        # 添加附带模块
         '--add-data', '"lora_node_device_page.py;." '
         '--add-data', '"channel_monitor_camera_device_page.py;." '
         '--add-data', '"other_device_page.py;." '
         '--add-data', '"tcp_client.py;." '
         '--add-data', '"utils.py;." '
+        '--add-data', '"server_function.py;." '
+        # 显式导入三方库
         '--hidden-import=tkinter',
         '--hidden-import=tkinter.messagebox',
         '--hidden-import=tkinter.ttk',
         '--hidden-import=json',
         '--hidden-import=uuid',
+        '--hidden-import=queue',
+        '--hidden-import=requests',
+        # 主程序入口
         'main.py'  # 主程序入口文件
     ]
 

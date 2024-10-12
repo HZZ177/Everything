@@ -12,7 +12,7 @@ from Locust.common.log_tool import logger
 import random
 import logging
 from Locust.common.config_loader import config
-from Locust.files.plate_pic_map import plate_map, plate_map_one
+from Locust.files.plate_pic_map import chinese_plate_map, plate_map_one
 
 # 将paramiko的日志级别设置为WARNING，屏蔽INFO级别的信息
 logging.getLogger("paramiko").setLevel(logging.WARNING)

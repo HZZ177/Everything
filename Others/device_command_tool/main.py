@@ -40,7 +40,7 @@ class App:
         self.local_ip_var = None  # 本地IP地址下拉框变量
 
         self.root = root
-        self.center_window(self.root, relative_size=3, calculate_size=10)
+        self.center_window(self.root, relative_size=3, calculate_size=12)
         self.app_name = "TCP设备指令模拟工具"
         self.root.title(self.app_name)
         self.tcp_client = TCPClient(self)  # 创建TCP客户端实例
@@ -61,7 +61,7 @@ class App:
     def create_connection_page(self):
         """创建服务器连接界面"""
         self.clear_window()
-        self.center_window(self.root, relative_size=3, calculate_size=10)
+        self.center_window(self.root, relative_size=3, calculate_size=12)
 
         container = tk.Frame(self.root)
         container.pack(expand=True)
@@ -100,7 +100,7 @@ class App:
         server_port = self.server_port_entry.get().strip()
 
         if not local_ip:
-            messagebox.showerror("输入错误", "请选择一个本地IP地址。")
+            messagebox.showerror("输入错误", "请选择一个本地IP地址")
             return
 
         # 调用 TCPClient 的 connect_to_server 方法，并传递本地IP

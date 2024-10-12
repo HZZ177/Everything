@@ -8,16 +8,16 @@
 
 from Locust.common.log_tool import logger
 import random
-from Locust.files.plate_pic_map import plate_map, plate_map_one
+from Locust.files.plate_pic_map import chinese_plate_map, plate_map_one
 
 
 def identify_plate_randomly(client):
     """调用FindCarServer识别库测试接口，图片存放路径为FindCarServer根目录下图片地址"""
 
-    image_path = random.choice(list(plate_map.keys()))  # 随机选择一张图片
-    target_plate = plate_map[image_path]    # 期望车牌号
-    target_plate_pure = plate_map[image_path][1:]    # 期望车牌号，去除汉字部分
-    target_chinese = plate_map[image_path][0]   # 期望车牌汉字
+    image_path = random.choice(list(chinese_plate_map.keys()))  # 随机选择一张图片
+    target_plate = chinese_plate_map[image_path]    # 期望车牌号
+    target_plate_pure = chinese_plate_map[image_path][1:]    # 期望车牌号，去除汉字部分
+    target_chinese = chinese_plate_map[image_path][0]   # 期望车牌汉字
     result = None
     flag = None
     result = client.get("/device-access/device/recognitionTest", params={'url': 'pictest/' + image_path})

@@ -1,10 +1,12 @@
 import time
 import json
+import queue
 import struct
 import threading
 import tkinter as tk
 import uuid
 from tkinter import ttk, messagebox
+from server_function import ServerFunctions
 
 
 class ChannelMonitorCameraPage:
@@ -39,6 +41,13 @@ class ChannelMonitorCameraPage:
 
         # 绑定窗口大小调整的事件
         self.root.bind("<Configure>", self.on_window_resize)
+
+        # 实例化服务器工具类
+        self.ServerFunctions = ServerFunctions(self.tcp_client.server_ip)
+
+        # 创建队列用于线程通信
+        self.result_queue = queue.Queue()
+        self.root.after(100, self.process_queue)  # 定时检查队列中的消息
 
     def setup(self):
         """通道监控相机页面初始化"""
@@ -92,6 +101,28 @@ class ChannelMonitorCameraPage:
         self.report_switch = ttk.Checkbutton(container, text="定时心跳(10s/次)", variable=self.is_reporting,
                                              command=self.heartbeat_by_time)
         self.report_switch.pack(pady=10)
+
+        # 刷新服务器设备状态的便捷按钮框架
+        additional_button_frame = tk.Frame(container)
+        additional_button_frame.pack(pady=10)
+
+        # 提示文字
+        tk.Label(additional_button_frame, text="-------服务器快捷功能|-_-|-------").grid(row=0, column=0, columnspan=2, padx=10,
+                                                                           pady=5)
+
+        get_online_devices_button = tk.Button(
+            additional_button_frame,
+            text="findCar刷新在线设备",
+            command=self.get_all_online_devices
+        )
+        get_online_devices_button.grid(row=1, column=0, padx=10, pady=5)
+
+        device_status_test_button = tk.Button(
+            additional_button_frame,
+            text="channel刷新在线设备",
+            command=self.device_status_test
+        )
+        device_status_test_button.grid(row=1, column=1, padx=10, pady=5)
 
         # 初始化指令生成
         self.generate_command()
@@ -730,6 +761,46 @@ class ChannelMonitorCameraPage:
         messagebox.showinfo("确认选择", "设备类型已确认选择！")
         # 你可以根据实际需求进行更多处理
         pass
+
+    def get_all_online_devices(self):
+        """findCarServer获取并刷新所有在线设备信息并显示结果"""
+        def task():
+            try:
+                data = self.ServerFunctions.get_all_online_device_info()
+                message = data.get('message')
+                formatted_data = json.dumps(data, ensure_ascii=False, indent=4)
+                self.result_queue.put(("findCarServer刷新在线设备", f"服务器返回：{message}"))
+            except Exception as e:
+                self.result_queue.put(("错误", f"findCarServer刷新在线设备信息失败:\n{e}"))
+
+        threading.Thread(target=task, daemon=True).start()
+
+    def device_status_test(self):
+        """channel刷新所有设备状态并显示结果"""
+        def task():
+            try:
+                data = self.ServerFunctions.device_status_test()
+                message = data.get('message')
+                formatted_data = json.dumps(data, ensure_ascii=False, indent=4)
+                self.result_queue.put(("channel刷新在线设备", f"服务器返回：{message}"))
+            except Exception as e:
+                self.result_queue.put(("错误", f"channel刷新设备状态失败:\n{e}"))
+
+        threading.Thread(target=task, daemon=True).start()
+
+    def process_queue(self):
+        """处理队列中的消息，并更新GUI"""
+        try:
+            while True:
+                title, message = self.result_queue.get_nowait()
+                if title == "错误":
+                    messagebox.showerror(title, message)
+                else:
+                    messagebox.showinfo(title, message)
+        except queue.Empty:
+            pass
+        finally:
+            self.root.after(100, self.process_queue)  # 继续检查队列
 
 
 if __name__ == "__main__":
