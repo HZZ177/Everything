@@ -8,10 +8,12 @@
 
 # 车牌号对应关系
 
+# 单张车牌号对应关系
 plate_map_one = {
     'KCH654W.jpg': 'KCH654W'
 }
 
+# 国内车牌号对应关系
 chinese_plate_map = {
     'HAA337.jpg': '京HAA337',
     'NHJ900.jpg': '京NHJ900',
@@ -68,4 +70,23 @@ chinese_plate_map = {
     'A1111P.jpg': '贵A1111P',
     'W39U02.jpg': '鄂W39U02',
     'E6699S.jpg': '闽E6699S'
+}
+
+# 国外车牌号对应关系
+foreign_plate_map = {
+    "ARAB_01.jpg": '7648TA',
+    "CAM_01.jpg": 'P564JWV',
+    "CAM_02.jpg": 'P412GTW',
+    "CAM_03.jpg": 'M356139',
+    "CAS_01.jpg": '01M002402',
+    "EUR_01.jpg": 'AA164YN',
+    "EUR_02.jpg": '3483FPK',
+    "EUR_03.jpg": 'ZN11638',
+    "NAF_01.jpg": '0272710143',
+    "NAF_02.jpg": 'A25970',
+    "NAM_01.jpg": 'PS6701',
+    "NAM_02.jpg": 'CFK9291',
+    "SAF_01.jpg": 'ST86UA',
+    "SAF_02.jpg": 'ST52PS',
+    "SAF_04.jpg": '6043AX00'
 }

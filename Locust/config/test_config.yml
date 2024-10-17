@@ -1,4 +1,4 @@
-host: 192.168.24.128
+host: 192.168.24.199
 
 port:
   admin: 8083
@@ -6,12 +6,12 @@ port:
   findcar: 8080
 
 url:
-  admin_url: http://192.168.24.128:8083
-  channel_url: http://192.168.24.128:7072
-  findcar_url: http://192.168.24.128:8080
+  admin_url: http://192.168.24.199:8083
+  channel_url: http://192.168.24.199:7072
+  findcar_url: http://192.168.24.199:8080
 
 # 服务器信息
 server:
-  ip: 192.168.24.128
+  ip: 192.168.24.199
   user: root
   password: RootKeytop:2020#

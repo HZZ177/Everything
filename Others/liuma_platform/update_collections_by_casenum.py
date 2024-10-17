@@ -226,23 +226,47 @@ class App:
         except requests.exceptions.RequestException as e:
             logger.error(f"保存集合失败，错误信息：{e}")
 
-    def execute(self, account, password, main_case_num_list, collection_id):
+    def get_collection_id_by_name(self, collection_name):
+        get_collection_id = f"SELECT id FROM `collection` where name = %s and `status` = 1"
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(get_collection_id, collection_name)
+                results = cursor.fetchall()
+                if results:
+                    if len(results) == 1:
+                        return results[0][0]
+                    else:
+                        logger.error(f"集合【{collection_name}】对应的未删除id数量大于1，请检查")
+                        return None
+                else:
+                    return None
+        except Exception as e:
+            logger.error(f"查询集合ID失败，错误信息：{e}")
+            return None
+
+    def execute(self, account, password, main_case_num_list, collection_name):
         # 登录获取token
         token = self.platform_login(account, password)
         if not token:
-            logger.error("无法获取token")
+            logger.error("无法获取token，已终止")
+            return
+
+        # 获取集合id
+        collection_id = self.get_collection_id_by_name(collection_name)
+        if not collection_id:
+            logger.error(f"集合【{collection_name}】没有获取到对应的有效集合id，已终止")
             return
 
         # 获取并组装所有相关用例的信息
         ordered_case_info_list = self.assemble_case_info(main_case_num_list)
         if not ordered_case_info_list:
-            logger.error("没有获取到任何用例信息")
+            logger.error(f"用例id集合{main_case_num_list}没有获取到任何用例信息，已终止")
             return
 
         # 获取集合的当前信息
         collection_case_info = self.get_collection_detail_byid(token, collection_id)
         if not collection_case_info:
-            logger.error("无法获取集合详情")
+            logger.error(f"无法获取集合{collection_id}的详情，已终止")
             return
 
         # 组装新的collectionCase，拼接到上一步查询出的参数中，调接口保存用例到合集
@@ -252,15 +276,15 @@ class App:
 if __name__ == '__main__':
     app = App()
 
-    # 登录获取token
+    # 登录的账号信息
     account = "heshouyi"
     password = "19981208@qwer"
 
     # 需要添加到集合中的主用例编号列表，按顺序填写，别填前后置id
-    main_case_num_list = [10120, 10123, 10124, 10125, 10126, 10127, 10128]
+    main_case_num_list = [10212]
 
-    # 要录入的集合id
-    collection_id = 'eb3637e8-67ac-4391-95f6-bd7678199e74'  # 替换为实际的集合ID
+    # 要录入的集合名称
+    collection_name = '测试集合'  # 替换为实际的集合名称
 
     # 执行流程
-    app.execute(account, password, main_case_num_list, collection_id)
+    app.execute(account, password, main_case_num_list, collection_name)
