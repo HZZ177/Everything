@@ -29,7 +29,7 @@ def generate_chinese_license_plate():
 
 # 连接数据库
 connection = pymysql.connect(
-    host='192.168.21.249',
+    host='192.168.24.36',
     port=5831,
     user='root',
     password='Keytop:wabjtam!',
@@ -48,7 +48,7 @@ try:
         """
 
         data = []
-        num_records = 1000000
+        num_records = 2000000       # 大约100万条/180MB
         batch_size = 1000
 
         # 开始计时

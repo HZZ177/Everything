@@ -30,7 +30,7 @@ def generate_chinese_license_plate():
 
 # 连接数据库
 connection = pymysql.connect(
-    host="localhost",
+    host="192.168.24.36",
     port=5831,
     user='root',
     password='Keytop:wabjtam!',
@@ -57,7 +57,7 @@ try:
         """
 
         data = []
-        num_records = 1000000
+        num_records = 10000000   # 大约100万条/180MB
         batch_size = 1000
 
         # 开始计时
@@ -84,7 +84,7 @@ try:
             plate_no_simple = plate_no[1:]
             car_image_url = fake.image_url()
             plate_no_color = random.choice(['blue', 'yellow', 'white', 'green'])
-            plate_no_record = ','.join([fake.license_plate() for _ in range(5)])
+            plate_no_record = ','.join([generate_chinese_license_plate() for _ in range(5)])
             in_time = fake.date_time_between(start_date='-2y', end_date='now')
             out_time = in_time + timedelta(hours=random.randint(1, 10))
             in_type = random.randint(0, 1)

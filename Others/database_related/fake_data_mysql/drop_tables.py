@@ -11,6 +11,7 @@ import pymysql
 def clean_database_backup():
     """
     清理数据库归档之后的备份库，测试用
+    范围：b_car_in_out_record，b_car_in_out_record_area，b_recognition_record，api_supplementary_push的归档表
     :return:
     """
 
