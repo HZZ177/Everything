@@ -199,7 +199,7 @@ DELIMITER ;
 
                         # 获取所有表的初始化语句
                         cursor.execute(f"""SELECT
-	                                            COLUMN_NAME,
+                                                COLUMN_NAME,
                                                 DATA_TYPE,
                                                 IS_NULLABLE,
                                                 COLUMN_DEFAULT,
@@ -216,8 +216,6 @@ DELIMITER ;
                                                 """)
                         create_columns = cursor.fetchall()
                         fields = str(create_columns).split(r'\n')
-
-
 
         except Exception as e:
             print(f"获取{table_name}表结构信息失败: {e}")
