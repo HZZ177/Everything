@@ -12,33 +12,76 @@ import random
 import string
 from tqdm import tqdm
 import time
-
-fake = Faker("zh_CN")
-
-
-def generate_chinese_license_plate():
-    province = random.choice([
-        '京', '津', '沪', '渝', '冀', '豫', '云', '辽', '黑', '湘', '皖', '鲁',
-        '新', '苏', '浙', '赣', '鄂', '桂', '甘', '晋', '蒙', '陕', '吉', '闽',
-        '贵', '粤', '青', '藏', '川', '宁', '琼'
-    ])
-    letter = random.choice(string.ascii_uppercase)
-    numbers = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
-    return f"{province}{letter}{numbers}"
+import yaml
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-# 连接数据库
-connection = pymysql.connect(
-    host='192.168.24.36',
-    port=5831,
-    user='root',
-    password='Keytop:wabjtam!',
-    database='parking_guidance'
-)
+class DataGenerator:
+    def __init__(self, db_config):
+        self.fake = Faker("zh_CN")
+        self.db_config = db_config
 
-try:
-    with connection.cursor() as cursor:
-        # 插入数据
+    @staticmethod
+    def generate_chinese_license_plate():
+        """
+        生成符合格式的中国车牌
+        :return:
+        """
+        province = random.choice([
+            '京', '津', '沪', '渝', '冀', '豫', '云', '辽', '黑', '湘', '皖', '鲁',
+            '新', '苏', '浙', '赣', '鄂', '桂', '甘', '晋', '蒙', '陕', '吉', '闽',
+            '贵', '粤', '青', '藏', '川', '宁', '琼'
+        ])
+        letter = random.choice(string.ascii_uppercase)
+        numbers = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        return f"{province}{letter}{numbers}"
+
+    def generate_data(self, batch_size):
+        """
+        生成用于插入数据库的数据集
+        :param batch_size:
+        :return: 数据列表
+        """
+        data = []
+        for _ in range(batch_size):
+            park_addr = random.randint(1, 500)
+            plate_no = self.generate_chinese_license_plate()
+            plate_no_simple = plate_no[1:]
+            car_image_url = self.fake.image_url()
+            plate_no_reliability = random.randint(500, 1000)
+            create_time = self.fake.date_time_between(start_date='-2y', end_date='now')
+
+            data.append((park_addr, plate_no, plate_no_simple, car_image_url, plate_no_reliability, create_time))
+
+        return data
+
+    def insert_data(self, sql, data_batch):
+        """
+        将数据批量插入数据库
+        :param sql: SQL 插入语句
+        :param data_batch: 一批待插入的数据
+        """
+        connection = pymysql.connect(
+            host=self.db_config['host'],
+            port=self.db_config['port'],
+            user=self.db_config['user'],
+            password=self.db_config['password'],
+            database=self.db_config['dbname']
+        )
+        try:
+            with connection.cursor() as cursor:
+                cursor.executemany(sql, data_batch)
+                connection.commit()
+        finally:
+            connection.close()
+
+    def run(self, num_records, batch_size, num_threads):
+        """
+        执行数据生成和插入的过程
+        :param num_records: 总数据量
+        :param batch_size: 每次批量插入的大小
+        :param num_threads: 并行生成数据的线程数
+        """
         sql = """
         INSERT INTO b_recognition_record (
             park_addr, plate_no, plate_no_simple, car_image_url, plate_no_reliability, create_time
@@ -47,60 +90,61 @@ try:
         )
         """
 
-        data = []
-        num_records = 2000000       # 大约100万条/180MB
-        batch_size = 1000
-
-        # 开始计时
         start_time = time.time()
-        data_gen_time = 0
-        db_insert_time = 0
 
-        for _ in tqdm(range(num_records), desc="Inserting records"):
+        # 1. 数据生成阶段
+        gen_start_time = time.time()
+        all_data = []
 
-            # 记录数据生成时间
-            gen_start_time = time.time()
+        with tqdm(total=num_records // batch_size, desc="数据生成进度") as pbar:
+            with ThreadPoolExecutor(max_workers=num_threads) as executor:
+                futures = [executor.submit(self.generate_data, batch_size) for _ in range(num_records // batch_size)]
 
-            park_addr = random.randint(1, 500)
-            plate_no = generate_chinese_license_plate()
-            plate_no_simple = plate_no[1:]
-            car_image_url = fake.image_url()
-            plate_no_reliability = random.randint(500, 1000)
-            create_time = fake.date_time_between(start_date='-2y', end_date='now')
+                for future in as_completed(futures):
+                    data = future.result()
+                    all_data.extend(data)
+                    pbar.update(1)
 
-            data.append((
-                park_addr, plate_no, plate_no_simple, car_image_url, plate_no_reliability, create_time
-            ))
+        gen_end_time = time.time()
 
-            gen_end_time = time.time()
-            data_gen_time += (gen_end_time - gen_start_time)
+        # 2. 数据插入阶段
+        insert_start_time = time.time()
+        with tqdm(total=len(all_data) // batch_size, desc="数据插入进度") as pbar:
+            with ThreadPoolExecutor(max_workers=num_threads) as executor:
+                futures = []
+                for i in range(0, len(all_data), batch_size):
+                    batch_data = all_data[i:i + batch_size]
+                    futures.append(executor.submit(self.insert_data, sql, batch_data))
 
-            # 每1000条数据批量插入一次
-            if len(data) == batch_size:
-                insert_start_time = time.time()
+                for future in as_completed(futures):
+                    pbar.update(1)
 
-                cursor.executemany(sql, data)
-                connection.commit()
-
-                insert_end_time = time.time()
-                db_insert_time += (insert_end_time - insert_start_time)
-
-                data = []
-
-        # 插入剩余数据
-        if data:
-            cursor.executemany(sql, data)
-            connection.commit()
-
-            insert_end_time = time.time()
-            db_insert_time += (insert_end_time - insert_start_time)
+        insert_end_time = time.time()
 
         end_time = time.time()
 
-        print(f"数据生成时间: {data_gen_time: .2f}秒")
-        print(f"数据库插入时间: {db_insert_time: .2f}秒")
-        print(f"总时间: {end_time - start_time: .2f}秒")
+        print(f"数据生成总时间: {gen_end_time - gen_start_time: .2f}秒")
+        print(f"数据库插入总时间: {insert_end_time - insert_start_time: .2f}秒")
+        print(f"程序总时间: {end_time - start_time: .2f}秒")
 
-finally:
-    connection.close()
 
+def load_db_config():
+    """
+    从dbconfig.yml加载数据库配置信息
+    :return: 数据库配置字典
+    """
+    with open("dbconfig.yml", "r") as file:
+        config = yaml.safe_load(file)
+    return config['database']
+
+
+if __name__ == '__main__':
+    # 从配置文件中加载数据库信息
+    db_config = load_db_config()
+
+    num_records = 100000  # 生成数据总量
+    batch_size = 10000  # 每批次数据大小
+    num_threads = 8  # 生成数据并行线程数
+
+    generator = DataGenerator(db_config)
+    generator.run(num_records, batch_size, num_threads)

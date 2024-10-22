@@ -1,0 +1,6 @@
+database:
+  host: "192.168.24.36"
+  port: 5831
+  user: "root"
+  password: "Keytop:wabjtam!"
+  dbname: "parking_guidance"
