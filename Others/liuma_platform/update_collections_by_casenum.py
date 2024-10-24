@@ -12,6 +12,7 @@ import base64
 import pymysql
 import requests
 from log_module import logger
+from prepare_data_from_file import prepare_data_from_file
 
 
 class App:
@@ -219,12 +220,19 @@ class App:
 
         logger.info(f'组装后集合内用例数据：{json.dumps(collection_case_info, indent=4, ensure_ascii=False)}')
 
-        try:
-            response = requests.post(url=url, headers=headers, json=collection_case_info)
-            response.raise_for_status()
-            logger.info(f"集合新增用例接口返回信息：{response.json()}")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"保存集合失败，错误信息：{e}")
+        # 执行步骤之前先用input询问是否继续，如果用户选择否，则直接返回
+        answer = input("请检查以上数据，是否继续操作？(按y确定，任意键取消)：").lower()
+        if answer != 'y':
+            logger.info("已取消本次保存用例到集合集合操作！")
+            return
+
+        # try:
+        #     response = requests.post(url=url, headers=headers, json=collection_case_info)
+        #     response.raise_for_status()
+        #     logger.info(f"集合新增用例接口返回信息：{response.json()}")
+        # except requests.exceptions.RequestException as e:
+        #     logger.error(f"保存集合失败，错误信息：{e}")
+        print("已执行")
 
     def get_collection_id_by_name(self, collection_name):
         get_collection_id = f"SELECT id FROM `collection` where name = %s and `status` = 1"
@@ -280,13 +288,19 @@ if __name__ == '__main__':
     account = "heshouyi"
     password = "19981208@qwer"
 
-    # 需要添加到集合中的主用例编号列表，按顺序填写，别填前后置id
-    main_case_num_list = [
-        10384
-    ]
+    data = prepare_data_from_file()
+    # print(data)
 
-    # 要录入的集合名称
-    collection_name = 'test'  # 替换为实际的集合名称
+    for item in data.items():
+        # print(item)
 
-    # 执行流程
-    app.execute(account, password, main_case_num_list, collection_name)
+        # 要录入的集合名称
+        collection_name = item[0]  # 替换为实际的集合名称
+        print(f"集合名称：{collection_name}")
+
+        # 需要添加到集合中的主用例编号列表，按顺序填写，别填前后置id
+        main_case_num_list = item[1]
+        print(f"主用例列表：{main_case_num_list}\n")
+
+        # # 执行流程
+        app.execute(account, password, main_case_num_list, collection_name)

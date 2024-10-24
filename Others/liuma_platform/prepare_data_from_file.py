@@ -7,7 +7,6 @@
 # @description: 把Excel文件里的用例编号根据模块整理成dict，方便后续脚本更新数据到平台集合中使用
 
 import json
-
 import openpyxl
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
@@ -49,6 +48,7 @@ def prepare_data_from_file():
 
         # 如果有用例编号，处理当前模块的用例编号
         if case_number:
+            # 拼接模块名作为集合名称
             key = f"{current_parent_module}—{current_sub_module}"
             if key not in result_dict:
                 result_dict[key] = []
@@ -56,13 +56,9 @@ def prepare_data_from_file():
 
     # 使用json.dumps格式化输出，缩进4个空格
     formatted_output = json.dumps(result_dict, indent=4, ensure_ascii=False)
-    # print(formatted_output)
-    #
-    # print(result_dict)
-    # print(result_dict.items())
 
-    for item in result_dict.items():
-        print(item)
+    # for item in result_dict.items():
+    #     print(item)
 
     return result_dict
 
