@@ -281,10 +281,12 @@ if __name__ == '__main__':
     password = "19981208@qwer"
 
     # 需要添加到集合中的主用例编号列表，按顺序填写，别填前后置id
-    main_case_num_list = [10212]
+    main_case_num_list = [
+        10384
+    ]
 
     # 要录入的集合名称
-    collection_name = '测试集合'  # 替换为实际的集合名称
+    collection_name = 'test'  # 替换为实际的集合名称
 
     # 执行流程
     app.execute(account, password, main_case_num_list, collection_name)

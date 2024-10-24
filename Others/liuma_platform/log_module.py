@@ -10,6 +10,9 @@ import sys
 from datetime import datetime
 from loguru import logger
 
+# 当前目录下logs文件夹
+log_path = "./logs"
+
 current_date = datetime.now().strftime("%Y-%m-%d")
 current_hour = datetime.now().strftime("%H")
 
@@ -33,7 +36,17 @@ logger.configure(
             "backtrace": False,   # 控制是否追溯详细的回溯信息（即代码调用链和变量状态等详细信息）
             "diagnose": False,    # 控制不会包含详细的诊断信息
             "enqueue": True,  # 启用多线程安全队列
-        }
+        },
+        {
+            "sink": f"{log_path}/{current_date}/liuma_{current_hour}.log",  # 指定日志输出到文件
+            "level": "INFO",  # 日志级别
+            "format": "{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module}:{line} | {level} | {message}",  # 日志格式
+            "rotation": "100 MB",  # 文件大小达到 100 MB 时自动分割日志
+            "compression": None,  # 压缩日志文件
+            "backtrace": True,   # 控制是否追溯详细的回溯信息（即代码调用链和变量状态等详细信息）
+            "diagnose": True,  # 控制是否包含详细的诊断信息
+            "enqueue": True,  # 启用多线程安全队列
+        },
     ]
 )
 
