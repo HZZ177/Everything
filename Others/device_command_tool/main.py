@@ -13,6 +13,7 @@ from tcp_client import TCPClient
 from lora_node_device_page import LoraDevicePage
 from other_device_page import OtherDevicePage
 from channel_monitor_camera_device_page import ChannelMonitorCameraPage
+from tcp_led_device_page import TcpLedScreenPage
 import socket
 
 
@@ -53,6 +54,7 @@ class App:
 
         # 定义设备类型到处理函数的映射
         self.device_type_handlers = {
+            "LED网络屏": self.load_tcp_led_device_page,
             "Lora节点": self.load_lora_device_page,
             "通道监控相机": self.load_channel_monitor_camera_page,
             "其他设备类型(demo)": self.load_other_device_page
@@ -165,6 +167,11 @@ class App:
         """加载通道监控相机设备页面"""
         channel_camera_page = ChannelMonitorCameraPage(self.root, self.tcp_client, self)
         channel_camera_page.setup()
+
+    def load_tcp_led_device_page(self):
+        """加载LED网络屏设备页面"""
+        tcp_led_screen_page = TcpLedScreenPage(self.root, self.tcp_client, self)
+        tcp_led_screen_page.setup()
 
     def load_other_device_page(self):
         """加载其他设备页面"""

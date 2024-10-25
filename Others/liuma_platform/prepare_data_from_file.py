@@ -10,11 +10,11 @@ from log_module import logger
 
 def create_db_connection():
     connection = pymysql.connect(
-        host='101.227.53.213',  # 数据库主机
-        user='root',  # 数据库用户名
-        password='K#2dOho@Dgts',  # 数据库密码
-        database='liuma',  # 数据库名称
-        charset='utf8mb4',  # 字符编码
+        host='101.227.53.213',
+        user='root',
+        password='K#2dOho@Dgts',
+        database='liuma',
+        charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor  # 结果以字典形式返回
     )
     return connection
