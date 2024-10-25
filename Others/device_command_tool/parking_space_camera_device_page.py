@@ -45,8 +45,13 @@ class ParkingCameraPage:
 
     def setup_status_page(self, container):
         """车位状态上报页面"""
-        for i in range(6):  # 假设总共有6列
+        # 设置列权重，使每列均匀分布
+        for i in range(6):  # 预计会用到的总行数
             container.grid_columnconfigure(i, weight=1)
+
+        # 设置行的权重，确保垂直方向均匀分布
+        for i in range(6):  # 预计会用到的总行数
+            container.grid_rowconfigure(i, weight=1)
 
         tk.Label(container, text="选择每个车位的状态：").grid(row=0, column=0, columnspan=8, pady=5)
 
@@ -69,8 +74,12 @@ class ParkingCameraPage:
     def setup_image_page(self, container):
         """图片上传页面"""
         # 设置列权重，使每列均匀分布
-        for i in range(6):  # 假设总共有6列
+        for i in range(6):  # 预计会用到的总行数
             container.grid_columnconfigure(i, weight=1)
+
+        # 设置行的权重，确保垂直方向均匀分布
+        for i in range(6):  # 预计会用到的总行数
+            container.grid_rowconfigure(i, weight=1)
 
         # 图片采集标题，跨所有列居中
         tk.Label(container, text="图片采集").grid(row=0, column=0, columnspan=6, pady=10)
