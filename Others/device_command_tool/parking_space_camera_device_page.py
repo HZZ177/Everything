@@ -14,10 +14,16 @@ class ParkingCameraPage:
         self.device_type = 0x0A  # 根据协议的设备类型
         self.device_version = 0x0400  # 版本信息
         self.is_reporting = tk.BooleanVar(value=False)
+        self.continuous_reporting = tk.BooleanVar(value=False)  # 持续上报开关变量
+        self.report_job = None  # 用于跟踪持续上报的任务
 
-        # 保存每个车位状态
-        self.parking_statuses = [tk.StringVar(value="0") for _ in range(6)]
-        self.parking_selected = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
+        # 有车无车上报页面状态
+        self.parking_statuses_parked = [tk.StringVar(value="0") for _ in range(6)]
+        self.parking_selected_parked = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
+
+        # 进车出车上报页面状态
+        self.parking_statuses_move = [tk.StringVar(value="2") for _ in range(6)]
+        self.parking_selected_move = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
 
     def setup(self):
         """设置UI界面"""
@@ -29,16 +35,23 @@ class ParkingCameraPage:
         notebook = ttk.Notebook(self.root)
         notebook.pack(expand=True, fill="both")
 
-        # 创建车位状态上报页面
-        status_page = ttk.Frame(notebook)
-        notebook.add(status_page, text="车位状态")
+        # 创建有车无车上报页面
+        parked_page = ttk.Frame(notebook)
+        notebook.add(parked_page, text="有车无车上报")
+
+        # 创建进车出车上报页面
+        move_page = ttk.Frame(notebook)
+        notebook.add(move_page, text="进车出车上报")
 
         # 创建图片上传页面
         image_page = ttk.Frame(notebook)
         notebook.add(image_page, text="上传图片")
 
-        # 设置车位状态上报页面的内容
-        self.setup_status_page(status_page)
+        # 设置有车无车上报页面的内容
+        self.setup_parked_page(parked_page)
+
+        # 设置进车出车上报页面的内容
+        self.setup_move_page(move_page)
 
         # 设置图片上传页面的内容
         self.setup_image_page(image_page)
@@ -47,47 +60,73 @@ class ParkingCameraPage:
         self.register_device()
         self.start_heartbeat()
 
-    def setup_status_page(self, container):
-        """车位状态上报页面"""
+    def setup_parked_page(self, container):
+        """有车无车上报页面"""
 
-        # 设置列权重，使每列均匀分布
-        for i in range(6):  # 预计会用到的总行数
-            container.grid_columnconfigure(i, weight=1)
-
-        # 设置行的权重，确保垂直方向均匀分布
-        for i in range(6):  # 预计会用到的总行数
-            container.grid_rowconfigure(i, weight=1)
-
-        tk.Label(container, text="选择每个车位的状态：").grid(row=0, column=0, columnspan=8, pady=5)
+        tk.Label(container, text="选择每个车位的状态（有车/无车）：").grid(row=0, column=0, columnspan=8, pady=5)
 
         # 为每个车位设置复选框和单选框
-        options = [("无车", "0"), ("有车", "1"), ("出车", "2"), ("进车", "3"), ("设备故障", "4")]
-        self.parking_status_radiobuttons = []
+        self.parking_status_radiobuttons_parked = []
         for idx in range(6):
-            check = tk.Checkbutton(container, text=f"车位 {idx + 1}", variable=self.parking_selected[idx],
-                                   command=lambda i=idx: self.toggle_parking_status(i))
+            check = tk.Checkbutton(container, text=f"车位 {idx + 1}", variable=self.parking_selected_parked[idx],
+                                   command=lambda i=idx: self.toggle_parking_status(i, 'parked'))
             check.grid(row=idx + 1, column=0, padx=5, pady=5)
-            for col, (text, value) in enumerate(options):
-                radio = tk.Radiobutton(container, text=text, variable=self.parking_statuses[idx], value=value,
-                                       state="disabled")
-                radio.grid(row=idx + 1, column=col + 1, padx=5, sticky="w")
-                self.parking_status_radiobuttons.append((idx, radio))
 
-        tk.Button(container, text="发送车位状态", command=self.send_parking_status).grid(row=8, column=1, columnspan=4,
+            radio_no_car = tk.Radiobutton(container, text="无车", variable=self.parking_statuses_parked[idx], value="0",
+                                          state="disabled")
+            radio_no_car.grid(row=idx + 1, column=1, padx=5, sticky="w")
+
+            radio_with_car = tk.Radiobutton(container, text="有车", variable=self.parking_statuses_parked[idx],
+                                            value="1", state="disabled")
+            radio_with_car.grid(row=idx + 1, column=2, padx=5, sticky="w")
+
+            # 将当前车位的单选按钮添加到列表
+            self.parking_status_radiobuttons_parked.append((radio_no_car, radio_with_car))
+
+        # 持续上报和上报一次按钮
+        tk.Checkbutton(container, text="持续上报", variable=self.continuous_reporting,
+                       command=self.toggle_continuous_reporting).grid(row=8, column=0, padx=5, pady=10)
+        tk.Button(container, text="上报一次", command=self.report_parking_status_once).grid(row=8, column=2, padx=5,
+                                                                                            pady=10)
+
+    def toggle_continuous_reporting(self):
+        """切换持续上报状态"""
+        if self.continuous_reporting.get():
+            self.report_parking_status_once()  # 立即开始上报
+        else:
+            if self.report_job:
+                self.root.after_cancel(self.report_job)
+                self.report_job = None
+
+    def setup_move_page(self, container):
+        """进车出车上报页面"""
+
+        tk.Label(container, text="选择每个车位的状态（进车/出车）：").grid(row=0, column=0, columnspan=8, pady=5)
+
+        # 为每个车位设置复选框和单选框
+        self.parking_status_radiobuttons_move = []
+        for idx in range(6):
+            check = tk.Checkbutton(container, text=f"车位 {idx + 1}", variable=self.parking_selected_move[idx],
+                                   command=lambda i=idx: self.toggle_parking_status(i, 'move'))
+            check.grid(row=idx + 1, column=0, padx=5, pady=5)
+
+            radio_out = tk.Radiobutton(container, text="出车", variable=self.parking_statuses_move[idx], value="2",
+                                       state="disabled")
+            radio_out.grid(row=idx + 1, column=1, padx=5, sticky="w")
+
+            radio_in = tk.Radiobutton(container, text="进车", variable=self.parking_statuses_move[idx], value="3",
+                                      state="disabled")
+            radio_in.grid(row=idx + 1, column=2, padx=5, sticky="w")
+
+            # 将当前车位的单选按钮添加到列表
+            self.parking_status_radiobuttons_move.append((radio_out, radio_in))
+
+        tk.Button(container, text="上报一次", command=self.report_move_status_once).grid(row=8, column=1, columnspan=4,
                                                                                          pady=10)
 
     def setup_image_page(self, container):
         """图片上传页面"""
 
-        # 设置列权重，使每列均匀分布
-        for i in range(6):  # 预计会用到的总行数
-            container.grid_columnconfigure(i, weight=1)
-
-        # 设置行的权重，确保垂直方向均匀分布
-        for i in range(6):  # 预计会用到的总行数
-            container.grid_rowconfigure(i, weight=1)
-
-        # 图片采集标题，跨所有列居中
         tk.Label(container, text="图片采集").grid(row=0, column=0, columnspan=6, pady=10)
 
         # 车牌号：标签和输入框在同一行，居中显示
@@ -111,29 +150,45 @@ class ParkingCameraPage:
         # 上传图片按钮，居中放置在最后一行
         tk.Button(container, text="上传图片", command=self.upload_image).grid(row=4, column=0, columnspan=6, pady=40)
 
-    def toggle_parking_status(self, index):
-        """启用或禁用特定车位的状态选择框"""
-        for idx, radio in self.parking_status_radiobuttons:
-            if idx == index:
-                radio.config(state="normal" if self.parking_selected[index].get() else "disabled")
+    def report_parking_status_once(self):
+        """上报一次有车无车状态"""
+        self.send_parking_status(self.parking_selected_parked, self.parking_statuses_parked)
+        if self.continuous_reporting.get():
+            self.report_job = self.root.after(10000, self.report_parking_status_once)  # 每10秒上报一次
 
-    def send_parking_status(self):
+    def report_move_status_once(self):
+        """上报一次进车出车状态"""
+        self.send_parking_status(self.parking_selected_move, self.parking_statuses_move)
+
+    def toggle_parking_status(self, index, page_type):
+        """启用或禁用特定车位的状态选择框"""
+        if page_type == 'parked':
+            radios = self.parking_status_radiobuttons_parked[index]
+            state = "normal" if self.parking_selected_parked[index].get() else "disabled"
+        elif page_type == 'move':
+            radios = self.parking_status_radiobuttons_move[index]
+            state = "normal" if self.parking_selected_move[index].get() else "disabled"
+
+        for radio in radios:
+            radio.config(state=state)
+
+    def send_parking_status(self, selected_status, status_values):
         """根据勾选情况发送车位状态"""
         timestamp = int(time.time())
         command_code = ord('S')
 
         parking_status_data = b''
-        for idx, selected in enumerate(self.parking_selected):
+        for idx, selected in enumerate(selected_status):
             if selected.get():
-                status = int(self.parking_statuses[idx].get())
+                status = int(status_values[idx].get())
                 parking_status_data += struct.pack(">H", status)
             else:
                 parking_status_data += struct.pack(">H", 4)
 
         packet = self.create_packet(parking_status_data, command_code, timestamp)
         self.tcp_client.send_command(packet)
-        print("车位状态包已发送:",
-              [status.get() for idx, status in enumerate(self.parking_statuses) if self.parking_selected[idx].get()])
+        print("车位状态包已发送: [状态]",
+              [status.get() for idx, status in enumerate(status_values) if selected_status[idx].get()])
 
     def upload_image(self):
         """上传图片采集信息"""
@@ -224,12 +279,10 @@ class ParkingCameraPage:
 
 
 if __name__ == "__main__":
-    # 调试模式下生成界面
     root = tk.Tk()
     root.title("车位相机页面 - 调试模式")
 
 
-    # 模拟TCP客户端
     class MockTCPClient:
         def __init__(self):
             self.server_ip = "127.0.0.1"
@@ -237,11 +290,7 @@ if __name__ == "__main__":
         def send_command(self, packet):
             print("发送数据包:", packet)
 
-        def disconnect(self):
-            print("断开连接")
 
-
-    # 模拟主程序对象
     class MockApp:
         def create_device_type_selection_page(self):
             print("返回设备选择界面")
@@ -250,12 +299,9 @@ if __name__ == "__main__":
             print("返回连接界面")
 
 
-    # 创建模拟的TCP客户端和应用程序实例
     tcp_client = MockTCPClient()
     app = MockApp()
-
-    # 实例化停车相机页面并初始化界面
     page = ParkingCameraPage(root, tcp_client, app)
-    page.setup()  # 创建调试界面
+    page.setup()
 
-    root.mainloop()  # 启动 Tkinter 事件循环
+    root.mainloop()
