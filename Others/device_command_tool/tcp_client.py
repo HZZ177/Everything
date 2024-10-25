@@ -125,6 +125,7 @@ class TCPClient:
                 continue  # 超时不一定是错误，可忽略并继续
             except socket.error as e:
                 print(f"接收数据时网络错误: {e}")
+                self.disconnect()
                 # messagebox.showerror("错误", f"接收数据时出错: {e}")
                 break
             except Exception as e:
