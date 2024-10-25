@@ -103,6 +103,7 @@ class TcpLedScreenPage:
         """在文本框中显示服务器下发的指令"""
         self.command_display.config(state='normal')
         print(f"收到{command}")
+        # 排除服务器返回的心跳包打印
         if "'data_content': b''," not in str(command):
             self.command_display.insert(tk.END, f"接收到服务器下发数据：{command}\n\n")
         self.command_display.config(state='disabled')
@@ -181,7 +182,8 @@ class TcpLedScreenPage:
         )
         return self.escape_packet(packet)
 
-    def calculate_checksum(self, timestamp, command_code_ascii, total_packets, packet_number, data_length, data_content):
+    @staticmethod
+    def calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number, data_length, data_content):
         checksum_data = (
             struct.pack('>I', timestamp) +
             struct.pack('>B', command_code_ascii) +
@@ -192,7 +194,8 @@ class TcpLedScreenPage:
         )
         return sum(checksum_data) & 0xFFFF
 
-    def escape_packet(self, packet):
+    @staticmethod
+    def escape_packet(packet):
         protocol_head = packet[0:1]
         protocol_tail = packet[-1:]
         data_to_escape = packet[1:-1]
@@ -204,11 +207,13 @@ class TcpLedScreenPage:
 
     def disconnect(self):
         self.stop_heartbeat()
+        self.tcp_client.set_receive_callback(None)  # 断开连接时取消回调，避免一直指向被销毁的输出窗口
         self.tcp_client.disconnect()
         self.app.create_connection_page()
 
     def back_to_device_selection(self):
         self.stop_heartbeat()
+        self.tcp_client.set_receive_callback(None)  # 断开连接时取消回调，避免一直指向被销毁的输出窗口
         self.app.create_device_type_selection_page()
 
     def clear_window(self):
