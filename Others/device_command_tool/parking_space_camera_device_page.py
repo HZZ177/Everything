@@ -21,6 +21,10 @@ class ParkingCameraPage:
 
     def setup(self):
         """设置UI界面"""
+
+        # 清空前置页面
+        self.clear_window()
+
         # 创建标签页
         notebook = ttk.Notebook(self.root)
         notebook.pack(expand=True, fill="both")
@@ -45,6 +49,7 @@ class ParkingCameraPage:
 
     def setup_status_page(self, container):
         """车位状态上报页面"""
+
         # 设置列权重，使每列均匀分布
         for i in range(6):  # 预计会用到的总行数
             container.grid_columnconfigure(i, weight=1)
@@ -73,6 +78,7 @@ class ParkingCameraPage:
 
     def setup_image_page(self, container):
         """图片上传页面"""
+
         # 设置列权重，使每列均匀分布
         for i in range(6):  # 预计会用到的总行数
             container.grid_columnconfigure(i, weight=1)
@@ -211,6 +217,10 @@ class ParkingCameraPage:
         packet = self.create_packet(data, command_code, timestamp)
         self.tcp_client.send_command(packet)
         print("心跳包已发送")
+
+    def clear_window(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
 
 if __name__ == "__main__":
