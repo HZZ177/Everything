@@ -811,7 +811,7 @@ if __name__ == "__main__":
     # 模拟一个TCP客户端（需要根据你的实际实现进行修改）
     class MockTCPClient:
         def __init__(self):
-            pass
+            self.server_ip = "127.0.0.1"  # 模拟的服务器IP地址
 
         def send_command(self, packet):
             print(f"发送数据包: {packet}")
