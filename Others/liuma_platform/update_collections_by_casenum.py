@@ -7,8 +7,11 @@
 # @description:
 
 import json
+import sys
 import uuid
 import base64
+from time import sleep
+
 import pymysql
 import requests
 from log_module import logger
@@ -187,8 +190,6 @@ class App:
         logger.debug(f"排序后的用例信息列表：{ordered_case_info_list}")
         return ordered_case_info_list
 
-
-
     @staticmethod
     def save_collection_with_new_cases(token, collection_id, collection_case_info, case_info_list):
         """
@@ -218,21 +219,20 @@ class App:
             collection_cases.append(new_collectioncase)
             new_start_index += 1
 
-        logger.info(f'组装后集合内用例数据：{json.dumps(collection_case_info, indent=4, ensure_ascii=False)}')
+        format_collection_case_info = json.dumps(collection_case_info, indent=4, ensure_ascii=False)
 
-        # 执行步骤之前先用input询问是否继续，如果用户选择否，则直接返回
-        answer = input("请检查以上数据，是否继续操作？(按y确定，任意键取消)：").lower()
-        if answer != 'y':
-            logger.info("已取消本次保存用例到集合集合操作！")
-            return
+        # 打印无格式集合信息
+        logger.info(f'组装后集合内用例数据：{collection_case_info}')
+        # # 打印格式化集合信息
+        # logger.info(f'组装后集合内用例数据：{format_collection_case_info}')
 
+        print('已发送！')
         # try:
         #     response = requests.post(url=url, headers=headers, json=collection_case_info)
         #     response.raise_for_status()
         #     logger.info(f"集合新增用例接口返回信息：{response.json()}")
         # except requests.exceptions.RequestException as e:
         #     logger.error(f"保存集合失败，错误信息：{e}")
-        print("已执行")
 
     def get_collection_id_by_name(self, collection_name):
         get_collection_id = f"SELECT id FROM `collection` where name = %s and `status` = 1"
@@ -256,29 +256,60 @@ class App:
         # 登录获取token
         token = self.platform_login(account, password)
         if not token:
-            logger.error("无法获取token，已终止")
+            logger.error("无法获取token，程序已终止！")
             return
 
         # 获取集合id
         collection_id = self.get_collection_id_by_name(collection_name)
         if not collection_id:
-            logger.error(f"集合【{collection_name}】没有获取到对应的有效集合id，已终止")
+            logger.error(f"集合【{collection_name}】没有获取到对应的有效集合id，程序已终止！")
             return
 
         # 获取并组装所有相关用例的信息
         ordered_case_info_list = self.assemble_case_info(main_case_num_list)
         if not ordered_case_info_list:
-            logger.error(f"用例id集合{main_case_num_list}没有获取到任何用例信息，已终止")
+            logger.error(f"用例id集合{main_case_num_list}没有获取到任何用例信息，程序已终止！")
             return
 
         # 获取集合的当前信息
         collection_case_info = self.get_collection_detail_byid(token, collection_id)
         if not collection_case_info:
-            logger.error(f"无法获取集合{collection_id}的详情，已终止")
+            logger.error(f"无法获取集合{collection_id}的详情，程序已终止！")
             return
 
         # 组装新的collectionCase，拼接到上一步查询出的参数中，调接口保存用例到合集
         self.save_collection_with_new_cases(token, collection_id, collection_case_info, ordered_case_info_list)
+
+    @staticmethod
+    def check_data_from_file():
+        """
+        检查从文件中读取出来的集合对应数据，询问是否继续
+        :return:
+        """
+        data = prepare_data_from_file()
+        # print(data)
+
+        logger.warning("--------------------以下为组装后要发送的数据，请检查--------------------")
+
+        for item in data:
+            # print(item)
+
+            # 要录入的集合名称
+            collection_name = item[0]  # 替换为实际的集合名称
+
+            # 需要添加到集合中的主用例编号列表，按顺序填写，别填前后置id
+            main_case_num_list = item[1]
+
+            logger.info(f"集合名称【{collection_name}】------对应要插入的主用例列表【{main_case_num_list}】")
+
+        # 执行步骤之前先用input询问是否继续，如果用户选择否，则直接返回
+        sleep(0.5)
+        answer = input("请检查要插入的数据，是否继续操作？(按y确定，任意键停止)：").lower()
+        if answer != 'y':
+            logger.info("已取消本次保存用例到集合集合操作！程序已退出！")
+            sys.exit()
+        else:
+            return data
 
 
 if __name__ == '__main__':
@@ -288,19 +319,17 @@ if __name__ == '__main__':
     account = "heshouyi"
     password = "19981208@qwer"
 
-    data = prepare_data_from_file()
-    # print(data)
+    # 展示要插入的数据，如果选择继续执行，返回数据集，否则退出程序
+    data = app.check_data_from_file()
 
-    for item in data.items():
+    for item in data:
         # print(item)
 
         # 要录入的集合名称
-        collection_name = item[0]  # 替换为实际的集合名称
-        print(f"集合名称：{collection_name}")
+        collection_name = item[0]
 
-        # 需要添加到集合中的主用例编号列表，按顺序填写，别填前后置id
+        # 需要添加到集合中的主用例编号列表
         main_case_num_list = item[1]
-        print(f"主用例列表：{main_case_num_list}\n")
 
-        # # 执行流程
+        # 执行流程
         app.execute(account, password, main_case_num_list, collection_name)
