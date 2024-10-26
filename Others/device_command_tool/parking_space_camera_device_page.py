@@ -31,8 +31,11 @@ class ParkingCameraPage:
         # 清空前置页面
         self.clear_window()
 
+        container = tk.Frame(self.root)
+        container.pack(expand=True, fill='both')
+
         # 创建标签页
-        notebook = ttk.Notebook(self.root)
+        notebook = ttk.Notebook(container)
         notebook.pack(expand=True, fill="both")
 
         # 创建有车无车上报页面
@@ -45,7 +48,7 @@ class ParkingCameraPage:
 
         # 创建图片上传页面
         image_page = ttk.Frame(notebook)
-        notebook.add(image_page, text="上传图片")
+        notebook.add(image_page, text="车牌更新上报")
 
         # 设置有车无车上报页面的内容
         self.setup_parked_page(parked_page)
@@ -63,31 +66,47 @@ class ParkingCameraPage:
     def setup_parked_page(self, container):
         """有车无车上报页面"""
 
-        tk.Label(container, text="选择每个车位的状态（有车/无车）：").grid(row=0, column=0, columnspan=8, pady=5)
+        # 配置每列的权重，使其随窗口大小自适应分布
+        for i in range(5):  # 5列布局
+            container.grid_columnconfigure(i, weight=1)
+
+        # 设置标题
+        tk.Label(container, text="选择每个车位的状态（有车/无车）：").grid(row=0, column=0, columnspan=5, pady=15, sticky="nsew")
 
         # 为每个车位设置复选框和单选框
         self.parking_status_radiobuttons_parked = []
         for idx in range(6):
+            # 每行创建一个车位的复选框
             check = tk.Checkbutton(container, text=f"车位 {idx + 1}", variable=self.parking_selected_parked[idx],
                                    command=lambda i=idx: self.toggle_parking_status(i, 'parked'))
-            check.grid(row=idx + 1, column=0, padx=5, pady=5)
+            check.grid(row=idx + 1, column=0, padx=40, pady=5, sticky="nsew")  # 放在第1列
 
+            # "无车"选项
             radio_no_car = tk.Radiobutton(container, text="无车", variable=self.parking_statuses_parked[idx], value="0",
                                           state="disabled")
-            radio_no_car.grid(row=idx + 1, column=1, padx=5, sticky="w")
+            radio_no_car.grid(row=idx + 1, column=2, padx=5, sticky="nsew")  # 放在第3列
 
+            # "有车"选项
             radio_with_car = tk.Radiobutton(container, text="有车", variable=self.parking_statuses_parked[idx],
                                             value="1", state="disabled")
-            radio_with_car.grid(row=idx + 1, column=2, padx=5, sticky="w")
+            radio_with_car.grid(row=idx + 1, column=4, padx=40, sticky="nsew")  # 放在第5列
 
-            # 将当前车位的单选按钮添加到列表
+            # 将单选按钮添加到列表中
             self.parking_status_radiobuttons_parked.append((radio_no_car, radio_with_car))
 
-        # 持续上报和上报一次按钮
-        tk.Checkbutton(container, text="持续上报", variable=self.continuous_reporting,
-                       command=self.toggle_continuous_reporting).grid(row=8, column=0, padx=5, pady=10)
-        tk.Button(container, text="上报一次", command=self.report_parking_status_once).grid(row=8, column=2, padx=5,
-                                                                                            pady=10)
+        # 底部frame框架放置上报操作按钮
+        operation_frame = tk.Frame(container)
+        operation_frame.grid(row=7, column=0, columnspan=5, pady=15, sticky="nsew")
+
+        # 配置三列布局，使得中间列居中显示控件
+        operation_frame.grid_columnconfigure(0, weight=1)  # 左侧列
+        operation_frame.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
+        operation_frame.grid_columnconfigure(2, weight=1)  # 右侧列
+
+        # 在下段frame设置“持续上报”复选框和“上报一次”按钮
+        tk.Checkbutton(operation_frame, text="车位状态持续上报开关", variable=self.continuous_reporting,
+                       command=self.toggle_continuous_reporting).grid(row=0, column=1, padx=5, pady=10, sticky="nsew")
+        tk.Button(operation_frame, text="上报一次当前车位状态", command=self.report_parking_status_once).grid(row=1, column=1, padx=5, pady=10, sticky="nsew")
 
     def toggle_continuous_reporting(self):
         """切换持续上报状态"""
@@ -101,54 +120,81 @@ class ParkingCameraPage:
     def setup_move_page(self, container):
         """进车出车上报页面"""
 
-        tk.Label(container, text="选择每个车位的状态（进车/出车）：").grid(row=0, column=0, columnspan=8, pady=5)
+        # 配置列的权重，使其随窗口大小自适应分布
+        for i in range(5):  # 5列布局
+            container.grid_columnconfigure(i, weight=1)
+
+        # 设置标题
+        tk.Label(container, text="选择每个车位要上报的事件（进车/出车）：").grid(row=0, column=0, columnspan=5, pady=15, sticky="nsew")
 
         # 为每个车位设置复选框和单选框
         self.parking_status_radiobuttons_move = []
         for idx in range(6):
+            # 车位选择框放在第1列
             check = tk.Checkbutton(container, text=f"车位 {idx + 1}", variable=self.parking_selected_move[idx],
                                    command=lambda i=idx: self.toggle_parking_status(i, 'move'))
-            check.grid(row=idx + 1, column=0, padx=5, pady=5)
+            check.grid(row=idx + 1, column=0, padx=40, pady=5, sticky="nsew")
 
+            # "出车"单选框放在第3列
             radio_out = tk.Radiobutton(container, text="出车", variable=self.parking_statuses_move[idx], value="2",
                                        state="disabled")
-            radio_out.grid(row=idx + 1, column=1, padx=5, sticky="w")
+            radio_out.grid(row=idx + 1, column=2, padx=5, sticky="nsew")
 
+            # "进车"单选框放在第5列
             radio_in = tk.Radiobutton(container, text="进车", variable=self.parking_statuses_move[idx], value="3",
                                       state="disabled")
-            radio_in.grid(row=idx + 1, column=2, padx=5, sticky="w")
+            radio_in.grid(row=idx + 1, column=4, padx=40, sticky="nsew")
 
             # 将当前车位的单选按钮添加到列表
             self.parking_status_radiobuttons_move.append((radio_out, radio_in))
 
-        tk.Button(container, text="上报一次", command=self.report_move_status_once).grid(row=8, column=1, columnspan=4,
-                                                                                         pady=10)
+        # 底部frame框架放置上报操作按钮
+        operation_frame = tk.Frame(container)
+        operation_frame.grid(row=7, column=0, columnspan=5, pady=15, sticky="nsew")
+
+        # 配置三列布局，使得中间列居中显示控件
+        operation_frame.grid_columnconfigure(0, weight=1)  # 左侧列
+        operation_frame.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
+        operation_frame.grid_columnconfigure(2, weight=1)  # 右侧列
+
+        # 上报一次按钮放在第底部框架中间
+        tk.Button(operation_frame, text="上报进出车事件", command=self.report_move_status_once).grid(row=0, column=1, pady=10, sticky="nsew")
 
     def setup_image_page(self, container):
         """图片上传页面"""
 
-        tk.Label(container, text="图片采集").grid(row=0, column=0, columnspan=6, pady=10)
+        # 配置三列布局，使得中间列居中显示控件
+        container.grid_columnconfigure(0, weight=1)  # 左侧列
+        container.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
+        container.grid_columnconfigure(2, weight=1)  # 右侧列
 
-        # 车牌号：标签和输入框在同一行，居中显示
-        tk.Label(container, text="车牌号：").grid(row=1, column=1, sticky="e", padx=5, pady=5)
+        # 车牌号标签放在第1列，输入框跨第3至第5列
+        tk.Label(container, text="车牌号：").grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
         self.plate_number = tk.Entry(container)
-        self.plate_number.grid(row=1, column=2, columnspan=6, sticky="w", padx=5, pady=5)
+        self.plate_number.grid(row=1, column=1, sticky="nsew", padx=5, pady=5)
 
-        # 车牌颜色：标签和选项在同一行横向排列，选项每行最多三个
-        tk.Label(container, text="车牌颜色：").grid(row=2, column=1, sticky="e", padx=5, pady=5)
+        # 车牌颜色标签放在第1列，颜色选项按每行三个分布在第2至第4列
+        tk.Label(container, text="车牌颜色：").grid(row=2, column=1, sticky="nsew", padx=5, pady=5)
         self.plate_color = tk.StringVar(value="蓝色")
         color_options = ["蓝色", "绿色", "黄色", "白色", "黑色"]
 
-        # 按每行三个进行分布
+        # 将颜色选项按每行三个进行分布
         for idx, color in enumerate(color_options):
-            row = 2 + idx // 3  # 第2行开始，每三项换一行
-            col = idx % 3 + 2  # 从第2列开始分布
-            tk.Radiobutton(container, text=color, variable=self.plate_color, value=color).grid(row=row, column=col,
-                                                                                               padx=5, pady=5,
-                                                                                               sticky="w")
+            row = 3 + idx // 3  # 从第3行开始，每三项换一行
+            col = (idx % 3)  # 每项在第1、2列分布
+            tk.Radiobutton(container, text=color, variable=self.plate_color, value=color).grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
 
-        # 上传图片按钮，居中放置在最后一行
-        tk.Button(container, text="上传图片", command=self.upload_image).grid(row=4, column=0, columnspan=6, pady=40)
+        # 底部frame框架放置上报操作按钮
+        operation_frame = tk.Frame(container)
+        operation_frame.grid(row=5, column=0, columnspan=5, pady=15, sticky="nsew")
+
+        # 配置三列布局，使得中间列居中显示控件
+        operation_frame.grid_columnconfigure(0, weight=1)  # 左侧列
+        operation_frame.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
+        operation_frame.grid_columnconfigure(2, weight=1)  # 右侧列
+
+        # 上传图片按钮放在最后一行并居中
+        tk.Button(operation_frame, text="上报车牌更新", command=self.upload_image).grid(row=1, column=1, pady=40, sticky="nsew")
 
     def report_parking_status_once(self):
         """上报一次有车无车状态"""
