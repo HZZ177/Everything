@@ -1,7 +1,11 @@
+import json
+import queue
+import threading
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import struct
 import time
+from server_function import ServerFunctions
 
 
 class ParkingCameraPage:
@@ -17,6 +21,9 @@ class ParkingCameraPage:
         self.continuous_reporting = tk.BooleanVar(value=False)  # 持续上报开关变量
         self.report_job = None  # 用于跟踪持续上报的任务
 
+        # 实例化服务器工具类
+        self.ServerFunctions = ServerFunctions(self.tcp_client.server_ip)
+
         # 有车无车上报页面状态
         self.parking_statuses_parked = [tk.StringVar(value="0") for _ in range(6)]
         self.parking_selected_parked = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
@@ -24,6 +31,11 @@ class ParkingCameraPage:
         # 进车出车上报页面状态
         self.parking_statuses_move = [tk.StringVar(value="2") for _ in range(6)]
         self.parking_selected_move = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
+
+        # 创建队列用于线程通信
+        self.result_queue = queue.Queue()
+        self.root.after(100, self.process_queue)  # 定时检查队列中的消息
+
 
     def setup(self):
         """设置UI界面"""
@@ -40,14 +52,23 @@ class ParkingCameraPage:
 
         # 创建有车无车上报页面
         parked_page = ttk.Frame(notebook)
+        # 配置每列的权重，使其随窗口大小自适应分布
+        for i in range(3):  # 3列布局
+            parked_page.grid_columnconfigure(i, weight=1)
         notebook.add(parked_page, text="有车无车上报")
 
         # 创建进车出车上报页面
         move_page = ttk.Frame(notebook)
+        # 配置每列的权重，使其随窗口大小自适应分布
+        for i in range(3):  # 3列布局
+            move_page.grid_columnconfigure(i, weight=1)
         notebook.add(move_page, text="进车出车上报")
 
         # 创建图片上传页面
         image_page = ttk.Frame(notebook)
+        # 配置每列的权重，使其随窗口大小自适应分布
+        for i in range(3):  # 3列布局
+            image_page.grid_columnconfigure(i, weight=1)
         notebook.add(image_page, text="车牌更新上报")
 
         # 设置有车无车上报页面的内容
@@ -66,28 +87,32 @@ class ParkingCameraPage:
     def setup_parked_page(self, container):
         """有车无车上报页面"""
 
+        # 放置选择按钮
+        selection_frame = tk.Frame(container)
+        selection_frame.grid(row=0, column=1, pady=15, sticky="nsew")
+
         # 配置每列的权重，使其随窗口大小自适应分布
         for i in range(5):  # 5列布局
-            container.grid_columnconfigure(i, weight=1)
+            selection_frame.grid_columnconfigure(i, weight=1)
 
         # 设置标题
-        tk.Label(container, text="选择每个车位的状态（有车/无车）：").grid(row=0, column=0, columnspan=5, pady=15, sticky="nsew")
+        tk.Label(selection_frame, text="选择每个车位的状态（有车/无车）：").grid(row=0, column=0, columnspan=5, pady=15, sticky="nsew")
 
         # 为每个车位设置复选框和单选框
         self.parking_status_radiobuttons_parked = []
         for idx in range(6):
             # 每行创建一个车位的复选框
-            check = tk.Checkbutton(container, text=f"车位 {idx + 1}", variable=self.parking_selected_parked[idx],
+            check = tk.Checkbutton(selection_frame, text=f"车位 {idx + 1}", variable=self.parking_selected_parked[idx],
                                    command=lambda i=idx: self.toggle_parking_status(i, 'parked'))
             check.grid(row=idx + 1, column=0, padx=40, pady=5, sticky="nsew")  # 放在第1列
 
             # "无车"选项
-            radio_no_car = tk.Radiobutton(container, text="无车", variable=self.parking_statuses_parked[idx], value="0",
+            radio_no_car = tk.Radiobutton(selection_frame, text="无车", variable=self.parking_statuses_parked[idx], value="0",
                                           state="disabled")
             radio_no_car.grid(row=idx + 1, column=2, padx=5, sticky="nsew")  # 放在第3列
 
             # "有车"选项
-            radio_with_car = tk.Radiobutton(container, text="有车", variable=self.parking_statuses_parked[idx],
+            radio_with_car = tk.Radiobutton(selection_frame, text="有车", variable=self.parking_statuses_parked[idx],
                                             value="1", state="disabled")
             radio_with_car.grid(row=idx + 1, column=4, padx=40, sticky="nsew")  # 放在第5列
 
@@ -96,7 +121,7 @@ class ParkingCameraPage:
 
         # 底部frame框架放置上报操作按钮
         operation_frame = tk.Frame(container)
-        operation_frame.grid(row=7, column=0, columnspan=5, pady=15, sticky="nsew")
+        operation_frame.grid(row=7, column=1, pady=15, sticky="nsew")
 
         # 配置三列布局，使得中间列居中显示控件
         operation_frame.grid_columnconfigure(0, weight=1)  # 左侧列
@@ -107,6 +132,32 @@ class ParkingCameraPage:
         tk.Checkbutton(operation_frame, text="车位状态持续上报开关", variable=self.continuous_reporting,
                        command=self.toggle_continuous_reporting).grid(row=0, column=1, padx=5, pady=10, sticky="nsew")
         tk.Button(operation_frame, text="上报一次当前车位状态", command=self.report_parking_status_once).grid(row=1, column=1, padx=5, pady=10, sticky="nsew")
+
+        # 刷新服务器设备状态的便捷按钮框架
+        additional_button_frame = tk.Frame(container)
+        additional_button_frame.grid(row=8, column=1, pady=15, sticky="nsew")
+
+        # 配置三列布局，使得中间列居中显示控件
+        additional_button_frame.grid_columnconfigure(0, weight=1)  # 左侧列
+        additional_button_frame.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
+        additional_button_frame.grid_columnconfigure(2, weight=1)  # 右侧列
+
+        # 提示文字
+        tk.Label(additional_button_frame, text="-------服务器快捷功能|-_-|-------").grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
+
+        get_online_devices_button = tk.Button(
+            additional_button_frame,
+            text="findCar刷新在线设备",
+            command=self.get_all_online_devices
+        )
+        get_online_devices_button.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+
+        device_status_test_button = tk.Button(
+            additional_button_frame,
+            text="channel刷新在线设备",
+            command=self.device_status_test
+        )
+        device_status_test_button.grid(row=1, column=2, padx=10, pady=5, sticky="nsew")
 
     def toggle_continuous_reporting(self):
         """切换持续上报状态"""
@@ -153,20 +204,39 @@ class ParkingCameraPage:
         operation_frame.grid(row=7, column=0, columnspan=5, pady=15, sticky="nsew")
 
         # 配置三列布局，使得中间列居中显示控件
-        operation_frame.grid_columnconfigure(0, weight=1)  # 左侧列
-        operation_frame.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
-        operation_frame.grid_columnconfigure(2, weight=1)  # 右侧列
+        for i in range(3):  # 3列布局
+            operation_frame.grid_columnconfigure(i, weight=1)
 
         # 上报一次按钮放在第底部框架中间
         tk.Button(operation_frame, text="上报进出车事件", command=self.report_move_status_once).grid(row=0, column=1, pady=10, sticky="nsew")
 
-    def setup_image_page(self, container):
-        """图片上传页面"""
+        # 刷新服务器设备状态的便捷按钮框架
+        additional_button_frame = tk.Frame(container)
+        additional_button_frame.grid(row=8, column=1, columnspan=3, pady=15, sticky="nsew")
 
         # 配置三列布局，使得中间列居中显示控件
-        container.grid_columnconfigure(0, weight=1)  # 左侧列
-        container.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
-        container.grid_columnconfigure(2, weight=1)  # 右侧列
+        for i in range(3):  # 3列布局
+            additional_button_frame.grid_columnconfigure(i, weight=1)
+
+        # 提示文字
+        tk.Label(additional_button_frame, text="-------服务器快捷功能|-_-|-------").grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
+
+        get_online_devices_button = tk.Button(
+            additional_button_frame,
+            text="findCar刷新在线设备",
+            command=self.get_all_online_devices
+        )
+        get_online_devices_button.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+
+        device_status_test_button = tk.Button(
+            additional_button_frame,
+            text="channel刷新在线设备",
+            command=self.device_status_test
+        )
+        device_status_test_button.grid(row=1, column=2, padx=10, pady=5, sticky="nsew")
+
+    def setup_image_page(self, container):
+        """图片上传页面"""
 
         # 车牌号标签放在第1列，输入框跨第3至第5列
         tk.Label(container, text="车牌号：").grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
@@ -181,20 +251,41 @@ class ParkingCameraPage:
         # 将颜色选项按每行三个进行分布
         for idx, color in enumerate(color_options):
             row = 3 + idx // 3  # 从第3行开始，每三项换一行
-            col = (idx % 3)  # 每项在第1、2列分布
+            col = (idx % 3)  # 每项在第1，2，3列分布
             tk.Radiobutton(container, text=color, variable=self.plate_color, value=color).grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
 
         # 底部frame框架放置上报操作按钮
         operation_frame = tk.Frame(container)
         operation_frame.grid(row=5, column=0, columnspan=5, pady=15, sticky="nsew")
 
-        # 配置三列布局，使得中间列居中显示控件
-        operation_frame.grid_columnconfigure(0, weight=1)  # 左侧列
-        operation_frame.grid_columnconfigure(1, weight=0)  # 中间列，不扩展
-        operation_frame.grid_columnconfigure(2, weight=1)  # 右侧列
 
         # 上传图片按钮放在最后一行并居中
         tk.Button(operation_frame, text="上报车牌更新", command=self.upload_image).grid(row=1, column=1, pady=40, sticky="nsew")
+
+        # 刷新服务器设备状态的便捷按钮框架
+        additional_button_frame = tk.Frame(container)
+        additional_button_frame.grid(row=6, column=1, columnspan=1, pady=15, sticky="nsew")
+
+        # 配置三列布局，使得中间列居中显示控件
+        for i in range(3):  # 3列布局
+            additional_button_frame.grid_columnconfigure(i, weight=1)
+
+        # 提示文字
+        tk.Label(additional_button_frame, text="-------服务器快捷功能|-_-|-------").grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
+
+        get_online_devices_button = tk.Button(
+            additional_button_frame,
+            text="findCar刷新在线设备",
+            command=self.get_all_online_devices
+        )
+        get_online_devices_button.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+
+        device_status_test_button = tk.Button(
+            additional_button_frame,
+            text="channel刷新在线设备",
+            command=self.device_status_test
+        )
+        device_status_test_button.grid(row=1, column=2, padx=10, pady=5, sticky="nsew")
 
     def report_parking_status_once(self):
         """上报一次有车无车状态"""
@@ -322,6 +413,46 @@ class ParkingCameraPage:
     def clear_window(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+
+    def get_all_online_devices(self):
+        """findCarServer获取并刷新所有在线设备信息并显示结果"""
+        def task():
+            try:
+                data = self.ServerFunctions.get_all_online_device_info()
+                message = data.get('message')
+                formatted_data = json.dumps(data, ensure_ascii=False, indent=4)
+                self.result_queue.put(("findCarServer刷新在线设备", f"服务器返回：{message}"))
+            except Exception as e:
+                self.result_queue.put(("错误", f"findCarServer刷新在线设备信息失败:\n{e}"))
+
+        threading.Thread(target=task, daemon=True).start()
+
+    def device_status_test(self):
+        """channel刷新所有设备状态并显示结果"""
+        def task():
+            try:
+                data = self.ServerFunctions.device_status_test()
+                message = data.get('message')
+                formatted_data = json.dumps(data, ensure_ascii=False, indent=4)
+                self.result_queue.put(("channel刷新在线设备", f"服务器返回：{message}"))
+            except Exception as e:
+                self.result_queue.put(("错误", f"channel刷新设备状态失败:\n{e}"))
+
+        threading.Thread(target=task, daemon=True).start()
+
+    def process_queue(self):
+        """处理队列中的消息，并更新GUI"""
+        try:
+            while True:
+                title, message = self.result_queue.get_nowait()
+                if title == "错误":
+                    messagebox.showerror(title, message)
+                else:
+                    messagebox.showinfo(title, message)
+        except queue.Empty:
+            pass
+        finally:
+            self.root.after(100, self.process_queue)  # 继续检查队列
 
 
 if __name__ == "__main__":
