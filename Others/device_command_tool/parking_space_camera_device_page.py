@@ -14,13 +14,13 @@ class ParkingCameraPage:
         self.root = root
         self.tcp_client = tcp_client
         self.app = app
-        self.heartbeat_interval = 10
+        self.heartbeat_interval = 10    # 定时心跳10s一次
         self.device_type = 0x0A  # 根据协议的设备类型
         self.device_version = 0x0400  # 版本信息
 
-        self.is_reporting = tk.BooleanVar(value=False)
-        self.continuous_reporting = tk.BooleanVar(value=False)  # 持续上报开关变量
-        self.report_job = None  # 用于跟踪持续上报的任务
+        self.is_reporting = tk.BooleanVar(value=False)  # 心跳持续开关变量
+        self.continuous_reporting = tk.BooleanVar(value=False)  # 车位状态持续上报开关变量
+        self.report_job = None  # 用于跟踪持续上报任务
 
         # 实例化服务器工具类
         self.ServerFunctions = ServerFunctions(self.tcp_client.server_ip)
@@ -36,7 +36,6 @@ class ParkingCameraPage:
         # 创建队列用于线程通信
         self.result_queue = queue.Queue()
         self.root.after(100, self.process_queue)  # 定时检查队列中的消息
-
 
     def setup(self):
         """设置UI界面"""
@@ -133,6 +132,14 @@ class ParkingCameraPage:
                        command=self.toggle_continuous_reporting).grid(row=0, column=1, padx=5, pady=10, sticky="nsew")
         tk.Button(operation_frame, text="上报一次当前车位状态", command=self.report_parking_status_once).grid(row=1, column=1, padx=5, pady=10, sticky="nsew")
 
+        # 返回设备选择界面按钮
+        back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
+        back_button.grid(row=2, column=0, padx=10)
+
+        # 断开服务器连接按钮
+        disconnect_button = tk.Button(operation_frame, text="断开服务器连接", command=self.disconnect)
+        disconnect_button.grid(row=2, column=2, padx=10, pady=10)
+
         # 刷新服务器设备状态的便捷按钮框架
         additional_button_frame = tk.Frame(container)
         additional_button_frame.grid(row=2, column=1, pady=15, sticky="nsew")
@@ -211,7 +218,15 @@ class ParkingCameraPage:
             operation_frame.grid_columnconfigure(i, weight=1)
 
         # 上报一次按钮放在第底部框架中间
-        tk.Button(operation_frame, text="上报进出车事件", command=self.report_move_status_once).grid(row=0, column=1, pady=10, sticky="nsew")
+        tk.Button(operation_frame, text="上报一次进出车事件", command=self.report_move_status_once).grid(row=0, column=1, pady=10, sticky="nsew")
+
+        # 返回设备选择界面按钮
+        back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
+        back_button.grid(row=1, column=0, padx=10)
+
+        # 断开服务器连接按钮
+        disconnect_button = tk.Button(operation_frame, text="断开服务器连接", command=self.disconnect)
+        disconnect_button.grid(row=1, column=2, padx=10, pady=10)
 
         # 刷新服务器设备状态的便捷按钮框架
         additional_button_frame = tk.Frame(container)
@@ -277,12 +292,24 @@ class ParkingCameraPage:
         operation_frame = tk.Frame(container)
         operation_frame.grid(row=2, column=1, pady=15, sticky="nsew")
 
+        # 配置每列的权重，使其随窗口大小自适应分布
+        for i in range(3):  # 3列布局
+            operation_frame.grid_columnconfigure(i, weight=1)
+
         # 上传图片按钮放在最后一行并居中
-        tk.Button(operation_frame, text="上报车牌更新", command=self.upload_image).grid(row=1, column=1, pady=40, sticky="nsew")
+        tk.Button(operation_frame, text="上报车牌更新", command=self.upload_image).grid(row=0, column=1, pady=40, sticky="nsew")
+
+        # 返回设备选择界面按钮
+        back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
+        back_button.grid(row=1, column=0, padx=10)
+
+        # 断开服务器连接按钮
+        disconnect_button = tk.Button(operation_frame, text="断开服务器连接", command=self.disconnect)
+        disconnect_button.grid(row=1, column=2, padx=10, pady=10)
 
         # 刷新服务器设备状态的便捷按钮框架
         additional_button_frame = tk.Frame(container)
-        additional_button_frame.grid(row=2, column=1, pady=15, sticky="nsew")
+        additional_button_frame.grid(row=3, column=1, pady=15, sticky="nsew")
 
         # 配置三列布局，使得中间列居中显示控件
         for i in range(3):  # 3列布局
@@ -317,6 +344,7 @@ class ParkingCameraPage:
 
     def toggle_parking_status(self, index, page_type):
         """启用或禁用特定车位的状态选择框"""
+        radios = None
         if page_type == 'parked':
             radios = self.parking_status_radiobuttons_parked[index]
             state = "normal" if self.parking_selected_parked[index].get() else "disabled"
@@ -369,8 +397,7 @@ class ParkingCameraPage:
         packet_number = 0
         data_length = len(data_content)
 
-        checksum = self.calculate_checksum(timestamp, command_code, total_packets, packet_number, data_length,
-                                           data_content)
+        checksum = self.calculate_checksum(timestamp, command_code, total_packets, packet_number, data_length, data_content)
 
         packet = (
                 struct.pack('>B', protocol_head) +
@@ -398,7 +425,7 @@ class ParkingCameraPage:
         return sum(checksum_data) & 0xFFFF
 
     def register_device(self):
-        """完整的注册流程（等待0.5秒后直接发送注册包内容）"""
+        """完整的注册流程（等待0.1秒后直接发送注册包内容）"""
 
         # 步骤一：发送初始请求 <001001>，用于注册启动
         timestamp = int(time.time())
@@ -408,8 +435,8 @@ class ParkingCameraPage:
         self.tcp_client.send_command(initial_packet)
         print("初始请求包已发送：<001001>")
 
-        # 等待 0.5 秒，不接收服务器确认，直接进入下一步
-        time.sleep(0.5)
+        # 等待0.1秒，不接收服务器确认，直接进入下一步
+        time.sleep(0.1)
 
         # 步骤二：发送注册包内容，包括 DSP 类型和版本号
         registration_data = struct.pack(">B H", self.device_type, self.device_version)
@@ -437,6 +464,22 @@ class ParkingCameraPage:
         packet = self.create_packet(data, command_code, timestamp)
         self.tcp_client.send_command(packet)
         print("心跳包已发送")
+
+    def stop_heartbeat(self):
+        """停止心跳包的定时发送"""
+        self.is_reporting.set(False)
+
+    def disconnect(self):
+        """断开连接并返回初始界面"""
+        self.stop_heartbeat()  # 停止心跳包的定时器
+        self.tcp_client.disconnect()  # 断开与服务器的连接
+        self.app.create_connection_page()  # 返回初始连接界面
+        self.app.root.title("TCP设备指令模拟工具")  # 清除标题中的服务器连接信息
+
+    def back2device_type_selection_page(self):
+        """返回设备类型选择界面"""
+        self.stop_heartbeat()  # 停止心跳包的定时器
+        self.app.create_device_type_selection_page()
 
     def clear_window(self):
         for widget in self.root.winfo_children():
@@ -495,8 +538,15 @@ if __name__ == "__main__":
         def send_command(self, packet):
             print("发送数据包:", packet)
 
+        def disconnect(self):
+            print("断开连接")
+
 
     class MockApp:
+
+        def __init__(self):
+            self.root = root
+
         def create_device_type_selection_page(self):
             print("返回设备选择界面")
 

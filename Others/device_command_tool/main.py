@@ -12,7 +12,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tcp_client import TCPClient
 from lora_node_device_page import LoraDevicePage
-from other_device_page import OtherDevicePage
 from channel_monitor_camera_device_page import ChannelMonitorCameraPage
 from tcp_led_device_page import TcpLedScreenPage
 from parking_space_camera_device_page import ParkingCameraPage
@@ -58,8 +57,7 @@ class App:
             "车位相机": self.load_parking_space_camera_page,
             "通道监控相机": self.load_channel_monitor_camera_page,
             "LED网络屏": self.load_tcp_led_device_page,
-            "Lora节点": self.load_lora_device_page,
-            "其他设备类型(demo)": self.load_other_device_page
+            "Lora节点": self.load_lora_device_page
         }
 
     def create_connection_page(self):
@@ -179,11 +177,6 @@ class App:
         """加载车位相机设备页面"""
         parking_camera_page = ParkingCameraPage(self.root, self.tcp_client, self)
         parking_camera_page.setup()
-
-    def load_other_device_page(self):
-        """加载其他设备页面"""
-        other_page = OtherDevicePage(self.root, self.tcp_client, self)
-        other_page.setup()
 
     def clear_window(self):
         """清除窗口中的所有组件"""
