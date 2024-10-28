@@ -15,7 +15,7 @@ class ParkingCameraPage:
         self.tcp_client = tcp_client
         self.app = app
         self.heartbeat_interval = 10    # 定时心跳10s一次
-        self.device_type = 0x0A  # 根据协议的设备类型
+        self.device_type = 0x00  # 根据协议的设备类型
         self.device_version = 0x0400  # 版本信息
 
         self.is_reporting = tk.BooleanVar(value=False)  # 心跳持续开关变量
@@ -82,7 +82,7 @@ class ParkingCameraPage:
 
         # 自动注册并启动心跳
         self.register_device()
-        self.start_heartbeat()
+        # self.start_heartbeat()
 
     def setup_parked_page(self, container):
         """有车无车上报页面"""
@@ -366,7 +366,8 @@ class ParkingCameraPage:
                 status = int(status_values[idx].get())
                 parking_status_data += struct.pack(">H", status)
             else:
-                parking_status_data += struct.pack(">H", 4)
+                # 不开启上报的车位状态默认用9填充，会被服务器过滤
+                parking_status_data += struct.pack(">H", 9)
 
         packet = self.create_packet(parking_status_data, command_code, timestamp)
         self.tcp_client.send_command(packet)
@@ -427,16 +428,16 @@ class ParkingCameraPage:
     def register_device(self):
         """完整的注册流程（等待0.1秒后直接发送注册包内容）"""
 
-        # 步骤一：发送初始请求 <001001>，用于注册启动
+        # # 步骤一：发送初始请求 <001001>，用于注册启动
         timestamp = int(time.time())
         command_code = ord('C')
-        initial_data = b"<001001>"
-        initial_packet = self.create_packet(initial_data, command_code, timestamp)
-        self.tcp_client.send_command(initial_packet)
-        print("初始请求包已发送：<001001>")
-
-        # 等待0.1秒，不接收服务器确认，直接进入下一步
-        time.sleep(0.1)
+        # initial_data = b"<001001>"
+        # initial_packet = self.create_packet(initial_data, command_code, timestamp)
+        # self.tcp_client.send_command(initial_packet)
+        # print("初始请求包已发送：<001001>")
+        #
+        # # 等待0.1秒，不接收服务器确认，直接进入下一步
+        # time.sleep(0.1)
 
         # 步骤二：发送注册包内容，包括 DSP 类型和版本号
         registration_data = struct.pack(">B H", self.device_type, self.device_version)

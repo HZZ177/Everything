@@ -60,6 +60,8 @@ class App:
             "Lora节点": self.load_lora_device_page
         }
 
+        self.root.focus()
+
     def create_connection_page(self):
         """创建服务器连接界面"""
         self.clear_window()

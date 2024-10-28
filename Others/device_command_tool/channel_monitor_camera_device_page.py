@@ -280,8 +280,15 @@ class ChannelMonitorCameraPage:
             self.event_id_entry.insert(0, str(uuid.uuid4()))
             self.event_id_entry.bind("<KeyRelease>", self.generate_command)
 
-            # 触发标志输入
-            trigger_flag_label = tk.Label(input_frame, text="触发标志：")
+            # 触发标志输入，不同类型提示不同
+            trigger_flag_label_text = "触发标志："
+            if event == "trigerEvent":
+                trigger_flag_label_text = "触发标志\n(3-来车/2-去车)："
+            elif event == "reverseEvent":
+                trigger_flag_label_text = "触发类型\n(9-来车后退/10-去车后退)："
+            elif event == "exitEvent":
+                trigger_flag_label_text = "触发方向\n(3-来车/2-去车)："
+            trigger_flag_label = tk.Label(input_frame, text=trigger_flag_label_text)
             trigger_flag_label.grid(row=5, column=2, padx=5, pady=5, sticky='e')
             self.trigger_flag_entry = tk.Entry(input_frame)
             self.trigger_flag_entry.grid(row=5, column=3, padx=5, pady=5, sticky='w')
