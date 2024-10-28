@@ -361,14 +361,20 @@ class ParkingCameraPage:
         command_code = ord('S')
 
         parking_status_data = b''
-        for idx, selected in enumerate(selected_status):
-            if selected.get():
+        # 前 6 个字节用于车位状态
+        for idx in range(6):
+            if selected_status[idx].get():
+                # 有效的车位状态，写入对应状态
                 status = int(status_values[idx].get())
-                parking_status_data += struct.pack(">H", status)
             else:
                 # 不开启上报的车位状态默认用9填充，会被服务器过滤
-                parking_status_data += struct.pack(">H", 9)
+                status = 9
+            # 每个状态1字节
+            parking_status_data += struct.pack(">B", status)
+        # 后 6 个字节为预留位，填充为9
+        parking_status_data += struct.pack(">BBBBBB", 9, 9, 9, 9, 9, 9)
 
+        # 打包封装指令并发送
         packet = self.create_packet(parking_status_data, command_code, timestamp)
         self.tcp_client.send_command(packet)
         print("车位状态包已发送: [状态]",
