@@ -277,25 +277,58 @@ class ParkingCameraPage:
 
         # 文件选择按钮和文件路径显示
         file_frame = tk.Frame(container)
-        file_frame.grid(row=1, column=1, pady=15, sticky="nsew")
+        file_frame.grid(row=1, column=1, pady=5, sticky="nsew")
 
         for i in range(1):  # 1列布局
             file_frame.grid_columnconfigure(i, weight=1)
 
         tk.Label(file_frame, text="选择要上传的图片：").grid(row=0, column=0, padx=5, pady=5)
         self.file_path = tk.StringVar()
-        tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=0, padx=5, pady=10, sticky="ew")
+        tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=0, padx=15, pady=10, sticky="ew")
         tk.Button(file_frame, text="选择文件", command=self.select_file).grid(row=2, column=0, padx=5, pady=10)
 
         # 底部操作框架放置上报按钮
         operation_frame = tk.Frame(container)
-        operation_frame.grid(row=2, column=1, pady=15, sticky="nsew")
+        operation_frame.grid(row=2, column=1, pady=5, sticky="nsew")
 
         for i in range(3):  # 3列布局
             operation_frame.grid_columnconfigure(i, weight=1)
 
         # 上传图片按钮
         tk.Button(operation_frame, text="上报车牌更新", command=self.upload_image).grid(row=0, column=1, pady=40, sticky="nsew")
+
+        # 返回设备选择界面按钮
+        back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
+        back_button.grid(row=1, column=0, padx=10)
+
+        # 断开服务器连接按钮
+        disconnect_button = tk.Button(operation_frame, text="断开服务器连接", command=self.disconnect)
+        disconnect_button.grid(row=1, column=2, padx=10, pady=10)
+
+        # 刷新服务器设备状态的便捷按钮框架
+        additional_button_frame = tk.Frame(container)
+        additional_button_frame.grid(row=3, column=1, pady=15, sticky="nsew")
+
+        # 配置三列布局，使得中间列居中显示控件
+        for i in range(3):  # 3列布局
+            additional_button_frame.grid_columnconfigure(i, weight=1)
+
+        # 提示文字
+        tk.Label(additional_button_frame, text="-------服务器快捷功能|-_-|-------").grid(row=0, column=1, padx=10, pady=5, sticky="nsew")
+
+        get_online_devices_button = tk.Button(
+            additional_button_frame,
+            text="findCar刷新在线设备",
+            command=self.get_all_online_devices
+        )
+        get_online_devices_button.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+
+        device_status_test_button = tk.Button(
+            additional_button_frame,
+            text="channel刷新在线设备",
+            command=self.device_status_test
+        )
+        device_status_test_button.grid(row=1, column=2, padx=10, pady=5, sticky="nsew")
 
     def select_file(self):
         """选择本地图片文件"""
@@ -317,28 +350,31 @@ class ParkingCameraPage:
 
         # 默认所有不用的字符9占位，并设置每个车位的状态和端口号
         data_content = b''
-        selected_slot = int(self.selected_slot.get()) - 1  # 获取选中车位编号（从1开始计数）
+        selected_slot = int(self.selected_slot.get())  # 获取选中车位编号（从1开始计数）
 
         for slot_number in range(4):
             # 设置车位端口号和状态
-            # 高4位为端口号（即slot_number + 1），低4位根据是否为选中车位来确定
-            if slot_number == selected_slot:
-                # 选中车位的状态设置为1（有车）
-                status_and_port = (slot_number + 1) | 0x10  # 将端口号直接赋值到高4位，状态为1
-            else:
-                # 非选中车位的状态设置为0（无车）
-                status_and_port = (slot_number + 1)
+            # # 高4位为端口号（即slot_number + 1），低4位根据是否为选中车位来确定
+            # if slot_number + 1 == selected_slot:
+            #     # 选中车位的状态设置为1（有车）
+            #     status_and_port = (slot_number + 1) | 0x10  # 将端口号直接赋值到高4位，状态为1
+            # else:
+            #     # 非选中车位的状态设置为0（无车）
+            #     status_and_port = (slot_number + 1)
+
+            # 把所有车位数据都设置为选中车位的车位端口号
+            status_and_port = selected_slot
 
             # 默认车牌颜色、车牌号码和可信度
-            plate_color = 9
-            plate_number = b'9' * 11
-            confidence = 9
+            plate_color = 3     # 3表示蓝色
+            plate_number = "川ABC123".encode('utf-8')
+            confidence = 900
 
             # 按协议格式打包每个车位信息
             data_content += struct.pack(">B B 11s H", status_and_port, plate_color, plate_number, confidence)
         print(f"头包content：{data_content}")
 
-        # 有卡/无卡标志位，低4位为8表示刚进车发送的图片
+        # 有卡/无卡标志位，低4位为8：刚进车发送的图片，高4位为0：旧模式(单车牌+车型信息等)
         has_card_flag = struct.pack(">B", 0x08)
 
         # 读取图片文件数据
@@ -362,6 +398,8 @@ class ParkingCameraPage:
         self.tcp_client.send_command(packet_header)
         print(f"车位 {self.selected_slot.get()} 的图片头包数据{packet_header}已发送")
         print(f"图片总长度：{len(image_data)}")
+
+        time.sleep(0.1)
 
         # 分批次发送图片数据，仅包含图片数据
         for i in range(total_packets):
