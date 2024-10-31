@@ -58,7 +58,7 @@ class TCPClient:
             # messagebox.showinfo("成功", "成功连接到服务器")
 
             # 启动一个线程用于接收led网络屏的服务器下发数据
-            threading.Thread(target=self.receive_tcp_led_command, daemon=True).start()
+            threading.Thread(target=self.receive_tcp_command, daemon=True).start()
             return True
         except socket.timeout:
             messagebox.showerror("错误", "连接服务器超时，请检查网络连接或服务器状态")
@@ -77,19 +77,19 @@ class TCPClient:
 
                 # 发送指令到服务器
                 self.server_socket.sendall(command)
-                print(f"已发送指令: {command}")
+                print(f"tcp_client：已发送指令: {command}")
             except Exception as e:
                 messagebox.showerror("错误", f"发送指令时出错: {e}")
         else:
             messagebox.showwarning("警告", "未连接到服务器")
 
-    def receive_tcp_led_command(self):
-        """接收来自服务器的led网络屏指令并按协议解析"""
+    def receive_tcp_command(self):
+        """接收来自服务器的指令并按协议解析"""
         while self.is_connected():
             try:
                 data = self.server_socket.recv(2048)  # 接收字节流，设置接收缓冲区的大小2048字节
                 if data:
-                    print(f"接收到字节流数据: {data}")
+                    print(f"tcp_client：接收到字节流数据: {data}")
 
                     # 根据协议解析数据，例如假设协议包含如下字段：
                     # 协议头 (1字节), 时间戳 (4字节), 命令码 (1字节), 数据长度 (2字节), 数据内容 (N字节), 校验码 (2字节), 协议尾 (1字节)
@@ -104,7 +104,7 @@ class TCPClient:
                     parsed_data = {
                         "protocol_head": protocol_head,
                         "timestamp": timestamp,
-                        "command_code": command_code,
+                        "command_code": chr(command_code),
                         "total_packets": total_packets,
                         "packet_number": packet_number,
                         "data_length": data_length,
@@ -115,21 +115,22 @@ class TCPClient:
 
                     # 调用回调函数处理解析的数据
                     if self.receive_callback:
+                        print("tcp_client：解析后的数据:", parsed_data)
                         self.app.root.after(0, self.receive_callback, parsed_data)
                 else:
-                    print("服务器主动断开连接")
+                    print("tcp_client：服务器主动断开连接")
                     messagebox.showerror("错误", "服务器主动断开连接！")
                     self.disconnect()
                     break
             except socket.timeout:
                 continue  # 超时不一定是错误，可忽略并继续
             except socket.error as e:
-                print(f"接收数据时网络错误: {e}")
+                print(f"tcp_client：接收数据时网络错误: {e}")
                 self.disconnect()
                 # messagebox.showerror("错误", f"接收数据时出错: {e}")
                 break
             except Exception as e:
-                print(f"接收数据时出现未知错误: {e}")
+                print(f"tcp_client：接收数据时出现未知错误: {e}")
                 # messagebox.showerror("错误", f"接收数据时出现未知错误: {e}")
                 break
 

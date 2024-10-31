@@ -40,6 +40,10 @@ class ParkingCameraPage:
         # 存储图片的时间戳
         self.last_image_timestamp = None  # 用于存储当前图片的时间戳
 
+        self.upload_condition = threading.Condition()  # 用于头包返回同步
+        self.upload_response_received = False  # 标识是否收到服务器的确认
+        self.tcp_client.set_receive_callback(self.handle_server_response)  # 设置接收回调函数
+
     def setup(self):
         """设置UI界面"""
 
@@ -269,7 +273,7 @@ class ParkingCameraPage:
         # 选择上传图片对应的车位
         tk.Label(slot_selection_frame, text="选择上传图片对应的车位：").grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
         self.selected_slot = tk.StringVar(value="1")  # 默认选择第一个车位
-        slot_options = [("车位 1", "1"), ("车位 2", "2"), ("车位 3", "3"), ("车位 4", "4")]
+        slot_options = [("车位 1", "1"), ("车位 2", "2"), ("车位 3", "3"), ("车位 4", "4"), ("车位 5", "5"), ("车位 6", "6")]
 
         for idx, (text, value) in enumerate(slot_options):
             tk.Radiobutton(slot_selection_frame, text=text, variable=self.selected_slot, value=value).grid(
@@ -344,6 +348,10 @@ class ParkingCameraPage:
             messagebox.showwarning("警告", "请先选择图片文件！")
             return
 
+        # 在新线程中执行上传逻辑，防止等待返回响应阻塞界面导致死循环
+        threading.Thread(target=self.upload_image_thread).start()
+
+    def upload_image_thread(self):
         # 获取时间戳和命令码
         timestamp = self.get_timestamp_for_image(is_new_image=True)
         command_code = ord('J')
@@ -367,15 +375,18 @@ class ParkingCameraPage:
 
             # 默认车牌颜色、车牌号码和可信度
             plate_color = 3     # 3表示蓝色
-            plate_number = "川ABC123".encode('utf-8')
+            plate_number = "川ABC123".encode('gbk')
             confidence = 900
 
             # 按协议格式打包每个车位信息
             data_content += struct.pack(">B B 11s H", status_and_port, plate_color, plate_number, confidence)
         print(f"头包content：{data_content}")
 
-        # 有卡/无卡标志位，低4位为8：刚进车发送的图片，高4位为0：旧模式(单车牌+车型信息等)
-        has_card_flag = struct.pack(">B", 0x08)
+        # 有卡/无卡标志位
+        #   低4位为6：找车系统主动上传
+        #   高4位为0：旧模式(单车牌+车型信息等)
+        has_card_flag = struct.pack(">B", 0x06)  # 高4位为0，低4位为6
+        print(f"有卡/无卡标志位：{has_card_flag}")
 
         # 读取图片文件数据
         with open(self.file_path.get(), "rb") as img_file:
@@ -386,6 +397,7 @@ class ParkingCameraPage:
 
         # 总图像数据长度
         total_image_length = struct.pack(">I", len(image_data))
+        print(f"总图像数据长度：{total_image_length}")
 
         # 组装包头包（包含有卡/无卡标志位、车位信息和图像数据总长度）
         packet_header = self.create_packet(
@@ -396,10 +408,13 @@ class ParkingCameraPage:
             packet_number=0
         )
         self.tcp_client.send_command(packet_header)
-        print(f"车位 {self.selected_slot.get()} 的图片头包数据{packet_header}已发送")
-        print(f"图片总长度：{len(image_data)}")
+        print(f"头包content_hex：{(has_card_flag + data_content + total_image_length).hex()}")
+        print(f"车位 {self.selected_slot.get()} 的图片头包数据：{packet_header}")
 
-        time.sleep(0.1)
+        # 等待服务器返回确认
+        with self.upload_condition:
+            self.upload_condition.wait_for(lambda: self.upload_response_received)
+            self.upload_response_received = False  # 重置状态
 
         # 分批次发送图片数据，仅包含图片数据
         for i in range(total_packets):
@@ -413,6 +428,15 @@ class ParkingCameraPage:
             )
             print(f"发送图片数据包，第{i + 1}包")
             self.tcp_client.send_command(packet)
+
+    def handle_server_response(self, parsed_data):
+        """处理服务器返回"""
+
+        if parsed_data.get("command_code") == 'J':
+            print(f"接收到图片头包响应{parsed_data}\n!=====继续发送图片内容=====!")
+            with self.upload_condition:
+                self.upload_response_received = True
+                self.upload_condition.notify()
 
     def get_timestamp_for_image(self, is_new_image):
         """获取当前图片的时间戳，若是新图片则生成新的时间戳"""

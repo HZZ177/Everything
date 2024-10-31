@@ -25,7 +25,7 @@ def findcar_report():
         logger.info(f'findcar_report 接收到字节数据上报: {data}')
 
     # 返回数据，包含原始字符或字节数据
-    return jsonify({"received_data": data if request.is_json else list(data)}), 200
+    return jsonify({"已接收到数据：": data if request.is_json else list(data)}), 200
 
 
 if __name__ == '__main__':

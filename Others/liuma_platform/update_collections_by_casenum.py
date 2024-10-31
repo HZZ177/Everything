@@ -226,13 +226,12 @@ class App:
         # # 打印格式化集合信息
         # logger.info(f'组装后集合内用例数据：{format_collection_case_info}')
 
-        print('已发送！')
-        # try:
-        #     response = requests.post(url=url, headers=headers, json=collection_case_info)
-        #     response.raise_for_status()
-        #     logger.info(f"集合新增用例接口返回信息：{response.json()}")
-        # except requests.exceptions.RequestException as e:
-        #     logger.error(f"保存集合失败，错误信息：{e}")
+        try:
+            response = requests.post(url=url, headers=headers, json=collection_case_info)
+            response.raise_for_status()
+            logger.info(f"集合新增用例接口返回信息：{response.json()}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"保存集合失败，错误信息：{e}")
 
     def get_collection_id_by_name(self, collection_name):
         get_collection_id = f"SELECT id FROM `collection` where name = %s and `status` = 1"
