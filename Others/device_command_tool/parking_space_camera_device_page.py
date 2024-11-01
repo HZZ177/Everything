@@ -26,11 +26,11 @@ class ParkingCameraPage:
         self.ServerFunctions = ServerFunctions(self.tcp_client.server_ip)
 
         # 有车无车上报页面状态
-        self.parking_statuses_parked = [tk.StringVar(value="0") for _ in range(6)]
+        self.parking_statuses_parked = [tk.StringVar(value="1") for _ in range(6)]
         self.parking_selected_parked = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
 
         # 进车出车上报页面状态
-        self.parking_statuses_move = [tk.StringVar(value="2") for _ in range(6)]
+        self.parking_statuses_move = [tk.StringVar(value="3") for _ in range(6)]
         self.parking_selected_move = [tk.BooleanVar(value=False) for _ in range(6)]  # 控制每个车位是否发送
 
         # 创建队列用于线程通信
@@ -113,15 +113,15 @@ class ParkingCameraPage:
                                    command=lambda i=idx: self.toggle_parking_status(i, 'parked'))
             check.grid(row=idx + 1, column=0, padx=40, pady=5, sticky="nsew")  # 放在第1列
 
-            # "无车"选项
-            radio_no_car = tk.Radiobutton(selection_frame, text="无车", variable=self.parking_statuses_parked[idx], value="0",
-                                          state="disabled")
-            radio_no_car.grid(row=idx + 1, column=2, padx=5, sticky="nsew")  # 放在第3列
-
             # "有车"选项
             radio_with_car = tk.Radiobutton(selection_frame, text="有车", variable=self.parking_statuses_parked[idx],
                                             value="1", state="disabled")
-            radio_with_car.grid(row=idx + 1, column=4, padx=40, sticky="nsew")  # 放在第5列
+            radio_with_car.grid(row=idx + 1, column=2, padx=5, sticky="nsew")  # 放在第3列
+
+            # "无车"选项
+            radio_no_car = tk.Radiobutton(selection_frame, text="无车", variable=self.parking_statuses_parked[idx], value="0",
+                                          state="disabled")
+            radio_no_car.grid(row=idx + 1, column=4, padx=40, sticky="nsew")  # 放在第5列
 
             # 将单选按钮添加到列表中
             self.parking_status_radiobuttons_parked.append((radio_no_car, radio_with_car))
@@ -136,8 +136,8 @@ class ParkingCameraPage:
 
         # 在下段frame设置“持续上报”复选框和“上报一次”按钮
         tk.Checkbutton(operation_frame, text="车位状态持续上报开关(10s/次)", variable=self.continuous_reporting,
-                       command=self.toggle_continuous_reporting).grid(row=0, column=1, padx=5, pady=10, sticky="nsew")
-        tk.Button(operation_frame, text="上报一次当前车位状态", command=self.report_parking_status_once).grid(row=1, column=1, padx=5, pady=10, sticky="nsew")
+                       command=self.toggle_continuous_reporting).grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+        tk.Button(operation_frame, text="上报一次当前车位状态", command=self.report_parking_status_once).grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
         # 返回设备选择界面按钮
         back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
@@ -203,15 +203,16 @@ class ParkingCameraPage:
                                    command=lambda i=idx: self.toggle_parking_status(i, 'move'))
             check.grid(row=idx + 1, column=0, padx=40, pady=5, sticky="nsew")
 
-            # "出车"单选框放在第3列
-            radio_out = tk.Radiobutton(selection_frame, text="出车", variable=self.parking_statuses_move[idx], value="2",
-                                       state="disabled")
-            radio_out.grid(row=idx + 1, column=2, padx=5, sticky="nsew")
-
-            # "进车"单选框放在第5列
+            # "进车"单选框放在第3列
             radio_in = tk.Radiobutton(selection_frame, text="进车", variable=self.parking_statuses_move[idx], value="3",
                                       state="disabled")
-            radio_in.grid(row=idx + 1, column=4, padx=40, sticky="nsew")
+            radio_in.grid(row=idx + 1, column=2, padx=5, sticky="nsew")
+
+            # "出车"单选框放在第5列
+            radio_out = tk.Radiobutton(selection_frame, text="出车", variable=self.parking_statuses_move[idx],
+                                       value="2",
+                                       state="disabled")
+            radio_out.grid(row=idx + 1, column=4, padx=40, sticky="nsew")
 
             # 将当前车位的单选按钮添加到列表
             self.parking_status_radiobuttons_move.append((radio_out, radio_in))
@@ -265,7 +266,7 @@ class ParkingCameraPage:
 
         # 车位选择框架
         slot_selection_frame = tk.Frame(container)
-        slot_selection_frame.grid(row=0, column=1, pady=15, sticky="nsew")
+        slot_selection_frame.grid(row=0, column=1, pady=5, sticky="nsew")
 
         for i in range(3):  # 3列布局
             slot_selection_frame.grid_columnconfigure(i, weight=1)
@@ -286,9 +287,12 @@ class ParkingCameraPage:
         for i in range(1):  # 1列布局
             file_frame.grid_columnconfigure(i, weight=1)
 
-        tk.Label(file_frame, text="选择要上传的图片：").grid(row=0, column=0, padx=5, pady=5)
+        tk.Label(file_frame, text="【请选择要上传的图片】\n"
+                                  "---最好用经过实际相机处理过的图片---\n"
+                                  "---普通图片虽然能正常识别,但识别库不会根据车位切割原图---\n"
+                                  "---会导致数据库存储的车位图名称与实际不符，后台车位不能显示在场车图片---").grid(row=0, column=0, padx=5, pady=5)
         self.file_path = tk.StringVar()
-        tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=0, padx=15, pady=10, sticky="ew")
+        tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=0, padx=20, pady=5, sticky="ew")
         tk.Button(file_frame, text="选择文件", command=self.select_file).grid(row=2, column=0, padx=5, pady=10)
 
         # 底部操作框架放置上报按钮
@@ -361,16 +365,9 @@ class ParkingCameraPage:
         selected_slot = int(self.selected_slot.get())  # 获取选中车位编号（从1开始计数）
 
         for slot_number in range(4):
-            # 设置车位端口号和状态
-            # # 高4位为端口号（即slot_number + 1），低4位根据是否为选中车位来确定
-            # if slot_number + 1 == selected_slot:
-            #     # 选中车位的状态设置为1（有车）
-            #     status_and_port = (slot_number + 1) | 0x10  # 将端口号直接赋值到高4位，状态为1
-            # else:
-            #     # 非选中车位的状态设置为0（无车）
-            #     status_and_port = (slot_number + 1)
-
-            # 把所有车位数据都设置为选中车位的车位端口号
+            # 此部分不按照协议封装，服务器端根据实际收到的数据长度取不同标志位的数据作为通道口数据
+            # 65为长度数据时，取第16byte数据作为通道口
+            # 因此直接把所有车位数据都设置为选中车位的车位端口号
             status_and_port = selected_slot
 
             # 默认车牌颜色、车牌号码和可信度
@@ -380,13 +377,13 @@ class ParkingCameraPage:
 
             # 按协议格式打包每个车位信息
             data_content += struct.pack(">B B 11s H", status_and_port, plate_color, plate_number, confidence)
-        print(f"头包content：{data_content}")
+        print(f"头包—content：{data_content}")
 
         # 有卡/无卡标志位
         #   低4位为6：找车系统主动上传
         #   高4位为0：旧模式(单车牌+车型信息等)
         has_card_flag = struct.pack(">B", 0x06)  # 高4位为0，低4位为6
-        print(f"有卡/无卡标志位：{has_card_flag}")
+        print(f"头包—有卡/无卡标志位：{has_card_flag}")
 
         # 读取图片文件数据
         with open(self.file_path.get(), "rb") as img_file:
@@ -397,19 +394,20 @@ class ParkingCameraPage:
 
         # 总图像数据长度
         total_image_length = struct.pack(">I", len(image_data))
-        print(f"总图像数据长度：{total_image_length}")
+        print(f"头包—总图像数据长度_bytes：{total_image_length}")
+        print(f"头包—总图像数据长度_size：{len(image_data)}")
 
         # 组装包头包（包含有卡/无卡标志位、车位信息和图像数据总长度）
         packet_header = self.create_packet(
             data_content=has_card_flag + data_content + total_image_length,
             command_code=command_code,
             timestamp=timestamp,
-            total_packets=total_packets,
+            total_packets=total_packets + 1,
             packet_number=0
         )
         self.tcp_client.send_command(packet_header)
-        print(f"头包content_hex：{(has_card_flag + data_content + total_image_length).hex()}")
-        print(f"车位 {self.selected_slot.get()} 的图片头包数据：{packet_header}")
+        print(f"头包full_content_hex：{(has_card_flag + data_content + total_image_length).hex()}")
+        print(f"头包封装数据：{packet_header}")
 
         # 等待服务器返回确认
         with self.upload_condition:
@@ -686,6 +684,8 @@ if __name__ == "__main__":
         def disconnect(self):
             print("断开连接")
 
+        def set_receive_callback(self, a=0, b=0):
+            print("回调函数")
 
     class MockApp:
 

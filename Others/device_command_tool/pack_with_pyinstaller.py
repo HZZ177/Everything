@@ -9,7 +9,7 @@ import subprocess
 import shutil
 import os
 
-version = "v1.0"  # 版本号
+version = "v1.1"  # 版本号
 
 # 项目基础路径
 project_path = os.getcwd()
@@ -41,6 +41,7 @@ def pack_and_clean_temp(app_name):
         # 显式导入三方库
         '--hidden-import=tkinter',
         '--hidden-import=tkinter.messagebox',
+        '--hidden-import=tkinter.filedialog',
         '--hidden-import=tkinter.ttk',
         '--hidden-import=json',
         '--hidden-import=uuid',
