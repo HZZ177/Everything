@@ -1,4 +1,5 @@
 import json
+import os
 import queue
 import threading
 import tkinter as tk
@@ -284,34 +285,38 @@ class ParkingCameraPage:
         file_frame = tk.Frame(container)
         file_frame.grid(row=1, column=1, pady=5, sticky="nsew")
 
-        for i in range(1):  # 1列布局
+        for i in range(3):  # 2列布局
             file_frame.grid_columnconfigure(i, weight=1)
 
         tk.Label(file_frame, text="【请选择要上传的图片】\n"
                                   "---最好用经过实际相机处理过的图片---\n"
                                   "---普通图片虽然能正常识别,但识别库不会根据车位切割原图---\n"
-                                  "---会导致数据库存储的车位图名称与实际不符，后台车位不能显示在场车图片---").grid(row=0, column=0, padx=5, pady=5)
+                                  "---会导致数据库存储的车位图名称与实际不符，后台车位不能显示在场车图片---").grid(row=0, column=1, padx=5, pady=5)
         self.file_path = tk.StringVar()
-        tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=0, padx=20, pady=5, sticky="ew")
-        tk.Button(file_frame, text="选择文件", command=self.select_file).grid(row=2, column=0, padx=5, pady=10)
+        tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=1, padx=20, pady=5, sticky="ew")
+        tk.Button(file_frame, text="选择文件", command=self.select_file).grid(row=2, column=1, padx=5, pady=10)
 
+        # 上传自选图片按钮
+        tk.Button(file_frame, text="上报自选图片车牌", command=lambda: self.upload_image(mode=1)).grid(row=3, column=1, pady=10)
+        tk.Label(file_frame, text="-------------OR 使用选择内置图片(渝G83666)-------------").grid(row=4, column=1, padx=5, pady=5)
         # 底部操作框架放置上报按钮
         operation_frame = tk.Frame(container)
         operation_frame.grid(row=2, column=1, pady=5, sticky="nsew")
 
-        for i in range(3):  # 3列布局
+        for i in range(5):  # 5列布局
             operation_frame.grid_columnconfigure(i, weight=1)
 
-        # 上传图片按钮
-        tk.Button(operation_frame, text="上报车牌更新", command=self.upload_image).grid(row=0, column=1, pady=40, sticky="nsew")
+        # 上传内置图片按钮
+        tk.Button(operation_frame, text="上报内置整图", command=lambda: self.upload_image(mode=2)).grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+        tk.Button(operation_frame, text="上报内置车位图", command=lambda: self.upload_image(mode=3)).grid(row=0, column=3, padx=10, pady=10, sticky="nsew")
 
         # 返回设备选择界面按钮
         back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
-        back_button.grid(row=1, column=0, padx=10)
+        back_button.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
         # 断开服务器连接按钮
         disconnect_button = tk.Button(operation_frame, text="断开服务器连接", command=self.disconnect)
-        disconnect_button.grid(row=1, column=2, padx=10, pady=10)
+        disconnect_button.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
 
         # 刷新服务器设备状态的便捷按钮框架
         additional_button_frame = tk.Frame(container)
@@ -344,18 +349,19 @@ class ParkingCameraPage:
         if file_path:
             self.file_path.set(file_path)
 
-    def upload_image(self):
+    def upload_image(self, mode):
         """上传图片采集信息"""
 
-        # 判断是否选择了图片文件
-        if not self.file_path.get():
-            messagebox.showwarning("警告", "请先选择图片文件！")
-            return
+        if mode == 1:
+            # 如果是自选图片上传，判断是否选择了图片文件
+            if not self.file_path.get():
+                messagebox.showwarning("警告", "请先选择图片文件！")
+                return
 
         # 在新线程中执行上传逻辑，防止等待返回响应阻塞界面导致死循环
-        threading.Thread(target=self.upload_image_thread).start()
+        threading.Thread(target=self.upload_image_thread, args=(mode,)).start()
 
-    def upload_image_thread(self):
+    def upload_image_thread(self, mode):
         # 获取时间戳和命令码
         timestamp = self.get_timestamp_for_image(is_new_image=True)
         command_code = ord('J')
@@ -385,9 +391,21 @@ class ParkingCameraPage:
         has_card_flag = struct.pack(">B", 0x06)  # 高4位为0，低4位为6
         print(f"头包—有卡/无卡标志位：{has_card_flag}")
 
-        # 读取图片文件数据
-        with open(self.file_path.get(), "rb") as img_file:
-            image_data = img_file.read()
+        # 获取当前路径
+        current_path = os.path.dirname(os.path.abspath(__file__))
+
+        if mode == 1:
+            # 读取自选图片文件数据
+            with open(self.file_path.get(), "rb") as img_file:
+                image_data = img_file.read()
+        elif mode == 2:
+            # 读取内置整图数据
+            with open(f'{current_path}/resource/full_photo.jpg', "rb") as img_file:
+                image_data = img_file.read()
+        elif mode == 3:
+            # 读取内置车位图数据
+            with open(f'{current_path}/resource/single_park_photo.jpg', "rb") as img_file:
+                image_data = img_file.read()
 
         # 计算总包数
         total_packets = len(image_data) // 1024 + (1 if len(image_data) % 1024 != 0 else 0)
