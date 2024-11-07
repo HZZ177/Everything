@@ -446,7 +446,7 @@ class Application:
         # 定义按钮信息
         buttons_info = {
             "下载设备日志": lambda: self.show_download_panel(),
-            "开启设备屏幕镜像": lambda: self.start_screen_mirror(self.device_ip),
+            "开启设备屏幕镜像(安卓5.0及以上)": lambda: self.start_screen_mirror(self.device_ip),
             "升级设备程序(仅支持apk)": lambda: self.upgrade_to_device(),
             "打开ADB命令窗口": lambda: self.open_adb_window(root, self.adb_window_path),  # 发送简单adb指令并执行
             # "断开设备连接": lambda: self.disconnect_device(root, adb_path),  # 暂时屏蔽该功能，感觉用不上

@@ -288,17 +288,18 @@ class ParkingCameraPage:
         for i in range(3):  # 2列布局
             file_frame.grid_columnconfigure(i, weight=1)
 
-        tk.Label(file_frame, text="【请选择要上传的图片】\n"
+        tk.Label(file_frame, text="【请选择要上传的图片(整图模式)】\n"
                                   "---最好用经过实际相机处理过的图片---\n"
                                   "---普通图片虽然能正常识别,但识别库不会根据车位切割原图---\n"
                                   "---会导致数据库存储的车位图名称与实际不符，后台车位不能显示在场车图片---").grid(row=0, column=1, padx=5, pady=5)
         self.file_path = tk.StringVar()
         tk.Entry(file_frame, textvariable=self.file_path).grid(row=1, column=1, padx=20, pady=5, sticky="ew")
-        tk.Button(file_frame, text="选择文件", command=self.select_file).grid(row=2, column=1, padx=5, pady=10)
+        tk.Button(file_frame, text="选择文件(整图模式)", command=self.select_file).grid(row=2, column=1, padx=5, pady=10)
 
         # 上传自选图片按钮
         tk.Button(file_frame, text="上报自选图片车牌", command=lambda: self.upload_image(mode=1)).grid(row=3, column=1, pady=10)
-        tk.Label(file_frame, text="-------------OR 使用选择内置图片(渝G83666)-------------").grid(row=4, column=1, padx=5, pady=5)
+        tk.Label(file_frame, text="-------------OR 使用内置图片(渝G83666)-------------\n"
+                                  "-------------【用这个的话 上方车位只能选车位1】-------------").grid(row=4, column=1, padx=5, pady=5)
         # 底部操作框架放置上报按钮
         operation_frame = tk.Frame(container)
         operation_frame.grid(row=2, column=1, pady=5, sticky="nsew")
@@ -308,7 +309,7 @@ class ParkingCameraPage:
 
         # 上传内置图片按钮
         tk.Button(operation_frame, text="上报内置整图", command=lambda: self.upload_image(mode=2)).grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
-        tk.Button(operation_frame, text="上报内置车位图", command=lambda: self.upload_image(mode=3)).grid(row=0, column=3, padx=10, pady=10, sticky="nsew")
+        tk.Button(operation_frame, text="上报内置车位图(暂不开放)", command=lambda: self.upload_image(mode=3)).grid(row=0, column=3, padx=10, pady=10, sticky="nsew")
 
         # 返回设备选择界面按钮
         back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
@@ -404,9 +405,9 @@ class ParkingCameraPage:
                 image_data = img_file.read()
         elif mode == 3:
             # 读取内置车位图数据
-            with open(f'{current_path}/resource/single_park_photo.jpg', "rb") as img_file:
-                image_data = img_file.read()
-
+            # with open(f'{current_path}/resource/single_park_photo.jpg', "rb") as img_file:
+            #     image_data = img_file.read()
+            return
         # 计算总包数
         total_packets = len(image_data) // 1024 + (1 if len(image_data) % 1024 != 0 else 0)
 
