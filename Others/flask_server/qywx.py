@@ -21,7 +21,7 @@ default_transfer_people = "何守一"
 
 @app.route('/findcar/order-message', methods=['POST'])
 def transfer_findcar_order_message():
-    data = request.get_json()
+    data = request.get_json()   # 尝试获取有效的json数据
     if not data:
         logger.error('无效的JSON数据')
         return jsonify({"error": "无效的JSON数据"}), 400
@@ -55,19 +55,27 @@ def process_timeout_orders(text, db_connection):
     orders = text.split("工单：")[1:]
     for order in orders:
         if "处理人" in order:
+            # 获取处理人
             process_people = order.split("处理人：")[1].split("；")[0]
             message = "工单：" + order
             phonenum = get_phone_number(process_people, db_connection)
+            # 如果未找到处理人，则转为@默认处理人
             if not phonenum:
-                phonenum = get_phone_number(default_transfer_people, db_connection)
                 logger.warning(f"未找到处理人 {process_people}，转为@默认处理人：{default_transfer_people}")
+                phonenum = get_phone_number(default_transfer_people, db_connection)
+                if not phonenum:
+                    logger.error(f"未找到默认处理人 {default_transfer_people} 的电话号码")
+                    return
             send_message(message, [phonenum])
 
 
 def process_assigned_orders(text, db_connection):
     """处理指派工单提醒"""
+    logger.info(f"收到指派工单给软件中心，@默认处理人：{default_transfer_people}")
     phonenum = get_phone_number(default_transfer_people, db_connection)
-    logger.info(f"指派工单给软件中心，@默认处理人：{default_transfer_people}")
+    if not phonenum:
+        logger.error(f"未找到默认处理人 {default_transfer_people} 的电话号码")
+        return
     send_message(text, [phonenum])
 
 
