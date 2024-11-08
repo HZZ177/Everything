@@ -65,7 +65,7 @@ class App:
     def create_connection_page(self):
         """创建服务器连接界面"""
         self.clear_window()
-        self.center_window(self.root, relative_size=3, calculate_size=12)
+        self.center_window(self.root, relative_size=3, calculate_size=13)
 
         container = tk.Frame(self.root)
         container.pack(expand=True)

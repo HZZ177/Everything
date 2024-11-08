@@ -19,7 +19,7 @@ target_url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f2cf09ad-c7c6
 default_transfer_people = "何守一"
 
 
-@app.route('/findcar/order-message', methods=['POST'])
+@app.route('/cd-autotest/order-message', methods=['POST'])
 def transfer_findcar_order_message():
     data = request.get_json()   # 尝试获取有效的json数据
     if not data:
@@ -112,4 +112,4 @@ def send_message(content, mentioned_mobile_list):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1778)
+    app.run(host='0.0.0.0', port=8080)
