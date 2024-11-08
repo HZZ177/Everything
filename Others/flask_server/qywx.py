@@ -5,7 +5,7 @@
 # @File    : qywx.py
 # @Software: PyCharm
 # @description:
-import re
+
 import requests
 from flask import Flask, request, jsonify
 from common.log_tool import logger
@@ -88,6 +88,7 @@ def transfer_findcar_order_message():
             # 该消息提醒给默认处理人
             default_phonenum = get_phone_number_by_name(default_transfer_people, db_connection)
             mentioned_mobile_list = [default_phonenum]
+            logger.info(f"接收到指派工单提醒，@默认处理人{default_transfer_people}")
             payload = {
                 "msgtype": "text",
                 "text": {

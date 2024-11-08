@@ -7,8 +7,6 @@
 # @description: 自定义日志工具封装
 
 import sys
-import allure
-import os
 from datetime import datetime
 from loguru import logger
 from Others.flask_server.common import file_path

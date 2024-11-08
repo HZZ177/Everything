@@ -28,3 +28,4 @@ Others/adb_tool/logs/
 
 /Others/liuma_platform/logs/*
 /Others/flask_server/log/*
+/Others/flask_server/log/*
