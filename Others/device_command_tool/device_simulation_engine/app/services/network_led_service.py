@@ -5,3 +5,6 @@
 # @File    : network_led_service.py
 # @Software: PyCharm
 # @description:
+
+def send_network_led_data(data):
+    pass

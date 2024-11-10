@@ -6,5 +6,5 @@
 # @Software: PyCharm
 # @description:
 
-def process_channel_camera_data(data):
+def send_channel_camera_data(data):
     pass

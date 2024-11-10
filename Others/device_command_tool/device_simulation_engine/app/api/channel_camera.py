@@ -7,7 +7,7 @@
 # @description:
 
 from flask import Blueprint, request, jsonify
-from ..services.channel_camera_service import process_channel_camera_data
+from ..services.channel_camera_service import send_channel_camera_data
 
 # 创建蓝图对象
 channel_camera_bp = Blueprint("channel_camera", __name__)
@@ -19,5 +19,5 @@ def send_data():
     if not data:
         return jsonify({"status": "error", "message": "无效的JSON"}), 400
 
-    response = process_channel_camera_data(data)
+    response = send_channel_camera_data(data)
     return jsonify(response)

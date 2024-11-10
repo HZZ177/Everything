@@ -5,3 +5,6 @@
 # @File    : parking_camera_service.py
 # @Software: PyCharm
 # @description:
+
+def send_parking_camera_data(data):
+    pass

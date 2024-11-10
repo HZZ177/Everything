@@ -28,4 +28,5 @@ Others/adb_tool/logs/
 
 /Others/liuma_platform/logs/*
 /Others/flask_server/log/*
-/Others/flask_server/log/*
+
+/Others/device_command_tool/device_simulation_engine/app/log/*

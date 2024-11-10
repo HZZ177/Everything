@@ -10,6 +10,7 @@ from flask import Flask
 from api.channel_camera import channel_camera_bp
 from api.network_led import network_led_bp
 from api.parking_camera import parking_camera_bp
+from api.lora_node import lora_node_bp
 from utils.logger import logger
 
 
@@ -20,5 +21,6 @@ def create_app():
     app.register_blueprint(channel_camera_bp, url_prefix="/api/channel_camera")
     app.register_blueprint(network_led_bp, url_prefix="/api/network_led")
     app.register_blueprint(parking_camera_bp, url_prefix="/api/parking_camera")
+    app.register_blueprint(lora_node_bp, url_prefix="/api/lora_node")
 
     return app

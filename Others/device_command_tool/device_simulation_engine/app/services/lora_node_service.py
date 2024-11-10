@@ -5,3 +5,6 @@
 # @File    : lora_node_service.py
 # @Software: PyCharm
 # @description:
+
+def send_lora_node_data(data):
+    pass
