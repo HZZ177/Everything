@@ -19,12 +19,12 @@ pro_config_path = os.path.abspath(os.path.join(project_path, 'config_pro'))     
 
 '''二级目录'''
 api_path = os.path.abspath(os.path.join(app_path, 'api'))
-log_path = os.path.abspath(os.path.join(app_path, 'log'))
+log_path = os.path.abspath(os.path.join(app_path, 'logs'))
 models_path = os.path.abspath(os.path.join(app_path, 'models'))
 utils_path = os.path.abspath(os.path.join(app_path, 'utils'))
 connection_path = os.path.abspath(os.path.join(app_path, 'connection'))
 
 
 if __name__ == '__main__':
-    print(connection_path)
-    # pass
+    # print(connection_path)
+    pass
