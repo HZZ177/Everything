@@ -2,22 +2,22 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2024/11/9 下午7:28
 # @Author  : Heshouyi
-# @File    : parking_camera.py
+# @File    : network_led_api.py
 # @Software: PyCharm
 # @description:
 
 from flask import Blueprint, request, jsonify
-from ..services.parking_camera_service import send_parking_camera_data
+from ..services.network_led_service import send_network_led_data
 
 # 创建蓝图对象
-parking_camera_bp = Blueprint("parking_camera", __name__)
+network_led_bp = Blueprint("network_led", __name__)
 
 
-@parking_camera_bp.route("/send_data", methods=["POST"])
+@network_led_bp.route("/send_data", methods=["POST"])
 def send_data():
     data = request.json
     if not data:
         return jsonify({"status": "error", "message": "无效的JSON"}), 400
 
-    response = send_parking_camera_data(data)
+    response = send_network_led_data(data)
     return jsonify(response)

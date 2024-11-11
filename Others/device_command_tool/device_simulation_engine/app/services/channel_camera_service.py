@@ -6,5 +6,57 @@
 # @Software: PyCharm
 # @description:
 
-def send_channel_camera_data(data):
-    pass
+from ..connection.tcp_connection import TCPClient
+from ..models.channel_camera_model import ChannelCameraModel
+from ..utils.logger import logger
+import threading
+import time
+
+
+class ChannelCameraService:
+    def __init__(self, server_ip, server_port, device_id, device_version):
+        self.device_id = device_id
+        self.device_version = device_version
+        self.client = TCPClient()
+        self.server_ip = server_ip
+        self.server_port = server_port
+        self.is_reporting = False
+        self.heartbeat_interval = 10
+        self.timer = None
+
+    def connect(self):
+        try:
+            self.client.connect(self.server_ip, self.server_port)
+            return True  # 连接成功返回 True
+        except Exception as e:
+            logger.error(f"连接服务器失败: {e}")
+            return False
+
+    def send_register_packet(self):
+        packet = ChannelCameraModel.create_register_packet(self.device_id, self.device_version)
+        self.client.send_data(packet)
+
+    def start_heartbeat(self):
+        self.is_reporting = True
+        self.schedule_next_heartbeat()
+
+    def stop_heartbeat(self):
+        self.is_reporting = False
+        if self.timer:
+            self.timer.cancel()
+            self.timer = None
+
+    def schedule_next_heartbeat(self):
+        if self.is_reporting:
+            heartbeat_packet = ChannelCameraModel.create_heartbeat_packet(self.device_id)
+            self.client.send_data(heartbeat_packet)
+            self.timer = threading.Timer(self.heartbeat_interval, self.schedule_next_heartbeat)
+            self.timer.start()
+
+    def send_command(self, command_data, command_code='T'):
+        packet = ChannelCameraModel.construct_packet(command_data, command_code)
+        self.client.send_data(packet)
+
+    def disconnect(self):
+        self.stop_heartbeat()
+        self.client.disconnect()
