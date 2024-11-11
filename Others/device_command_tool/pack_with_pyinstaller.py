@@ -15,6 +15,7 @@ version = "v1.1"  # 版本号
 project_path = os.getcwd()
 # 主程序文件路径
 main_script_path = os.path.join(project_path, 'main.py')
+resource_path = os.path.join(project_path, 'resource')
 # 打包后的应用程序名称
 app_name = f"TCP设备指令模拟工具-{version}"
 
@@ -38,6 +39,7 @@ def pack_and_clean_temp(app_name):
         '--add-data', '"server_function.py;." '
         '--add-data', '"tcp_led_device_page.py;." '
         '--add-data', '"parking_space_camera_device_page.py;." '
+        '--add-data', f'{resource_path};resource',
         # 显式导入三方库
         '--hidden-import=tkinter',
         '--hidden-import=tkinter.messagebox',

@@ -309,7 +309,7 @@ class ParkingCameraPage:
 
         # 上传内置图片按钮
         tk.Button(operation_frame, text="上报内置一号位整图", command=lambda: self.upload_image(mode=2)).grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
-        tk.Button(operation_frame, text="上报内置一号位车位图(暂不开放)", command=lambda: self.upload_image(mode=3)).grid(row=0, column=3, padx=10, pady=10, sticky="nsew")
+        tk.Button(operation_frame, text="上报内置一号位车位图", command=lambda: self.upload_image(mode=3)).grid(row=0, column=3, padx=10, pady=10, sticky="nsew")
 
         # 返回设备选择界面按钮
         back_button = tk.Button(operation_frame, text="返回设备选择界面", command=self.back2device_type_selection_page)
