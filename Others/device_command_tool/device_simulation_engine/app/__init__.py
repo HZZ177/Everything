@@ -7,11 +7,11 @@
 # @description:
 
 from flask import Flask
-from api.channel_camera_api import channel_camera_bp
-from api.network_led_api import network_led_bp
-from api.parking_camera_api import parking_camera_bp
-from api.lora_node_api import lora_node_bp
-from utils.logger import logger
+from .api.channel_camera_api import channel_camera_bp
+from .api.network_led_api import network_led_bp
+from .api.parking_camera_api import parking_camera_bp
+from .api.lora_node_api import lora_node_bp
+from .utils.logger import logger
 
 
 def create_app():

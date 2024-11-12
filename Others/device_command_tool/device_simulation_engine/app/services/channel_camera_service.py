@@ -27,6 +27,8 @@ class ChannelCameraService:
     def connect(self):
         try:
             self.client.connect(self.server_ip, self.server_port)
+            # 设置接收数据的回调函数
+            self.client.set_receive_callback(self.handle_received_data)
             return True  # 连接成功返回 True
         except Exception as e:
             logger.error(f"连接服务器失败: {e}")
@@ -56,6 +58,14 @@ class ChannelCameraService:
     def send_command(self, command_data, command_code='T'):
         packet = ChannelCameraModel.construct_packet(command_data, command_code)
         self.client.send_data(packet)
+
+    @staticmethod
+    def handle_received_data(data):
+        """接收到服务器数据时的处理函数"""
+        logger.info(f"收到来自服务器的数据，开始解包")
+        # 根据数据内容进行处理
+        parsed_data = ChannelCameraModel.deconstruct_packet(data)
+        logger.info(f"收到服务器下发数据: {parsed_data}")
 
     def disconnect(self):
         self.stop_heartbeat()

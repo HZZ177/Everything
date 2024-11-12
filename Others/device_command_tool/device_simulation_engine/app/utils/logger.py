@@ -9,7 +9,7 @@
 import sys
 from datetime import datetime
 from loguru import logger
-import file_path
+from .file_path import log_path
 
 
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -37,7 +37,7 @@ logger.configure(
             "enqueue": False,  # 关闭多线程安全队列
         },
         {
-            "sink": f"{file_path.log_path}/{current_date}/device_simulation_engine_{current_hour}.log",  # 指定日志输出到文件
+            "sink": f"{log_path}/{current_date}/device_simulation_engine_{current_hour}.log",  # 指定日志输出到文件
             "level": "INFO",  # 日志级别
             "format": "{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module}:{line} | {level} | {message}",  # 日志格式
             "rotation": "100 MB",  # 文件大小达到 100 MB 时自动分割日志
