@@ -6,5 +6,5 @@
 # @Software: PyCharm
 # @description:
 
-def send_network_led_data(data):
+class NetworkLedService:
     pass

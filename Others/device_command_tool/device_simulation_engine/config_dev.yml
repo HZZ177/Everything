@@ -1,0 +1,10 @@
+server:
+  host: "192.168.21.130"
+  port: 7799
+
+devices_addr:
+  channel_camera_ip: "192.168.1.8"
+#  lora_node_ip: "192.168.1.11"
+#  network_led_ip: "192.168.1.12"
+#  parking_camera_ip: "192.168.1.13"
+

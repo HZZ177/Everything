@@ -5,9 +5,22 @@
 # @File    : run.py.py
 # @Software: PyCharm
 # @description:
-from app import create_app
 
-app = create_app()
+from app import create_app
+from app.utils.logger import logger
+import sys
+
+app = None
+try:
+    app = create_app()
+except Exception as e:
+    logger.error(f"自动化引擎启动失败: {e}")
+    sys.exit(1)  # 应用初始化失败，退出程序
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7777)
+    # 如果创建应用成功，启动应用
+    if app:
+        app.run(host="0.0.0.0", port=1777)
+    else:
+        logger.error("应用尚未初始化，自动化引擎启动失败")
+        sys.exit(1)

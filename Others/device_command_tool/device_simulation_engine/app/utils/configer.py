@@ -7,7 +7,7 @@
 # @description:
 
 from ruamel.yaml import YAML
-from file_path import dev_config_path, pro_config_path
+from .file_path import dev_config_path, pro_config_path
 
 
 class Config:

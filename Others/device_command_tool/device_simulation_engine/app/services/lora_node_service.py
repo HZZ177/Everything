@@ -6,5 +6,7 @@
 # @Software: PyCharm
 # @description:
 
-def send_lora_node_data(data):
-    pass
+class LoraNodeService:
+
+    def send_network_led_data(self):
+        pass

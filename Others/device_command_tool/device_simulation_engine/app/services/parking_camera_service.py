@@ -6,5 +6,5 @@
 # @Software: PyCharm
 # @description:
 
-def send_parking_camera_data(data):
+class ParkingCameraService:
     pass

@@ -7,17 +7,17 @@
 # @description:
 
 from flask import Blueprint, request, jsonify
-from ..services.parking_camera_service import send_parking_camera_data
+# from ..services.parking_camera_service import send_parking_camera_data
 
 # 创建蓝图对象
 parking_camera_bp = Blueprint("parking_camera", __name__)
 
 
-@parking_camera_bp.route("/send_data", methods=["POST"])
-def send_data():
-    data = request.json
-    if not data:
-        return jsonify({"status": "error", "message": "无效的JSON"}), 400
-
-    response = send_parking_camera_data(data)
-    return jsonify(response)
+# @parking_camera_bp.route("/send_data", methods=["POST"])
+# def send_data():
+#     data = request.json
+#     if not data:
+#         return jsonify({"status": "error", "message": "无效的JSON"}), 400
+#
+#     response = send_parking_camera_data(data)
+#     return jsonify(response)
