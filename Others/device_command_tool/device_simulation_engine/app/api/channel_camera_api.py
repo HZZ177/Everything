@@ -57,14 +57,18 @@ def init():
 @channel_camera_bp.route('/connect', methods=['POST'])
 def connect():
     """连接设备到服务器"""
-    success = channel_camera.connect()
-    if success:
-        # 连接后发送注册包
-        channel_camera.send_register_packet()
-        # 注册后开始持续心跳
-        channel_camera.start_heartbeat()
-        return jsonify({"message": "连接成功"}), 200
-    return jsonify({"message": "连接失败"}), 500
+    if channel_camera:
+        success = channel_camera.connect()
+        if success:
+            # 连接后发送注册包
+            channel_camera.send_register_packet()
+            # 注册后开始持续心跳
+            channel_camera.start_heartbeat()
+            return jsonify({"message": "连接成功"}), 200
+        else:
+            return jsonify({"message": "连接失败"}), 500
+    else:
+        return jsonify({"message": "设备还未被初始化"}), 500
 
 
 @channel_camera_bp.route('/start_heartbeat', methods=['GET'])

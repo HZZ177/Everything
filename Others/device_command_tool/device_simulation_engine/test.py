@@ -16,7 +16,7 @@ def channel_camera_init():
         "server_port": 7799
     }
     response = requests.post(url, json=data)
-    print(response.text)
+    print(response.json())
 
 
 def channel_camera_connect():
@@ -32,7 +32,7 @@ def channel_camera_disconnect():
 
 
 if __name__ == '__main__':
-    # channel_camera_init()
-    channel_camera_connect()
+    channel_camera_init()
+    # channel_camera_connect()
     # channel_camera_disconnect()
 

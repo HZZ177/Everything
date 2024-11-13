@@ -18,7 +18,8 @@ class TCPClient:
         self.server_socket = None
         self.server_ip = ""
         self.server_port = 0
-        self.receive_callback = None    # 回调函数
+        self.receive_callback = None    # 处理监控服务器接受的回调函数
+        self.disconnect_callback = None    # 处理connection层主动断开时的回调函数
 
     def connect(self, server_ip, server_port, local_ip="0.0.0.0"):
         """连接到服务器"""
@@ -52,23 +53,32 @@ class TCPClient:
 
     def receive_data(self):
         """监听来自服务器的数据并调用回调处理"""
-        try:
-            while self.is_connected():
+        while self.is_connected():
+            try:
                 data = self.server_socket.recv(2048)
                 if data:
-                    logger.info(f"接收到原始数据: {data}")
+                    logger.debug(f"接收到原始数据: {data}")
                     if self.receive_callback:
                         self.receive_callback(data)
                 else:
-                    logger.error("数据为空，断开连接")
+                    logger.error("recv数据为空，主动断开连接")
                     self.disconnect()
-        except socket.timeout:
-            pass  # 超时不一定是错误，可忽略并继续
-        except socket.error as e:
-            logger.error(f"接收数据时网络错误: {e}")
-            self.disconnect()
-        except Exception as e:
-            logger.error(f"接收数据时出现未知错误: {e}")
+                    logger.info("tcp层主动断开连接，调用回调函数停止其他逻辑")
+                    self.disconnect_callback()
+            except socket.timeout:
+                continue  # 超时大概率是服务器暂时没有返回数据，可忽略
+            except socket.error as e:
+                logger.error(f"接收数据时网络错误: {e} 断开连接")
+                self.disconnect()
+                logger.info("tcp层主动断开连接，调用回调函数停止其他逻辑")
+                self.disconnect_callback()
+                break
+            except Exception as e:
+                logger.error(f"接收数据时出现未知错误: {e}，断开连接")
+                self.disconnect()
+                logger.info("tcp层主动断开连接，调用回调函数停止其他逻辑")
+                self.disconnect_callback()
+                break
 
     def disconnect(self):
         """断开连接"""
@@ -76,7 +86,7 @@ class TCPClient:
             self.server_socket.close()
             self.server_socket = None
             self.receive_callback = None
-            logger.info("断开连接")
+            logger.info("TCP连接断开")
 
     def is_connected(self):
         return self.server_socket is not None
@@ -84,3 +94,7 @@ class TCPClient:
     def set_receive_callback(self, callback):
         """设置接收数据的回调函数"""
         self.receive_callback = callback
+
+    def set_disconnect_callback(self, callback):
+        """设置connection层主动断开时的回调函数"""
+        self.disconnect_callback = callback

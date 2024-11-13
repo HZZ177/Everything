@@ -29,6 +29,7 @@ class ChannelCameraService:
             self.client.connect(self.server_ip, self.server_port)
             # 设置接收数据的回调函数
             self.client.set_receive_callback(self.handle_received_data)
+            self.client.set_disconnect_callback(self.disconnect)
             return True  # 连接成功返回 True
         except Exception as e:
             logger.error(f"连接服务器失败: {e}")
