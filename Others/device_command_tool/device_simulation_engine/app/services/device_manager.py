@@ -21,17 +21,25 @@ class DeviceManager:
     def initialize_all_devices(cls):
         """初始化所有设备实例"""
 
+        # 服务器配置参数
+        server_ip = config['server']['host']
+        server_port = config['server']['port']
+        # 通道相机配置参数
+        channel_camera_ip = config['devices_addr']['channel_camera_ip']
+        device_id = config["devices_info"]["channel_camera"]["device_id"]
+        device_version = config["devices_info"]["channel_camera"]["device_version"]
+
         # 初始化通道相机设备
         try:
-            server_ip = config['server']['host']
-            server_port = config['server']['port']
-            channel_camera_ip = config['devices_addr']['channel_camera_ip']
-
-            # 初始化设备
-            cls.channel_camera_service = ChannelCameraService(server_ip, server_port, channel_camera_ip)
-            # 连接设备
+            # 初始化设备实例
+            cls.channel_camera_service = ChannelCameraService(server_ip, server_port, channel_camera_ip, device_id, device_version)
+            # 连接服务器
             cls.channel_camera_service.connect()
-            logger.info("通道相机设备初始化成功并已连接")
+            # 连接后发送注册包
+            cls.channel_camera_service.send_register_packet()
+            # 注册后开始持续心跳
+            cls.channel_camera_service.start_heartbeat()
+            logger.info("通道相机设备初始化成功")
         except Exception as e:
             logger.error(f"通道相机设备初始化失败: {e}")
             raise e

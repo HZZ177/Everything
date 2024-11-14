@@ -46,7 +46,7 @@ def create_app():
     app.register_blueprint(parking_camera_bp, url_prefix="/api/parking_camera")
     app.register_blueprint(lora_node_bp, url_prefix="/api/lora_node")
 
-    logger.info("检查当前环境是否满足设备所需IP，并尝试初始化所有设备")
+    logger.info("开始检查当前环境是否满足配置文件中设备所需全部IP")
     # 获取当前环境中的所有IP地址
     local_ips = get_all_local_ips()
     logger.debug(f"当前环境的所有IP地址: {local_ips}")
@@ -66,6 +66,7 @@ def create_app():
         raise Exception(f"环境缺少设备所需IP地址：{missing_ips}")
 
     # 如果检测通过，初始化所有设备
+    logger.info("环境满足，开始初始化设备")
     try:
         DeviceManager.initialize_all_devices()
         logger.info("所有设备初始化成功")

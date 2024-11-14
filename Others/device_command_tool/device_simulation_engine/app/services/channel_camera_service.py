@@ -6,14 +6,14 @@
 # @Software: PyCharm
 # @description:
 
+import threading
 from ..connection.tcp_connection import TCPClient
 from ..models.channel_camera_model import ChannelCameraModel
 from ..utils.logger import logger
-import threading
 
 
 class ChannelCameraService:
-    def __init__(self, server_ip, server_port, local_ip, device_id="SY17711123", device_version="RDD.CSA.S1A.1.0"):
+    def __init__(self, server_ip, server_port, local_ip, device_id, device_version):
         self.device_id = device_id              # 设备ID，默认为SY17711123
         self.device_version = device_version    # 设备版本号，默认为RDD.CSA.S1A.1.0
         self.client = TCPClient()       # TCP客户端连接
@@ -25,29 +25,40 @@ class ChannelCameraService:
         self.timer = None               # 用于定时发送心跳包的定时器
 
     def connect(self):
+        status = self.client.is_connected()
         try:
+            if status:
+                logger.warning(f"通道相机尝试连接服务器时，已有连接，断开后重连")
+                self.client.disconnect()
             self.client.connect(self.server_ip, self.server_port, self.local_ip)
             # 设置接收数据和断开连接的回调函数
             self.client.set_receive_callback(self.handle_received_data)
             self.client.set_disconnect_callback(self.disconnect)
             return True  # 连接成功返回 True
         except Exception as e:
-            logger.error(f"连接服务器失败: {e}")
+            logger.error(f"通道相机连接服务器失败: {e}")
             raise e
 
     def send_register_packet(self):
+        """
+        发送心跳包
+        :return:
+        """
+        # 构造注册包
         packet = ChannelCameraModel.create_register_packet(self.device_id, self.device_version)
         self.client.send_data(packet)
 
     def start_heartbeat(self):
         self.is_reporting = True
         self.schedule_next_heartbeat()
+        logger.info("通道相机定时心跳开始")
 
     def stop_heartbeat(self):
         self.is_reporting = False
         if self.timer:
             self.timer.cancel()
             self.timer = None
+            logger.info("通道相机定时心跳停止")
 
     def schedule_next_heartbeat(self):
         if self.is_reporting:
@@ -57,16 +68,29 @@ class ChannelCameraService:
             self.timer.start()
 
     def send_command(self, command_data, command_code='T'):
+        """
+        发送指令工具方法，向上供不同指令的发送接口使用，默认T包
+        :param command_data: 需要发送的数据体
+        :param command_code: 包码，默认T包
+        :return:
+        """
+        # 根据协议和数据体构造包
         packet = ChannelCameraModel.construct_packet(command_data, command_code)
         self.client.send_data(packet)
 
     @staticmethod
     def handle_received_data(data):
         """接收到服务器数据时的处理函数"""
-        logger.info(f"收到来自服务器的数据，开始解包")
+        logger.debug(f"通道相机收到来自服务器的数据，开始解包")
         # 根据数据内容进行处理
-        parsed_data = ChannelCameraModel.deconstruct_packet(data)
-        logger.info(f"收到服务器下发数据: {parsed_data}")
+        try:
+            parsed_data = ChannelCameraModel.deconstruct_packet(data)
+            if "heartbeatResult" in str(parsed_data):    # 心跳包的日志打成debug，太多了
+                logger.debug(f"通道相机收到服务器的心跳返回：{parsed_data}")
+            else:
+                logger.info(f"通道相机收到服务器下发数据，解包结果: {parsed_data}")
+        except Exception as e:
+            logger.error(f"通道相机解析服务器下发数据失败: {e}")
 
     def disconnect(self):
         self.stop_heartbeat()

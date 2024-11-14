@@ -50,7 +50,10 @@ class TCPClient:
                 if isinstance(data, str):
                     data = data.encode()
                 self.server_socket.sendall(data)
-                logger.info(f"发送数据成功: {data}")
+                if "heartbeat".encode() in data:
+                    logger.debug(f"发送心跳包：{data}")
+                else:
+                    logger.info(f"发送数据: {data}")
             except Exception as e:
                 logger.error(f"发送数据失败: {e}")
         else:
@@ -60,34 +63,30 @@ class TCPClient:
         """监听来自服务器的数据并调用回调处理"""
         while self.is_connected():
             try:
+                # 检查是否已连接，因为是死循环接收，可能断连后无法及时停止
+                if not self.server_socket:
+                    logger.error("套接字未连接，停止接收数据")
+                    break
                 data = self.server_socket.recv(2048)    # 一旦缓冲区有数据可读，则接收数据并处理
                 if data:
                     logger.debug(f"接收到原始数据: {data}")
                     if self.receive_callback:
                         self.receive_callback(data)     # 调用回调函数，将数据传回业务层处理
-                else:
-                    logger.error("recv数据为空，主动断开连接")
-                    self.disconnect()
-                    logger.info("tcp层主动断开连接，调用回调函数停止其他逻辑")
-                    self.disconnect_callback()
             except socket.timeout:
-                continue  # 超时大概率是服务器一段时间内没有返回数据，可忽略
+                continue    # 超时大概率是服务器一段时间内没有返回数据，可忽略
             except socket.error as e:
-                logger.error(f"接收数据时网络错误: {e} 主动断开连接")
-                self.disconnect()
-                logger.info("tcp层主动断开连接，调用回调函数停止其他逻辑")
-                self.disconnect_callback()
-                break
+                continue    # 捕获异常，偶尔会因为连接断连的切换导致短时间内大量的网络错误，这里忽略
             except Exception as e:
-                logger.error(f"接收数据时出现未知错误: {e}，主动断开连接")
-                self.disconnect()
-                logger.info("tcp层主动断开连接，调用回调函数停止其他逻辑")
-                self.disconnect_callback()
-                break
+                logger.error(f"接收服务器数据时出现未知错误: {e}")
+                # self.disconnect()
+                # logger.info("连接层主动断开连接，调用回调函数停止其他逻辑")
+                # self.disconnect_callback()
+                # break
 
     def disconnect(self):
         """断开连接"""
         if self.server_socket:
+            self.server_socket.shutdown(socket.SHUT_RDWR)   # 先shutdown防止服务器端检测异常断开
             self.server_socket.close()
             self.server_socket = None
             self.receive_callback = None    # 断开连接后清空处理数据的回调函数

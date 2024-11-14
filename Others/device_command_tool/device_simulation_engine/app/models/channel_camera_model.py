@@ -52,19 +52,19 @@ class ChannelCameraModel:
         :param data: 返回的原数据字节流
         :return: 根据协议解析后的json
         """
-        # 协议包含如下字段：
-        # 协议头 (1字节), 时间戳 (4字节), 命令码 (1字节), 数据长度 (2字节), 数据内容 (N字节), 校验码 (2字节), 协议尾 (1字节)
+        # 根据协议解析：包含如下字段
+        #   协议头 (1字节), 时间戳 (4字节), 命令码 (1字节), 数据长度 (2字节), 数据内容 (N字节), 校验码 (2字节), 协议尾 (1字节)
         protocol_head, timestamp, command_code, total_packets, packet_number, data_length = struct.unpack(
             '>BIBHHH', data[:12])
 
         # 根据data_length提取数据内容
-        data_content = data[12:12 + data_length]
+        data_content = data[12:12 + data_length].decode()
         # 提取校验码和协议尾
         checksum, protocol_tail = struct.unpack('>HB', data[12 + data_length:12 + data_length + 3])
 
         # 组装解析后数据
         parsed_data = {
-            "protocol_head": protocol_head,
+            "protocol_head": hex(protocol_head),
             "timestamp": timestamp,
             "command_code": chr(command_code),
             "total_packets": total_packets,
@@ -72,7 +72,7 @@ class ChannelCameraModel:
             "data_length": data_length,
             "data_content": data_content,
             "checksum": checksum,
-            "protocol_tail": protocol_tail,
+            "protocol_tail": hex(protocol_tail),
         }
 
         return parsed_data
