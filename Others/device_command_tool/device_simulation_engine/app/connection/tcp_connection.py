@@ -37,7 +37,6 @@ class TCPClient:
             logger.info(f"成功使用本地IP：{local_ip}，连接到服务器：{server_ip}:{server_port} ")
             # 连接后启动监听线程，接收服务器返回的数据
             threading.Thread(target=self.receive_data, daemon=True).start()
-            return True
         except Exception as e:
             logger.error(f"连接失败，错误信息: {e}")
             raise e
@@ -56,8 +55,10 @@ class TCPClient:
                     logger.info(f"发送数据: {data}")
             except Exception as e:
                 logger.error(f"发送数据失败: {e}")
+                raise e
         else:
             logger.error("尝试发送数据，但是还未与服务器建立连接")
+            raise Exception("尝试发送数据，但是还未与服务器建立连接")
 
     def receive_data(self):
         """监听来自服务器的数据并调用回调处理"""

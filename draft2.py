@@ -1,4 +1,2 @@
-from datetime import datetime
-
-now_hour = datetime.now().hour
-print(now_hour)
+for i in range(6):
+    print(i)

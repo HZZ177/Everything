@@ -6,5 +6,113 @@
 # @Software: PyCharm
 # @description:
 
+import threading
+from ..connection.tcp_connection import TCPClient
+from ..models.parking_camera_model import ParkingCameraModel
+from ..utils.logger import logger
+
+
 class ParkingCameraService:
-    pass
+    def __init__(self, server_ip, server_port, local_ip, device_type, device_version):
+        self.device_type = device_type          # 设备类型，默认为0x00
+        self.device_version = device_version    # 设备版本号，默认为0x0400
+        self.client = TCPClient()           # TCP客户端连接
+        self.server_ip = server_ip          # 服务器IP
+        self.server_port = server_port      # 服务器端口
+        self.local_ip = local_ip            # 用于连接服务器的设备IP
+        self.is_reporting = False           # 是否正在上报数据
+        self.heartbeat_interval = 10        # 心跳间隔时间，单位为秒
+        self.timer = None                   # 用于定时发送心跳包的定时器
+
+    def connect(self):
+        status = self.client.is_connected()
+        try:
+            if status:
+                logger.warning(f"车位相机尝试连接服务器时，已有连接，断开后重连")
+                self.client.disconnect()
+            self.client.connect(self.server_ip, self.server_port, self.local_ip)
+            # 设置接收数据和断开连接的回调函数
+            self.client.set_receive_callback(self.handle_received_data)
+            self.client.set_disconnect_callback(self.disconnect)
+        except Exception as e:
+            raise e
+
+    def send_register_packet(self):
+        """
+        发送注册包
+        :return:
+        """
+        # 构造注册包
+        try:
+            packet = ParkingCameraModel.create_register_packet(self.device_type, self.device_version)
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
+
+    def start_heartbeat(self):
+        try:
+            self.is_reporting = True
+            self.schedule_next_heartbeat()
+            logger.info("车位相机定时心跳开始")
+        except Exception as e:
+            raise e
+
+    def stop_heartbeat(self):
+        try:
+            self.is_reporting = False
+            if self.timer:
+                self.timer.cancel()
+                self.timer = None
+                logger.info("车位相机定时心跳停止")
+        except Exception as e:
+            raise e
+
+    def schedule_next_heartbeat(self):
+        if self.is_reporting:
+            heartbeat_packet = ParkingCameraModel.create_heartbeat_packet(self.device_type)
+            self.client.send_data(heartbeat_packet)
+            self.timer = threading.Timer(self.heartbeat_interval, self.schedule_next_heartbeat)
+            self.timer.start()
+
+    def send_command(self, command_data: bytes, command_code: str):
+        """
+        发送指令工具方法，向上供不同指令的发送接口使用
+        :param command_data: 需要发送的数据体
+        :param command_code: 命令码
+        :return:
+        """
+        try:
+            # 根据协议和数据体构造包
+            packet = ParkingCameraModel.construct_packet(command_data, command_code)
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
+
+    def send_parking_status(self, selected_port, status_values):
+        """上报车位事件"""
+        try:
+            packet = ParkingCameraModel.create_parking_status_packet(selected_port, status_values)
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    def handle_received_data(data):
+        """接收到服务器数据时的处理函数"""
+        logger.debug(f"车位相机收到来自服务器的数据，开始解包")
+        # 根据数据内容进行处理
+        try:
+            parsed_data = ParkingCameraModel.deconstruct_packet(data)
+            if "heartbeatResult" in str(parsed_data):    # 心跳包的日志打成debug，太多了
+                logger.debug(f"车位相机收到服务器的心跳返回：{parsed_data}")
+            else:
+                logger.info(f"车位相机收到服务器下发数据，解包结果: {parsed_data}")
+        except Exception as e:
+            logger.error(f"车位相机解析服务器下发数据失败: {e}")
+
+    def disconnect(self):
+        try:
+            self.stop_heartbeat()
+            self.client.disconnect()
+        except Exception as e:
+            raise e

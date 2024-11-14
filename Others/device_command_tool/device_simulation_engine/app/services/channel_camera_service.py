@@ -19,7 +19,7 @@ class ChannelCameraService:
         self.client = TCPClient()       # TCP客户端连接
         self.server_ip = server_ip      # 服务器IP
         self.server_port = server_port  # 服务器端口
-        self.local_ip = local_ip        # 用语连接服务器的设备IP
+        self.local_ip = local_ip        # 用于连接服务器的设备IP
         self.is_reporting = False       # 是否正在上报数据
         self.heartbeat_interval = 10    # 心跳间隔时间，单位为秒
         self.timer = None               # 用于定时发送心跳包的定时器
@@ -34,31 +34,36 @@ class ChannelCameraService:
             # 设置接收数据和断开连接的回调函数
             self.client.set_receive_callback(self.handle_received_data)
             self.client.set_disconnect_callback(self.disconnect)
-            return True  # 连接成功返回 True
         except Exception as e:
-            logger.error(f"通道相机连接服务器失败: {e}")
             raise e
 
     def send_register_packet(self):
         """
-        发送心跳包
+        发送注册包
         :return:
         """
         # 构造注册包
-        packet = ChannelCameraModel.create_register_packet(self.device_id, self.device_version)
-        self.client.send_data(packet)
+        try:
+            packet = ChannelCameraModel.create_register_packet(self.device_id, self.device_version)
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
 
     def start_heartbeat(self):
-        self.is_reporting = True
-        self.schedule_next_heartbeat()
-        logger.info("通道相机定时心跳开始")
+        try:
+            self.is_reporting = True
+            self.schedule_next_heartbeat()
+        except Exception as e:
+            raise e
 
     def stop_heartbeat(self):
-        self.is_reporting = False
-        if self.timer:
-            self.timer.cancel()
-            self.timer = None
-            logger.info("通道相机定时心跳停止")
+        try:
+            self.is_reporting = False
+            if self.timer:
+                self.timer.cancel()
+                self.timer = None
+        except Exception as e:
+            raise e
 
     def schedule_next_heartbeat(self):
         if self.is_reporting:
@@ -71,12 +76,15 @@ class ChannelCameraService:
         """
         发送指令工具方法，向上供不同指令的发送接口使用，默认T包
         :param command_data: 需要发送的数据体
-        :param command_code: 包码，默认T包
+        :param command_code: 命令码，默认T包
         :return:
         """
-        # 根据协议和数据体构造包
-        packet = ChannelCameraModel.construct_packet(command_data, command_code)
-        self.client.send_data(packet)
+        try:
+            # 根据协议和数据体构造包
+            packet = ChannelCameraModel.construct_packet(command_data, command_code)
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
 
     @staticmethod
     def handle_received_data(data):
@@ -93,5 +101,8 @@ class ChannelCameraService:
             logger.error(f"通道相机解析服务器下发数据失败: {e}")
 
     def disconnect(self):
-        self.stop_heartbeat()
-        self.client.disconnect()
+        try:
+            self.stop_heartbeat()
+            self.client.disconnect()
+        except Exception as e:
+            raise e

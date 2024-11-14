@@ -23,27 +23,31 @@ class ChannelCameraModel:
         :param command_code: 命令码，目前一般为T包
         :return:
         """
-        data_bytes = json.dumps(command_data, ensure_ascii=False).encode('gbk')     # 要发送的数据体，使用GBK编码
-        timestamp = int(time.time())    # 时间戳
-        command_code_ascii = ord(command_code)  # 命令码转换为ASCII码
-        total_packets = 1   # 总包数，默认只有一个
-        packet_number = 0   # 包序号，默认为0
-        data_length = len(data_bytes)   # 数据长度
-        checksum = ChannelCameraModel.calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number,
-                                                         data_length, data_bytes)        # 校验码
+        try:
+            data_bytes = json.dumps(command_data, ensure_ascii=False).encode('gbk')     # 要发送的数据体，使用GBK编码
+            timestamp = int(time.time())    # 时间戳
+            command_code_ascii = ord(command_code)  # 命令码转换为ASCII码
+            total_packets = 1   # 总包数，默认只有一个
+            packet_number = 0   # 包序号，默认为0
+            data_length = len(data_bytes)   # 数据长度
+            # 校验码
+            checksum = ChannelCameraModel.calculate_checksum(timestamp, command_code_ascii, total_packets,
+                                                             packet_number, data_length, data_bytes)
 
-        packet = (struct.pack('>B', ChannelCameraModel.PROTOCOL_HEAD) +
-                  struct.pack('>I', timestamp) +
-                  struct.pack('>B', command_code_ascii) +
-                  struct.pack('>H', total_packets) +
-                  struct.pack('>H', packet_number) +
-                  struct.pack('>H', data_length) +
-                  data_bytes +
-                  struct.pack('>H', checksum) +
-                  struct.pack('>B', ChannelCameraModel.PROTOCOL_TAIL))
-        # 组装数据包，并使用转义符处理
-        processed_packet = ChannelCameraModel.escape_packet(packet)
-        return processed_packet
+            packet = (struct.pack('>B', ChannelCameraModel.PROTOCOL_HEAD) +
+                      struct.pack('>I', timestamp) +
+                      struct.pack('>B', command_code_ascii) +
+                      struct.pack('>H', total_packets) +
+                      struct.pack('>H', packet_number) +
+                      struct.pack('>H', data_length) +
+                      data_bytes +
+                      struct.pack('>H', checksum) +
+                      struct.pack('>B', ChannelCameraModel.PROTOCOL_TAIL))
+            # 组装数据包，按协议要求处理转义
+            processed_packet = ChannelCameraModel.escape_packet(packet)
+            return processed_packet
+        except Exception as e:
+            raise e
 
     @staticmethod
     def deconstruct_packet(data):
@@ -79,6 +83,7 @@ class ChannelCameraModel:
 
     @staticmethod
     def calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number, data_length, data_bytes):
+        """按照协议要求，计算校验码"""
         checksum_data = (struct.pack('>I', timestamp) + struct.pack('>B', command_code_ascii) +
                          struct.pack('>H', total_packets) + struct.pack('>H', packet_number) +
                          struct.pack('>H', data_length) + data_bytes)
@@ -88,7 +93,7 @@ class ChannelCameraModel:
     @staticmethod
     def escape_packet(packet):
         """
-        按协议要求，将除了头尾的中间字节进行转义处理
+        按照协议要求，将除了头尾的中间字节进行转义处理
         :param packet: 组装后的未处理字节数据
         :return:
         """

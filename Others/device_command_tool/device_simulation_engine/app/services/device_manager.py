@@ -7,6 +7,7 @@
 # @description:
 
 from .channel_camera_service import ChannelCameraService
+from .parking_camera_service import ParkingCameraService
 from ..utils.configer import config
 from ..utils.logger import logger
 
@@ -23,22 +24,43 @@ class DeviceManager:
 
         # 服务器配置参数
         server_ip = config['server']['host']
-        server_port = config['server']['port']
+        server_port_7799 = config['server']['port_7799']
         # 通道相机配置参数
         channel_camera_ip = config['devices_addr']['channel_camera_ip']
-        device_id = config["devices_info"]["channel_camera"]["device_id"]
-        device_version = config["devices_info"]["channel_camera"]["device_version"]
+        channel_camera_device_id = config["devices_info"]["channel_camera"]["device_id"]
+        channel_camera_device_version = config["devices_info"]["channel_camera"]["device_version"]
+        # 车位相机配置参数
+        parking_camera_ip = config['devices_addr']['parking_camera_ip']
+        parking_camera_device_type = config["devices_info"]["parking_camera"]["device_type"]
+        parking_camera_device_version = config["devices_info"]["parking_camera"]["device_version"]
 
         # 初始化通道相机设备
         try:
             # 初始化设备实例
-            cls.channel_camera_service = ChannelCameraService(server_ip, server_port, channel_camera_ip, device_id, device_version)
+            cls.channel_camera_service = ChannelCameraService(server_ip, server_port_7799, channel_camera_ip,
+                                                              channel_camera_device_id, channel_camera_device_version)
             # 连接服务器
             cls.channel_camera_service.connect()
             # 连接后发送注册包
             cls.channel_camera_service.send_register_packet()
             # 注册后开始持续心跳
             cls.channel_camera_service.start_heartbeat()
+            logger.info("通道相机设备初始化成功")
+        except Exception as e:
+            logger.error(f"通道相机设备初始化失败: {e}")
+            raise e
+
+        # 初始化车位相机设备
+        try:
+            # 初始化设备实例
+            cls.parking_camera_service = ParkingCameraService(server_ip, server_port_7799, parking_camera_ip,
+                                                              parking_camera_device_type, parking_camera_device_version)
+            # 连接服务器
+            cls.parking_camera_service.connect()
+            # 连接后发送注册包
+            cls.parking_camera_service.send_register_packet()
+            # 注册后开始持续心跳
+            cls.parking_camera_service.start_heartbeat()
             logger.info("通道相机设备初始化成功")
         except Exception as e:
             logger.error(f"通道相机设备初始化失败: {e}")
