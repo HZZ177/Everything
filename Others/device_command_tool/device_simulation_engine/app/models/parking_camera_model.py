@@ -15,8 +15,7 @@ class ParkingCameraModel:
     PROTOCOL_HEAD = 0xfb  # 协议头
     PROTOCOL_TAIL = 0xfe  # 协议尾
 
-    @staticmethod
-    def construct_packet(command_data: bytes, command_code: str, total_packets: int = 1, packet_number: int = 0) -> bytes:
+    def construct_packet(self, command_data: bytes, command_code: str, total_packets: int = 1, packet_number: int = 0) -> bytes:
         """
         构造事件数据包
         :param command_data: 要发送的数据字节码
@@ -29,11 +28,11 @@ class ParkingCameraModel:
         timestamp = int(time.time())  # 时间戳
         command_code_ascii = ord(command_code)  # 命令码转换为ASCII码
         data_length = len(data_content)  # 数据长度
-        checksum = ParkingCameraModel.calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number,
+        checksum = self.calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number,
                                                          data_length, data_content)  # 校验码
 
         packet = (
-                struct.pack('>B', ParkingCameraModel.PROTOCOL_HEAD) +
+                struct.pack('>B', self.PROTOCOL_HEAD) +
                 struct.pack('>I', timestamp) +
                 struct.pack('>B', command_code_ascii) +
                 struct.pack('>H', total_packets) +
@@ -41,10 +40,10 @@ class ParkingCameraModel:
                 struct.pack('>H', data_length) +
                 data_content +
                 struct.pack('>H', checksum) +
-                struct.pack('>B', ParkingCameraModel.PROTOCOL_TAIL)
+                struct.pack('>B', self.PROTOCOL_TAIL)
         )
         # 组装数据包，按协议要求处理转义
-        processed_packet = ParkingCameraModel.escape_packet(packet)
+        processed_packet = self.escape_packet(packet)
         return processed_packet
 
     @staticmethod
@@ -103,21 +102,18 @@ class ParkingCameraModel:
         full_data = protocol_head + escaped_data + protocol_tail
         return full_data
 
-    @staticmethod
-    def create_register_packet(device_type, device_version):
+    def create_register_packet(self, device_type, device_version):
         """根据参数封装注册包字节码"""
         registration_data = struct.pack(">BH", device_type, device_version)    # 协议要求的注册信息
-        packet = ParkingCameraModel.construct_packet(registration_data, command_code='C')
+        packet = self.construct_packet(registration_data, command_code='C')
         return packet
 
-    @staticmethod
-    def create_heartbeat_packet(device_id):
+    def create_heartbeat_packet(self):
         """按参数封装心跳包"""
-        packet = ParkingCameraModel.construct_packet(b"", command_code='F')     # 心跳包没有任何数据内容
+        packet = self.construct_packet(b"", command_code='F')     # 心跳包没有任何数据内容
         return packet
 
-    @staticmethod
-    def create_parking_status_packet(selected_port, status_values):
+    def create_parking_status_packet(self, selected_port, status_values):
         """
         按参数封装车位状态包
         :param selected_port: 车位号
@@ -138,5 +134,61 @@ class ParkingCameraModel:
             parking_status_data += struct.pack(">B", status)
         # 后6个字节为预留位，填充为9
         parking_status_data += struct.pack(">BBBBBB", 9, 9, 9, 9, 9, 9)
-        packet = ParkingCameraModel.construct_packet(parking_status_data, command_code='S')
+        packet = self.construct_packet(parking_status_data, command_code='S')
         return packet
+
+    def create_parking_picture_head_packet(self, park_num, image_bytes, command_code="J",
+                                           plate_color=3, plate_number='川ABC123', confidence=900):
+        """
+        按参数封装车位图片包
+        默认所有不使用的字符用9占位，并设置每个车位的状态和端口号
+        :param park_num: 车位号
+        :param image_bytes: 车位图片二进制数据
+        :param command_code: 命令码
+        :param confidence: 车牌可信度，用于硬识别，暂不支持，直接填充默认值
+        :param plate_number: 车牌号，用于硬识别，暂不支持，直接填充默认值
+        :param plate_color: 车牌颜色，用于硬识别，暂不支持，直接填充默认值
+        :return:
+        """
+
+        # 头包内的车位信息主体
+        data_content = b''
+        # 有卡/无卡标志位
+        #   低4位为6：找车系统主动上传
+        #   高4位为0：旧模式(单车牌+车型信息等)
+        has_card_flag = struct.pack(">B", 0x06)  # 高4位为0，低4位为6
+
+        # 封装4个车位信息的参数
+        for slot_number in range(4):
+            """
+            此部分不按照现有的协议文档封装
+            文档要求固定封装四个车位的数据，但服务器端实际是根据收到的数据长度取不同位置的数据作为通道口数据
+            数据长度为65时，取第16byte数据作为通道口，因此直接简单的把所有车位状态都封装为选中车位的车位端口号
+            """
+            # 车位状态和端口号
+            status_and_port = park_num
+
+            # 暂时不支持硬识别，因此硬识别相关参数直接封装默认值
+            # 默认车牌颜色【蓝(3)】、车牌号码【川ABC123】，可信度【900】
+            plate_color = plate_color
+            plate_number = plate_number.encode('gbk')
+            confidence = confidence
+
+            # 按协议格式封装每个车位的包
+            data_content += struct.pack(">B B 11s H", status_and_port, plate_color, plate_number, confidence)
+
+        # 计算图像分割总包数，1024字节为一包
+        total_pic_packets = len(image_bytes) // 1024 + (1 if len(image_bytes) % 1024 != 0 else 0)
+
+        # 总图像数据长度
+        total_image_length = struct.pack(">I", len(image_bytes))
+
+        # 组装头包（包含有卡/无卡标志位、车位信息和图像数据总长度）
+        head_packet = self.construct_packet(
+            command_data=has_card_flag + data_content + total_image_length,     # 头包数据：有卡/无卡标志位+4车位信息+总图像数据长度
+            command_code=command_code,      # 命令码，J包
+            total_packets=total_pic_packets + 1,    # 头包+数据包的包数
+            packet_number=0     # 头包为0
+        )
+        return head_packet
+
