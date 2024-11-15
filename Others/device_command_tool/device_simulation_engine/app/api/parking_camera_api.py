@@ -106,13 +106,21 @@ def parking_status_report():
 
 @parking_camera_bp.route('/reportParkingPicture', methods=['POST'])
 def report_parking_picture():
-    """上报车位图片"""
+    """
+    上报车位图片，目前只支持软识别模式
+    :return:
+    """
     parking_camera = DeviceManager.get_parking_camera_service()
     try:
-        parking_camera.send_picture_report()
+        data = request.get_json()
+        park_num = data['parkNum']
+        mode = data['mode']
+        image = data['image']
 
-
-
+    except KeyError as e:
+        return jsonify({"error": f"缺少必填参数: {str(e)}"}), 400
+    try:
+        parking_camera.upload_picture(park_num, mode, image)
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.error(f"车位相机上传图片失败: {e}")

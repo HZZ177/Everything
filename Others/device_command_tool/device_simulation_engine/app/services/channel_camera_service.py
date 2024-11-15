@@ -88,10 +88,10 @@ class ChannelCameraService:
         except Exception as e:
             raise e
 
-    def send_picture_report(self, selected_slot, plate_color, plate_number, confidence):
+    def upload_picture(self, park_num, image):
         """
-        发送图片数据包
-        :param image_path: 图片路径
+        给服务器上传图片数据包
+
         :return:
         """
         # TODO
@@ -100,7 +100,7 @@ class ChannelCameraService:
 
         # 默认所有不用的字符9占位，并设置每个车位的状态和端口号
         data_content = b''
-        selected_slot = selected_slot    # 获取选中车位编号
+        selected_slot = park_num    # 选中的车位编号
 
         for slot_number in range(4):
             # 此部分不按照协议封装，服务器端根据实际收到3的数据长度取不同标志位的数据作为通道口数据
