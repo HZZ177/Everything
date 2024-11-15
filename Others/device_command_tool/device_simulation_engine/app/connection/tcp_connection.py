@@ -41,7 +41,7 @@ class TCPClient:
             logger.error(f"连接失败，错误信息: {e}")
             raise e
 
-    def send_data(self, data):
+    def send_data(self, data, need_log=True):
         """发送数据到服务器"""
         if self.server_socket:
             try:
@@ -49,7 +49,7 @@ class TCPClient:
                 if isinstance(data, str):
                     data = data.encode()
                 self.server_socket.sendall(data)
-                if "heartbeat".encode() in data:
+                if not need_log:    # 根据参数选择是否打印info日志，否则打debug，主要是为了过滤心跳日志
                     logger.debug(f"发送心跳包：{data}")
                 else:
                     logger.info(f"发送数据: {data}")

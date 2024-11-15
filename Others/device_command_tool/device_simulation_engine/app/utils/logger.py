@@ -7,6 +7,7 @@
 # @description:
 
 import sys
+import threading
 from datetime import datetime
 from loguru import logger
 from .file_path import log_path
@@ -48,6 +49,24 @@ logger.configure(
         }
     ]
 )
+
+
+# 定义全局异常捕获函数，处理未捕获的异常
+def handle_uncaught_exception(exc_type, exc_value, exc_traceback):
+    # 忽略系统退出异常（如 Ctrl+C 中断）
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    # 记录未捕获的异常栈信息
+    logger.opt(exception=(exc_type, exc_value, exc_traceback)).error("未捕获的异常")
+
+
+# 设置全局异常捕获钩子
+sys.excepthook = handle_uncaught_exception
+
+# 捕获线程中的未捕获异常（Python 3.8+ 支持）
+if hasattr(threading, "excepthook"):
+    threading.excepthook = lambda args: logger.opt(exception=(args.exc_type, args.exc_value, args.exc_traceback)).error("线程中未捕获的异常")
 
 # 供其他模块引用的 logger
 logger = logger

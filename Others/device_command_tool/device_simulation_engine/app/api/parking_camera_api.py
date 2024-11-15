@@ -47,14 +47,38 @@ def disconnect():
         return jsonify({"message": "系统异常"}), 500
 
 
+@parking_camera_bp.route('/startHeartbeat', methods=['GET'])
+def start_heartbeat():
+    """开启持续心跳"""
+    parking_camera = DeviceManager.get_parking_camera_service()
+    try:
+        parking_camera.start_heartbeat()
+        return jsonify({"message": "成功"}), 200
+    except Exception as e:
+        logger.error(f"车位相机开启心跳失败: {e}")
+        return jsonify({"message": "系统异常"}), 500
+
+
+@parking_camera_bp.route('/stopHeartbeat', methods=['GET'])
+def stop_heartbeat():
+    """停止心跳"""
+    parking_camera = DeviceManager.get_parking_camera_service()
+    try:
+        parking_camera.stop_heartbeat()
+        return jsonify({"message": "成功"}), 200
+    except Exception as e:
+        logger.error(f"车位相机停止心跳失败: {e}")
+        return jsonify({"message": "系统异常"}), 500
+
+
 @parking_camera_bp.route('/parkingStatusReport', methods=['POST'])
 def parking_status_report():
     """
     上报单个车位状态（事件）
 
     必填参数：
-    park_num (int): 车位号——范围1-6
-    park_event (int): 车位状态——0：无车；1：有车；2：出车；3：进车；4：设备故障
+    port (int): 车位号——范围1-6
+    parkEvent (int): 车位状态——0：无车；1：有车；2：出车；3：进车；4：设备故障
 
     :return:
     """
@@ -62,8 +86,8 @@ def parking_status_report():
     # 获取必填参数并校验
     try:
         data = request.get_json()
-        park_num = data.get('port')
-        park_event = data.get('parkEvent')
+        park_num = data['port']
+        park_event = data['parkEvent']
     except KeyError as e:
         return jsonify({"error": f"缺少必填参数: {str(e)}"}), 400
     if park_num not in [1, 2, 3, 4, 5, 6]:
@@ -77,4 +101,19 @@ def parking_status_report():
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.error(f"车位相机上报车位状态失败: {e}")
+        return jsonify({"message": "系统异常"}), 500
+
+
+@parking_camera_bp.route('/reportParkingPicture', methods=['POST'])
+def report_parking_picture():
+    """上报车位图片"""
+    parking_camera = DeviceManager.get_parking_camera_service()
+    try:
+        parking_camera.send_picture_report()
+
+
+
+        return jsonify({"message": "成功"}), 200
+    except Exception as e:
+        logger.error(f"车位相机上传图片失败: {e}")
         return jsonify({"message": "系统异常"}), 500

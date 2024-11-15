@@ -56,10 +56,9 @@ def start_heartbeat():
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         channel_camera.start_heartbeat()
-        logger.info("通道相机定时心跳开始")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"开启心跳失败: {e}")
+        logger.error(f"通道相机开启心跳失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -69,7 +68,6 @@ def stop_heartbeat():
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         channel_camera.stop_heartbeat()
-        logger.info("通道相机定时心跳停止")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.error(f"通道相机停止心跳失败: {e}")

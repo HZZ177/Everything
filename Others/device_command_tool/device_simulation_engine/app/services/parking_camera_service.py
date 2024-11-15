@@ -70,7 +70,7 @@ class ParkingCameraService:
     def schedule_next_heartbeat(self):
         if self.is_reporting:
             heartbeat_packet = ParkingCameraModel.create_heartbeat_packet(self.device_type)
-            self.client.send_data(heartbeat_packet)
+            self.client.send_data(heartbeat_packet, need_log=False)
             self.timer = threading.Timer(self.heartbeat_interval, self.schedule_next_heartbeat)
             self.timer.start()
 
@@ -103,7 +103,7 @@ class ParkingCameraService:
         # 根据数据内容进行处理
         try:
             parsed_data = ParkingCameraModel.deconstruct_packet(data)
-            if "heartbeatResult" in str(parsed_data):    # 心跳包的日志打成debug，太多了
+            if "F" in str(parsed_data):    # 过滤车位相机的F心跳包，打成debug
                 logger.debug(f"车位相机收到服务器的心跳返回：{parsed_data}")
             else:
                 logger.info(f"车位相机收到服务器下发数据，解包结果: {parsed_data}")

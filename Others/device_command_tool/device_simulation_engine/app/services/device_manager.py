@@ -61,9 +61,9 @@ class DeviceManager:
             cls.parking_camera_service.send_register_packet()
             # 注册后开始持续心跳
             cls.parking_camera_service.start_heartbeat()
-            logger.info("通道相机设备初始化成功")
+            logger.info("车位相机设备初始化成功")
         except Exception as e:
-            logger.error(f"通道相机设备初始化失败: {e}")
+            logger.error(f"车位相机设备初始化失败: {e}")
             raise e
 
     @classmethod

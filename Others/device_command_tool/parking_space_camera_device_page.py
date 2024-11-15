@@ -372,7 +372,7 @@ class ParkingCameraPage:
         selected_slot = int(self.selected_slot.get())  # 获取选中车位编号（从1开始计数）
 
         for slot_number in range(4):
-            # 此部分不按照协议封装，服务器端根据实际收到的数据长度取不同标志位的数据作为通道口数据
+            # 此部分不按照协议封装，服务器端根据实际收到3的数据长度取不同标志位的数据作为通道口数据
             # 65为长度数据时，取第16byte数据作为通道口
             # 因此直接把所有车位数据都设置为选中车位的车位端口号
             status_and_port = selected_slot

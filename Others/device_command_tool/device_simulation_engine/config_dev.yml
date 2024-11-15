@@ -4,10 +4,10 @@ server:
   port_7777: 7777
 
 devices_addr:
-  channel_camera_ip: "192.168.6.94"
-  parking_camera_ip: "192.168.7.77"
-#  lora_node_ip: "192.168.1.11"
-#  network_led_ip: "192.168.1.12"
+  channel_camera_ip: "192.168.24.117"
+  parking_camera_ip: "192.168.24.118"
+#  lora_node_ip: "192.168.24.119"
+#  network_led_ip: "192.168.24.120"
 
 devices_info:
   channel_camera:
