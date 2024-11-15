@@ -33,7 +33,7 @@ def connect():
         channel_camera.start_heartbeat()
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机连接服务器失败: {e}")
+        logger.exception(f"通道相机连接服务器失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -46,7 +46,7 @@ def disconnect():
         channel_camera.disconnect()
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机断开连接失败: {e}")
+        logger.exception(f"通道相机断开连接失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -58,7 +58,7 @@ def start_heartbeat():
         channel_camera.start_heartbeat()
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机开启心跳失败: {e}")
+        logger.exception(f"通道相机开启心跳失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -70,7 +70,7 @@ def stop_heartbeat():
         channel_camera.stop_heartbeat()
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机停止心跳失败: {e}")
+        logger.exception(f"通道相机停止心跳失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -100,7 +100,7 @@ def send_command():
         channel_camera.send_command(command_data, command_code)
         return jsonify({"message": f"成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机发送指令失败: {e}")
+        logger.exception(f"通道相机发送指令失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -140,7 +140,7 @@ def alarm_report():
         channel_camera.send_command(content, "T")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机告警上报失败: {e}")
+        logger.exception(f"通道相机告警上报失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -179,7 +179,7 @@ def alarm_recovery_report():
         channel_camera.send_command(content, "T")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机告警恢复上报失败: {e}")
+        logger.exception(f"通道相机告警恢复上报失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -232,7 +232,7 @@ def car_trigger_event():
         channel_camera.send_command(content, "T")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机来去车事件上报失败: {e}")
+        logger.exception(f"通道相机来去车事件上报失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -285,7 +285,7 @@ def car_back_event():
         channel_camera.send_command(content, "T")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机后退事件上报失败: {e}")
+        logger.exception(f"通道相机后退事件上报失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -331,5 +331,5 @@ def car_traffic_event():
         channel_camera.send_command(content, "T")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"通道相机交通流量上报失败: {e}")
+        logger.exception(f"通道相机交通流量上报失败: {e}")
         return jsonify({"message": "系统异常"}), 500

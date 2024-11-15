@@ -100,7 +100,7 @@ class ChannelCameraService:
             else:
                 logger.info(f"通道相机收到服务器下发数据，解包结果: {parsed_data}")
         except Exception as e:
-            logger.error(f"通道相机解析服务器下发数据失败: {e}")
+            logger.exception(f"通道相机解析服务器下发数据失败: {e}")
 
     def disconnect(self):
         try:

@@ -29,9 +29,10 @@ def connect():
         parking_camera.send_register_packet()
         # 注册后开始持续心跳
         parking_camera.start_heartbeat()
+        logger.info("车位相机成功连接服务器")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"车位相机连接服务器失败: {e}")
+        logger.exception(f"车位相机连接服务器失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -41,9 +42,10 @@ def disconnect():
     parking_camera = DeviceManager.get_parking_camera_service()
     try:
         parking_camera.disconnect()
+        logger.info("车位相机成功断开连接")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"车位相机断开连接失败: {e}")
+        logger.exception(f"车位相机断开连接失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -55,7 +57,7 @@ def start_heartbeat():
         parking_camera.start_heartbeat()
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"车位相机开启心跳失败: {e}")
+        logger.exception(f"车位相机开启心跳失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -67,7 +69,7 @@ def stop_heartbeat():
         parking_camera.stop_heartbeat()
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"车位相机停止心跳失败: {e}")
+        logger.exception(f"车位相机停止心跳失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -98,9 +100,10 @@ def parking_status_report():
     # 校验通过，组装数据，状态上报
     try:
         parking_camera.send_parking_status(park_num, park_event)
+        logger.info(f"车位相机上报车位状态成功，车位号: {park_num}, 车位状态: {park_event}")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"车位相机上报车位状态失败: {e}")
+        logger.exception(f"车位相机上报车位状态失败: {e}")
         return jsonify({"message": "系统异常"}), 500
 
 
@@ -116,16 +119,24 @@ def upload_parking_picture():
     :return:
     """
     parking_camera = DeviceManager.get_parking_camera_service()
-    try:
-        data = request.get_json()
-        park_num = data['parkNum']
-        image = request.files['image']  # 获取的是一个FileStorage对象，直接传下去后续自行处理
-    except KeyError as e:
-        return jsonify({"error": f"缺少必填参数: {str(e)}"}), 400
+
+    # 获取必填参数
+    park_num = int(request.form.get('parkNum'))
+    image = request.files['image']  # 获取的是一个FileStorage对象，直接传下去后续自行处理
+
+    # 校验参数
+    if not park_num:
+        return jsonify({"error": "缺少必填参数: parkNum"}), 400
+    if not image:
+        return jsonify({"error": "缺少必填参数: image"}), 400
+    if park_num not in [1, 2, 3, 4, 5, 6]:
+        return jsonify({"error": f"错误的通道号{park_num}"}), 400
+
     # 校验通过，组装数据，图片上报
     try:
         parking_camera.upload_picture(park_num, image)
+        logger.info(f"车位相机{park_num}号车位成功上报车位图片")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
-        logger.error(f"车位相机上传图片失败: {e}")
+        logger.exception(f"车位相机上传图片失败: {e}")
         return jsonify({"message": "系统异常"}), 500

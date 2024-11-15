@@ -103,7 +103,7 @@ class ParkingCameraService:
         except Exception as e:
             raise e
 
-    def upload_picture(self, park_num, image: FileStorage):
+    def upload_picture(self, park_num: int, image: FileStorage):
         """
         给服务器上传图片数据包，包类型为J包
         首先发送一次头包，阻塞进程等待服务器的确认返回，接收到返回后分包发送图片的二进制内容
@@ -119,12 +119,12 @@ class ParkingCameraService:
             self.client.send_data(head_packet)
 
             # 等待服务器返回确认
-            logger.info("图片头包已发送，等待服务器返回确认...")
+            logger.debug("图片头包已发送，等待服务器返回确认...")
             self.confirmation_event.clear()  # 设置事件为未触发状态
             if not self.confirmation_event.wait(timeout=5):  # 等待事件被触发，超时时间为5秒
-                logger.error("5秒内没有接收到服务器确认信息，停止上传图片")
+                logger.exception("5秒内没有接收到服务器确认信息，停止上传图片")
                 raise Exception("5秒内没有接收到服务器确认信息，停止上传图片")
-            logger.info("收到服务器的头包确认返回，开始发送图片数据")
+            logger.debug("收到服务器的头包确认返回，开始发送图片数据")
 
             # 计算图片分割总包数
             total_packets = len(image_bytes) // 1024 + (1 if len(image_bytes) % 1024 != 0 else 0)
@@ -137,7 +137,7 @@ class ParkingCameraService:
                     total_packets=total_packets,
                     packet_number=i + 1  # 图片数据包的序号从1开始
                 )
-                self.client.send_data(packet)
+                self.client.send_data(packet, need_log=False)
         except Exception as e:
             raise e
 
@@ -150,12 +150,11 @@ class ParkingCameraService:
             if "F" in str(parsed_data):    # 处理车位相机的F心跳包，打成debug
                 logger.debug(f"车位相机收到服务器的心跳返回：{parsed_data}")
             elif "J" in str(parsed_data):  # 处理服务器返回的图片头包ACK返回包，返回J包视为确认通过
-                logger.info("收到服务器对上传头包的确认信息，解除阻塞状态")
-                self.confirmation_event.set()  # 触发事件，解除等待状态
+                self.confirmation_event.set()  # 触发事件解除等待状态
             else:
                 logger.info(f"车位相机收到服务器下发数据，解包结果: {parsed_data}")
         except Exception as e:
-            logger.error(f"车位相机解析服务器下发数据失败: {e}")
+            logger.exception(f"车位相机解析服务器下发数据失败: {e}")
 
     def disconnect(self):
         try:

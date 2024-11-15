@@ -137,8 +137,8 @@ class ParkingCameraModel:
         packet = self.construct_packet(parking_status_data, command_code='S')
         return packet
 
-    def create_parking_picture_head_packet(self, park_num, image_bytes, command_code="J",
-                                           plate_color=3, plate_number='川ABC123', confidence=900):
+    def create_parking_picture_head_packet(self, park_num: int, image_bytes, command_code="J",
+                                           plate_color: int = 3, plate_number: str = '川ABC123', confidence: int = 900):
         """
         按参数封装车位图片包
         默认所有不使用的字符用9占位，并设置每个车位的状态和端口号
@@ -171,11 +171,11 @@ class ParkingCameraModel:
             # 暂时不支持硬识别，因此硬识别相关参数直接封装默认值
             # 默认车牌颜色【蓝(3)】、车牌号码【川ABC123】，可信度【900】
             plate_color = plate_color
-            plate_number = plate_number.encode('gbk')
+            plate_number_encoded = plate_number.encode('gbk')
             confidence = confidence
 
             # 按协议格式封装每个车位的包
-            data_content += struct.pack(">B B 11s H", status_and_port, plate_color, plate_number, confidence)
+            data_content += struct.pack(">B B 11s H", status_and_port, plate_color, plate_number_encoded, confidence)
 
         # 计算图像分割总包数，1024字节为一包
         total_pic_packets = len(image_bytes) // 1024 + (1 if len(image_bytes) % 1024 != 0 else 0)
