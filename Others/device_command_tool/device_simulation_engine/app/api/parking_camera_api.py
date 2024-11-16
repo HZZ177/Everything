@@ -9,7 +9,7 @@
 from flask import Blueprint, request, jsonify
 from ..services.device_manager import DeviceManager
 from ..utils.logger import logger
-
+from ..utils.util import get_inner_picture
 
 # 创建蓝图对象
 parking_camera_bp = Blueprint("parking_camera", __name__)
@@ -117,30 +117,47 @@ def upload_parking_picture():
     上报车位图片，目前只支持软识别模式
 
     必填参数：
-    parkNum (int): 车位号
-    image (file): 车牌图片，base64编码
+        parkNum (int): 车位号
+    以下两个必填其一：
+        image (file): 车牌图片，base64编码
+        innerPic (str): 内置图片名称
 
     :return:
     """
     logger.info("车位相机uploadParkingPicture接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
 
-    # 获取必填参数
-    park_num = int(request.form.get('parkNum'))
-    image = request.files['image']  # 获取的是一个FileStorage对象，直接传下去后续自行处理
+    # 获取参数
+    park_num = request.form.get('parkNum')
+    image = request.files.get('image')  # 获取上传的图片文件（FileStorage对象）
+    inner_pic = request.form.get('innerPic')    # 内置图片
 
-    # 校验参数
-    if not park_num:
-        return jsonify({"error": "缺少必填参数: parkNum"}), 400
-    if not image:
-        return jsonify({"error": "缺少必填参数: image"}), 400
+    # 校验parkNum
+    try:
+        park_num = int(park_num)    # flask中从表获取的参数都是字符串，需要手动转换为整数
+    except (TypeError, ValueError):
+        return jsonify({"error": "缺少必填参数parkNum或parkNum不是有效的整数"}), 400
+    # 校验车位号是否合法
     if park_num not in [1, 2, 3, 4, 5, 6]:
-        return jsonify({"error": f"错误的通道号{park_num}"}), 400
+        return jsonify({"error": f"错误的车位号{park_num}"}), 400
+
+    # 校验图片参数：image和innerPic必填其一
+    if not inner_pic and not image:
+        return jsonify({"error": "image或innerPic至少需要有其中一个"}), 400
+
+    # 判断图片来源并获取二进制数据
+    if inner_pic:
+        image_bytes = get_inner_picture(inner_pic)
+        if image_bytes is None:
+            return jsonify({"error": f"无法找到内置图片: {inner_pic}"}), 400
+    else:
+        # 将上传的图片文件转换为二进制数据
+        image_bytes = image.read()
 
     # 校验通过，组装数据，图片上报
     try:
-        parking_camera.upload_picture(park_num, image)
-        logger.info(f"车位相机{park_num}号车位成功上报车位图片")
+        parking_camera.upload_picture(park_num, image_bytes)
+        logger.info(f"车位相机 {park_num} 号车位成功上报车位图片")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"车位相机上传图片失败: {e}")

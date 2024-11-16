@@ -143,7 +143,7 @@ class ParkingCameraModel:
         packet = self.construct_packet(data, command_code='S')
         return packet
 
-    def create_parking_picture_head_packet(self, park_num: int, image_bytes, command_code="J",
+    def create_parking_picture_head_packet(self, park_num: int, image_bytes: bytes, command_code="J",
                                            plate_color: int = 3, plate_number: str = '川ABC123', confidence: int = 900):
         """
         按参数封装车位图片包

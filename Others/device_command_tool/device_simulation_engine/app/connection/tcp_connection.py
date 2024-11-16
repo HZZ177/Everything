@@ -34,7 +34,7 @@ class TCPClient:
             self.server_socket.bind((local_ip, 0))  # 绑定用于连接的本地IP和端口，端口0表示系统自动分配
             self.server_socket.connect((server_ip, server_port))
             self.server_socket.settimeout(5)    # 设置超时时间为5秒
-            logger.info(f"成功使用本地IP：{local_ip}，连接到服务器：{server_ip}:{server_port} ")
+            logger.debug(f"成功使用本地IP：{local_ip}，连接到服务器：{server_ip}:{server_port} ")
             # 连接后启动监听线程，接收服务器返回的数据
             threading.Thread(target=self.receive_data, daemon=True).start()
         except Exception as e:

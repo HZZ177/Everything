@@ -30,3 +30,4 @@ Others/adb_tool/logs/
 /Others/flask_server/log/*
 
 /Others/device_command_tool/device_simulation_engine/app/logs/*
+/Others/device_command_tool/device_simulation_engine/app/resource/*

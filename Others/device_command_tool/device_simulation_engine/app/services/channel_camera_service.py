@@ -95,7 +95,7 @@ class ChannelCameraService:
         # 根据数据内容进行处理
         try:
             parsed_data = self.channel_camera_model.deconstruct_packet(data)
-            if "heartbeatResult" in str(parsed_data):    # 心跳包的日志打成debug，太多了
+            if "heartbeatResult" in str(parsed_data):
                 logger.debug(f"通道相机收到服务器的心跳返回：{parsed_data}")
             else:
                 logger.info(f"通道相机收到服务器下发数据，解包结果: {parsed_data}")

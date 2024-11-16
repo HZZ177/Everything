@@ -116,17 +116,15 @@ class ParkingCameraService:
         except Exception as e:
             raise e
 
-    def upload_picture(self, park_num: int, image: FileStorage):
+    def upload_picture(self, park_num: int, image_bytes: bytes):
         """
         给服务器上传图片数据包，包类型为J包
         首先发送一次头包，阻塞进程等待服务器的确认返回，接收到返回后分包发送图片的二进制内容
         :param park_num: 车位号
-        :param image: 图片文件对象
+        :param image_bytes: 图片二进制数据
         :return:
         """
         try:
-            # 读取图片的二进制数据
-            image_bytes = image.read()
             # 构造头包后发送
             head_packet = self.parking_camera_model.create_parking_picture_head_packet(park_num, image_bytes)
             self.client.send_data(head_packet)
@@ -160,7 +158,7 @@ class ParkingCameraService:
         # 根据数据内容进行处理
         try:
             parsed_data = self.parking_camera_model.deconstruct_packet(data)
-            if "F" in str(parsed_data):    # 处理车位相机的F心跳包，打成debug
+            if "F" in str(parsed_data):    # 处理车位相机的F心跳包
                 logger.debug(f"车位相机收到服务器的心跳返回：{parsed_data}")
             elif "J" in str(parsed_data):  # 处理服务器返回的图片头包ACK返回包，返回J包视为确认通过
                 self.confirmation_event.set()  # 触发事件解除等待状态
