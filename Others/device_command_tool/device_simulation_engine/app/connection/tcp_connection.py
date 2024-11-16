@@ -49,8 +49,8 @@ class TCPClient:
                 if isinstance(data, str):
                     data = data.encode()
                 self.server_socket.sendall(data)
-                if not need_log:    # 根据参数选择是否打印info日志，否则打debug，主要是为了过滤心跳日志
-                    logger.debug(f"发送心跳包：{data}")
+                if not need_log:    # 根据参数选择是否打印info日志，为False打debug
+                    logger.debug(f"发送数据：{data}")
                 else:
                     logger.info(f"发送数据: {data}")
             except Exception as e:

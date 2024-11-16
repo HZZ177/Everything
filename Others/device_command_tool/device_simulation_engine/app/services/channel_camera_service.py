@@ -23,6 +23,7 @@ class ChannelCameraService:
         self.is_reporting = False       # 是否正在上报数据
         self.heartbeat_interval = 10    # 心跳间隔时间，单位为秒
         self.timer = None               # 用于定时发送心跳包的定时器
+        self.register_confirmation_event = threading.Event()  # 线程事件对象，用于注册时阻塞发送进程，等待服务器返回确认信息
         self.channel_camera_model = ChannelCameraModel()    # 通道相机数据模型实例
 
     def connect(self):
@@ -39,14 +40,15 @@ class ChannelCameraService:
             raise e
 
     def send_register_packet(self):
-        """
-        发送注册包
-        :return:
-        """
-        # 构造注册包
+        """发送注册包"""
         try:
             packet = self.channel_camera_model.create_register_packet(self.device_id, self.device_version)
-            self.client.send_data(packet)
+            self.client.send_data(packet, need_log=False)
+            # 阻塞等待服务器返回注册确认包
+            self.register_confirmation_event.clear()  # 设置事件为未触发状态
+            if not self.register_confirmation_event.wait(timeout=5):  # 等待事件被触发，超时时间为5秒
+                logger.exception("通道相机5秒内没有接收到服务器返回的注册确认包")
+                raise Exception("通道相机5秒内没有接收到服务器返回的注册确认包，注册失败")
         except Exception as e:
             raise e
 
@@ -91,12 +93,15 @@ class ChannelCameraService:
 
     def handle_received_data(self, data):
         """接收到服务器数据时的处理函数"""
-        logger.debug(f"通道相机收到来自服务器的数据，开始解包")
+        logger.debug(f"通道相机收到来自服务器的数据，开始解包 {data}")
         # 根据数据内容进行处理
         try:
             parsed_data = self.channel_camera_model.deconstruct_packet(data)
             if "heartbeatResult" in str(parsed_data):
                 logger.debug(f"通道相机收到服务器的心跳返回：{parsed_data}")
+            elif "cameraLoginResult" in str(parsed_data):
+                logger.debug(f"通道相机收到服务器注册结果：{parsed_data}")
+                self.register_confirmation_event.set()  # 触发事件解除等待状态
             else:
                 logger.info(f"通道相机收到服务器下发数据，解包结果: {parsed_data}")
         except Exception as e:

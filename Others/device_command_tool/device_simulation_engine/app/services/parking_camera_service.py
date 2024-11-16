@@ -24,7 +24,8 @@ class ParkingCameraService:
         self.is_reporting = False           # 是否正在上报数据
         self.heartbeat_interval = 10        # 心跳间隔时间，单位为秒
         self.timer = None                   # 用于定时发送心跳包的定时器
-        self.confirmation_event = threading.Event()  # 线程事件对象，用于发送图片时阻塞发送进程，等待服务器返回确认信息
+        self.image_confirmation_event = threading.Event()  # 线程事件对象，用于发送图片时阻塞发送进程，等待服务器返回确认信息
+        self.register_confirmation_event = threading.Event()  # 线程事件对象，用于注册时阻塞发送进程，等待服务器返回确认信息
         self.parking_camera_model = ParkingCameraModel()    # 车位相机的数据模型实例
 
     def connect(self):
@@ -45,7 +46,12 @@ class ParkingCameraService:
         """发送注册包"""
         try:
             packet = self.parking_camera_model.create_register_packet(self.device_type, self.device_version)
-            self.client.send_data(packet)
+            self.client.send_data(packet, need_log=False)
+            # 阻塞等待服务器返回注册确认包
+            self.register_confirmation_event.clear()  # 设置事件为未触发状态
+            if not self.register_confirmation_event.wait(timeout=5):  # 等待事件被触发，超时时间为5秒
+                logger.exception("车位相机5秒内没有接收到服务器返回的注册确认包")
+                raise Exception("车位相机5秒内没有接收到服务器返回的注册确认包，注册失败")
         except Exception as e:
             raise e
 
@@ -58,7 +64,7 @@ class ParkingCameraService:
         """
         try:
             packet = self.parking_camera_model.create_all9_parking_status_packet()
-            self.client.send_data(packet)
+            self.client.send_data(packet, need_log=False)
         except Exception as e:
             raise e
 
@@ -130,12 +136,12 @@ class ParkingCameraService:
             self.client.send_data(head_packet)
 
             # 等待服务器返回确认
-            logger.debug("图片头包已发送，等待服务器返回确认...")
-            self.confirmation_event.clear()  # 设置事件为未触发状态
-            if not self.confirmation_event.wait(timeout=5):  # 等待事件被触发，超时时间为5秒
-                logger.exception("5秒内没有接收到服务器确认信息，停止上传图片")
-                raise Exception("5秒内没有接收到服务器确认信息，停止上传图片")
-            logger.debug("收到服务器的头包确认返回，开始发送图片数据")
+            logger.debug("图片头包已发送，等待服务器返回确认")
+            self.image_confirmation_event.clear()  # 设置事件为未触发状态
+            if not self.image_confirmation_event.wait(timeout=5):  # 等待事件被触发，超时时间为5秒
+                logger.exception("车位相机5秒内没有接收到服务器返回的图片头包确认包，停止上传图片")
+                raise Exception("车位相机5秒内没有接收到服务器返回的图片头包确认包，停止上传图片")
+            logger.debug("车位相机收到服务器的头包确认返回，开始发送图片数据")
 
             # 计算图片分割总包数
             total_packets = len(image_bytes) // 1024 + (1 if len(image_bytes) % 1024 != 0 else 0)
@@ -154,14 +160,18 @@ class ParkingCameraService:
 
     def handle_received_data(self, data):
         """接收到服务器数据时的处理函数"""
-        logger.debug(f"车位相机收到来自服务器的数据，开始解包")
+        logger.debug(f"车位相机收到来自服务器的数据，开始解包 {data}")
         # 根据数据内容进行处理
         try:
             parsed_data = self.parking_camera_model.deconstruct_packet(data)
             if "F" in str(parsed_data):    # 处理车位相机的F心跳包
                 logger.debug(f"车位相机收到服务器的心跳返回：{parsed_data}")
+            elif "C" in str(parsed_data):    # 处理注册确认C包
+                logger.debug(f"车位相机收到服务器的注册确认包：{parsed_data}")
+                self.register_confirmation_event.set()  # 触发事件解除等待状态
             elif "J" in str(parsed_data):  # 处理服务器返回的图片头包ACK返回包，返回J包视为确认通过
-                self.confirmation_event.set()  # 触发事件解除等待状态
+                logger.debug(f"车位相机收到服务器的图片头包确认返回：{parsed_data}")
+                self.image_confirmation_event.set()  # 触发事件解除等待状态
             else:
                 logger.info(f"车位相机收到服务器下发数据，解包结果: {parsed_data}")
         except Exception as e:

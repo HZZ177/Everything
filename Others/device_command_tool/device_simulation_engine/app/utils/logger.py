@@ -30,7 +30,7 @@ logger.configure(
     handlers=[
         {
             "sink": sys.stdout,  # 日志输出到标准输出
-            "level": "INFO",  # 日志级别
+            "level": "DEBUG",  # 日志级别
             "format": "<green>{time:YYYY-MM-DD HH:mm:ss.SSSS} | {module}:{line}</green> | <level>{level}</level> | {message}",
             "colorize": True,  # 启用颜色
             "backtrace": False,   # 控制是否追溯详细的回溯信息（即代码调用链和变量状态等详细信息）
