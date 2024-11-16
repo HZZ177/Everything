@@ -12,16 +12,16 @@ Others/adb_tool/logs/
 /Others/map/uploads/*
 
 
-/findcar_auto/z_run_pytest/report/allure-results/*
-/findcar_auto/z_run_pytest/report/allure-report/*
-/findcar_auto/z_run_pytest/pytest_log/*
-/findcar_auto/pictures/verified_picture/verify_code.png
-/findcar_auto/API_tool/data/*
+/Findcar_auto/z_run_pytest/report/allure-results/*
+/Findcar_auto/z_run_pytest/report/allure-report/*
+/Findcar_auto/z_run_pytest/pytest_log/*
+/Findcar_auto/pictures/verified_picture/verify_code.png
+/Findcar_auto/API_tool/data/*
 
 
 /Others/map/markers.json
 /Others/map/interactive_map.html
-/findcar_auto/file/*
+/Findcar_auto/file/*
 
 
 /Locust/log/*
