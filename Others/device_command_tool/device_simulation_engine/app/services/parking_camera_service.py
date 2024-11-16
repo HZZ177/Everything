@@ -49,12 +49,25 @@ class ParkingCameraService:
         except Exception as e:
             raise e
 
+    def send_all9_packet_for_recognition(self):
+        """
+        特殊步骤
+        发一个全部用9占位的车位状态上报，，用于服务器识别设备类型
+        9会被服务器主动过滤，没有实际业务影响
+        :return:
+        """
+        try:
+            packet = self.parking_camera_model.create_all9_parking_status_packet()
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
+
     def start_heartbeat(self):
         """开启持续心跳"""
         try:
             self.is_reporting = True
             self.schedule_next_heartbeat()
-            logger.info("车位相机定时心跳开始")
+            logger.debug("车位相机定时心跳开始")
         except Exception as e:
             raise e
 
@@ -65,7 +78,7 @@ class ParkingCameraService:
             if self.timer:
                 self.timer.cancel()
                 self.timer = None
-                logger.info("车位相机定时心跳停止")
+                logger.debug("车位相机定时心跳停止")
         except Exception as e:
             raise e
 

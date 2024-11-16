@@ -59,6 +59,8 @@ class DeviceManager:
             cls.parking_camera_service.connect()
             # 连接后发送注册包
             cls.parking_camera_service.send_register_packet()
+            # 特殊步骤，注册后立即发一个无实际业务数据的车位状态上报，全部用9占位，用于服务器识别设备类型
+            cls.parking_camera_service.send_all9_packet_for_recognition()
             # 注册后开始持续心跳
             cls.parking_camera_service.start_heartbeat()
             logger.info("车位相机设备初始化成功")

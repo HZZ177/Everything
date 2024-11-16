@@ -137,6 +137,12 @@ class ParkingCameraModel:
         packet = self.construct_packet(parking_status_data, command_code='S')
         return packet
 
+    def create_all9_parking_status_packet(self):
+        """特殊步骤，生成12字节全为9占位的车位状态上报包，用于注册后让服务器识别设备类型"""
+        data = struct.pack(">BBBBBBBBBBBB", 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9)
+        packet = self.construct_packet(data, command_code='S')
+        return packet
+
     def create_parking_picture_head_packet(self, park_num: int, image_bytes, command_code="J",
                                            plate_color: int = 3, plate_number: str = '川ABC123', confidence: int = 900):
         """
