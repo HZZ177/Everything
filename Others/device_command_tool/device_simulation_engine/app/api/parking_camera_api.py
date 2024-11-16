@@ -6,12 +6,9 @@
 # @Software: PyCharm
 # @description:
 
-import time
-import uuid
 from flask import Blueprint, request, jsonify
 from ..services.device_manager import DeviceManager
 from ..utils.logger import logger
-from ..utils.configer import config
 
 
 # 创建蓝图对象
@@ -21,6 +18,7 @@ parking_camera_bp = Blueprint("parking_camera", __name__)
 @parking_camera_bp.route('/connect', methods=['GET'])
 def connect():
     """尝试连接设备到服务器，连接后发送注册包，开启心跳"""
+    logger.info("车位相机connect接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
     try:
         # 连接服务器
@@ -39,6 +37,7 @@ def connect():
 @parking_camera_bp.route('/disconnect', methods=['GET'])
 def disconnect():
     """断开连接"""
+    logger.info("车位相机disconnect接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
     try:
         parking_camera.disconnect()
@@ -52,9 +51,11 @@ def disconnect():
 @parking_camera_bp.route('/startHeartbeat', methods=['GET'])
 def start_heartbeat():
     """开启持续心跳"""
+    logger.info("车位相机startHeartbeat接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
     try:
         parking_camera.start_heartbeat()
+        logger.info("车位相机成功开启心跳")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"车位相机开启心跳失败: {e}")
@@ -64,9 +65,11 @@ def start_heartbeat():
 @parking_camera_bp.route('/stopHeartbeat', methods=['GET'])
 def stop_heartbeat():
     """停止心跳"""
+    logger.info("车位相机stopHeartbeat接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
     try:
         parking_camera.stop_heartbeat()
+        logger.info("车位相机成功停止心跳")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"车位相机停止心跳失败: {e}")
@@ -84,6 +87,7 @@ def parking_status_report():
 
     :return:
     """
+    logger.info("车位相机parkingStatusReport接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
     # 获取必填参数并校验
     try:
@@ -118,6 +122,7 @@ def upload_parking_picture():
 
     :return:
     """
+    logger.info("车位相机uploadParkingPicture接口被调用")
     parking_camera = DeviceManager.get_parking_camera_service()
 
     # 获取必填参数

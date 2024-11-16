@@ -23,6 +23,7 @@ device_version = config["devices_info"]["channel_camera"]["device_version"]
 @channel_camera_bp.route('/connect', methods=['GET'])
 def connect():
     """尝试连接设备到服务器，连接后发送注册包，开启心跳"""
+    logger.info("通道相机connect接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         # 连接服务器
@@ -31,6 +32,7 @@ def connect():
         channel_camera.send_register_packet()
         # 注册后开始持续心跳
         channel_camera.start_heartbeat()
+        logger.info("通道相机成功连接服务器")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机连接服务器失败: {e}")
@@ -40,10 +42,12 @@ def connect():
 @channel_camera_bp.route('/disconnect', methods=['GET'])
 def disconnect():
     """断开连接"""
+    logger.info("通道相机disconnect接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
 
     try:
         channel_camera.disconnect()
+        logger.info("通道相机成功断开连接")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机断开连接失败: {e}")
@@ -53,9 +57,11 @@ def disconnect():
 @channel_camera_bp.route('/startHeartbeat', methods=['GET'])
 def start_heartbeat():
     """开启持续心跳"""
+    logger.info("通道相机startHeartbeat接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         channel_camera.start_heartbeat()
+        logger.info("通道相机成功开启心跳")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机开启心跳失败: {e}")
@@ -65,9 +71,11 @@ def start_heartbeat():
 @channel_camera_bp.route('/stopHeartbeat', methods=['GET'])
 def stop_heartbeat():
     """停止心跳"""
+    logger.info("通道相机stopHeartbeat接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         channel_camera.stop_heartbeat()
+        logger.info("通道相机成功停止心跳")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机停止心跳失败: {e}")
@@ -85,6 +93,7 @@ def send_command():
     选填参数:
     - commandCode (str): 命令码，默认为 "T"
     """
+    logger.info("通道相机sendCommand接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
 
     try:
@@ -98,6 +107,7 @@ def send_command():
 
         # 发送指令
         channel_camera.send_command(command_data, command_code)
+        logger.info(f"通道相机成功发送指令{command_data}")
         return jsonify({"message": f"成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机发送指令失败: {e}")
@@ -117,6 +127,7 @@ def alarm_report():
     moreInfo (str)：更多详细信息
     :return:
     """
+    logger.info("通道相机alarmReport接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
 
     try:
@@ -138,6 +149,7 @@ def alarm_report():
             "moreInfo": more_info   # 可选，补充说明
         }
         channel_camera.send_command(content, "T")
+        logger.info(f"通道相机成功上报告警{message}")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机告警上报失败: {e}")
@@ -157,6 +169,7 @@ def alarm_recovery_report():
     moreInfo (str)：更多详细信息
     :return:
     """
+    logger.info("通道相机alarmRecoveryReport接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         # 获取并校验必填参数
@@ -177,6 +190,7 @@ def alarm_recovery_report():
             "moreInfo": more_info   # 可选，补充说明
         }
         channel_camera.send_command(content, "T")
+        logger.info(f"通道相机成功上报告警恢复{message}")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机告警恢复上报失败: {e}")
@@ -198,6 +212,7 @@ def car_trigger_event():
 
     :return:
     """
+    logger.info("通道相机carTriggerEvent接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         # 获取并校验必填参数
@@ -230,6 +245,7 @@ def car_trigger_event():
             "carColour": car_colour     # 车身颜色
         }
         channel_camera.send_command(content, "T")
+        logger.info(f"通道相机成功上报事件类型：{trigger_flag}")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机来去车事件上报失败: {e}")
@@ -251,6 +267,7 @@ def car_back_event():
 
     :return:
     """
+    logger.info("通道相机carBackEvent接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         # 获取并校验必填参数
@@ -283,6 +300,7 @@ def car_back_event():
             "carColour": car_colour     # 车身颜色
         }
         channel_camera.send_command(content, "T")
+        logger.info(f"通道相机成功上报后退事件类型：{trigger_flag}")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机后退事件上报失败: {e}")
@@ -302,6 +320,7 @@ def car_traffic_event():
 
     :return:
     """
+    logger.info("通道相机carTrafficEvent接口被调用")
     channel_camera = DeviceManager.get_channel_camera_service()
     try:
         # 获取并校验必填参数
@@ -329,6 +348,7 @@ def car_traffic_event():
             "num": "0",     # 当天事件序号，从0开始
         }
         channel_camera.send_command(content, "T")
+        logger.info(f"通道相机成功上报交通流量状态：{area_state}")
         return jsonify({"message": "成功"}), 200
     except Exception as e:
         logger.exception(f"通道相机交通流量上报失败: {e}")

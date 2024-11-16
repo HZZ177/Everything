@@ -29,7 +29,7 @@ class ChannelCameraService:
         status = self.client.is_connected()
         try:
             if status:
-                logger.warning(f"通道相机尝试连接服务器时，已有连接，断开后重连")
+                logger.debug(f"通道相机尝试连接服务器时，已有连接，断开后重连")
                 self.client.disconnect()
             self.client.connect(self.server_ip, self.server_port, self.local_ip)
             # 设置接收数据和断开连接的回调函数
@@ -54,7 +54,7 @@ class ChannelCameraService:
         try:
             self.is_reporting = True
             self.schedule_next_heartbeat()
-            logger.info("通道相机定时心跳开始")
+            logger.debug("通道相机定时心跳开始")
         except Exception as e:
             raise e
 
@@ -64,7 +64,7 @@ class ChannelCameraService:
             if self.timer:
                 self.timer.cancel()
                 self.timer = None
-                logger.info("通道相机定时心跳停止")
+                logger.debug("通道相机定时心跳停止")
         except Exception as e:
             raise e
 

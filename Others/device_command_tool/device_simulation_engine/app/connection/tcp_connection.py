@@ -75,7 +75,7 @@ class TCPClient:
                         self.receive_callback(data)     # 调用回调函数，将数据传回业务层处理
             except socket.timeout:
                 continue    # 超时大概率是服务器一段时间内没有返回数据，可忽略
-            except socket.error as e:
+            except socket.error:
                 continue    # 捕获异常，偶尔会因为连接断连的切换导致短时间内大量的网络错误，这里忽略
             except Exception as e:
                 logger.error(f"接收服务器数据时出现未知错误: {e}")
