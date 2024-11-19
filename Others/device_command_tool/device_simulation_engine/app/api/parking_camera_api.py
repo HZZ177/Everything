@@ -18,9 +18,10 @@ from ..utils.util import get_inner_picture
 parking_camera_bp = Blueprint("parking_camera", __name__)
 
 
+# 枚举类，维护各种数据类型对应值
 class ParkingEvent(Enum):
     """
-    车位状态枚举类
+    车位状态枚举值
     0：无车；1：有车；2：出车；3：进车；4：设备故障
     """
     NO_CAR = 0
@@ -32,7 +33,7 @@ class ParkingEvent(Enum):
 
 # 公共工具函数和装饰器
 def handle_exceptions(func):
-    """处理通用异常装饰器"""
+    """通用异常处理装饰器"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
@@ -84,7 +85,7 @@ def validate_form_field(field_name, data, valid_values=None):
 
 
 def get_parking_camera():
-    """获取车位相机实例"""
+    """获取车位相机设备实例"""
     return DeviceManager.get_parking_camera_service()    
 
 
@@ -92,7 +93,11 @@ def get_parking_camera():
 @parking_camera_bp.route('/connect', methods=['GET'])
 @handle_exceptions
 def connect():
-    """尝试连接设备到服务器，连接后发送注册包，开启心跳"""
+    """
+    尝试连接设备到服务器
+    连接后发送注册包并开启心跳
+    :return:
+    """
     logger.info("车位相机connect接口被调用")
     parking_camera = get_parking_camera()
     parking_camera.connect()
@@ -105,7 +110,10 @@ def connect():
 @parking_camera_bp.route('/disconnect', methods=['GET'])
 @handle_exceptions
 def disconnect():
-    """断开连接"""
+    """
+    断开服务器连接并停止心跳
+    :return:
+    """
     logger.info("车位相机disconnect接口被调用")
     parking_camera = get_parking_camera()
     parking_camera.disconnect()
@@ -116,7 +124,10 @@ def disconnect():
 @parking_camera_bp.route('/startHeartbeat', methods=['GET'])
 @handle_exceptions
 def start_heartbeat():
-    """开启持续心跳"""
+    """
+    开启持续心跳
+    :return:
+    """
     logger.info("车位相机startHeartbeat接口被调用")
     parking_camera = get_parking_camera()
     parking_camera.start_heartbeat()
@@ -127,7 +138,10 @@ def start_heartbeat():
 @parking_camera_bp.route('/stopHeartbeat', methods=['GET'])
 @handle_exceptions
 def stop_heartbeat():
-    """停止心跳"""
+    """
+    停止心跳
+    :return:
+    """
     logger.info("车位相机stopHeartbeat接口被调用")
     parking_camera = get_parking_camera()
     parking_camera.stop_heartbeat()
@@ -155,13 +169,13 @@ def parking_status_report():
     park_num = data["port"]
     park_event = data["parkEvent"]
 
-    if park_num not in range(1, 7):
+    if park_num not in range(1, 7):     # 车位号范围1-6
         return error_response(f"错误的车位号: {park_num}，范围应为1-6", 400)
     if park_event not in (item.value for item in ParkingEvent):
         return error_response(f"错误的事件类型: {park_event}，范围应为0-4", 400)
 
-    parking_camera = get_parking_camera()
-    parking_camera.send_parking_status(park_num, park_event)
+    parking_camera = get_parking_camera()   # 获取设备实例
+    parking_camera.send_parking_status(park_num, park_event)    # 上报车位状态
     logger.info(f"车位相机上报车位状态成功，车位号: {park_num}, 车位状态: {park_event}")
     return success_response()
 
@@ -178,27 +192,26 @@ def upload_parking_picture():
         innerPic (str): 内置图片名称
     """
     logger.info("车位相机uploadParkingPicture接口被调用")
-    # 校验必填参数
+    # 校验必填参数；因为涉及文件上传，需要使用表单类型提交，所以用form获取，另起一个检验方法
     park_num = validate_form_field("parkNum", request.form, valid_values=range(1, 7))
-    if isinstance(park_num, tuple):  # 返回错误响应时直接中断后续逻辑
-        return
-
-    image = request.files.get('image')  # 上传的图片文件
-    inner_pic = request.form.get('innerPic')  # 内置图片名称
+    if isinstance(park_num, tuple):  # 校验不通过会返回flask的错误对象，直接返回错误信息
+        return park_num
 
     # 校验image和innerPic至少存在一个
+    image = request.files.get('image')  # 上传的图片文件
+    inner_pic = request.form.get('innerPic')  # 内置图片名称
     if not image and not inner_pic:
         return error_response("image或innerPic至少需要填一个", 400)
 
     # 获取图片数据
-    if inner_pic:
+    if inner_pic:   # 如果有内置图片，尝试获取，忽略自定义上传图片参数
         image_bytes = get_inner_picture(inner_pic)
         if image_bytes is None:
             return error_response(f"无法找到内置图片: {inner_pic}", 400)
     else:
-        image_bytes = image.read()  # 将上传的文件转换为二进制数据
+        image_bytes = image.read()  # 如果没有指定内置图片，将上传的文件转换为二进制数据
 
-    parking_camera = get_parking_camera()
-    parking_camera.upload_picture(park_num, image_bytes)
-    logger.info(f"车位相机 {park_num} 号车位成功上报车位图片")
+    parking_camera = get_parking_camera()   # 获取设备实例
+    parking_camera.upload_picture(park_num, image_bytes)    # 上传图片
+    logger.info(f"车位相机{park_num}号车位成功上报车位图片")
     return success_response()

@@ -77,9 +77,9 @@ class ChannelCameraService:
             self.timer = threading.Timer(self.heartbeat_interval, self.schedule_next_heartbeat)
             self.timer.start()
 
-    def send_command(self, command_data, command_code='T'):
+    def send_command(self, command_data: dict, command_code='T'):
         """
-        发送指令工具方法，向上供不同指令的发送接口使用，默认T包
+        适用于协议中通用协议那一部分，指令工具方法，向上供不同指令的发送接口使用，默认T包
         :param command_data: 需要发送的数据体
         :param command_code: 命令码，默认T包
         :return:

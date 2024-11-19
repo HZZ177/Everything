@@ -22,7 +22,7 @@ device_id = config["devices_info"]["channel_camera"]["device_id"]
 device_version = config["devices_info"]["channel_camera"]["device_version"]
 
 
-# 枚举类：用于定义事件类型和颜色类型
+# 枚举类，维护各种数据类型对应值
 class CarTriggerFlag(Enum):
     """
     相机触发事件枚举值
@@ -59,7 +59,7 @@ class CarColour(Enum):
 
 class AreaState(Enum):
     """
-    区域交通流量状态
+    区域交通流量状态枚举值
     0：正常；1：繁忙；2：拥堵
     """
     NORMAL = 0
@@ -67,9 +67,25 @@ class AreaState(Enum):
     JAM = 2
 
 
+class CameraFaultType(Enum):
+    """
+    相机故障类型枚举值
+    videoFault：视频故障
+    algNotWork：算法未正常运行
+    jpgEncodeFault：图片编码失败
+    ossNetFault：连接图片服务器oss失败
+    NetFault：网络故障
+    """
+    VIDEO_FAULT = "videoFault"
+    ALG_NOT_WORK = "algNotWork"
+    JPG_ENCODE_FAULT = "jpgEncodeFault"
+    OSS_NET_FAULT = "ossNetFault"
+    NET_FAULT = "NetFault"
+
+
 # 工具函数和装饰器
 def handle_exceptions(func):
-    """处理通用异常装饰器"""
+    """通用异常处理装饰器"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
@@ -92,17 +108,18 @@ def error_response(message="系统异常", code=500):
 
 def validate_json(required_fields, request_data):
     """
-    校验接口JSON传参必填参数
-    校验通过返回None，校验失败返回错误信息
+    校验接口JSON传参的必填参数
+    校验通过返回None
+    校验失败返回错误信息，包含缺少的具体参数信息
     """
     missing_fields = [field for field in required_fields if field not in request_data]
     if missing_fields:
-        return jsonify({"error": f"缺少必填参数: {', '.join(missing_fields)}"}), 400
+        return jsonify({"error": f"缺少必填参数: {','.join(missing_fields)}"}), 400
     return None
 
 
 def get_channel_camera():
-    """获取通道相机实例"""
+    """获取通道相机设备实例"""
     return DeviceManager.get_channel_camera_service()
 
 
@@ -110,7 +127,11 @@ def get_channel_camera():
 @channel_camera_bp.route('/connect', methods=['GET'])
 @handle_exceptions
 def connect():
-    """尝试连接设备到服务器，连接后发送注册包，开启心跳"""
+    """
+    尝试连接设备到服务器
+    连接后发送注册包并开启心跳
+    :return:
+    """
     logger.info("通道相机connect接口被调用")
     camera = get_channel_camera()
     camera.connect()
@@ -123,7 +144,10 @@ def connect():
 @channel_camera_bp.route('/disconnect', methods=['GET'])
 @handle_exceptions
 def disconnect():
-    """断开连接"""
+    """
+    断开服务器连接
+    :return:
+    """
     logger.info("通道相机disconnect接口被调用")
     camera = get_channel_camera()
     camera.disconnect()
@@ -134,7 +158,10 @@ def disconnect():
 @channel_camera_bp.route('/startHeartbeat', methods=['GET'])
 @handle_exceptions
 def start_heartbeat():
-    """开启持续心跳"""
+    """
+    开启持续心跳
+    :return:
+    """
     logger.info("通道相机startHeartbeat接口被调用")
     camera = get_channel_camera()
     camera.start_heartbeat()
@@ -145,7 +172,10 @@ def start_heartbeat():
 @channel_camera_bp.route('/stopHeartbeat', methods=['GET'])
 @handle_exceptions
 def stop_heartbeat():
-    """停止心跳"""
+    """
+    停止心跳
+    :return:
+    """
     logger.info("通道相机stopHeartbeat接口被调用")
     camera = get_channel_camera()
     camera.stop_heartbeat()
@@ -153,12 +183,17 @@ def stop_heartbeat():
     return success_response()
 
 
-@channel_camera_bp.route('/sendCommand', methods=['POST'])
+@channel_camera_bp.route('/sendCustomCommand', methods=['POST'])
 @handle_exceptions
-def send_command():
+def send_custom_command():
     """
     工具方法，构造数据体向服务器上报指令，默认T包
-    需要自己提供发送的所有消息体部分
+    请求参数中需要自己提供发送的所有消息体部分
+
+    必填参数：
+        commandData (dict): 指令数据体，类型dict
+    选填参数：
+        commandCode (str): 指令类型，不传默认为T包
     :return:
     """
     logger.info("通道相机sendCommand接口被调用")
@@ -170,9 +205,10 @@ def send_command():
 
     # 校验参数合法性
     command_data = data["commandData"]
+    command_code = data.get("commandCode", "T")
 
     camera = get_channel_camera()
-    camera.send_command(command_data, command_code="T")
+    camera.send_command(command_data, command_code)
     logger.info(f"通道相机成功发送指令: {command_data}")
     return success_response()
 
@@ -185,10 +221,9 @@ def alarm_report():
     视频故障/算法未正常运行/图片编码失败/连接图片服务器失败/网络故障
 
     必填参数：
-    message (str): 故障类型：videoFault/algNotWork/jpgEncodeFault/ossNetFault/NetFault
-
+        message (str): 故障类型：videoFault/algNotWork/jpgEncodeFault/ossNetFault/NetFault
     选填参数：
-    moreInfo (str)：更多详细信息
+        moreInfo (str)：更多详细信息
     :return:
     """
     logger.info("通道相机alarmReport接口被调用")
@@ -202,7 +237,7 @@ def alarm_report():
     message = data["message"]
     more_info = data.get("moreInfo", "")
 
-    if message not in ["videoFault", "algNotWork", "jpgEncodeFault", "ossNetFault", "NetFault"]:
+    if message not in (item.value for item in CameraFaultType):
         return error_response(f"未知的告警类型: {message}", 400)
 
     # 组装上报数据
@@ -246,7 +281,7 @@ def alarm_recovery_report():
     message = data["message"]
     more_info = data.get("moreInfo", "")
 
-    if message not in ["videoFault", "algNotWork", "jpgEncodeFault", "ossNetFault", "NetFault"]:
+    if message not in (item.value for item in CameraFaultType):
         return error_response(f"未知的告警类型: {message}", 400)
 
     # 组装上报数据
@@ -273,11 +308,11 @@ def car_trigger_event():
     触发事件：2：从下到上/去车；3：从上到下/来车
 
     必填参数：
-    triggerFlag (int)：触发事件类型——2：去车；3：来车
-    plate (str)：车牌号
-    plateReliability (int)：车牌可信度
-    carType (str)：车辆类型——小型车/大型车
-    carColour (int)：车身颜色——0：无  1："白",  2："黑", 3："蓝", 4："黄", 5："绿"，6："红"
+        triggerFlag (int)：触发事件类型——2：去车；3：来车
+        plate (str)：车牌号
+        plateReliability (int)：车牌可信度
+        carType (str)：车辆类型——小型车/大型车
+        carColour (int)：车身颜色——0：无  1："白",  2："黑", 3："蓝", 4："黄", 5："绿"，6："红"
     :return:
     """
     logger.info("通道相机carTriggerEvent接口被调用")
@@ -289,17 +324,17 @@ def car_trigger_event():
         return validation_error
 
     # 校验参数合法性
-    trigger_flag = data["triggerFlag"]
-    plate = data["plate"]
-    plate_reliability = data["plateReliability"]
-    car_type = data["carType"]
-    car_colour = data["carColour"]
+    trigger_flag = data["triggerFlag"]  # 触发类型
+    plate = data["plate"]               # 车牌号
+    plate_reliability = data["plateReliability"]    # 车牌可信度
+    car_type = data["carType"]          # 车辆类型
+    car_colour = data["carColour"]      # 车身颜色
 
     if trigger_flag not in (item.value for item in CarTriggerFlag):
         return error_response(f"未知的车位事件类型: {trigger_flag}", 400)
-    if plate_reliability not in range(0, 1001):
+    if plate_reliability not in range(0, 1001):     # 可信度范围0-1000
         return error_response(f"无效的可信度 {plate_reliability}，取值范围0-1000: ", 400)
-    if car_type not in ["小型车", "大型车"]:
+    if car_type not in ["小型车", "大型车"]:      # 预留字段，暂时只有小型车/大型车
         return error_response(f"无效的车辆类型: {car_type}", 400)
     if car_colour not in (item.value for item in CarColour):
         return error_response(f"无效的车辆颜色: {car_colour}", 400)
@@ -333,11 +368,11 @@ def car_back_event():
     触发类型：9：“/从上到下/来车”后车辆又后退；10: “/从下到上/去车”后车辆又后退
 
     必填参数：
-    triggerFlag (int): 触发类型——9：来车后车辆又后退；10: 去车后车辆又后退
-    plate (str)：车牌号
-    plateReliability (int)：车牌可信度
-    carType (str)：车辆类型；大型车/小型车
-    carColour (int)：车身颜色——0：无  1："白",  2："黑", 3："蓝", 4："黄", 5："绿"，6："红"
+        triggerFlag (int): 触发类型——9：来车后车辆又后退；10: 去车后车辆又后退
+        plate (str)：车牌号
+        plateReliability (int)：车牌可信度
+        carType (str)：车辆类型；大型车/小型车
+        carColour (int)：车身颜色——0：无  1："白",  2："黑", 3："蓝", 4："黄", 5："绿"，6："红"
     :return:
     """
     logger.info("通道相机carBackEvent接口被调用")
@@ -349,17 +384,17 @@ def car_back_event():
         return validation_error
 
     # 校验参数合法性
-    trigger_flag = data["triggerFlag"]
-    plate = data["plate"]
-    plate_reliability = data["plateReliability"]
-    car_type = data["carType"]
-    car_colour = data["carColour"]
+    trigger_flag = data["triggerFlag"]  # 触发类型
+    plate = data["plate"]               # 车牌号
+    plate_reliability = data["plateReliability"]    # 车牌可信度
+    car_type = data["carType"]          # 车辆类型
+    car_colour = data["carColour"]      # 车身颜色
 
-    if trigger_flag not in (item.value for item in CarBackFlag):
-        return error_response(f"未知的后退事件类型: {trigger_flag}", 400)
-    if plate_reliability not in range(0, 1001):
+    if trigger_flag not in (item.value for item in CarTriggerFlag):
+        return error_response(f"未知的车位事件类型: {trigger_flag}", 400)
+    if plate_reliability not in range(0, 1001):     # 可信度范围0-1000
         return error_response(f"无效的可信度 {plate_reliability}，取值范围0-1000: ", 400)
-    if car_type not in ["小型车", "大型车"]:
+    if car_type not in ["小型车", "大型车"]:      # 预留字段，暂时只有小型车/大型车
         return error_response(f"无效的车辆类型: {car_type}", 400)
     if car_colour not in (item.value for item in CarColour):
         return error_response(f"无效的车辆颜色: {car_colour}", 400)
@@ -367,7 +402,7 @@ def car_back_event():
     # 组装上报数据
     content = {
         "cmd": "reportInfo",
-        "eventType": "trigerEvent",     # trigerEvent没写错，协议就是这个单词
+        "eventType": "reverseEvent",
         "eventId": generate_uuid(),
         "triggerFlag": trigger_flag,
         "cmdTime": str(int(time.time())),
@@ -393,9 +428,9 @@ def car_traffic_event():
     区域状态——0：正常；1：繁忙；2：拥堵
 
     必填参数：
-    areaState (int)： 区域状态， 0：正常；1：繁忙；2：拥堵
-    area_state_reliability (int)： 区域状态可信度
-    car_num (int)： 车辆数量
+        areaState (int)： 区域状态， 0：正常；1：繁忙；2：拥堵
+        area_state_reliability (int)： 区域状态可信度
+        car_num (int)： 车辆数量
     :return:
     """
     logger.info("通道相机carTrafficEvent接口被调用")
