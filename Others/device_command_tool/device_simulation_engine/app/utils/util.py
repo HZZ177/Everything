@@ -7,6 +7,7 @@
 # @description:
 
 import re
+import uuid
 from .logger import logger
 from .file_path import resource_path
 
@@ -26,3 +27,8 @@ def get_inner_picture(inner_pic_name):
     except FileNotFoundError:
         logger.error(f"内置图片文件未找到: {inner_pic_path}")
         return None
+
+
+def generate_uuid():
+    """生成UUID"""
+    return str(uuid.uuid4())
