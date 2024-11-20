@@ -114,9 +114,9 @@ def report_status():
     """
     try:
         data = request.json
-        sensor_addr = data.get("sensor_addr")
-        car_status = data.get("car_status")
-        fault_details = data.get("fault_details", [])
+        sensor_addr = data.get("sensorAddr")
+        car_status = data.get("carStatus")
+        fault_details = data.get("faultDetails", [])
 
         # 参数校验
         if not isinstance(sensor_addr, int) or sensor_addr <= 0:
