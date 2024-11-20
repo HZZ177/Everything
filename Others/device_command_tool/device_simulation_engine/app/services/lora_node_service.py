@@ -6,7 +6,83 @@
 # @Software: PyCharm
 # @description:
 
+import threading
+from ..connection.tcp_connection import TCPClient
+from ..models.lora_node_model import LoraNodeModel
+from ..utils.logger import logger
+
+
 class LoraNodeService:
 
-    def send_network_led_data(self):
-        pass
+    def __init__(self, server_ip, server_port, local_ip):
+        self.client = TCPClient()  # TCP客户端连接
+        self.server_ip = server_ip  # 服务器IP
+        self.server_port = server_port  # 服务器端口
+        self.local_ip = local_ip  # 用于连接服务器的设备IP
+        self.is_reporting = False  # 是否正在上报数据
+        self.status_report_interval = 10    # 持续发送探测器状态的间隔时间，单位为秒
+        self.timer = None       # 用于持续发送探测器状态的定时器
+        self.lora_node_model = LoraNodeModel()  # Lora节点数据模型实例
+
+    def connect(self):
+        status = self.client.is_connected()
+        try:
+            if status:
+                logger.debug(f"Lora节点尝试连接服务器时，已有连接，断开后重连")
+                self.client.disconnect()
+            self.client.connect(self.server_ip, self.server_port, self.local_ip)
+        except Exception as e:
+            raise e
+
+    def disconnect(self):
+        try:
+            self.stop_reporting()   # 停止持续上报
+            self.client.disconnect()
+        except Exception as e:
+            raise e
+
+    def report_status(self, sensor_addr, car_status, fault_details):
+        """上报一次节点下探测器状态"""
+        try:
+            packet = self.lora_node_model.construct_status_report_packet(sensor_addr, car_status, fault_details)
+            logger.info(f"Lora节点发送数据: {packet}")
+            self.client.send_data(packet)
+        except Exception as e:
+            raise e
+
+    def start_reporting(self, sensor_addr, node_status):
+        """开始持续上报探测器状态"""
+        try:
+            self.is_reporting = True
+            self.schedule_next_report(sensor_addr, node_status)
+            logger.info("Lora节点持续上报开始")
+        except Exception as e:
+            raise e
+
+    def stop_reporting(self):
+        """停止持续上报"""
+        try:
+            self.is_reporting = False
+            if self.timer:
+                self.timer.cancel()
+                self.timer = None
+            logger.info("Lora节点持续上报停止")
+        except Exception as e:
+            raise e
+
+    def schedule_next_report(self, sensor_addr, node_status):
+        """调度下一次上报"""
+        if self.is_reporting:
+            try:
+                # 执行上报逻辑
+                self.report_status(sensor_addr, node_status)
+            except Exception as e:
+                logger.error(f"Lora节点上报失败: {e}")
+
+            # 调度下一次上报
+            self.timer = threading.Timer(
+                self.status_report_interval,
+                self.schedule_next_report,
+                args=[sensor_addr, node_status]
+            )
+            self.timer.start()

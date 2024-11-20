@@ -2,12 +2,13 @@ server:
   host: "192.168.21.130"
   port_7799: 7799
   port_7777: 7777
+  port_8083: 8083
 
 devices_addr:
   channel_camera_ip: "192.168.24.117"
   parking_camera_ip: "192.168.24.118"
-#  lora_node_ip: "192.168.24.119"
-#  network_led_ip: "192.168.24.120"
+  lora_node_ip: "192.168.24.119"
+  #network_led_ip: "192.168.24.120"
 
 devices_info:
   channel_camera:
