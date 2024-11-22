@@ -81,9 +81,14 @@ class ParkingCameraModel:
     @staticmethod
     def calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number, data_length, data_bytes):
         """按照协议要求，计算校验码"""
-        checksum_data = (struct.pack('>I', timestamp) + struct.pack('>B', command_code_ascii) +
-                         struct.pack('>H', total_packets) + struct.pack('>H', packet_number) +
-                         struct.pack('>H', data_length) + data_bytes)
+        checksum_data = (
+            struct.pack('>I', timestamp) +
+            struct.pack('>B', command_code_ascii) +
+            struct.pack('>H', total_packets) +
+            struct.pack('>H', packet_number) +
+            struct.pack('>H', data_length) +
+            data_bytes
+        )
         checksum = sum(checksum_data) & 0xFFFF
         return checksum
 
@@ -97,8 +102,12 @@ class ParkingCameraModel:
         protocol_head = packet[0:1]
         protocol_tail = packet[-1:]
         data_to_escape = packet[1:-1]
-        escaped_data = (data_to_escape.replace(b'\xfb', b'\xff\xbb')
-                        .replace(b'\xfe', b'\xff\xee').replace(b'\xff', b'\xff\xfc'))
+        escaped_data = (
+            data_to_escape
+            .replace(b'\xfb', b'\xff\xbb')
+            .replace(b'\xfe', b'\xff\xee')
+            .replace(b'\xff', b'\xff\xfc')
+        )
         full_data = protocol_head + escaped_data + protocol_tail
         return full_data
 

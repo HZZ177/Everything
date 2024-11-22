@@ -14,6 +14,7 @@ version = "v1.2.4"  # 打包程序名称中的版本号
 
 project_path = os.getcwd()  # 项目基础路径
 extra_tool_path = os.path.join(project_path, 'scrcpy_tool')     # 打包的额外资源文件
+resource_path = os.path.join(project_path, 'resource')     # 图标资源文件
 main_script_path = os.path.join(project_path, 'main.py')    # 主题代码文件路径
 
 
@@ -31,6 +32,7 @@ def pack_and_clean_temp(extra_tool_path, app_name):
         '--onefile',
         '--windowed',
         '--add-data', f"{extra_tool_path};scrcpy_tool",
+        # f'--icon={resource_path}\cover.ico',
         '-n', f"{app_name}",
         "main.py"
     ]

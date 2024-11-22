@@ -11,10 +11,10 @@ class LoraNodeModel:
 
     # 车位状态枚举值对应协议数据
     CAR_STATUS_CODES = {
-        0: "A",  # 有车正常
-        1: "C",  # 有车故障
+        1: "A",  # 有车正常
         2: "@",  # 无车正常
-        3: "B",  # 无车故障
+        3: "C",  # 有车故障
+        4: "B",  # 无车故障
     }
 
     # 故障详情枚举值对应二进制标志位
@@ -29,11 +29,11 @@ class LoraNodeModel:
     }
 
     @staticmethod
-    def construct_status_report_packet(sensor_addr, car_status, fault_details):
+    def construct_status_report_packet(sensor_addr, sensor_status, fault_details):
         """
         构造节点状态上报的数据包
         :param sensor_addr: 车位地址
-        :param car_status: 车位状态（整数枚举值）
+        :param sensor_status: 车位状态（整数枚举值）
         :param fault_details: 故障详情列表（整数枚举值）
         :return: 构造完成的数据包字符串
         """
@@ -41,9 +41,9 @@ class LoraNodeModel:
             raise ValueError("无效的车位地址")
 
         # 获取车位状态代码
-        car_status_code = LoraNodeModel.CAR_STATUS_CODES.get(car_status)
+        car_status_code = LoraNodeModel.CAR_STATUS_CODES.get(sensor_status)
         if not car_status_code:
-            raise ValueError(f"无效的车位状态: {car_status}")
+            raise ValueError(f"无效的探测器状态: {sensor_status}")
 
         # 合并故障标志位
         zz = 0x00

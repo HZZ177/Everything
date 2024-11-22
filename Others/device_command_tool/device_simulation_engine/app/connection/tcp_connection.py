@@ -29,9 +29,11 @@ class TCPClient:
             if not is_valid_ip(local_ip):
                 logger.error(f"无效的本地IP地址: {local_ip}")
                 return False
-
+            # 创建TCP套接字
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.server_socket.bind((local_ip, 0))  # 绑定用于连接的本地IP和端口，端口0表示系统自动分配
+            # 绑定用于连接的本地IP和端口，端口0表示系统自动分配
+            self.server_socket.bind((local_ip, 0))
+            # 连接服务器
             self.server_socket.connect((server_ip, server_port))
             self.server_socket.settimeout(5)    # 设置超时时间为5秒
             logger.debug(f"成功使用本地IP：{local_ip}，连接到服务器：{server_ip}:{server_port} ")
@@ -78,11 +80,8 @@ class TCPClient:
             except socket.error:
                 continue    # 捕获异常，偶尔会因为连接断连的切换导致短时间内大量的网络错误，这里忽略
             except Exception as e:
+                # 只打印错误日志，不停止接收，因为这一层负责所有设备的连接，不影响其他设备的连接
                 logger.error(f"接收服务器数据时出现未知错误: {e}")
-                # self.disconnect()
-                # logger.info("连接层主动断开连接，调用回调函数停止其他逻辑")
-                # self.disconnect_callback()
-                # break
 
     def disconnect(self):
         """断开连接"""

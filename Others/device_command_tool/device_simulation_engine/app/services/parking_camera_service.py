@@ -10,7 +10,6 @@ import threading
 from ..connection.tcp_connection import TCPClient
 from ..models.parking_camera_model import ParkingCameraModel
 from ..utils.logger import logger
-from werkzeug.datastructures import FileStorage
 
 
 class ParkingCameraService:

@@ -84,9 +84,14 @@ class ChannelCameraModel:
     @staticmethod
     def calculate_checksum(timestamp, command_code_ascii, total_packets, packet_number, data_length, data_bytes):
         """按照协议要求，计算校验码"""
-        checksum_data = (struct.pack('>I', timestamp) + struct.pack('>B', command_code_ascii) +
-                         struct.pack('>H', total_packets) + struct.pack('>H', packet_number) +
-                         struct.pack('>H', data_length) + data_bytes)
+        checksum_data = (
+            struct.pack('>I', timestamp) +
+            struct.pack('>B', command_code_ascii) +
+            struct.pack('>H', total_packets) +
+            struct.pack('>H', packet_number) +
+            struct.pack('>H', data_length) +
+            data_bytes
+        )
         checksum = sum(checksum_data) & 0xFFFF
         return checksum
 

@@ -39,7 +39,7 @@ def handle_exceptions(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            logger.exception(f"系统异常: {e}")
+            logger.exception(f"调用车位相机接口时系统异常: {e}")
             return jsonify({"message": "系统异常"}), 500
     return wrapper
 
