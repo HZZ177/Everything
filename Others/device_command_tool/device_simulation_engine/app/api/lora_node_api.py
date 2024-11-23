@@ -144,6 +144,8 @@ def start_reporting():
         sensorAddr (int): 探测器地址
         sensorStatus (int): 车位状态
         faultDetails (list[int]): 故障详情列表，每个元素为故障类型枚举值
+    选填参数：
+        reportInterval (int): 上报时间间隔，不传默认10s/次
     车位状态枚举值：
         1: 有车正常 2: 无车正常 3: 有车故障 4: 无车故障
     故障详情枚举值：
@@ -157,6 +159,7 @@ def start_reporting():
         sensor_addr = data.get("sensorAddr")
         sensor_status = data.get("sensorStatus")
         fault_details = data.get("faultDetails")
+        report_interval = data.get("reportInterval", 10)    # 上报的间隔时间，不传的话默认时间10s/次
 
         # 参数校验
         if not isinstance(sensor_addr, int) or sensor_addr <= 0:
@@ -167,6 +170,9 @@ def start_reporting():
 
         if not isinstance(fault_details, list):
             return jsonify({"error": f"故障详情参数类型错误: {sensor_status}"}), 400
+
+        if report_interval is not None and not isinstance(report_interval, int):
+            return jsonify({"error": f"无效的上报时间间隔: {sensor_status}"}), 400
 
         # 故障详情范围1-7
         if any(fault_detail not in [1, 2, 3, 4, 5, 6, 7] for fault_detail in fault_details):
@@ -180,7 +186,7 @@ def start_reporting():
             fault_details = []
 
         lora_node = get_lora_node()
-        lora_node.start_reporting(sensor_addr, sensor_status, fault_details)
+        lora_node.start_reporting(sensor_addr, sensor_status, fault_details, report_interval)
         logger.info("Lora节点成功开启持续上报")
         return success_response(data="开启持续上报成功")
     except Exception:

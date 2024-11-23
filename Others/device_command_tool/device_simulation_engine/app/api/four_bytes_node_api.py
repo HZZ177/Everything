@@ -126,6 +126,8 @@ def start_reporting():
     必填参数：
         sensorAddr (int): 探测器地址
         sensorStatus (int): 车位状态
+    选填参数：
+        reportInterval (int): 上报间隔时间，不传的话默认10s/次
     车位状态枚举值：
         1: 无车 2: 有车 3: 故障
     :return:
@@ -135,6 +137,7 @@ def start_reporting():
         data = request.json
         sensor_addr = data.get("sensorAddr")
         sensor_status = data.get("sensorStatus")
+        report_interval = data.get("reportInterval", 10)    # 上报的间隔时间，不传的话默认时间10s/次
 
         # 参数校验
         if not isinstance(sensor_addr, int) or sensor_addr <= 0:
@@ -143,9 +146,12 @@ def start_reporting():
         if not isinstance(sensor_status, int) or sensor_status not in [1, 2, 3]:
             return jsonify({"error": f"无效的探测器状态: {sensor_status}"}), 400
 
+        if report_interval is not None and not isinstance(report_interval, int):
+            return jsonify({"error": f"无效的上报时间间隔: {sensor_status}"}), 400
+
         four_bytes_node = get_four_bytes_node()
         # sensor_status-1是为了跟其他设备习惯同一，参数用1/2/3，实际对应协议0/1/2
-        four_bytes_node.start_reporting(sensor_addr, sensor_status - 1)
+        four_bytes_node.start_reporting(sensor_addr, sensor_status - 1, report_interval)
         logger.info("四字节网络节点成功开启持续上报")
         return success_response(data="开启持续上报成功")
     except Exception:

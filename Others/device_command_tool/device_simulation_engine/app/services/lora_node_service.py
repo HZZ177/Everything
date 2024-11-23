@@ -20,7 +20,6 @@ class LoraNodeService:
         self.server_port = server_port  # 服务器端口
         self.local_ip = local_ip  # 用于连接服务器的设备IP
         self.is_reporting = False  # 是否正在上报数据
-        self.status_report_interval = 10    # 持续发送探测器状态的间隔时间，单位为秒
         self.timer = None       # 用于持续发送探测器状态的定时器
         self.lora_node_model = LoraNodeModel()  # Lora节点数据模型实例
 
@@ -56,7 +55,7 @@ class LoraNodeService:
         except Exception as e:
             raise e
 
-    def start_reporting(self, sensor_addr, sensor_status, fault_details):
+    def start_reporting(self, sensor_addr, sensor_status, fault_details, report_interval):
         """开始持续上报探测器状态"""
         try:
             # 如果已存在运行中的定时任务，手动停止，确保同一时间只有一个上报
@@ -65,7 +64,7 @@ class LoraNodeService:
                 self.stop_reporting()
             # 启动定时器
             self.is_reporting = True
-            self.schedule_next_report(sensor_addr, sensor_status, fault_details)
+            self.schedule_next_report(sensor_addr, sensor_status, fault_details, report_interval)
         except Exception as e:
             raise e
 
@@ -79,7 +78,7 @@ class LoraNodeService:
         except Exception as e:
             raise e
 
-    def schedule_next_report(self, sensor_addr, sensor_status, fault_details):
+    def schedule_next_report(self, sensor_addr, sensor_status, fault_details, report_interval):
         """调度下一次上报"""
         if self.is_reporting:
             try:
@@ -90,7 +89,7 @@ class LoraNodeService:
 
             # 调度下一次上报
             self.timer = threading.Timer(
-                self.status_report_interval,
+                report_interval,
                 self.schedule_next_report,
                 args=[sensor_addr, sensor_status, fault_details]
             )
