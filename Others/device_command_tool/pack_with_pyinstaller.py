@@ -49,6 +49,8 @@ def pack_and_clean_temp(app_name):
         '--hidden-import=uuid',
         '--hidden-import=queue',
         '--hidden-import=requests',
+        # 图标ico
+        rf'--icon={resource_path}\cover.ico',
         # 主程序入口
         'main.py'  # 主程序入口文件
     ]
