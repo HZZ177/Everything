@@ -32,7 +32,7 @@ def pack_and_clean_temp(extra_tool_path, app_name):
         '--onefile',
         '--windowed',
         '--add-data', f"{extra_tool_path};scrcpy_tool",
-        # f'--icon={resource_path}\cover.ico',
+        f'--icon={resource_path}\cover.ico',
         '-n', f"{app_name}",
         "main.py"
     ]

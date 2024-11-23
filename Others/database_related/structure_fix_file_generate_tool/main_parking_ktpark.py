@@ -164,7 +164,7 @@ DELIMITER ;
 
                         for column in columns:
                             describe = column[1]
-                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace("CREATE TABLE", "")};\n")
+                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace('CREATE TABLE', '')};\n")
 
                         file.write("\n")
 

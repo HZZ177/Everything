@@ -25,7 +25,7 @@ def message_test():
     response = requests.post('http://127.0.0.1:1778/cd-autotest/order-message', json=message)
 
     print(f"接收到返回状态码：{response.status_code}")
-    print(f"接收到返回信息：{response.text.encode().decode("unicode_escape")}")
+    print(f"接收到返回信息：{response.text.encode().decode('unicode_escape')}")
 
 
 if __name__ == '__main__':
