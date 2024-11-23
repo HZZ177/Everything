@@ -15,10 +15,9 @@ try:
     app = create_app()
 except Exception as e:
     logger.exception(f"自动化引擎启动失败: {e}")
-    sys.exit(1)  # 应用初始化失败，退出程序
+    sys.exit(1)
 
 if __name__ == "__main__":
-    # 如果创建应用成功，启动应用
     if app:
         logger.info("自动化引擎启动成功")
         app.run(host="0.0.0.0", port=1777)
