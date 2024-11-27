@@ -97,7 +97,7 @@ class ParkingCameraPage:
 
         # 放置选择按钮
         selection_frame = tk.Frame(container)
-        selection_frame.grid(row=0, column=1, pady=15, sticky="nsew")
+        selection_frame.grid(row=0, column=1, pady=15, padx=20, sticky="nsew")
 
         # 配置每列的权重，使其随窗口大小自适应分布
         for i in range(5):  # 5列布局
@@ -117,15 +117,25 @@ class ParkingCameraPage:
             # "有车"选项
             radio_with_car = tk.Radiobutton(selection_frame, text="有车", variable=self.parking_statuses_parked[idx],
                                             value="1", state="disabled")
-            radio_with_car.grid(row=idx + 1, column=2, padx=5, sticky="nsew")  # 放在第3列
+            radio_with_car.grid(row=idx + 1, column=1, padx=5, sticky="nsew")  # 放在第2列
 
             # "无车"选项
-            radio_no_car = tk.Radiobutton(selection_frame, text="无车", variable=self.parking_statuses_parked[idx], value="0",
-                                          state="disabled")
-            radio_no_car.grid(row=idx + 1, column=4, padx=40, sticky="nsew")  # 放在第5列
+            radio_no_car = tk.Radiobutton(selection_frame, text="无车", variable=self.parking_statuses_parked[idx],
+                                          value="0", state="disabled")
+            radio_no_car.grid(row=idx + 1, column=2, padx=5, sticky="nsew")  # 放在第3列
+
+            # "压线告警"选项
+            radio_pressure_alarm = tk.Radiobutton(selection_frame, text="压线告警", variable=self.parking_statuses_parked[idx],
+                                          value="5", state="disabled")
+            radio_pressure_alarm.grid(row=idx + 1, column=3, padx=5, sticky="nsew")     # 第四列
+
+            # "压线告警取消"选项
+            radio_pressure_alarm_cancel = tk.Radiobutton(selection_frame, text="压线取消", variable=self.parking_statuses_parked[idx],
+                                          value="6", state="disabled")
+            radio_pressure_alarm_cancel.grid(row=idx + 1, column=4, padx=5, sticky="nsew")  # 第五列
 
             # 将单选按钮添加到列表中
-            self.parking_status_radiobuttons_parked.append((radio_no_car, radio_with_car))
+            self.parking_status_radiobuttons_parked.append((radio_no_car, radio_with_car, radio_pressure_alarm, radio_pressure_alarm_cancel))
 
         # 底部frame框架放置上报操作按钮
         operation_frame = tk.Frame(container)

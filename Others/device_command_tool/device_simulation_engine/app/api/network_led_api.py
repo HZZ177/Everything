@@ -7,17 +7,109 @@
 # @description:
 
 from flask import Blueprint, request, jsonify
-# from ..services.network_led_service import send_network_led_data
+from functools import wraps
+from ..utils.logger import logger
+from ..services.device_manager import DeviceManager
 
 # 创建蓝图对象
 network_led_bp = Blueprint("network_led", __name__)
 
 
-# @network_led_bp.route("/send_data", methods=["POST"])
-# def send_data():
-#     data = request.json
-#     if not data:
-#         return jsonify({"status": "error", "message": "无效的JSON"}), 400
-#
-#     response = send_network_led_data(data)
-#     return jsonify(response)
+# 工具函数和装饰器
+def handle_exceptions(func):
+    """通用异常处理装饰器"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.exception(f"LED网络屏接口调用时系统异常: {e}")
+            return error_response()
+    return wrapper
+
+
+def success_response(message="成功", data=None):
+    """生成成功响应"""
+    return jsonify({"message": message, "data": data}), 200
+
+
+def error_response(message="系统异常", code=500):
+    """生成失败响应"""
+    return jsonify({"message": message}), code
+
+
+def validate_json(required_fields, request_data):
+    """
+    校验接口JSON传参的必填参数
+    校验通过返回None
+    校验失败返回错误信息，包含缺少的具体参数信息
+    """
+    missing_fields = [field for field in required_fields if field not in request_data]
+    if missing_fields:
+        return jsonify({"error": f"缺少必填参数: {','.join(missing_fields)}"}), 400
+    return None
+
+
+def get_network_led():
+    """获取LED网络屏设备实例"""
+    return DeviceManager.get_network_led_service()
+
+
+# API 路由
+@network_led_bp.route('/connect', methods=['GET'])
+@handle_exceptions
+def connect():
+    """
+    尝试连接设备到服务器
+    连接后发送注册包并开启心跳
+    :return:
+    """
+    logger.info("LED网络屏connect接口被调用")
+    network_led = get_network_led()
+    network_led.connect()
+    network_led.send_register_packet()
+    network_led.start_heartbeat()
+    logger.info("LED网络屏成功连接服务器")
+    return success_response()
+
+
+@network_led_bp.route('/disconnect', methods=['GET'])
+@handle_exceptions
+def disconnect():
+    """
+    断开服务器连接
+    :return:
+    """
+    logger.info("LED网络屏disconnect接口被调用")
+    network_led = get_network_led()
+    network_led.disconnect()
+    logger.info("LED网络屏成功断开连接")
+    return success_response()
+
+
+@network_led_bp.route('/startHeartbeat', methods=['GET'])
+@handle_exceptions
+def start_heartbeat():
+    """
+    开启持续心跳
+    :return:
+    """
+    logger.info("LED网络屏startHeartbeat接口被调用")
+    network_led = get_network_led()
+    network_led.start_heartbeat()
+    logger.info("LED网络屏成功开启心跳")
+    return success_response()
+
+
+@network_led_bp.route('/stopHeartbeat', methods=['GET'])
+@handle_exceptions
+def stop_heartbeat():
+    """
+    停止心跳
+    :return:
+    """
+    logger.info("LED网络屏stopHeartbeat接口被调用")
+    network_led = get_network_led()
+    network_led.stop_heartbeat()
+    logger.info("LED网络屏成功停止心跳")
+    return success_response()

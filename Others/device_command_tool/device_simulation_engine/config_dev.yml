@@ -1,15 +1,12 @@
 server:
   host: "192.168.21.130"
-  port_7777: 7777
-  port_7799: 7799
-  port_8083: 8083
 
 devices_addr:
   channel_camera_ip: "192.168.24.117"
   parking_camera_ip: "192.168.24.118"
   lora_node_ip: "192.168.24.119"
   four_bytes_node_ip: "192.168.24.120"
-  # network_led_ip: "192.168.24.121"
+  network_led_ip: "192.168.24.121"
 
 devices_info:
   channel_camera:
@@ -20,6 +17,9 @@ devices_info:
     device_type: 0x00  # 协议定义的设备类型
     device_version: 0x0400  # 协议定义的设备版本
 
+  network_led:
+    device_type: 0x0C  # DSP类别（网络版LED屏）
+    device_version: 0x0400  # 设备版本号
+
   lora_node: ""
-  network_led: ""
   four_bytes_node: ""

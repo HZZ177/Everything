@@ -6,5 +6,92 @@
 # @Software: PyCharm
 # @description:
 
+import threading
+from ..connection.tcp_connection import TCPClient
+from ..models.network_led_model import NetworkLedModel
+from ..utils.logger import logger
+
+
 class NetworkLedService:
-    pass
+
+    def __init__(self, server_ip, server_port, local_ip, device_type, device_version):
+        self.client = TCPClient()  # TCP连接客户端
+        self.server_ip = server_ip  # 服务器IP
+        self.server_port = server_port  # 服务器端口
+        self.local_ip = local_ip    # 用于连接服务器的设备IP
+        self.device_type = device_type          # 设备类型
+        self.device_version = device_version    # 设备版本
+        self.is_reporting = False  # 是否正在上报数据
+        self.heartbeat_interval = 10  # 心跳间隔时间，单位为秒
+        self.timer = None       # 用于定时发送心跳包的定时器
+        self.network_led_model = NetworkLedModel()  # 网络LED屏数据模型实例
+    
+    def connect(self):
+        status = self.client.is_connected()
+        try:
+            if status:
+                logger.debug(f"LED网络屏尝试连接服务器时，已有连接，断开后重连")
+                self.client.disconnect()
+            self.client.connect(self.server_ip, self.server_port, self.local_ip)
+            # 设置接收数据和断开连接的回调函数
+            self.client.set_receive_callback(self.handle_received_data)
+            self.client.set_disconnect_callback(self.disconnect)
+        except Exception as e:
+            raise e
+
+    def send_register_packet(self):
+        """发送注册包"""
+        try:
+            packet = self.network_led_model.create_register_packet(self.device_type, self.device_version)
+            self.client.send_data(packet, need_log=False)
+        except Exception as e:
+            raise e
+
+    def start_heartbeat(self):
+        try:
+            self.is_reporting = True
+            self.schedule_next_heartbeat()
+            logger.debug("LED网络屏定时心跳开始")
+        except Exception as e:
+            raise e
+
+    def stop_heartbeat(self):
+        try:
+            self.is_reporting = False
+            if self.timer:
+                self.timer.cancel()
+                self.timer = None
+                logger.debug("LED网络屏定时心跳停止")
+        except Exception as e:
+            raise e
+
+    def schedule_next_heartbeat(self):
+        if self.is_reporting:
+            heartbeat_packet = self.network_led_model.create_heartbeat_packet()
+            self.client.send_data(heartbeat_packet, need_log=False)
+            self.timer = threading.Timer(self.heartbeat_interval, self.schedule_next_heartbeat)
+            self.timer.start()
+
+    def handle_received_data(self, data):
+        """接收到服务器数据时的处理函数"""
+        logger.debug(f"LED网络屏收到来自服务器的数据，开始解包 {data}")
+        # 根据数据内容进行处理
+        try:
+            parsed_data = self.network_led_model.deconstruct_packet(data)
+            if parsed_data.get("command_code") == "C":     # 注册包
+                logger.debug(f"LED网络屏收到服务器的注册返回包：{parsed_data}")
+            elif parsed_data.get("command_code") == "F":     # 心跳包
+                logger.debug(f"LED网络屏收到服务器的心跳返回包：{parsed_data}")
+            elif parsed_data.get("command_code") == "T":   # T包为服务器下发的显示数据包
+                logger.info(f"LED网络屏收到服务器下发的屏显示包：{parsed_data}\n提取显示指令部分：{parsed_data.get('data_content')}")
+            else:
+                logger.info(f"LED网络屏收到服务器下发数据，解包结果: {parsed_data}")
+        except Exception as e:
+            logger.exception(f"LED网络屏解析服务器下发数据失败: {e}")
+
+    def disconnect(self):
+        try:
+            self.stop_heartbeat()
+            self.client.disconnect()
+        except Exception as e:
+            raise e

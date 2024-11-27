@@ -163,12 +163,12 @@ class ParkingCameraService:
         # 根据数据内容进行处理
         try:
             parsed_data = self.parking_camera_model.deconstruct_packet(data)
-            if "F" in str(parsed_data):    # 处理车位相机的F心跳包
+            if parsed_data.get("command_code") == "F":    # 处理车位相机的F心跳包
                 logger.debug(f"车位相机收到服务器的心跳返回：{parsed_data}")
-            elif "C" in str(parsed_data):    # 处理注册确认C包
+            elif parsed_data.get("command_code") == "C":    # 处理注册确认C包
                 logger.debug(f"车位相机收到服务器的注册确认包：{parsed_data}")
                 self.register_confirmation_event.set()  # 触发事件解除等待状态
-            elif "J" in str(parsed_data):  # 处理服务器返回的图片头包ACK返回包，返回J包视为确认通过
+            elif parsed_data.get("command_code") == "J":  # 处理服务器返回的图片头包ACK返回包，返回J包视为确认通过
                 logger.debug(f"车位相机收到服务器的图片头包确认返回：{parsed_data}")
                 self.image_confirmation_event.set()  # 触发事件解除等待状态
             else:

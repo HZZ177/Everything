@@ -10,6 +10,7 @@ from .channel_camera_service import ChannelCameraService
 from .parking_camera_service import ParkingCameraService
 from .lora_node_service import LoraNodeService
 from .four_bytes_node_service import FourBytesNodeService
+from .network_led_service import NetworkLedService
 from ..utils.configer import config
 from ..utils.logger import logger
 
@@ -29,8 +30,6 @@ class DeviceManager:
         try:
             # 服务器配置参数
             server_ip = config['server']['host']
-            server_port_7799 = config['server']['port_7799']
-            server_port_7777 = config['server']['port_7777']
             # 通道相机配置参数
             channel_camera_ip = config['devices_addr']['channel_camera_ip']
             channel_camera_device_id = config["devices_info"]["channel_camera"]["device_id"]
@@ -43,13 +42,18 @@ class DeviceManager:
             lora_node_ip = config['devices_addr']['lora_node_ip']
             # 四字节网络节点配置参数
             four_bytes_node_ip = config['devices_addr']['four_bytes_node_ip']
+            # led网络屏配置参数
+            network_led_ip = config['devices_addr']['network_led_ip']
+            network_led_device_type = config["devices_info"]["network_led"]["device_type"]
+            network_led_device_version = config["devices_info"]["network_led"]["device_version"]
+
         except Exception as e:
             raise Exception(f"初始化时配置读取失败：{e}")
 
         # 初始化通道相机设备
         try:
             # 初始化设备实例
-            cls.channel_camera_service = ChannelCameraService(server_ip, server_port_7799, channel_camera_ip,
+            cls.channel_camera_service = ChannelCameraService(server_ip, 7799, channel_camera_ip,
                                                               channel_camera_device_id, channel_camera_device_version)
             # 连接服务器
             cls.channel_camera_service.connect()
@@ -64,7 +68,7 @@ class DeviceManager:
         # 初始化车位相机设备
         try:
             # 初始化设备实例
-            cls.parking_camera_service = ParkingCameraService(server_ip, server_port_7799, parking_camera_ip,
+            cls.parking_camera_service = ParkingCameraService(server_ip, 7799, parking_camera_ip,
                                                               parking_camera_device_type, parking_camera_device_version)
             # 连接服务器
             cls.parking_camera_service.connect()
@@ -81,7 +85,7 @@ class DeviceManager:
         # 初始化lora节点设备
         try:
             # 初始化设备实例
-            cls.lora_node_service = LoraNodeService(server_ip, server_port_7777, lora_node_ip)
+            cls.lora_node_service = LoraNodeService(server_ip, 7777, lora_node_ip)
             # 连接服务器
             cls.lora_node_service.connect()
             logger.info("Lora节点初始化成功")
@@ -91,12 +95,27 @@ class DeviceManager:
         # 初始化四字节节点设备
         try:
             # 初始化设备实例
-            cls.four_bytes_node_service = FourBytesNodeService(server_ip, server_port_7777, four_bytes_node_ip)
+            cls.four_bytes_node_service = FourBytesNodeService(server_ip, 7777, four_bytes_node_ip)
             # 连接服务器
             cls.four_bytes_node_service.connect()
             logger.info("四字节网络节点初始化成功")
         except Exception as e:
             raise Exception(f"四字节网络节点初始化失败: {e}")
+
+        # 初始化网络led屏设备
+        try:
+            # 初始化设备实例
+            cls.network_led_service = NetworkLedService(server_ip, 7799, network_led_ip,
+                                                        network_led_device_type, network_led_device_version)
+            # 连接服务器
+            cls.network_led_service.connect()
+            # 连接后发送注册包
+            cls.network_led_service.send_register_packet()
+            # 注册后开始持续心跳
+            cls.network_led_service.start_heartbeat()
+            logger.info("网络led屏初始化成功")
+        except Exception as e:
+            raise Exception(f"网络led屏初始化失败: {e}")
 
     @classmethod
     def get_channel_camera_service(cls):
