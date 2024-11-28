@@ -14,6 +14,7 @@ from enum import Enum
 from ..utils.logger import logger
 from ..utils.configer import config
 from ..services.device_manager import DeviceManager
+from ..services.channel_camera_service import ChannelCameraService
 
 # 创建蓝图
 channel_camera_bp = Blueprint("channel_camera", __name__)
@@ -120,7 +121,8 @@ def validate_json(required_fields, request_data):
 
 def get_channel_camera():
     """获取通道相机设备实例"""
-    return DeviceManager.get_channel_camera_service()
+    service: ChannelCameraService = DeviceManager.get_channel_camera_service()
+    return service
 
 
 # API 路由
@@ -135,8 +137,6 @@ def connect():
     logger.info("通道相机connect接口被调用")
     camera = get_channel_camera()
     camera.connect()
-    camera.send_register_packet()
-    camera.start_heartbeat()
     logger.info("通道相机成功连接服务器")
     return success_response()
 
@@ -196,7 +196,7 @@ def send_custom_command():
         commandCode (str): 指令类型，不传默认为T包
     :return:
     """
-    logger.info("通道相机sendCommand接口被调用")
+    logger.info("通道相机sendCustomCommand接口被调用")
     # 检验必填参数
     data = request.get_json()
     validation_error = validate_json(["commandData"], data)
@@ -209,7 +209,7 @@ def send_custom_command():
 
     camera = get_channel_camera()
     camera.send_command(command_data, command_code)
-    logger.info(f"通道相机成功发送指令: {command_data}")
+    logger.info(f"通道相机自定义指令成功发送指令: {command_data}")
     return success_response()
 
 
@@ -400,7 +400,7 @@ def car_back_event():
     car_type = data["carType"]          # 车辆类型
     car_colour = data["carColour"]      # 车身颜色
 
-    if trigger_flag not in (item.value for item in CarTriggerFlag):
+    if trigger_flag not in (item.value for item in CarBackFlag):
         return error_response(f"未知的车位事件类型: {trigger_flag}", 400)
     if plate_reliability not in range(0, 1001):     # 可信度范围0-1000
         return error_response(f"无效的可信度 {plate_reliability}，取值范围0-1000: ", 400)

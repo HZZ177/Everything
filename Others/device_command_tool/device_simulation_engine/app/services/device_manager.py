@@ -6,21 +6,24 @@
 # @Software: PyCharm
 # @description:
 
+from typing import Union
 from .channel_camera_service import ChannelCameraService
 from .parking_camera_service import ParkingCameraService
 from .lora_node_service import LoraNodeService
 from .four_bytes_node_service import FourBytesNodeService
 from .network_led_service import NetworkLedService
+from .network_lcd_service import NetworkLcdService
 from ..utils.configer import config
 from ..utils.logger import logger
 
 
 class DeviceManager:
-    channel_camera_service = None   # 通道相机服务实例
-    lora_node_service = None        # Lora节点设备服务实例
-    four_bytes_node_service = None   # 四字节网络节点服务实例
-    network_led_service = None      # 网络led屏服务实例
-    parking_camera_service = None   # 车位相机服务实例
+    channel_camera_service: Union[ChannelCameraService, None] = None   # 通道相机服务实例
+    lora_node_service: Union[LoraNodeService, None] = None        # Lora节点设备服务实例
+    four_bytes_node_service: Union[FourBytesNodeService, None] = None   # 四字节网络节点服务实例
+    network_led_service: Union[NetworkLedService, None] = None      # 网络led屏服务实例
+    network_lcd_service: Union[NetworkLcdService, None] = None      # lcd一体屏服务实例
+    parking_camera_service: Union[ParkingCameraService, None] = None   # 车位相机服务实例
 
     @classmethod
     def initialize_all_devices(cls):
@@ -46,6 +49,8 @@ class DeviceManager:
             network_led_ip = config['devices_addr']['network_led_ip']
             network_led_device_type = config["devices_info"]["network_led"]["device_type"]
             network_led_device_version = config["devices_info"]["network_led"]["device_version"]
+            # lcd一体屏配置参数
+            network_lcd_ip = config['devices_addr']['network_lcd_ip']
 
         except Exception as e:
             raise Exception(f"初始化时配置读取失败：{e}")
@@ -55,12 +60,8 @@ class DeviceManager:
             # 初始化设备实例
             cls.channel_camera_service = ChannelCameraService(server_ip, 7799, channel_camera_ip,
                                                               channel_camera_device_id, channel_camera_device_version)
-            # 连接服务器
+            # 连接服务器后自动注册并开始心跳
             cls.channel_camera_service.connect()
-            # 连接后发送注册包
-            cls.channel_camera_service.send_register_packet()
-            # 注册后开始持续心跳
-            cls.channel_camera_service.start_heartbeat()
             logger.info("通道相机设备初始化成功")
         except Exception as e:
             raise Exception(f"通道相机设备初始化失败: {e}")
@@ -70,14 +71,8 @@ class DeviceManager:
             # 初始化设备实例
             cls.parking_camera_service = ParkingCameraService(server_ip, 7799, parking_camera_ip,
                                                               parking_camera_device_type, parking_camera_device_version)
-            # 连接服务器
+            # 连接服务器后自动注册并开始心跳
             cls.parking_camera_service.connect()
-            # 连接后发送注册包
-            cls.parking_camera_service.send_register_packet()
-            # 特殊步骤，注册后立即发一个无实际业务数据的车位状态上报，全部用9占位，用于服务器识别设备类型
-            cls.parking_camera_service.send_all9_packet_for_recognition()
-            # 注册后开始持续心跳
-            cls.parking_camera_service.start_heartbeat()
             logger.info("车位相机设备初始化成功")
         except Exception as e:
             raise Exception(f"车位相机设备初始化失败: {e}")
@@ -107,15 +102,40 @@ class DeviceManager:
             # 初始化设备实例
             cls.network_led_service = NetworkLedService(server_ip, 7799, network_led_ip,
                                                         network_led_device_type, network_led_device_version)
-            # 连接服务器
+            # 连接服务器后自动注册并开始心跳
             cls.network_led_service.connect()
-            # 连接后发送注册包
-            cls.network_led_service.send_register_packet()
-            # 注册后开始持续心跳
-            cls.network_led_service.start_heartbeat()
             logger.info("网络led屏初始化成功")
         except Exception as e:
             raise Exception(f"网络led屏初始化失败: {e}")
+
+        # 初始化网络lcd一体屏设备
+        try:
+            # 初始化设备实例
+            server_url = f"ws://{server_ip}:8080/device-access/lcd/{network_lcd_ip}&0"  # url固定格式，"&0"标识为LCD一体屏
+            cls.network_lcd_service = NetworkLcdService(server_ip, 8080, network_lcd_ip, server_url)
+            # 连接服务器后开始心跳
+            cls.network_lcd_service.connect()
+            logger.info("网络lcd一体屏初始化成功")
+        except Exception as e:
+            raise Exception(f"网络lcd一体屏初始化失败: {e}")
+
+    @classmethod
+    def shutdown_all_devices(cls):
+        """注销所有设备"""
+        logger.info("开始注销所有设备......")
+        if cls.channel_camera_service:
+            cls.channel_camera_service.disconnect()
+        if cls.parking_camera_service:
+            cls.parking_camera_service.disconnect()
+        if cls.lora_node_service:
+            cls.lora_node_service.disconnect()
+        if cls.four_bytes_node_service:
+            cls.four_bytes_node_service.disconnect()
+        if cls.network_led_service:
+            cls.network_led_service.disconnect()
+        if cls.network_lcd_service:
+            cls.network_lcd_service.disconnect()
+        logger.info("所有设备注销成功")
 
     @classmethod
     def get_channel_camera_service(cls):
@@ -129,13 +149,18 @@ class DeviceManager:
 
     @classmethod
     def get_four_bytes_node_service(cls):
-        """获取Lora节点设备服务实例"""
+        """获取四字节节点设备服务实例"""
         return cls.four_bytes_node_service
 
     @classmethod
     def get_network_led_service(cls):
         """获取网络led屏服务实例"""
         return cls.network_led_service
+
+    @classmethod
+    def get_network_lcd_service(cls):
+        """获取lcd一体屏服务实例"""
+        return cls.network_lcd_service
 
     @classmethod
     def get_parking_camera_service(cls):

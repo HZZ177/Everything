@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify
 from functools import wraps
 from ..utils.logger import logger
 from ..services.device_manager import DeviceManager
+from ..services.four_bytes_node_service import FourBytesNodeService
 
 # 创建蓝图
 four_bytes_node_bp = Blueprint("four_bytes_node", __name__)
@@ -52,7 +53,8 @@ def validate_json(required_fields, request_data):
 
 def get_four_bytes_node():
     """获取四字节网络节点设备实例"""
-    return DeviceManager.get_four_bytes_node_service()
+    service: FourBytesNodeService = DeviceManager.get_four_bytes_node_service()
+    return service
 
 
 # API 路由

@@ -31,7 +31,7 @@ class LoraNodeService:
                 self.client.disconnect()
             self.client.connect(self.server_ip, self.server_port, self.local_ip)
         except Exception as e:
-            raise e
+            raisee
 
     def disconnect(self):
         try:

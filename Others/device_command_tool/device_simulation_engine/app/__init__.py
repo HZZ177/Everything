@@ -11,9 +11,11 @@ import psutil
 from flask import Flask
 from .api.channel_camera_api import channel_camera_bp
 from .api.network_led_api import network_led_bp
+from .api.network_lcd_api import network_lcd_bp
 from .api.parking_camera_api import parking_camera_bp
 from .api.lora_node_api import lora_node_bp
 from .api.four_bytes_node_api import four_bytes_node_bp
+from .api.findcar_report_api import findcar_report_bp
 from .utils.logger import logger
 from .utils.configer import config
 from .services.channel_camera_service import ChannelCameraService
@@ -21,6 +23,8 @@ from .services.network_led_service import NetworkLedService
 from .services.parking_camera_service import ParkingCameraService
 from .services.lora_node_service import LoraNodeService
 from .services.device_manager import DeviceManager
+from .connection.db_connection import DBConnection
+from .utils.file_path import db_path
 
 
 def get_all_local_ips():
@@ -38,15 +42,17 @@ def get_all_local_ips():
     return ips
 
 
-def create_app():
+def init_app():
     app = Flask(__name__)
 
     # 注册Flask蓝图
     app.register_blueprint(channel_camera_bp, url_prefix="/api/channel_camera")
     app.register_blueprint(network_led_bp, url_prefix="/api/network_led")
+    app.register_blueprint(network_lcd_bp, url_prefix="/api/network_lcd")
     app.register_blueprint(parking_camera_bp, url_prefix="/api/parking_camera")
     app.register_blueprint(lora_node_bp, url_prefix="/api/lora_node")
     app.register_blueprint(four_bytes_node_bp, url_prefix="/api/four_bytes_node")
+    app.register_blueprint(findcar_report_bp, url_prefix="/api/findcar_report")
 
     logger.info("开始检查当前环境是否满足配置文件中设备所需全部IP")
     # 获取当前环境中的所有IP地址
@@ -56,7 +62,8 @@ def create_app():
     # 加载配置中的设备IP
     try:
         required_ips = [addr for device, addr in config['devices_addr'].items()]
-        logger.debug(f"配置文件中所需的所有设备IP地址: {required_ips}")
+        devices = [device for device, addr in config['devices_addr'].items()]
+        logger.info(f"配置文件中所需的所有设备IP地址: {required_ips}，对应设备名称: {devices}")
     except Exception as e:
         raise Exception(f"获取配置文件所需的IP失败: {e}")
 
@@ -73,5 +80,12 @@ def create_app():
         logger.info("所有设备初始化成功")
     except Exception as e:
         raise Exception(f"设备初始化失败: {e}")
+
+    # 初始化sqlite
+    try:
+        DBConnection(db_path).init()
+        logger.info("sqlite初始化成功")
+    except Exception as e:
+        raise Exception(f"sqlite初始化失败: {e}")
 
     return app

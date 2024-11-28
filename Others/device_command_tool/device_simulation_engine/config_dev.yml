@@ -7,6 +7,7 @@ devices_addr:
   lora_node_ip: "192.168.24.119"
   four_bytes_node_ip: "192.168.24.120"
   network_led_ip: "192.168.24.121"
+  network_lcd_ip: "192.168.24.122"
 
 devices_info:
   channel_camera:
@@ -23,3 +24,4 @@ devices_info:
 
   lora_node: ""
   four_bytes_node: ""
+  network_ldc: ""

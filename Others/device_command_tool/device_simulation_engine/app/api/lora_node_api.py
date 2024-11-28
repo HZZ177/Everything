@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify
 from functools import wraps
 from ..utils.logger import logger
 from ..services.device_manager import DeviceManager
+from ..services.lora_node_service import LoraNodeService
 
 # 创建蓝图
 lora_node_bp = Blueprint("lora_node", __name__)
@@ -52,7 +53,8 @@ def validate_json(required_fields, request_data):
 
 def get_lora_node():
     """获取通道相机设备实例"""
-    return DeviceManager.get_lora_node_service()
+    service: LoraNodeService = DeviceManager.get_lora_node_service()
+    return service
 
 
 # API 路由
@@ -101,38 +103,35 @@ def report_status():
     :return:
     """
     logger.info("Lora节点reportStatus接口被调用")
-    try:
-        data = request.json
-        sensor_addr = data.get("sensorAddr")
-        sensor_status = data.get("sensorStatus")
-        fault_details = data.get("faultDetails")
+    data = request.json
+    sensor_addr = data.get("sensorAddr")
+    sensor_status = data.get("sensorStatus")
+    fault_details = data.get("faultDetails")
 
-        # 参数校验
-        if not isinstance(sensor_addr, int) or sensor_addr <= 0:
-            return jsonify({"error": f"无效的车位地址{sensor_addr}"}), 400
+    # 参数校验
+    if not isinstance(sensor_addr, int) or sensor_addr <= 0:
+        return jsonify({"error": f"无效的车位地址{sensor_addr}"}), 400
 
-        if not isinstance(sensor_status, int) or sensor_status not in [1, 2, 3, 4]:
-            return jsonify({"error": f"无效的探测器状态: {sensor_status}"}), 400
+    if not isinstance(sensor_status, int) or sensor_status not in [1, 2, 3, 4]:
+        return jsonify({"error": f"无效的探测器状态: {sensor_status}"}), 400
 
-        if not isinstance(fault_details, list):
-            return jsonify({"error": f"故障详情参数类型错误: {sensor_status}"}), 400
+    if not isinstance(fault_details, list):
+        return jsonify({"error": f"故障详情参数类型错误: {sensor_status}"}), 400
 
-        # 故障详情范围1-7
-        if any(fault_detail not in [1, 2, 3, 4, 5, 6, 7] for fault_detail in fault_details):
-            return jsonify({"error": f"故障详情中包含无效值，有效范围位1-7的整数"}), 400
+    # 故障详情范围1-7
+    if any(fault_detail not in [1, 2, 3, 4, 5, 6, 7] for fault_detail in fault_details):
+        return jsonify({"error": f"故障详情中包含无效值，有效范围位1-7的整数"}), 400
 
-        # 上报为故障状态时，必须有故障详情
-        if sensor_status in [3, 4]:
-            if not fault_details:
-                return jsonify({"error": "上报车位为故障状态时，必须提供至少一个故障详情"}), 400
-        else:   # 如果车位状态为正常，强制将故障详情丢弃
-            fault_details = []
+    # 上报为故障状态时，必须有故障详情
+    if sensor_status in [3, 4]:
+        if not fault_details:
+            return jsonify({"error": "上报车位为故障状态时，必须提供至少一个故障详情"}), 400
+    else:   # 如果车位状态为正常，强制将故障详情丢弃
+        fault_details = []
 
-        lora_node = get_lora_node()
-        lora_node.report_status(sensor_addr, sensor_status, fault_details)
-        return success_response(data="上报成功")
-    except Exception:
-        return error_response()
+    lora_node = get_lora_node()
+    lora_node.report_status(sensor_addr, sensor_status, fault_details)
+    return success_response(data="上报成功")
 
 
 @lora_node_bp.route('/startReporting', methods=['POST'])
@@ -154,43 +153,40 @@ def start_reporting():
     :return:
     """
     logger.info("Lora节点startReporting接口被调用")
-    try:
-        data = request.json
-        sensor_addr = data.get("sensorAddr")
-        sensor_status = data.get("sensorStatus")
-        fault_details = data.get("faultDetails")
-        report_interval = data.get("reportInterval", 10)    # 上报的间隔时间，不传的话默认时间10s/次
+    data = request.json
+    sensor_addr = data.get("sensorAddr")
+    sensor_status = data.get("sensorStatus")
+    fault_details = data.get("faultDetails")
+    report_interval = data.get("reportInterval", 10)    # 上报的间隔时间，不传的话默认时间10s/次
 
-        # 参数校验
-        if not isinstance(sensor_addr, int) or sensor_addr <= 0:
-            return jsonify({"error": f"无效的车位地址{sensor_addr}"}), 400
+    # 参数校验
+    if not isinstance(sensor_addr, int) or sensor_addr <= 0:
+        return jsonify({"error": f"无效的车位地址{sensor_addr}"}), 400
 
-        if not isinstance(sensor_status, int) or sensor_status not in [0, 1, 2, 3]:
-            return jsonify({"error": f"无效的探测器状态: {sensor_status}"}), 400
+    if not isinstance(sensor_status, int) or sensor_status not in [0, 1, 2, 3]:
+        return jsonify({"error": f"无效的探测器状态: {sensor_status}"}), 400
 
-        if not isinstance(fault_details, list):
-            return jsonify({"error": f"故障详情参数类型错误: {sensor_status}"}), 400
+    if not isinstance(fault_details, list):
+        return jsonify({"error": f"故障详情参数类型错误: {sensor_status}"}), 400
 
-        if report_interval is not None and not isinstance(report_interval, int):
-            return jsonify({"error": f"无效的上报时间间隔: {sensor_status}"}), 400
+    if report_interval is not None and not isinstance(report_interval, int):
+        return jsonify({"error": f"无效的上报时间间隔: {sensor_status}"}), 400
 
-        # 故障详情范围1-7
-        if any(fault_detail not in [1, 2, 3, 4, 5, 6, 7] for fault_detail in fault_details):
-            return jsonify({"error": f"故障详情中包含无效值，有效范围位1-7的整数"}), 400
+    # 故障详情范围1-7
+    if any(fault_detail not in [1, 2, 3, 4, 5, 6, 7] for fault_detail in fault_details):
+        return jsonify({"error": f"故障详情中包含无效值，有效范围位1-7的整数"}), 400
 
-        # 有故障状态时，必须有故障详情
-        if sensor_status in [3, 4]:
-            if not fault_details:
-                return jsonify({"error": "上报车位为故障状态时，必须提供至少一个故障详情"}), 400
-        else:   # 如果车位状态为正常，强制将故障详情丢弃
-            fault_details = []
+    # 有故障状态时，必须有故障详情
+    if sensor_status in [3, 4]:
+        if not fault_details:
+            return jsonify({"error": "上报车位为故障状态时，必须提供至少一个故障详情"}), 400
+    else:   # 如果车位状态为正常，强制将故障详情丢弃
+        fault_details = []
 
-        lora_node = get_lora_node()
-        lora_node.start_reporting(sensor_addr, sensor_status, fault_details, report_interval)
-        logger.info("Lora节点成功开启持续上报")
-        return success_response(data="开启持续上报成功")
-    except Exception:
-        return error_response()
+    lora_node = get_lora_node()
+    lora_node.start_reporting(sensor_addr, sensor_status, fault_details, report_interval)
+    logger.info("Lora节点成功开启持续上报")
+    return success_response(data="开启持续上报成功")
 
 
 @lora_node_bp.route('/stopReporting', methods=['GET'])
@@ -201,10 +197,7 @@ def stop_reporting():
     :return:
     """
     logger.info("Lora节点stopReporting接口被调用")
-    try:
-        lora_node = get_lora_node()
-        lora_node.stop_reporting()
-        logger.info("Lora节点成功停止持续上报")
-        return success_response(data="停止持续上报成功")
-    except Exception:
-        return error_response()
+    lora_node = get_lora_node()
+    lora_node.stop_reporting()
+    logger.info("Lora节点成功停止持续上报")
+    return success_response(data="停止持续上报成功")

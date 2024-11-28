@@ -16,8 +16,6 @@ class TCPClient:
     def __init__(self):
         self.local_ip = None    # 用来连接服务器的设备IP
         self.server_socket = None
-        self.server_ip = ""
-        self.server_port = 0
         self.receive_callback = None    # 处理监控服务器下发数据的回调函数
         self.disconnect_callback = None    # 处理connection层主动断开时后续逻辑的回调函数
 
@@ -51,10 +49,10 @@ class TCPClient:
                 if isinstance(data, str):
                     data = data.encode()
                 self.server_socket.sendall(data)
-                if not need_log:    # 根据参数选择是否打印info日志，为False打debug
-                    logger.debug(f"发送数据：{data}")
+                if need_log:    # 根据参数选择是否打印info日志，为False打debug
+                    logger.info(f"发送数据：{data}")
                 else:
-                    logger.info(f"发送数据: {data}")
+                    logger.debug(f"发送数据: {data}")
             except Exception as e:
                 logger.error(f"发送数据失败: {e}")
                 raise e

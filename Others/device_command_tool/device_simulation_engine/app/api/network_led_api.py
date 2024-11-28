@@ -9,6 +9,7 @@
 from flask import Blueprint, request, jsonify
 from functools import wraps
 from ..utils.logger import logger
+from ..services.network_led_service import NetworkLedService
 from ..services.device_manager import DeviceManager
 
 # 创建蓝图对象
@@ -52,7 +53,8 @@ def validate_json(required_fields, request_data):
 
 def get_network_led():
     """获取LED网络屏设备实例"""
-    return DeviceManager.get_network_led_service()
+    service: NetworkLedService = DeviceManager.get_network_led_service()
+    return service
 
 
 # API 路由
@@ -67,8 +69,6 @@ def connect():
     logger.info("LED网络屏connect接口被调用")
     network_led = get_network_led()
     network_led.connect()
-    network_led.send_register_packet()
-    network_led.start_heartbeat()
     logger.info("LED网络屏成功连接服务器")
     return success_response()
 
@@ -113,3 +113,34 @@ def stop_heartbeat():
     network_led.stop_heartbeat()
     logger.info("LED网络屏成功停止心跳")
     return success_response()
+
+
+@network_led_bp.route('/getHistoryCommandMessage', methods=['POST'])
+@handle_exceptions
+def get_history_command_message():
+    """
+    查询数据库中记录的服务器对屏下发的命令消息
+    必填参数：
+        pageNo: 页码
+        pageSize: 每页数量
+    :return:
+    """
+    logger.info("LED网络屏getCommandMessage接口被调用")
+    # 校验必填参数
+    data = request.json
+    validation_error = validate_json(['pageNo', 'pageSize'], data)
+    if validation_error:
+        return validation_error
+
+    page_no = data.get('pageNo', 1)
+    page_size = data.get('pageSize', 10)
+    # 分页页数和每页数量校验必须为正整数
+    if not isinstance(page_no, int) or not isinstance(page_size, int):
+        return error_response(message="分页参数必须为正整数")
+    if page_no <= 0 or page_size <= 0:
+        return error_response(message="分页参数必须为正整数")
+
+    network_led = get_network_led()
+    result = network_led.get_db_command_message(page_no, page_size)
+    logger.info(f"LED网络屏查询数据库中记录的服务器对屏下发的命令消息成功，返回结果：{result}")
+    return success_response(data=result)

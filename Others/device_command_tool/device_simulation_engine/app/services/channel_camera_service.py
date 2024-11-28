@@ -21,7 +21,7 @@ class ChannelCameraService:
         self.server_port = server_port  # 服务器端口
         self.local_ip = local_ip        # 用于连接服务器的设备IP
         self.is_reporting = False       # 是否正在上报数据
-        self.heartbeat_interval = 10    # 心跳间隔时间，单位为秒
+        self.heartbeat_interval = 30    # 心跳间隔时间，单位为秒
         self.timer = None               # 用于定时发送心跳包的定时器
         self.register_confirmation_event = threading.Event()  # 线程事件对象，用于注册时阻塞发送进程，等待服务器返回确认信息
         self.channel_camera_model = ChannelCameraModel()    # 通道相机数据模型实例
@@ -32,7 +32,15 @@ class ChannelCameraService:
             if status:
                 logger.debug(f"通道相机尝试连接服务器时，已有连接，断开后重连")
                 self.client.disconnect()
+            # 设置接收数据和断开连接的回调函数
+            self.client.set_receive_callback(self.handle_received_data)
+            self.client.set_disconnect_callback(self.disconnect)
+            # 连接服务器
             self.client.connect(self.server_ip, self.server_port, self.local_ip)
+            # 连接后发送注册包
+            self.send_register_packet()
+            # 注册后开始持续心跳
+            self.start_heartbeat()
             # 设置接收数据和断开连接的回调函数
             self.client.set_receive_callback(self.handle_received_data)
             self.client.set_disconnect_callback(self.disconnect)

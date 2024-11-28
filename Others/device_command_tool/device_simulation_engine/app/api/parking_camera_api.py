@@ -12,6 +12,7 @@ from enum import Enum
 from ..services.device_manager import DeviceManager
 from ..utils.logger import logger
 from ..utils.util import get_inner_picture
+from ..services.parking_camera_service import ParkingCameraService
 
 
 # 创建蓝图对象
@@ -22,13 +23,15 @@ parking_camera_bp = Blueprint("parking_camera", __name__)
 class ParkingEvent(Enum):
     """
     车位状态枚举值
-    0：无车；1：有车；2：出车；3：进车；4：设备故障
+    0：无车；1：有车；2：出车；3：进车；4：设备故障；5：压线告警：6：压线取消
     """
     NO_CAR = 0
     HAS_CAR = 1
     CAR_OUT = 2
     CAR_IN = 3
     FAULT = 4
+    PRESSURE = 5
+    PRESSURE_CANCEL = 6
 
 
 # 公共工具函数和装饰器
@@ -86,7 +89,8 @@ def validate_form_field(field_name, data, valid_values=None):
 
 def get_parking_camera():
     """获取车位相机设备实例"""
-    return DeviceManager.get_parking_camera_service()    
+    service: ParkingCameraService = DeviceManager.get_parking_camera_service()
+    return service
 
 
 # 核心 API 路由
@@ -101,8 +105,6 @@ def connect():
     logger.info("车位相机connect接口被调用")
     parking_camera = get_parking_camera()
     parking_camera.connect()
-    parking_camera.send_register_packet()
-    parking_camera.start_heartbeat()
     logger.info("车位相机成功连接服务器")
     return success_response()
 
@@ -156,7 +158,7 @@ def parking_status_report():
     上报单个车位状态（事件）
     必填参数：
     port (int): 车位号——范围1-6
-    parkEvent (int): 车位状态——0：无车；1：有车；2：出车；3：进车；4：设备故障
+    parkEvent (int): 车位状态——0：无车；1：有车；2：出车；3：进车；4：设备故障；5：压线告警：6：压线取消
     """
     logger.info("车位相机parkingStatusReport接口被调用")
     # 校验必填参数
@@ -172,7 +174,7 @@ def parking_status_report():
     if park_num not in range(1, 7):     # 车位号范围1-6
         return error_response(f"错误的车位号: {park_num}，范围应为1-6", 400)
     if park_event not in (item.value for item in ParkingEvent):
-        return error_response(f"错误的事件类型: {park_event}，范围应为0-4", 400)
+        return error_response(f"错误的事件类型: {park_event}，范围应为0-6", 400)
 
     parking_camera = get_parking_camera()   # 获取设备实例
     parking_camera.send_parking_status(park_num, park_event)    # 上报车位状态

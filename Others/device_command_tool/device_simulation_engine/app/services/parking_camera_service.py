@@ -21,7 +21,7 @@ class ParkingCameraService:
         self.server_port = server_port      # 服务器端口
         self.local_ip = local_ip            # 用于连接服务器的设备IP
         self.is_reporting = False           # 是否正在上报数据
-        self.heartbeat_interval = 10        # 心跳间隔时间，单位为秒
+        self.heartbeat_interval = 30        # 心跳间隔时间，单位为秒
         self.timer = None                   # 用于定时发送心跳包的定时器
         self.image_confirmation_event = threading.Event()  # 线程事件对象，用于发送图片时阻塞发送进程，等待服务器返回确认信息
         self.register_confirmation_event = threading.Event()  # 线程事件对象，用于注册时阻塞发送进程，等待服务器返回确认信息
@@ -34,10 +34,17 @@ class ParkingCameraService:
             if status:
                 logger.warning(f"车位相机尝试连接服务器时，已有连接，断开后重连")
                 self.client.disconnect()
-            self.client.connect(self.server_ip, self.server_port, self.local_ip)
             # 设置接收数据和断开连接的回调函数
             self.client.set_receive_callback(self.handle_received_data)
             self.client.set_disconnect_callback(self.disconnect)
+            # 连接服务器
+            self.client.connect(self.server_ip, self.server_port, self.local_ip)
+            # 连接后发送注册包
+            self.send_register_packet()
+            # 特殊步骤，注册后立即发一个无实际业务数据的车位状态上报，全部用9占位，用于服务器识别设备类型
+            self.send_all9_packet_for_recognition()
+            # 注册后开始持续心跳
+            self.start_heartbeat()
         except Exception as e:
             raise e
 
@@ -171,6 +178,8 @@ class ParkingCameraService:
             elif parsed_data.get("command_code") == "J":  # 处理服务器返回的图片头包ACK返回包，返回J包视为确认通过
                 logger.debug(f"车位相机收到服务器的图片头包确认返回：{parsed_data}")
                 self.image_confirmation_event.set()  # 触发事件解除等待状态
+            elif parsed_data.get("command_code") == "S":    # 处理车位相机的F心跳包
+                logger.info(f"车位相机收到服务器的车位状态上报返回：{parsed_data}")
             else:
                 logger.info(f"车位相机收到服务器下发数据，解包结果: {parsed_data}")
         except Exception as e:
