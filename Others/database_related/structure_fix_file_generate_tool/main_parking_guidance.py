@@ -53,47 +53,6 @@ class Application:
             print(f"数据库连接失败: {e}")
             traceback.print_exc()
 
-    def get_all_tables_and_columns(self):
-        """
-        获取标准库结构，只包含表名，字段和字段类型
-        :return:
-        """
-
-        self.connect_to_database()
-
-        # 文件路径
-        output_file = 'output/parking_guidance_database_structure.txt'
-
-        try:
-            with self.connection.cursor() as cursor:
-                # 获取所有表名
-                cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
-                tables = cursor.fetchall()
-
-                with open(output_file, 'w', encoding="utf-8") as file:
-                    for table in tables:
-                        table_name = table[0]
-                        file.write(f"Table: {table_name}\n")
-
-                        # 调试输出
-                        # print(f"正在处理表: {table_name}")
-
-                        # 获取表中的所有字段名和字段类型
-                        cursor.execute(f"DESCRIBE `{table_name}`")
-                        columns = cursor.fetchall()
-
-                        for column in columns:
-                            field, type_ = column[:2]
-                            file.write(f"  Field: {field}, Type: {type_}\n")
-
-                        file.write("\n")
-
-        except Exception as e:
-            print(f"获取表和列信息失败: {e}")
-            traceback.print_exc()
-
-        sleep(2)
-
     def insert_procedure_sentences(self):
         procedure_add_element_unless_exists = """
 DROP PROCEDURE IF EXISTS add_element_unless_exists;

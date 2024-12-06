@@ -435,6 +435,7 @@ class ParkingCameraPage:
             packet_number=0
         )
         self.tcp_client.send_command(packet_header)
+        print(f"头包total_packets：{total_packets + 1}")
         print(f"头包full_content_hex：{(has_card_flag + data_content + total_image_length).hex()}")
         print(f"头包封装数据：{packet_header}")
 

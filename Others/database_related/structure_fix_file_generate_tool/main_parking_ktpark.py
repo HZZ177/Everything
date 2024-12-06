@@ -7,7 +7,6 @@
 # @description:
 import pymysql
 import traceback
-from time import sleep
 
 
 class Application:
@@ -86,8 +85,6 @@ class Application:
         except Exception as e:
             print(f"获取表和列信息失败: {e}")
             traceback.print_exc()
-
-        sleep(2)
 
     def insert_procedure_sentences(self):
         procedure_add_element_unless_exists = """
@@ -172,11 +169,9 @@ DELIMITER ;
             print(f"获取表结构信息失败: {e}")
             traceback.print_exc()
 
-        sleep(2)
-
     def get_all_column_insert_sentences(self):
         """
-        获取所有字段和索引创建语句
+        获取所有字段和索引动态生成结构修补语句
         :return:
         """
 
@@ -192,43 +187,84 @@ DELIMITER ;
                     file.write("-- ===============全量更新所有表字段===============\n")
                     for table in tables:
                         table_name = table[0]
-                        # file.write(f"-- 构造表{table_name}\n")
+                        file.write(f"-- 更新表 {table_name} 所有字段和索引\n")
 
-                        # 调试输出
-                        # print(f"正在处理表: {table_name}")
-
-                        # 获取所有表的初始化语句
+                        # 获取表字段详细信息
                         cursor.execute(f"""SELECT
                                                 COLUMN_NAME,
-                                                DATA_TYPE,
+                                                COLUMN_TYPE,
                                                 IS_NULLABLE,
                                                 COLUMN_DEFAULT,
-                                                CHARACTER_MAXIMUM_LENGTH,
-                                                NUMERIC_PRECISION,
-                                                COLUMN_TYPE,
                                                 COLUMN_KEY,
-                                                EXTRA 
+                                                EXTRA
                                             FROM
-                                                INFORMATION_SCHEMA.COLUMNS 
+                                                INFORMATION_SCHEMA.COLUMNS
                                             WHERE
-                                                TABLE_SCHEMA = '{self.database}' 
-                                                AND TABLE_NAME = '{table_name}';
-                                                """)
-                        create_columns = cursor.fetchall()
-                        fields = str(create_columns).split(r'\n')
+                                                TABLE_SCHEMA = '{self.database}'
+                                                AND TABLE_NAME = '{table_name}';""")
+                        columns = cursor.fetchall()
+
+                        # 获取表索引详细信息
+                        cursor.execute(f"""SELECT
+                                                INDEX_NAME,
+                                                NON_UNIQUE,
+                                                INDEX_TYPE,
+                                                COLUMN_NAME
+                                            FROM
+                                                INFORMATION_SCHEMA.STATISTICS
+                                            WHERE
+                                                TABLE_SCHEMA = '{self.database}'
+                                                AND TABLE_NAME = '{table_name}';""")
+                        indexes = cursor.fetchall()
+
+                        # 初始化字段位置计数器
+                        column_id = 0
+                        column_pre = None  # 储存上一个字段
+
+                        # 动态生成字段添加语句
+                        for column in columns:
+                            column_name, column_type, is_nullable, column_default, column_key, extra = column
+                            nullable = "NULL" if is_nullable == "YES" else "NOT NULL"
+                            default = f"DEFAULT {column_default}" if column_default is not None else ""
+                            extra_info = extra if extra else ""
+
+                            # 动态生成 SQL 语句
+                            column_definition = f"`{column_name}` {column_type} {nullable} {default} {extra_info}".strip()
+                            # 转义单引号以支持 SET 类型的字段
+                            escaped_definition = column_definition.replace("'", "\\'")
+
+                            if column_id == 0:
+                                file.write(
+                                    f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition};');\n"
+                                )
+                            else:
+                                file.write(
+                                    f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition} AFTER `{column_pre}`;');\n"
+                                )
+                            column_pre = column_name
+                            column_id += 1
+
+                        # 动态生成索引添加语句
+                        for index in indexes:
+                            index_name, non_unique, index_type, column_name = index
+                            index_type = "UNIQUE" if non_unique == 0 else "INDEX"
+                            index_statement = f"ADD {index_type} INDEX `{index_name}` (`{column_name}`) USING BTREE"
+                            file.write(
+                                f"CALL add_element_unless_exists('index', '{table_name}', '{index_name}', 'ALTER TABLE {table_name} {index_statement};');\n"
+                            )
+
+                        file.write("\n")
 
         except Exception as e:
-            print(f"获取{table_name}表结构信息失败: {e}")
+            print(f"获取表结构信息失败: {e}")
             traceback.print_exc()
-
-        sleep(2)
 
 
 if __name__ == "__main__":
     app = Application(host="localhost", port=5831, user="root", password="Keytop:wabjtam!", database='ktpark')
 
     # 获取标准库结构
-    # app.get_all_tables_and_columns()
+    app.get_all_tables_and_columns()
 
     # 写入存储过程
     app.insert_procedure_sentences()
