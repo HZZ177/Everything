@@ -275,5 +275,5 @@ if __name__ == "__main__":
     app.get_all_column_insert_sentences()
 
     # 文件动态生成完成后强制同步到update_database_tool项目作为依赖文件
-    destination_file = '../update_database_tool/data/parking_guidance_database_structure_fix.sql'
+    destination_file = '../../update_database_tool/data/parking_guidance_database_structure_fix.sql'
     app.force_copy_file_to(destination_file)
