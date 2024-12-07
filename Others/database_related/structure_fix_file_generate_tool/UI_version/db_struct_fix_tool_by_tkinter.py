@@ -1,33 +1,22 @@
 import os
+import queue
+import re
 import sys
+import threading
 from datetime import datetime
 import pymysql
-import subprocess
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-
-
-def get_resource_path(relative_path):
-    """获取资源文件路径"""
-    if hasattr(sys, '_MEIPASS'):
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
-
-utils_path = get_resource_path("utils")
-sql_file = rf"{utils_path}\db_fix_sql.sql"
-mysql_path = rf"{utils_path}\mysql.exe"
+from pack_with_pyinstaller import version
 
 
 class Application:
+    """动态生成修复sql文件的核心功能工具类"""
     def __init__(
             self,
             base_host, base_port, base_user, base_password, base_database,
             target_host, target_port, target_user, target_password, target_database,
-            output_file,
             log
     ):
         # 基线库相关参数
@@ -44,8 +33,8 @@ class Application:
         self.target_password = target_password
         self.target_database = target_database
 
-        self.output_file = output_file  # 输出sql修复文件路径
-        self.connection = None
+        self.base_connection = None     # 基线库连接对象
+        self.target_connection = None   # 修复目标库连接对象
         self.log = log  # 日志输出更新函数
 
     def log_message(self, message):
@@ -56,7 +45,7 @@ class Application:
     def connect_to_base_database(self):
         """连接到基线库"""
         try:
-            self.connection = pymysql.connect(
+            self.base_connection = pymysql.connect(
                 host=self.base_host,
                 user=self.base_user,
                 password=self.base_password,
@@ -72,7 +61,7 @@ class Application:
     def connect_to_target_database(self):
         """连接到目标库"""
         try:
-            self.connection = pymysql.connect(
+            self.target_connection = pymysql.connect(
                 host=self.target_host,
                 user=self.target_user,
                 password=self.target_password,
@@ -85,12 +74,23 @@ class Application:
             self.log_message(f"修复目标库连接失败: {e}")
             raise e
 
+    def disconnect_dbs(self):
+        try:
+            if self.base_connection:
+                self.base_connection.close()
+            if self.target_connection:
+                self.target_connection.close()
+        except Exception as e:
+            self.log_message(f"关闭数据库连接失败: {e}")
+            raise e
+
     def insert_procedure_sentences(self):
         """写入存储过程"""
-        self.log_message("开始写入存储过程......")
+        self.log_message("开始对目标库新增存储过程......")
+
+        clear_procedure = "DROP PROCEDURE IF EXISTS add_element_unless_exists;"
+
         procedure_add_element_unless_exists = """
-DROP PROCEDURE IF EXISTS add_element_unless_exists;
-DELIMITER $$
 -- 新增字段或索引，新增之前会判定是否存在
 -- element_type：参数类型 column=字段 index=索引
 -- tab_name：表名
@@ -128,189 +128,238 @@ BEGIN
         END IF;
     END IF;
 
-END; $$
-DELIMITER ;
+END;
 """
         try:
-            with open(self.output_file, 'w', encoding="utf-8") as file:
-                file.write(f"SET NAMES utf8mb4;\nSET CHARACTER SET utf8mb4;\n")
-                file.write(f"-- ============定义存储过程============\n")
-                file.write(f"{procedure_add_element_unless_exists}\n\n")
+            with self.target_connection.cursor() as cursor:
+                self.log_message(f"清理存储过程\n{clear_procedure}")
+                cursor.execute(clear_procedure)     # 清除之前存在的存储过程
+
+                self.log_message(f"写入存储过程\n{procedure_add_element_unless_exists}")
+                cursor.execute(procedure_add_element_unless_exists)     # 写入存储过程
+                self.target_connection.commit()     # 手动提交防止自动提交模式被关闭
+
             self.log_message("存储过程写入成功！")
         except Exception as e:
             self.log_message(f"存储过程写入失败: {e}")
             raise e
 
     def get_all_construct_sentences(self):
-        """获取并写入所有表创建语句"""
-        self.log_message("开始获取基线表建表语句并写入......")
-        self.connect_to_base_database()
+        """从基线库获取所有表创建语句，动态生成后执行到目标库"""
+        self.log_message("开始获取基线库表结构并动态生成......")
 
-        try:
-            with self.connection.cursor() as cursor:
-                # 获取所有表名
+        try:    # 从基线库获取所有表名
+            with self.base_connection.cursor() as cursor:
                 cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
                 tables = cursor.fetchall()
 
-                with open(self.output_file, 'a', encoding="utf-8") as file:
-                    file.write("-- ===============全量创建标准库表===============\n")
-                    for table in tables:
-                        table_name = table[0]
-                        file.write(f"-- 构造表 {table_name}\n")
+                self.log_message("-- ===============全量创建标准库表===============\n")
+                for table in tables:
+                    table_name = table[0]
+                    self.log_message(f"-- 构造表 {table_name}\n")
 
-                        # 获取所有表的初始化语句
-                        cursor.execute(f"show create TABLE `{table_name}`")
-                        columns = cursor.fetchall()
+                    # 获取所有表的初始化语句
+                    cursor.execute(f"show create TABLE `{table_name}`")
+                    columns = cursor.fetchall()
 
-                        for column in columns:
-                            describe = column[1]
-                            file.write(f"CREATE TABLE IF NOT EXISTS{str(describe).replace('CREATE TABLE', '')};\n")
+                    for column in columns:
+                        describe = column[1]
+                        crate_sql = f"CREATE TABLE IF NOT EXISTS{str(describe).replace('CREATE TABLE', '')};\n"
 
-                        file.write("\n")
-            self.log_message("获取基线表建表语句并写入成功！")
+                        self.log_message(crate_sql)     # 打印
+                        # 对目标库执行
+                        with self.target_connection.cursor() as cursor_target:
+                            cursor_target.execute(crate_sql)       # 执行
+                        self.target_connection.commit()     # 提交
+
+            self.log_message("动态构建表结构并执行成功！")
         except Exception as e:
-            self.log_message(f"构建并写入建表语句失败: {e}")
+            self.log_message(f"构建并执行建表语句失败: {e}")
             raise e
 
     def get_all_column_insert_sentences(self):
         """获取并写入所有字段和索引创建语句"""
         self.log_message("开始获取字段和索引创建语句并写入......")
-        self.connect_to_base_database()
 
-        try:
-            with self.connection.cursor() as cursor:
+        try:        # 在基线库获取
+            with self.base_connection.cursor() as cursor:
                 # 获取所有表名
                 cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
                 tables = cursor.fetchall()
 
-                with open(self.output_file, 'a', encoding="utf-8") as file:
-                    file.write("-- ===============全量更新所有表字段===============\n")
-                    for table in tables:
-                        table_name = table[0]
-                        file.write(f"-- 更新表 {table_name} 所有字段和索引\n")
+                self.log_message("-- ===============全量更新所有表字段===============\n")
+                for table in tables:
+                    table_name = table[0]
+                    self.log_message(f"-- 更新表 {table_name} 所有字段和索引\n")
 
-                        # 获取表字段详细信息
-                        cursor.execute(f"""SELECT
-                                                COLUMN_NAME,
-                                                COLUMN_TYPE,
-                                                IS_NULLABLE,
-                                                COLUMN_DEFAULT,
-                                                COLUMN_KEY,
-                                                EXTRA
-                                            FROM
-                                                INFORMATION_SCHEMA.COLUMNS
-                                            WHERE
-                                                TABLE_SCHEMA = '{self.base_database}'
-                                                AND TABLE_NAME = '{table_name}';""")
-                        columns = cursor.fetchall()
+                    # 获取表字段详细信息
+                    cursor.execute(f"""SELECT
+                                            COLUMN_NAME,
+                                            COLUMN_TYPE,
+                                            IS_NULLABLE,
+                                            COLUMN_DEFAULT,
+                                            COLUMN_KEY,
+                                            EXTRA
+                                        FROM
+                                            INFORMATION_SCHEMA.COLUMNS
+                                        WHERE
+                                            TABLE_SCHEMA = '{self.base_database}'
+                                            AND TABLE_NAME = '{table_name}';""")
+                    columns = cursor.fetchall()
 
-                        # 获取表索引详细信息
-                        cursor.execute(f"""SELECT
-                                                INDEX_NAME,
-                                                NON_UNIQUE,
-                                                INDEX_TYPE,
-                                                COLUMN_NAME
-                                            FROM
-                                                INFORMATION_SCHEMA.STATISTICS
-                                            WHERE
-                                                TABLE_SCHEMA = '{self.base_database}'
-                                                AND TABLE_NAME = '{table_name}';""")
-                        indexes = cursor.fetchall()
+                    # 获取表索引详细信息
+                    cursor.execute(f"""SELECT
+                                            INDEX_NAME,
+                                            NON_UNIQUE,
+                                            INDEX_TYPE,
+                                            COLUMN_NAME
+                                        FROM
+                                            INFORMATION_SCHEMA.STATISTICS
+                                        WHERE
+                                            TABLE_SCHEMA = '{self.base_database}'
+                                            AND TABLE_NAME = '{table_name}';""")
+                    indexes = cursor.fetchall()
 
-                        # 初始化字段位置计数器
-                        column_id = 0
-                        column_pre = None  # 储存上一个字段
+                    # 初始化字段位置计数器
+                    column_id = 0
+                    column_pre = None  # 储存上一个字段
 
-                        # 动态生成字段添加语句
-                        for column in columns:
-                            column_name, column_type, is_nullable, column_default, column_key, extra = column
-                            nullable = "NULL" if is_nullable == "YES" else "NOT NULL"
-                            default = f"DEFAULT {column_default}" if column_default is not None else ""
-                            extra_info = extra if extra else ""
+                    table_call_messages = ""
+                    # 动态生成字段添加语句
+                    for column in columns:
+                        column_name, column_type, is_nullable, column_default, column_key, extra = column
+                        nullable = "NULL" if is_nullable == "YES" else "NOT NULL"
+                        default = f"DEFAULT {column_default}" if column_default is not None else ""
+                        extra_info = extra if extra else ""
 
-                            # 动态生成 SQL 语句
-                            column_definition = f"`{column_name}` {column_type} {nullable} {default} {extra_info}".strip()
-                            # 转义单引号以支持 SET 类型的字段
-                            escaped_definition = column_definition.replace("'", "\\'")
+                        # 动态生成 SQL 语句
+                        column_definition = f"`{column_name}` {column_type} {nullable} {default} {extra_info}".strip()
+                        # 转义单引号以支持 SET 类型的字段
+                        escaped_definition = column_definition.replace("'", "\\'")
 
-                            if column_id == 0:
-                                file.write(
-                                    f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition};');\n"
-                                )
-                            else:
-                                file.write(
-                                    f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition} AFTER `{column_pre}`;');\n"
-                                )
-                            column_pre = column_name
-                            column_id += 1
+                        if column_id == 0:
+                            call_procedure_column_sql = f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition};');\n"
+                        else:
+                            call_procedure_column_sql = f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition} AFTER `{column_pre}`;');\n"
 
-                        # 动态生成索引添加语句
-                        for index in indexes:
-                            index_name, non_unique, index_type, column_name = index
-                            index_type = "UNIQUE" if non_unique == 0 else "INDEX"
-                            index_statement = f"ADD {index_type} INDEX `{index_name}` (`{column_name}`) USING BTREE"
-                            file.write(
-                                f"CALL add_element_unless_exists('index', '{table_name}', '{index_name}', 'ALTER TABLE {table_name} {index_statement};');\n"
-                            )
+                        table_call_messages += call_procedure_column_sql    # 打印
+                        # 在目标库执行
+                        with self.target_connection.cursor() as cursor_target:
+                            cursor_target.execute(call_procedure_column_sql)      # 执行
+                        self.target_connection.commit()         # 提交
 
-                        file.write("\n")
-            self.log_message("获取字段和索引创建语句并写入成功！")
+                        column_pre = column_name
+                        column_id += 1
+
+                    # 动态生成索引添加语句
+                    for index in indexes:
+                        index_name, non_unique, index_type, column_name = index
+                        index_type = "UNIQUE" if non_unique == 0 else "INDEX"
+                        index_statement = f"ADD {index_type} INDEX `{index_name}` (`{column_name}`) USING BTREE"
+                        call_procedure_index_sql = f"CALL add_element_unless_exists('index', '{table_name}', '{index_name}', 'ALTER TABLE {table_name} {index_statement};');\n"
+
+                        table_call_messages += call_procedure_index_sql  # 打印
+                        # 在目标库执行
+                        with self.target_connection.cursor() as cursor_target:
+                            cursor_target.execute(call_procedure_index_sql)    # 执行
+                        self.target_connection.commit()             # 提交
+                    self.log_message(table_call_messages)
+            self.log_message("构建字段和索引创建语句并执行成功！")
         except Exception as e:
-            self.log_message(f"尝试构建并写入字段和索引创建语句失败: {e}")
-            raise e
-
-    def execute_sql_file_with_mysql(self):
-        """使用mysql客户端工具执行SQL文件"""
-        self.log_message("开始执行SQL修复文件......")
-        try:
-            # 构造mysql执行文件命令
-            command = [
-                mysql_path,  # mysql客户端的绝对路径
-                f"-h{self.target_host}",
-                f"-P{self.target_port}",
-                f"-u{self.target_user}",
-                f"-p{self.target_password}",
-                self.target_database
-            ]
-
-            # 确保SQL文件存在
-            if not os.path.isfile(sql_file):
-                self.log_message(f"SQL修复文件{sql_file}不存在")
-                raise FileNotFoundError(f"SQL修复文件{sql_file}不存在")
-
-            # 打开SQL文件并通过stdin传递给mysql
-            with open(sql_file, "r", encoding="utf-8") as file:
-                result = subprocess.run(command, stdin=file, text=True, check=True)
-            self.log_message("SQL修复文件执行成功！")
-        except subprocess.CalledProcessError as e:
-            self.log_message(f"SQL修复文件执行失败，错误代码: {e.returncode}")
-            self.log_message(f"错误信息: {e}")
-            raise e
-        except FileNotFoundError:
-            self.log_message(f"请确保MySQL客户端工具{mysql_path}已存在，并在指定路径下")
-            raise FileNotFoundError
-        except Exception as e:
+            self.log_message(f"构建字段和索引创建语句并执行失败: {e}")
             raise e
 
 
 class MainWindow(tk.Tk):
+    """UI界面类"""
     def __init__(self):
         super().__init__()
-        self.title("数据库结构补全工具")
+
+        # 基线库配置信息
+        self.base_host = "101.91.144.186"
+        self.base_port = 13049
+        self.base_user = "root"  # 云端基线库账号，root账号方便后续扩展可以用其他库表，程序内只有读操作，不会修改数据
+        self.base_password = "Keytop@321"
+
+        self.title(f"数据库结构补全工具-{version}")
         self.geometry("800x600")
-        self.resizable(False, False)
+        # self.resizable(False, False)
 
         self.create_widgets()
-        self.center_window()
+        self.center_window(800, 600)
+
+        # 线程安全的日志队列
+        self.log_queue = queue.Queue()
+        self.after(100, self.process_log_queue)
+
+        self.parking_guidance_databases = []  # 缓存parking_guidance_x.x.x数据库名，后续切换的时候展示用
+        self.fetch_parking_guidance_databases()  # 初始化时查询并缓存数据
+
+    def fetch_parking_guidance_databases(self):
+        """从云端基线库获取所有符合'parking_guidance_x.x.x'格式的数据库名并缓存"""
+        connection = None
+        try:
+            connection = pymysql.connect(
+                host=self.base_host,
+                user=self.base_user,
+                password=self.base_password,
+                port=self.base_port,
+                connect_timeout=10,
+                read_timeout=10
+            )
+
+            with connection.cursor() as cursor:
+                # 查询所有符合'parking_guidance_x.x.x'格式的数据库名
+                cursor.execute("""
+                    SELECT schema_name 
+                    FROM information_schema.schemata 
+                    WHERE schema_name REGEXP '^parking_guidance_[0-9]+\\.[0-9]+\\.[0-9]+$';
+                """)
+                databases = cursor.fetchall()
+
+                # 提取表名并更新下拉列表
+                database_names = [database[0] for database in databases]
+
+                # 定义一个函数来提取版本号，并将其转换为元组(major, minor, patch)
+                def parse_version(name):
+                    """从数据库名中提取版本号并转换为(major, minor, patch)格式的元组，方便后续处理"""
+                    version_numbers = re.findall(r'\d+', name)
+                    return tuple(map(int, version_numbers)) if version_numbers else (0, 0, 0)
+
+                # 过滤掉小于3.2.3的版本号
+                filtered_databases = []
+                for db_name in database_names:
+                    version = parse_version(db_name)
+                    if version >= (3, 2, 3):
+                        filtered_databases.append((db_name, version))
+
+                # 按版本号进行排序
+                sorted_databases = sorted(filtered_databases, key=lambda x: x[1])
+
+                # 提取排序后的数据库名
+                sorted_database_names = [db[0] for db in sorted_databases]
+
+                self.parking_guidance_databases = sorted_database_names
+
+        except Exception as e:
+            messagebox.showerror("错误", f"连接基线库加载列表失败: {e}\n请确保网络环境可用")
+        finally:
+            if connection:
+                connection.close()
 
     def create_widgets(self):
-        # 主框架
-        main_frame = tk.Frame(self, padx=20, pady=20)
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        # 主框架，使用 grid 布局管理
+        self.grid_rowconfigure(0, weight=2)  # 上半部分占五分之二
+        self.grid_rowconfigure(1, weight=3)  # 下半部分占五分之三
+        self.grid_columnconfigure(0, weight=1)  # 列权重为 1，保证填满整个窗口
 
-        # 上部分（左右分区）
-        top_frame = tk.Frame(main_frame)
-        top_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+        # 上半部分（左右分区）
+        top_frame = tk.Frame(self, padx=20, pady=20)
+        top_frame.grid(row=0, column=0, sticky="nsew")
+
+        # 下半部分（日志框和按钮）
+        bottom_frame = tk.Frame(self, padx=20, pady=20)
+        bottom_frame.grid(row=1, column=0, sticky="nsew")
 
         # 左右框架
         left_frame = tk.Frame(top_frame)
@@ -320,7 +369,7 @@ class MainWindow(tk.Tk):
         right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # 左侧表单布局
-        tk.Label(left_frame, text="待修复数据库参数:").grid(row=0, column=0, pady=5, sticky=tk.W)
+        tk.Label(left_frame, text="待修复的数据库信息:").grid(row=0, column=0, pady=5, sticky=tk.W)
 
         tk.Label(left_frame, text="\t数据库IP:").grid(row=1, column=0, pady=5, sticky=tk.W)
         self.host_input = tk.Entry(left_frame)
@@ -342,40 +391,40 @@ class MainWindow(tk.Tk):
         self.password_input.insert(0, "Keytop:wabjtam!")
         self.password_input.grid(row=4, column=1, pady=5, sticky=tk.W + tk.E)
 
-        tk.Label(left_frame, text="\t数据库:").grid(row=5, column=0, pady=5, sticky=tk.W)
+        tk.Label(left_frame, text="\t数据库名称:").grid(row=5, column=0, pady=5, sticky=tk.W)
         self.base_database_input = ttk.Combobox(left_frame, values=["ktpark", "parking_guidance"])
-        self.base_database_input.current(0)
         self.base_database_input.grid(row=5, column=1, pady=5, sticky=tk.W + tk.E)
+        # 绑定事件到左侧下拉框
+        self.base_database_input.bind("<<ComboboxSelected>>", self.update_base_db_select)
 
         # 右侧布局（选择基准库）
         tk.Label(right_frame, text="想要以哪个版本结构来修复当前库:").grid(row=1, column=0, pady=5, sticky=tk.W)
 
-        tk.Label(right_frame, text="\t选择基准结构库:").grid(row=2, column=0, pady=5, sticky=tk.W)
-        self.base_db_select = ttk.Combobox(right_frame, values=["ktpark", "parking_guidance"])
-        self.base_db_select.current(0)
+        tk.Label(right_frame, text="\t选择云端基准结构库:").grid(row=2, column=0, pady=5, sticky=tk.W)
+        self.base_db_select = ttk.Combobox(right_frame, values=["请先选择左侧现场数据库名称"])
         self.base_db_select.grid(row=2, column=1, pady=5, sticky=tk.W + tk.E)
 
         # 下部分（日志框和按钮）
-        bottom_frame = tk.Frame(main_frame)
-        bottom_frame.pack(fill=tk.BOTH, expand=True)
+        # 滚动条
+        log_scrollbar = tk.Scrollbar(bottom_frame)
+        log_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # 日志显示框
-        self.log_text = tk.Text(bottom_frame, state=tk.DISABLED, height=15)
+        self.log_text = tk.Text(bottom_frame, state=tk.DISABLED, height=15, yscrollcommand=log_scrollbar.set)
         self.log_text.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
+        # 关联滚动条和文本框
+        log_scrollbar.config(command=self.log_text.yview)
+
         # 按钮
-        self.start_button = tk.Button(bottom_frame, text="开始结构修复", command=self.start_completion)
+        self.start_button = tk.Button(bottom_frame, text="开始结构修复", command=self.start_completion_in_thread)
         self.start_button.pack()
 
-    def center_window(self):
+    def center_window(self, window_width, window_height):
         """使窗口居中显示"""
         # 获取屏幕宽度和高度
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-
-        # 获取窗口宽度和高度
-        window_width = 800  # 与 `geometry` 宽度一致
-        window_height = 600  # 与 `geometry` 高度一致
 
         # 计算窗口的居中位置
         x = (screen_width - window_width) // 2
@@ -384,18 +433,57 @@ class MainWindow(tk.Tk):
         # 设置窗口位置
         self.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
+    def update_base_db_select(self, event):
+        """根据左侧下拉框的选择动态更新右侧下拉框的选项"""
+        selected_option = self.base_database_input.get()
+
+        if selected_option == "ktpark":
+            # 如果左侧选择 ktpark，右侧下拉框只显示 ktpark
+            self.base_db_select['values'] = ["ktpark"]
+            self.base_db_select.set("ktpark")  # 设置默认选中项
+        elif selected_option == "parking_guidance":
+            # 如果左侧选择 parking_guidance，右侧下拉框显示缓存的 parking_guidance 数据库
+            if self.parking_guidance_databases:
+                self.base_db_select['values'] = self.parking_guidance_databases
+                self.base_db_select.set(self.parking_guidance_databases[0])  # 设置默认选中项
+            else:
+                self.base_db_select['values'] = []
+                self.base_db_select.set("")
+                messagebox.showwarning("警告", "没有找到符合条件的parking_guidance数据库")
+        else:
+            # 清空右侧下拉框
+            self.base_db_select['values'] = []
+            self.base_db_select.set("")
+
     def log(self, message):
-        self.log_text.config(state=tk.NORMAL)
-        self.log_text.insert(tk.END, f"{datetime.now()} - {message}\n")
-        self.log_text.config(state=tk.DISABLED)
-        self.log_text.see(tk.END)
-        self.update_idletasks()  # 强制更新界面
+        """将日志消息放入队列"""
+        self.log_queue.put(f"{datetime.now()} - {message}")
+
+    def process_log_queue(self):
+        """从队列中获取日志并更新到日志框"""
+        while not self.log_queue.empty():
+            message = self.log_queue.get()
+            self.log_text.config(state=tk.NORMAL)
+            self.log_text.insert(tk.END, message + "\n")
+            self.log_text.config(state=tk.DISABLED)
+            self.log_text.see(tk.END)
+        self.after(100, self.process_log_queue)
+
+    def start_completion_in_thread(self):
+        """在新线程中执行修复操作，否则太耗时会阻塞主UI无响应"""
+        threading.Thread(target=self.start_completion, daemon=True).start()
 
     def start_completion(self):
+        """执行修复操作"""
+        # 先检查是否选择了数据库
+        if not self.base_database_input.get() or not self.base_db_select.get():
+            messagebox.showwarning("警告", "请先选择数据库")
+            return
+
         # 先弹宇宙免责声明
         proceed = messagebox.askokcancel(
             "友情提示",
-            "结构修复理论上不会造成原数据被破坏~\n但是出于安全考虑，开始修复前最好还是自行做个数据备份~\n\n“确定”开始修复，“取消”停止操作。"
+            "结构修复理论上不会造成原数据被破坏~\n但是出于安全考虑，开始修复前最好还是自行做个数据备份~\n\n“确定”开始修复，“取消”停止操作"
         )
 
         if not proceed:
@@ -403,6 +491,7 @@ class MainWindow(tk.Tk):
             return  # 用户选择取消时，停止操作
 
         self.log("========开始数据库结构修复========")
+        self.start_button.config(state=tk.DISABLED)
         # 获取输入的目标库数据
         target_host = self.host_input.get()
         target_port = int(self.port_input.get())
@@ -411,30 +500,30 @@ class MainWindow(tk.Tk):
         target_database = self.base_database_input.get()
 
         # 基线库信息
-        base_host = "127.0.0.1"
-        base_port = 5831
-        base_user = "root"
-        base_password = "Keytop:wabjtam!"
         base_database = self.base_db_select.get()
 
-        output_file = sql_file
-
-        app = Application(
-            base_host, base_port, base_user, base_password, base_database,
-            target_host, target_port, target_user, target_password, target_database,
-            output_file,
-            self.log
-        )
-
         try:
+            app = Application(
+                self.base_host, self.base_port, self.base_user, self.base_password, base_database,
+                target_host, target_port, target_user, target_password, target_database,
+                self.log
+            )
+
+            app.connect_to_target_database()    # 初始化目标数据库连接
+            app.connect_to_base_database()      # 初始化源数据库连接
+
+            # 从基线库动态构建语句并执行到待修复数据库
             app.insert_procedure_sentences()
             app.get_all_construct_sentences()
             app.get_all_column_insert_sentences()
 
-            app.execute_sql_file_with_mysql()
+            # 完成后关闭数据库连接
+            app.disconnect_dbs()
             self.log("数据库结构修复成功完成！")
         except Exception as e:
             self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
+        finally:
+            self.start_button.config(state=tk.NORMAL)
 
 
 if __name__ == "__main__":

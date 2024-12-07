@@ -13,9 +13,11 @@ import os
 
 project_path = os.getcwd()  # 项目基础路径
 # script_name = os.path.join(project_path, 'db_struct_fix_tool_by_pyqt5.py')  # pyqt5版本脚本路径(打包出来有点大)
-script_name = os.path.join(project_path, 'db_struct_fix_tool_by_tkinter.py')  # tkinter版本主脚本路径
+main_script_path = os.path.join(project_path, 'db_struct_fix_tool_by_tkinter.py')  # tkinter版本主脚本路径
 utils_path = os.path.join(project_path, 'utils')     # 数据文件夹路径
-app_name = "寻车数据库结构修复工具-V1.0"  # 打包后的应用程序名称
+cover_path = os.path.join(project_path, 'cover.ico')
+version = "V1.0"
+app_name = f"寻车数据库结构修复工具-{version}"  # 打包后的应用程序名称
 
 
 def clean_data_directory(data_path):
@@ -32,7 +34,7 @@ def clean_data_directory(data_path):
         print(f"目录 {data_path} 不存在，跳过清理。")
 
 
-def pack_and_clean_temp(app_name, script_name):
+def pack_and_clean_temp(app_name, main_script_path):
     """
     使用 PyInstaller 打包给定的 Python 脚本，并在打包完成后清理临时文件。
     app_name: 打包后的应用程序名称
@@ -42,9 +44,10 @@ def pack_and_clean_temp(app_name, script_name):
         '--onefile',
         '--windowed',
         '--name', app_name,
-        '--add-data', f"{utils_path};utils",
         '--paths', '.',
-        script_name
+        main_script_path,
+        # 图标ico
+        rf'--icon={cover_path}',
     ]
     try:
         print("开始打包...")
@@ -66,4 +69,4 @@ if __name__ == "__main__":
     # 前置清理步骤
     clean_data_directory(utils_path)
     # 调用函数来执行打包并清理临时文件
-    pack_and_clean_temp(app_name, script_name)
+    pack_and_clean_temp(app_name, main_script_path)
