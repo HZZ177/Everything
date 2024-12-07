@@ -275,6 +275,16 @@ class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        # 页面组件
+        self.start_button = None
+        self.log_text = None
+        self.base_db_select = None
+        self.base_database_input = None
+        self.password_input = None
+        self.user_input = None
+        self.port_input = None
+        self.host_input = None
+
         # 基线库配置信息
         self.base_host = "101.91.144.186"
         self.base_port = 13049
@@ -438,11 +448,11 @@ class MainWindow(tk.Tk):
         selected_option = self.base_database_input.get()
 
         if selected_option == "ktpark":
-            # 如果左侧选择 ktpark，右侧下拉框只显示 ktpark
+            # 如果左侧选择ktpark，右侧下拉框只显示ktpark
             self.base_db_select['values'] = ["ktpark"]
             self.base_db_select.set("ktpark")  # 设置默认选中项
         elif selected_option == "parking_guidance":
-            # 如果左侧选择 parking_guidance，右侧下拉框显示缓存的 parking_guidance 数据库
+            # 如果左侧选择parking_guidance，右侧下拉框显示缓存的parking_guidance相关数据库
             if self.parking_guidance_databases:
                 self.base_db_select['values'] = self.parking_guidance_databases
                 self.base_db_select.set(self.parking_guidance_databases[0])  # 设置默认选中项
