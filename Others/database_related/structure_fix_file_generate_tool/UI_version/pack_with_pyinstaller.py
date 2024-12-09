@@ -16,6 +16,8 @@ project_path = os.getcwd()  # 项目基础路径
 main_script_path = os.path.join(project_path, 'db_struct_fix_tool_by_tkinter.py')  # tkinter版本主脚本路径
 utils_path = os.path.join(project_path, 'utils')     # 数据文件夹路径
 cover_path = os.path.join(project_path, 'cover.ico')
+ktpark_sql_path = os.path.join(project_path, 'ktpark_fix.sql')
+parking_guidance_323_path = os.path.join(project_path, 'parking_guidance_3.2.3_fix.sql')
 version = "V1.0"
 app_name = f"寻车数据库结构修复工具-{version}"  # 打包后的应用程序名称
 
@@ -46,6 +48,9 @@ def pack_and_clean_temp(app_name, main_script_path):
         '--name', app_name,
         '--paths', '.',
         main_script_path,
+        # 内置修复sql文件
+        '--add-data', f"{ktpark_sql_path};.",
+        '--add-data', f"{parking_guidance_323_path};.",
         # 图标ico
         rf'--icon={cover_path}',
     ]

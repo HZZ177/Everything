@@ -13,6 +13,7 @@ from pack_with_pyinstaller import version
 
 class Application:
     """动态生成修复sql文件的核心功能工具类"""
+
     def __init__(
             self,
             base_host, base_port, base_user, base_password, base_database,
@@ -33,8 +34,8 @@ class Application:
         self.target_password = target_password
         self.target_database = target_database
 
-        self.base_connection = None     # 基线库连接对象
-        self.target_connection = None   # 修复目标库连接对象
+        self.base_connection = None  # 基线库连接对象
+        self.target_connection = None  # 修复目标库连接对象
         self.log = log  # 日志输出更新函数
 
     def log_message(self, message):
@@ -133,11 +134,11 @@ END;
         try:
             with self.target_connection.cursor() as cursor:
                 self.log_message(f"清理存储过程\n{clear_procedure}")
-                cursor.execute(clear_procedure)     # 清除之前存在的存储过程
+                cursor.execute(clear_procedure)  # 清除之前存在的存储过程
 
                 self.log_message(f"写入存储过程\n{procedure_add_element_unless_exists}")
-                cursor.execute(procedure_add_element_unless_exists)     # 写入存储过程
-                self.target_connection.commit()     # 手动提交防止自动提交模式被关闭
+                cursor.execute(procedure_add_element_unless_exists)  # 写入存储过程
+                self.target_connection.commit()  # 手动提交防止自动提交模式被关闭
 
             self.log_message("存储过程写入成功！")
         except Exception as e:
@@ -148,7 +149,7 @@ END;
         """从基线库获取所有表创建语句，动态生成后执行到目标库"""
         self.log_message("开始获取基线库表结构并动态生成......")
 
-        try:    # 从基线库获取所有表名
+        try:  # 从基线库获取所有表名
             with self.base_connection.cursor() as cursor:
                 cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
                 tables = cursor.fetchall()
@@ -166,11 +167,11 @@ END;
                         describe = column[1]
                         crate_sql = f"CREATE TABLE IF NOT EXISTS{str(describe).replace('CREATE TABLE', '')};\n"
 
-                        self.log_message(crate_sql)     # 打印
+                        self.log_message(crate_sql)  # 打印
                         # 对目标库执行
                         with self.target_connection.cursor() as cursor_target:
-                            cursor_target.execute(crate_sql)       # 执行
-                        self.target_connection.commit()     # 提交
+                            cursor_target.execute(crate_sql)  # 执行
+                        self.target_connection.commit()  # 提交
 
             self.log_message("动态构建表结构并执行成功！")
         except Exception as e:
@@ -181,7 +182,7 @@ END;
         """获取并写入所有字段和索引创建语句"""
         self.log_message("开始获取字段和索引创建语句并写入......")
 
-        try:        # 在基线库获取
+        try:  # 在基线库获取
             with self.base_connection.cursor() as cursor:
                 # 获取所有表名
                 cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
@@ -242,11 +243,11 @@ END;
                         else:
                             call_procedure_column_sql = f"CALL add_element_unless_exists('column', '{table_name}', '{column_name}', 'ALTER TABLE {table_name} ADD COLUMN {escaped_definition} AFTER `{column_pre}`;');\n"
 
-                        table_call_messages += call_procedure_column_sql    # 打印
+                        table_call_messages += call_procedure_column_sql  # 打印
                         # 在目标库执行
                         with self.target_connection.cursor() as cursor_target:
-                            cursor_target.execute(call_procedure_column_sql)      # 执行
-                        self.target_connection.commit()         # 提交
+                            cursor_target.execute(call_procedure_column_sql)  # 执行
+                        self.target_connection.commit()  # 提交
 
                         column_pre = column_name
                         column_id += 1
@@ -261,20 +262,84 @@ END;
                         table_call_messages += call_procedure_index_sql  # 打印
                         # 在目标库执行
                         with self.target_connection.cursor() as cursor_target:
-                            cursor_target.execute(call_procedure_index_sql)    # 执行
-                        self.target_connection.commit()             # 提交
+                            cursor_target.execute(call_procedure_index_sql)  # 执行
+                        self.target_connection.commit()  # 提交
                     self.log_message(table_call_messages)
             self.log_message("构建字段和索引创建语句并执行成功！")
         except Exception as e:
             self.log_message(f"构建字段和索引创建语句并执行失败: {e}")
             raise e
 
-    def fix_structure_by_file(self, fix_sqls):
-        pass
+    def fix_structure_by_file(self, file_path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            create_tables = []
+            current_statement = []
+            in_create_table = False
+            in_call_lines = False
+            call_lines = []
+
+            # 处理建表语句部分
+            for line in lines:
+                # 检查是否进入 CREATE TABLE 语句块
+                if line.strip().startswith('CREATE TABLE'):
+                    in_create_table = True
+
+                # 如果在CREATE TABLE块中，添加当前行
+                if in_create_table:
+                    current_statement.append(line)
+
+                # 如果遇到分号并且在 CREATE TABLE 块中，表示语句结束
+                if in_create_table and line.strip().endswith(';'):
+                    create_tables.append(''.join(current_statement))
+                    current_statement = []
+                    in_create_table = False
+
+                # 处理 "全量更新所有表字段" 之后的插入语句
+                if "全量更新所有表字段" in line:
+                    in_call_lines = True
+
+                if in_call_lines:
+                    call_lines.append(line.strip())
+
+            # 执行 CREATE TABLE 语句
+            cursor = self.target_connection.cursor()
+            for table_sql in create_tables:
+                try:
+                    self.log_message(f"执行补表：{table_sql}")
+                    cursor.execute(table_sql)
+                except Exception as e:
+                    self.log_message(f"执行补表失败: {e}")
+                    raise e
+
+            # 执行后续插入或补充字段/索引的语句
+            call_message = ""
+            for call_sql in call_lines:
+                try:
+                    if call_sql.startswith("--"):
+                        self.log_message(f"成功执行字段/索引插入：{call_message}")
+                        call_message = ""
+                        call_message += f"{call_sql}\n"
+                    else:
+                        call_message += f"{call_sql}\n"
+                        if call_sql:    # 过滤空白行
+                            cursor.execute(call_sql)
+                except Exception as e:
+                    self.log_message(f"执行补字段/索引插入失败: {e}")
+                    raise e
+            self.log_message(f"成功执行字段/索引插入：{call_message}")     # 打的是最后一次的部分
+            self.target_connection.commit()
+
+        except Exception as e:
+            self.log_message(f"执行补表失败: {e}")
+            raise e
 
 
 class MainWindow(tk.Tk):
     """UI界面类"""
+
     def __init__(self):
         super().__init__()
 
@@ -289,7 +354,7 @@ class MainWindow(tk.Tk):
         self.host_input = None
 
         # 基线库配置信息
-        self.base_host = "101.91.144.181"
+        self.base_host = "101.91.144.186"
         self.base_port = 13049
         self.base_user = "findcar_read"  # 云端基线库账号，全表只读账号
         self.base_password = "Keytop@2024"
@@ -548,33 +613,38 @@ class MainWindow(tk.Tk):
             else:
                 self.log(f"无法识别的内置库名：{base_database}，已停止修复！")
                 return
+            # 开始执行
             try:
-                with open(file_path, "r", encoding="utf-8") as file:
-                    fix_sqls = file.read()
+                app.connect_to_target_database()    # 初始化目标数据库连接
+                app.insert_procedure_sentences()    # 插入存储过程
 
-                app.fix_structure_by_file(fix_sqls)
-
+                app.fix_structure_by_file(file_path)
+                self.log("数据库结构修复成功完成！")
             except Exception as e:
                 self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
+                return
             finally:
+                # 完成后关闭数据库连接
+                app.disconnect_dbs()
                 self.start_button.config(state=tk.NORMAL)
         # 如果能连基线库，从基线库动态生成
         else:
             try:
-                app.connect_to_target_database()    # 初始化目标数据库连接
-                app.connect_to_base_database()      # 初始化源数据库连接
+                app.connect_to_target_database()  # 初始化目标数据库连接
+                app.connect_to_base_database()  # 初始化源数据库连接
 
                 # 从基线库动态构建语句并执行到待修复数据库
                 app.insert_procedure_sentences()
                 app.get_all_construct_sentences()
                 app.get_all_column_insert_sentences()
 
-                # 完成后关闭数据库连接
-                app.disconnect_dbs()
                 self.log("数据库结构修复成功完成！")
             except Exception as e:
                 self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
+                return
             finally:
+                # 完成后关闭数据库连接
+                app.disconnect_dbs()
                 self.start_button.config(state=tk.NORMAL)
 
 
