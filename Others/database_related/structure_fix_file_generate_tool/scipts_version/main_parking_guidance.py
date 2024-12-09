@@ -35,7 +35,7 @@ class Application:
 
         # 文件路径
         self.output_data_path = 'output'
-        self.output_file_path = os.path.join(self.output_data_path, 'parking_guidance_database_structure_fix.sql')
+        self.output_file_path = os.path.join(self.output_data_path, 'parking_guidance_3.2.3_fix.sql')
 
     def connect_to_database(self):
         try:

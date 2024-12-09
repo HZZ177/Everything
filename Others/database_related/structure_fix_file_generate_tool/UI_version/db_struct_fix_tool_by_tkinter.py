@@ -1,5 +1,7 @@
+import os
 import queue
 import re
+import sys
 import threading
 from datetime import datetime
 import pymysql
@@ -267,6 +269,9 @@ END;
             self.log_message(f"构建字段和索引创建语句并执行失败: {e}")
             raise e
 
+    def fix_structure_by_file(self, fix_sqls):
+        pass
+
 
 class MainWindow(tk.Tk):
     """UI界面类"""
@@ -284,7 +289,7 @@ class MainWindow(tk.Tk):
         self.host_input = None
 
         # 基线库配置信息
-        self.base_host = "101.91.144.186"
+        self.base_host = "101.91.144.181"
         self.base_port = 13049
         self.base_user = "findcar_read"  # 云端基线库账号，全表只读账号
         self.base_password = "Keytop@2024"
@@ -302,6 +307,18 @@ class MainWindow(tk.Tk):
 
         self.parking_guidance_databases = []  # 缓存parking_guidance_x.x.x数据库名，后续切换的时候展示用
         self.fetch_parking_guidance_databases()  # 初始化时查询并缓存数据
+
+        # 处理 PyInstaller 打包后的路径
+        if getattr(sys, 'frozen', False):
+            # PyInstaller打包后的路径（sys._MEIPASS是临时目录）
+            self.base_path = sys._MEIPASS
+        else:
+            # 开发环境下的路径
+            self.base_path = os.path.dirname(__file__)
+
+        # ktpark_fix.sql的路径
+        self.ktpark_path = os.path.join(self.base_path, "ktpark_fix.sql")
+        self.parking_guidance_323_path = os.path.join(self.base_path, "parking_guidance_3.2.3_fix.sql")
 
     def fetch_parking_guidance_databases(self):
         """从云端基线库获取所有符合'parking_guidance_x.x.x'格式的数据库名并缓存"""
@@ -350,7 +367,7 @@ class MainWindow(tk.Tk):
                 self.parking_guidance_databases = sorted_database_names
 
         except Exception as e:
-            messagebox.showerror("错误", f"连接基线库加载列表失败: {e}\n请确保网络环境可用")
+            messagebox.showwarning("提示", f"连接基线库失败！请确保网络环境可用\n{e}\n如果现场确实没有外网，右侧基线库请选择内置版本")
         finally:
             if connection:
                 connection.close()
@@ -446,9 +463,14 @@ class MainWindow(tk.Tk):
         selected_option = self.base_database_input.get()
 
         if selected_option == "ktpark":
-            # 如果左侧选择ktpark，右侧下拉框只显示ktpark
-            self.base_db_select['values'] = ["ktpark"]
-            self.base_db_select.set("ktpark")  # 设置默认选中项
+            if self.parking_guidance_databases:
+                # 如果左侧选择ktpark，右侧下拉框只显示ktpark
+                self.base_db_select['values'] = ["ktpark"]
+                self.base_db_select.set("ktpark")  # 设置默认选中项
+            else:
+                self.base_db_select['values'] = []
+                self.base_db_select.set("内置_ktpark")
+                # messagebox.showwarning("警告", "没有连接到基线库，请确保网络环境可用")
         elif selected_option == "parking_guidance":
             # 如果左侧选择parking_guidance，右侧下拉框显示缓存的parking_guidance相关数据库
             if self.parking_guidance_databases:
@@ -456,8 +478,9 @@ class MainWindow(tk.Tk):
                 self.base_db_select.set(self.parking_guidance_databases[0])  # 设置默认选中项
             else:
                 self.base_db_select['values'] = []
-                self.base_db_select.set("")
-                messagebox.showwarning("警告", "没有找到符合条件的parking_guidance数据库")
+                self.base_db_select.set("内置_parking_guidance_3.2.3")
+                # messagebox.showwarning("警告", "没有连接到基线库，请确保网络环境可用")
+
         else:
             # 清空右侧下拉框
             self.base_db_select['values'] = []
@@ -509,29 +532,50 @@ class MainWindow(tk.Tk):
 
         # 基线库信息
         base_database = self.base_db_select.get()
+        # 初始化
+        app = Application(
+            self.base_host, self.base_port, self.base_user, self.base_password, base_database,
+            target_host, target_port, target_user, target_password, target_database,
+            self.log
+        )
 
-        try:
-            app = Application(
-                self.base_host, self.base_port, self.base_user, self.base_password, base_database,
-                target_host, target_port, target_user, target_password, target_database,
-                self.log
-            )
+        if "内置" in base_database:
+            self.log(f"选择使用{base_database}修复，开始读取内置sql并执行")
+            if base_database == "内置_ktpark":
+                file_path = self.ktpark_path
+            elif base_database == "内置_parking_guidance_3.2.3":
+                file_path = self.parking_guidance_323_path
+            else:
+                self.log(f"无法识别的内置库名：{base_database}，已停止修复！")
+                return
+            try:
+                with open(file_path, "r", encoding="utf-8") as file:
+                    fix_sqls = file.read()
 
-            app.connect_to_target_database()    # 初始化目标数据库连接
-            app.connect_to_base_database()      # 初始化源数据库连接
+                app.fix_structure_by_file(fix_sqls)
 
-            # 从基线库动态构建语句并执行到待修复数据库
-            app.insert_procedure_sentences()
-            app.get_all_construct_sentences()
-            app.get_all_column_insert_sentences()
+            except Exception as e:
+                self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
+            finally:
+                self.start_button.config(state=tk.NORMAL)
+        # 如果能连基线库，从基线库动态生成
+        else:
+            try:
+                app.connect_to_target_database()    # 初始化目标数据库连接
+                app.connect_to_base_database()      # 初始化源数据库连接
 
-            # 完成后关闭数据库连接
-            app.disconnect_dbs()
-            self.log("数据库结构修复成功完成！")
-        except Exception as e:
-            self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
-        finally:
-            self.start_button.config(state=tk.NORMAL)
+                # 从基线库动态构建语句并执行到待修复数据库
+                app.insert_procedure_sentences()
+                app.get_all_construct_sentences()
+                app.get_all_column_insert_sentences()
+
+                # 完成后关闭数据库连接
+                app.disconnect_dbs()
+                self.log("数据库结构修复成功完成！")
+            except Exception as e:
+                self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
+            finally:
+                self.start_button.config(state=tk.NORMAL)
 
 
 if __name__ == "__main__":

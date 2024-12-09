@@ -3,7 +3,6 @@ SET CHARACTER SET utf8mb4;
 -- ============定义存储过程============
 
 DROP PROCEDURE IF EXISTS add_element_unless_exists;
-DELIMITER $$
 -- 新增字段或索引，新增之前会判定是否存在
 -- element_type：参数类型 column=字段 index=索引
 -- tab_name：表名
@@ -41,9 +40,7 @@ BEGIN
         END IF;
     END IF;
 
-END; $$
-DELIMITER ;
-
+END;
 
 -- ===============全量创建标准库表===============
 -- 构造表 api_access_info
