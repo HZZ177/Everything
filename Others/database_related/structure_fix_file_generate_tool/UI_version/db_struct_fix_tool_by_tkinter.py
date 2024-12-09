@@ -1,7 +1,5 @@
-import os
 import queue
 import re
-import sys
 import threading
 from datetime import datetime
 import pymysql
@@ -288,8 +286,8 @@ class MainWindow(tk.Tk):
         # 基线库配置信息
         self.base_host = "101.91.144.186"
         self.base_port = 13049
-        self.base_user = "root"  # 云端基线库账号，root账号方便后续扩展可以用其他库表，程序内只有读操作，不会修改数据
-        self.base_password = "Keytop@321"
+        self.base_user = "findcar_read"  # 云端基线库账号，全表只读账号
+        self.base_password = "Keytop@2024"
 
         self.title(f"数据库结构补全工具-{version}")
         self.geometry("800x600")
