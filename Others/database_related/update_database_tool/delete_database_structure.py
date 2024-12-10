@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time    : 2024/7/13 下午11:47
-# @Author  : Heshouyi
-# @File    : delete_database_structure.py
-# @Software: PyCharm
-# @description:
-
 import pymysql
 
 
@@ -15,7 +7,7 @@ def delete_database_structure():
         host='localhost',
         user='root',
         password='Keytop:wabjtam!',
-        database='parking_guidance',
+        database='ktpark1',
         port=5831
     )
     cursor = connection.cursor()
@@ -29,25 +21,41 @@ def delete_database_structure():
         table_name = table[0]
 
         # 获取所有字段信息
-        cursor.execute(f"SHOW COLUMNS FROM {table_name}")
+        cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
         columns = cursor.fetchall()
 
-        # 删除除id之外的所有字段
+        # 过滤出需要保留的字段（如 id）
+        columns_to_keep = [col[0] for col in columns if 'id' in col[0].lower()]
+
+        # 如果没有找到 id 字段，保留第一个字段，避免删除所有字段
+        if not columns_to_keep and columns:
+            columns_to_keep.append(columns[0][0])
+
+        # 删除需要删除的字段
         for column in columns:
             column_name = column[0]
-            if column_name != 'id':
-                cursor.execute(f"ALTER TABLE {table_name} DROP COLUMN {column_name}")
+            if column_name not in columns_to_keep:
+                try:
+                    cursor.execute(f"ALTER TABLE `{table_name}` DROP COLUMN `{column_name}`")
+                except pymysql.err.OperationalError as e:
+                    print(f"删除字段 {column_name} 时发生错误: {e}")
 
         # 获取所有索引信息
-        cursor.execute(f"SHOW INDEX FROM {table_name}")
+        cursor.execute(f"SHOW INDEX FROM `{table_name}`")
         indexes = cursor.fetchall()
 
-        # 删除所有索引
+        # 删除所有非主键索引
         for index in indexes:
             index_name = index[2]  # 索引名在第三列
             if index_name != 'PRIMARY':  # 保留主键索引
-                cursor.execute(f"ALTER TABLE {table_name} DROP INDEX {index_name}")
-        print(f'表{table_name}除主键id外所有字段和索引清除完成')
+                try:
+                    cursor.execute(f"ALTER TABLE `{table_name}` DROP INDEX `{index_name}`")
+                except pymysql.err.OperationalError as e:
+                    print(f"删除索引 {index_name} 时发生错误: {e}")
+
+        print(f'表 {table_name} 除主键外的所有字段和索引清除完成')
+
+    # 提交事务
     connection.commit()
 
     # 关闭连接

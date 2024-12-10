@@ -5,6 +5,8 @@
 # @File    : main_parking_guidance.py
 # @Software: PyCharm
 # @description:
+from collections import defaultdict
+
 import pymysql
 import traceback
 
@@ -225,8 +227,26 @@ DELIMITER ;
                         for column in columns:
                             column_name, column_type, is_nullable, column_default, column_key, extra = column
                             nullable = "NULL" if is_nullable == "YES" else "NOT NULL"
-                            default = f"DEFAULT {column_default}" if column_default is not None else ""
-                            extra_info = extra if extra else ""
+                            # 需要单独处理默认值为空串的情况
+                            if column_default is not None:
+                                if column_default == '':
+                                    default = "DEFAULT ''"
+                                elif column_default == "2013-01-01 00:00:00" or "#" in column_default:
+                                    default = f"DEFAULT '{column_default}'"
+
+                                else:
+                                    default = f"DEFAULT {column_default}"
+                            else:
+                                default = ""
+
+                            # 单独处理附加信息里的auto_increment，变为auto_increment PRIMARY KEY
+                            if extra:
+                                if "auto_increment" in extra.lower():
+                                    extra_info = f"{extra} PRIMARY KEY"
+                                else:
+                                    extra_info = extra
+                            else:
+                                extra_info = ""
 
                             # 动态生成 SQL 语句
                             column_definition = f"`{column_name}` {column_type} {nullable} {default} {extra_info}".strip()
@@ -245,10 +265,22 @@ DELIMITER ;
                             column_id += 1
 
                         # 动态生成索引添加语句
+                        # 先将索引信息按照 index_name 分组
+                        index_dict = defaultdict(list)
+
                         for index in indexes:
                             index_name, non_unique, index_type, column_name = index
-                            index_type = "UNIQUE" if non_unique == 0 else "INDEX"
-                            index_statement = f"ADD {index_type} INDEX `{index_name}` (`{column_name}`) USING BTREE"
+                            index_type = "UNIQUE" if non_unique == 0 else ""
+                            index_dict[(index_name, index_type)].append(column_name)
+
+                        # 遍历分组后的索引信息，生成 SQL 语句
+                        for (index_name, index_type), columns in index_dict.items():
+                            columns_list = ", ".join(f"`{col}`" for col in columns)
+                            if index_name == "PRIMARY":
+                                index_statement = f"ADD PRIMARY KEY ({columns_list})"
+                            else:
+                                index_statement = f"ADD {index_type} INDEX `{index_name}` ({columns_list}) USING BTREE"
+
                             file.write(
                                 f"CALL add_element_unless_exists('index', '{table_name}', '{index_name}', 'ALTER TABLE {table_name} {index_statement};');\n"
                             )

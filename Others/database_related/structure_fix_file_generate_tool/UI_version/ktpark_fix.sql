@@ -1,3 +1,41 @@
+-- ============定义存储过程============
+
+DROP PROCEDURE IF EXISTS add_element_unless_exists;
+-- 新增字段或索引，新增之前会判定是否存在
+-- element_type：参数类型 column=字段 index=索引
+-- tab_name：表名
+-- element_name：字段名或索引名
+-- sql_statement：执行的sql
+CREATE PROCEDURE add_element_unless_exists(IN element_type VARCHAR(64), IN tab_name VARCHAR(64), IN element_name VARCHAR(64), IN sql_statement VARCHAR(500))
+BEGIN
+
+    -- 新增字段
+    IF element_type = 'column' THEN
+        IF NOT EXISTS (
+            -- 判定字段是否存在
+            SELECT * FROM information_schema.columns
+            WHERE table_schema = DATABASE() and table_name = tab_name AND column_name = element_name
+        ) THEN
+            SET @s = sql_statement;
+            PREPARE stmt FROM @s;
+            EXECUTE stmt;
+        END IF;
+    END IF;
+
+    -- 新增索引
+    IF element_type = 'index' THEN
+        IF NOT EXISTS (
+            -- 判定索引是否存在
+            SELECT 1 FROM INFORMATION_SCHEMA.STATISTICS
+            WHERE table_schema = DATABASE() and table_name= tab_name AND index_name= element_name
+        ) THEN
+            SET @s = sql_statement;
+            PREPARE stmt FROM @s;
+            EXECUTE stmt;
+        END IF;
+    END IF;
+END;
+
 -- ===============全量创建标准库表===============
 -- 构造表 areapointled
 CREATE TABLE IF NOT EXISTS `areapointled` (
@@ -1089,73 +1127,69 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 -- ===============全量更新所有表字段===============
 -- 更新表 areapointled 所有字段和索引
-CALL add_element_unless_exists('column', 'areapointled', 'ID', 'ALTER TABLE areapointled ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'areapointled', 'ID', 'ALTER TABLE areapointled ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'areapointled', 'Lid', 'ALTER TABLE areapointled ADD COLUMN `Lid` int(11) NULL DEFAULT 0 AFTER `ID`;');
 CALL add_element_unless_exists('column', 'areapointled', 'Aid', 'ALTER TABLE areapointled ADD COLUMN `Aid` int(11) NULL DEFAULT 0 AFTER `Lid`;');
-CALL add_element_unless_exists('index', 'areapointled', 'PRIMARY', 'ALTER TABLE areapointled ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'areapointled', 'PRIMARY', 'ALTER TABLE areapointled ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 buspointled 所有字段和索引
-CALL add_element_unless_exists('column', 'buspointled', 'ID', 'ALTER TABLE buspointled ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'buspointled', 'ID', 'ALTER TABLE buspointled ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'buspointled', 'PAddr', 'ALTER TABLE buspointled ADD COLUMN `PAddr` int(11) NULL AFTER `ID`;');
 CALL add_element_unless_exists('column', 'buspointled', 'LAddr', 'ALTER TABLE buspointled ADD COLUMN `LAddr` int(11) NULL AFTER `PAddr`;');
 CALL add_element_unless_exists('column', 'buspointled', 'pid', 'ALTER TABLE buspointled ADD COLUMN `pid` int(11) NULL DEFAULT 0 AFTER `LAddr`;');
 CALL add_element_unless_exists('column', 'buspointled', 'lid', 'ALTER TABLE buspointled ADD COLUMN `lid` int(11) NULL DEFAULT 0 AFTER `pid`;');
-CALL add_element_unless_exists('index', 'buspointled', 'PRIMARY', 'ALTER TABLE buspointled ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'buspointled', 'PRIMARY', 'ALTER TABLE buspointled ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 buspointrecorder 所有字段和索引
-CALL add_element_unless_exists('column', 'buspointrecorder', 'ID', 'ALTER TABLE buspointrecorder ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'buspointrecorder', 'ID', 'ALTER TABLE buspointrecorder ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'buspointrecorder', 'Paddr', 'ALTER TABLE buspointrecorder ADD COLUMN `Paddr` int(11) NULL DEFAULT 0 AFTER `ID`;');
 CALL add_element_unless_exists('column', 'buspointrecorder', 'Rid', 'ALTER TABLE buspointrecorder ADD COLUMN `Rid` int(11) NULL DEFAULT 0 AFTER `Paddr`;');
 CALL add_element_unless_exists('column', 'buspointrecorder', 'Rport', 'ALTER TABLE buspointrecorder ADD COLUMN `Rport` int(11) NULL DEFAULT 0 AFTER `Rid`;');
-CALL add_element_unless_exists('index', 'buspointrecorder', 'PRIMARY', 'ALTER TABLE buspointrecorder ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'buspointrecorder', 'PRIMARY', 'ALTER TABLE buspointrecorder ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 carcolor 所有字段和索引
-CALL add_element_unless_exists('column', 'carcolor', 'ID', 'ALTER TABLE carcolor ADD COLUMN `ID` int(10) unsigned NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'carcolor', 'ID', 'ALTER TABLE carcolor ADD COLUMN `ID` int(10) unsigned NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'carcolor', 'LedOne', 'ALTER TABLE carcolor ADD COLUMN `LedOne` int(10) unsigned NULL DEFAULT 0 AFTER `ID`;');
 CALL add_element_unless_exists('column', 'carcolor', 'LedTwo', 'ALTER TABLE carcolor ADD COLUMN `LedTwo` int(10) unsigned NULL DEFAULT 0 AFTER `LedOne`;');
 CALL add_element_unless_exists('column', 'carcolor', 'ACar', 'ALTER TABLE carcolor ADD COLUMN `ACar` int(10) unsigned NULL DEFAULT 0 AFTER `LedTwo`;');
 CALL add_element_unless_exists('column', 'carcolor', 'NoCar', 'ALTER TABLE carcolor ADD COLUMN `NoCar` int(10) unsigned NULL DEFAULT 0 AFTER `ACar`;');
 CALL add_element_unless_exists('column', 'carcolor', 'CarType', 'ALTER TABLE carcolor ADD COLUMN `CarType` int(10) unsigned NULL DEFAULT 0 AFTER `NoCar`;');
-CALL add_element_unless_exists('column', 'carcolor', 'TypeNamect', 'ALTER TABLE carcolor ADD COLUMN `TypeNamect` varchar(45) NULL DEFAULT AFTER `CarType`;');
-CALL add_element_unless_exists('column', 'carcolor', 'TypeNameen', 'ALTER TABLE carcolor ADD COLUMN `TypeNameen` varchar(45) NULL DEFAULT AFTER `TypeNamect`;');
+CALL add_element_unless_exists('column', 'carcolor', 'TypeNamect', 'ALTER TABLE carcolor ADD COLUMN `TypeNamect` varchar(45) NULL DEFAULT \'\' AFTER `CarType`;');
+CALL add_element_unless_exists('column', 'carcolor', 'TypeNameen', 'ALTER TABLE carcolor ADD COLUMN `TypeNameen` varchar(45) NULL DEFAULT \'\' AFTER `TypeNamect`;');
 CALL add_element_unless_exists('column', 'carcolor', 'IfCount', 'ALTER TABLE carcolor ADD COLUMN `IfCount` int(11) NULL DEFAULT 0 AFTER `TypeNameen`;');
-CALL add_element_unless_exists('index', 'carcolor', 'PRIMARY', 'ALTER TABLE carcolor ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'carcolor', 'PRIMARY', 'ALTER TABLE carcolor ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 carfindencrypt 所有字段和索引
-CALL add_element_unless_exists('column', 'carfindencrypt', 'id', 'ALTER TABLE carfindencrypt ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'carfindencrypt', 'CarNum', 'ALTER TABLE carfindencrypt ADD COLUMN `CarNum` varchar(10) NOT NULL DEFAULT AFTER `id`;');
-CALL add_element_unless_exists('column', 'carfindencrypt', 'password', 'ALTER TABLE carfindencrypt ADD COLUMN `password` varchar(10) NOT NULL DEFAULT AFTER `CarNum`;');
+CALL add_element_unless_exists('column', 'carfindencrypt', 'id', 'ALTER TABLE carfindencrypt ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'carfindencrypt', 'CarNum', 'ALTER TABLE carfindencrypt ADD COLUMN `CarNum` varchar(10) NOT NULL DEFAULT \'\' AFTER `id`;');
+CALL add_element_unless_exists('column', 'carfindencrypt', 'password', 'ALTER TABLE carfindencrypt ADD COLUMN `password` varchar(10) NOT NULL DEFAULT \'\' AFTER `CarNum`;');
 CALL add_element_unless_exists('column', 'carfindencrypt', 'ValidityFromDate', 'ALTER TABLE carfindencrypt ADD COLUMN `ValidityFromDate` datetime NULL AFTER `password`;');
 CALL add_element_unless_exists('column', 'carfindencrypt', 'ValidityToDate', 'ALTER TABLE carfindencrypt ADD COLUMN `ValidityToDate` datetime NULL AFTER `ValidityFromDate`;');
 CALL add_element_unless_exists('column', 'carfindencrypt', 'CreateTime', 'ALTER TABLE carfindencrypt ADD COLUMN `CreateTime` datetime NULL AFTER `ValidityToDate`;');
-CALL add_element_unless_exists('index', 'carfindencrypt', 'PRIMARY', 'ALTER TABLE carfindencrypt ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 'carfindencrypt', 'idx_carfindencrypt_CarNum', 'ALTER TABLE carfindencrypt ADD INDEX INDEX `idx_carfindencrypt_CarNum` (`CarNum`) USING BTREE;');
+CALL add_element_unless_exists('index', 'carfindencrypt', 'PRIMARY', 'ALTER TABLE carfindencrypt ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 'carfindencrypt', 'idx_carfindencrypt_CarNum', 'ALTER TABLE carfindencrypt ADD  INDEX `idx_carfindencrypt_CarNum` (`CarNum`) USING BTREE;');
 
 -- 更新表 columns_priv 所有字段和索引
-CALL add_element_unless_exists('column', 'columns_priv', 'Host', 'ALTER TABLE columns_priv ADD COLUMN `Host` char(60) NOT NULL DEFAULT;');
-CALL add_element_unless_exists('column', 'columns_priv', 'Db', 'ALTER TABLE columns_priv ADD COLUMN `Db` char(64) NOT NULL DEFAULT AFTER `Host`;');
-CALL add_element_unless_exists('column', 'columns_priv', 'User', 'ALTER TABLE columns_priv ADD COLUMN `User` char(16) NOT NULL DEFAULT AFTER `Db`;');
-CALL add_element_unless_exists('column', 'columns_priv', 'Table_name', 'ALTER TABLE columns_priv ADD COLUMN `Table_name` char(64) NOT NULL DEFAULT AFTER `User`;');
-CALL add_element_unless_exists('column', 'columns_priv', 'Column_name', 'ALTER TABLE columns_priv ADD COLUMN `Column_name` char(64) NOT NULL DEFAULT AFTER `Table_name`;');
+CALL add_element_unless_exists('column', 'columns_priv', 'Host', 'ALTER TABLE columns_priv ADD COLUMN `Host` char(60) NOT NULL DEFAULT \'\';');
+CALL add_element_unless_exists('column', 'columns_priv', 'Db', 'ALTER TABLE columns_priv ADD COLUMN `Db` char(64) NOT NULL DEFAULT \'\' AFTER `Host`;');
+CALL add_element_unless_exists('column', 'columns_priv', 'User', 'ALTER TABLE columns_priv ADD COLUMN `User` char(16) NOT NULL DEFAULT \'\' AFTER `Db`;');
+CALL add_element_unless_exists('column', 'columns_priv', 'Table_name', 'ALTER TABLE columns_priv ADD COLUMN `Table_name` char(64) NOT NULL DEFAULT \'\' AFTER `User`;');
+CALL add_element_unless_exists('column', 'columns_priv', 'Column_name', 'ALTER TABLE columns_priv ADD COLUMN `Column_name` char(64) NOT NULL DEFAULT \'\' AFTER `Table_name`;');
 CALL add_element_unless_exists('column', 'columns_priv', 'Timestamp', 'ALTER TABLE columns_priv ADD COLUMN `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `Column_name`;');
 CALL add_element_unless_exists('column', 'columns_priv', 'Column_priv', 'ALTER TABLE columns_priv ADD COLUMN `Column_priv` set(\'Select\',\'Insert\',\'Update\',\'References\') NOT NULL AFTER `Timestamp`;');
-CALL add_element_unless_exists('index', 'columns_priv', 'PRIMARY', 'ALTER TABLE columns_priv ADD UNIQUE INDEX `PRIMARY` (`Host`) USING BTREE;');
-CALL add_element_unless_exists('index', 'columns_priv', 'PRIMARY', 'ALTER TABLE columns_priv ADD UNIQUE INDEX `PRIMARY` (`Db`) USING BTREE;');
-CALL add_element_unless_exists('index', 'columns_priv', 'PRIMARY', 'ALTER TABLE columns_priv ADD UNIQUE INDEX `PRIMARY` (`User`) USING BTREE;');
-CALL add_element_unless_exists('index', 'columns_priv', 'PRIMARY', 'ALTER TABLE columns_priv ADD UNIQUE INDEX `PRIMARY` (`Table_name`) USING BTREE;');
-CALL add_element_unless_exists('index', 'columns_priv', 'PRIMARY', 'ALTER TABLE columns_priv ADD UNIQUE INDEX `PRIMARY` (`Column_name`) USING BTREE;');
+CALL add_element_unless_exists('index', 'columns_priv', 'PRIMARY', 'ALTER TABLE columns_priv ADD PRIMARY KEY (`Host`, `Db`, `User`, `Table_name`, `Column_name`);');
 
 -- 更新表 controlset 所有字段和索引
-CALL add_element_unless_exists('column', 'controlset', 'ID', 'ALTER TABLE controlset ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'controlset', 'LNumber', 'ALTER TABLE controlset ADD COLUMN `LNumber` varchar(50) NULL DEFAULT AFTER `ID`;');
+CALL add_element_unless_exists('column', 'controlset', 'ID', 'ALTER TABLE controlset ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'controlset', 'LNumber', 'ALTER TABLE controlset ADD COLUMN `LNumber` varchar(50) NULL DEFAULT \'\' AFTER `ID`;');
 CALL add_element_unless_exists('column', 'controlset', 'Location', 'ALTER TABLE controlset ADD COLUMN `Location` varchar(50) NULL DEFAULT 0 AFTER `LNumber`;');
 CALL add_element_unless_exists('column', 'controlset', 'Direction', 'ALTER TABLE controlset ADD COLUMN `Direction` varchar(50) NULL DEFAULT 0 AFTER `Location`;');
 CALL add_element_unless_exists('column', 'controlset', 'Color', 'ALTER TABLE controlset ADD COLUMN `Color` varchar(50) NULL DEFAULT 3 AFTER `Direction`;');
 CALL add_element_unless_exists('column', 'controlset', 'BusType', 'ALTER TABLE controlset ADD COLUMN `BusType` varchar(50) NULL DEFAULT 1 AFTER `Color`;');
-CALL add_element_unless_exists('index', 'controlset', 'PRIMARY', 'ALTER TABLE controlset ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'controlset', 'PRIMARY', 'ALTER TABLE controlset ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 cy2 所有字段和索引
-CALL add_element_unless_exists('column', 'cy2', 'ID', 'ALTER TABLE cy2 ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'cy2', 'ID', 'ALTER TABLE cy2 ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'cy2', 'CIP', 'ALTER TABLE cy2 ADD COLUMN `CIP` varchar(50) NOT NULL AFTER `ID`;');
 CALL add_element_unless_exists('column', 'cy2', 'OtherMid', 'ALTER TABLE cy2 ADD COLUMN `OtherMid` int(11) unsigned NOT NULL AFTER `CIP`;');
 CALL add_element_unless_exists('column', 'cy2', 'FloorPoint', 'ALTER TABLE cy2 ADD COLUMN `FloorPoint` varchar(50) NOT NULL AFTER `OtherMid`;');
@@ -1165,15 +1199,15 @@ CALL add_element_unless_exists('column', 'cy2', 'DirType', 'ALTER TABLE cy2 ADD 
 CALL add_element_unless_exists('column', 'cy2', 'CliFlag', 'ALTER TABLE cy2 ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `DirType`;');
 CALL add_element_unless_exists('column', 'cy2', 'CliDate', 'ALTER TABLE cy2 ADD COLUMN `CliDate` datetime NULL AFTER `CliFlag`;');
 CALL add_element_unless_exists('column', 'cy2', 'IsDelete', 'ALTER TABLE cy2 ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliDate`;');
-CALL add_element_unless_exists('index', 'cy2', 'PRIMARY', 'ALTER TABLE cy2 ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'cy2', 'PRIMARY', 'ALTER TABLE cy2 ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 cy_cx_a 所有字段和索引
-CALL add_element_unless_exists('column', 'cy_cx_a', 'ID', 'ALTER TABLE cy_cx_a ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'CName', 'ALTER TABLE cy_cx_a ADD COLUMN `CName` varchar(50) NOT NULL DEFAULT AFTER `ID`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'CIP', 'ALTER TABLE cy_cx_a ADD COLUMN `CIP` varchar(50) NOT NULL DEFAULT AFTER `CName`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'ID', 'ALTER TABLE cy_cx_a ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'CName', 'ALTER TABLE cy_cx_a ADD COLUMN `CName` varchar(50) NOT NULL DEFAULT \'\' AFTER `ID`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'CIP', 'ALTER TABLE cy_cx_a ADD COLUMN `CIP` varchar(50) NOT NULL DEFAULT \'\' AFTER `CName`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'MID', 'ALTER TABLE cy_cx_a ADD COLUMN `MID` int(11) NOT NULL DEFAULT 0 AFTER `CIP`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'lukou', 'ALTER TABLE cy_cx_a ADD COLUMN `lukou` int(11) NOT NULL DEFAULT 0 AFTER `MID`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'mapfile', 'ALTER TABLE cy_cx_a ADD COLUMN `mapfile` varchar(45) NOT NULL DEFAULT AFTER `lukou`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'mapfile', 'ALTER TABLE cy_cx_a ADD COLUMN `mapfile` varchar(45) NOT NULL DEFAULT \'\' AFTER `lukou`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'angle', 'ALTER TABLE cy_cx_a ADD COLUMN `angle` int(11) NOT NULL DEFAULT 0 AFTER `mapfile`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'Direction', 'ALTER TABLE cy_cx_a ADD COLUMN `Direction` int(6) NOT NULL DEFAULT 45 AFTER `angle`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'PosX', 'ALTER TABLE cy_cx_a ADD COLUMN `PosX` int(11) NOT NULL DEFAULT 0 AFTER `Direction`;');
@@ -1182,30 +1216,29 @@ CALL add_element_unless_exists('column', 'cy_cx_a', 'AreaId', 'ALTER TABLE cy_cx
 CALL add_element_unless_exists('column', 'cy_cx_a', 'CliFlag', 'ALTER TABLE cy_cx_a ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `AreaId`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'CliDate', 'ALTER TABLE cy_cx_a ADD COLUMN `CliDate` datetime NULL AFTER `CliFlag`;');
 CALL add_element_unless_exists('column', 'cy_cx_a', 'IsDelete', 'ALTER TABLE cy_cx_a ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliDate`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'route_ip', 'ALTER TABLE cy_cx_a ADD COLUMN `route_ip` varchar(50) NULL DEFAULT AFTER `IsDelete`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'up_point', 'ALTER TABLE cy_cx_a ADD COLUMN `up_point` varchar(50) NULL DEFAULT AFTER `route_ip`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'down_point', 'ALTER TABLE cy_cx_a ADD COLUMN `down_point` varchar(50) NULL DEFAULT AFTER `up_point`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'left_point', 'ALTER TABLE cy_cx_a ADD COLUMN `left_point` varchar(50) NULL DEFAULT AFTER `down_point`;');
-CALL add_element_unless_exists('column', 'cy_cx_a', 'right_point', 'ALTER TABLE cy_cx_a ADD COLUMN `right_point` varchar(50) NULL DEFAULT AFTER `left_point`;');
-CALL add_element_unless_exists('index', 'cy_cx_a', 'PRIMARY', 'ALTER TABLE cy_cx_a ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'route_ip', 'ALTER TABLE cy_cx_a ADD COLUMN `route_ip` varchar(50) NULL DEFAULT \'\' AFTER `IsDelete`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'up_point', 'ALTER TABLE cy_cx_a ADD COLUMN `up_point` varchar(50) NULL DEFAULT \'\' AFTER `route_ip`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'down_point', 'ALTER TABLE cy_cx_a ADD COLUMN `down_point` varchar(50) NULL DEFAULT \'\' AFTER `up_point`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'left_point', 'ALTER TABLE cy_cx_a ADD COLUMN `left_point` varchar(50) NULL DEFAULT \'\' AFTER `down_point`;');
+CALL add_element_unless_exists('column', 'cy_cx_a', 'right_point', 'ALTER TABLE cy_cx_a ADD COLUMN `right_point` varchar(50) NULL DEFAULT \'\' AFTER `left_point`;');
+CALL add_element_unless_exists('index', 'cy_cx_a', 'PRIMARY', 'ALTER TABLE cy_cx_a ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 dspinfolog 所有字段和索引
-CALL add_element_unless_exists('column', 'dspinfolog', 'ID', 'ALTER TABLE dspinfolog ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'dspinfolog', 'CarplateNum', 'ALTER TABLE dspinfolog ADD COLUMN `CarplateNum` varchar(50) NULL DEFAULT AFTER `ID`;');
+CALL add_element_unless_exists('column', 'dspinfolog', 'ID', 'ALTER TABLE dspinfolog ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'dspinfolog', 'CarplateNum', 'ALTER TABLE dspinfolog ADD COLUMN `CarplateNum` varchar(50) NULL DEFAULT \'\' AFTER `ID`;');
 CALL add_element_unless_exists('column', 'dspinfolog', 'CarAddr', 'ALTER TABLE dspinfolog ADD COLUMN `CarAddr` int(11) NULL DEFAULT 0 AFTER `CarplateNum`;');
-CALL add_element_unless_exists('column', 'dspinfolog', 'ImgName', 'ALTER TABLE dspinfolog ADD COLUMN `ImgName` varchar(100) NULL DEFAULT AFTER `CarAddr`;');
+CALL add_element_unless_exists('column', 'dspinfolog', 'ImgName', 'ALTER TABLE dspinfolog ADD COLUMN `ImgName` varchar(100) NULL DEFAULT \'\' AFTER `CarAddr`;');
 CALL add_element_unless_exists('column', 'dspinfolog', 'PdataTime', 'ALTER TABLE dspinfolog ADD COLUMN `PdataTime` varchar(40) NULL AFTER `ImgName`;');
-CALL add_element_unless_exists('index', 'dspinfolog', 'PRIMARY', 'ALTER TABLE dspinfolog ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
-CALL add_element_unless_exists('index', 'dspinfolog', 'IDX_dspinfolog', 'ALTER TABLE dspinfolog ADD INDEX INDEX `IDX_dspinfolog` (`CarAddr`) USING BTREE;');
-CALL add_element_unless_exists('index', 'dspinfolog', 'IDX_dspinfolog', 'ALTER TABLE dspinfolog ADD INDEX INDEX `IDX_dspinfolog` (`PdataTime`) USING BTREE;');
-CALL add_element_unless_exists('index', 'dspinfolog', 'IDX_dspinfolog_PdataTime', 'ALTER TABLE dspinfolog ADD INDEX INDEX `IDX_dspinfolog_PdataTime` (`PdataTime`) USING BTREE;');
+CALL add_element_unless_exists('index', 'dspinfolog', 'PRIMARY', 'ALTER TABLE dspinfolog ADD PRIMARY KEY (`ID`);');
+CALL add_element_unless_exists('index', 'dspinfolog', 'IDX_dspinfolog', 'ALTER TABLE dspinfolog ADD  INDEX `IDX_dspinfolog` (`CarAddr`, `PdataTime`) USING BTREE;');
+CALL add_element_unless_exists('index', 'dspinfolog', 'IDX_dspinfolog_PdataTime', 'ALTER TABLE dspinfolog ADD  INDEX `IDX_dspinfolog_PdataTime` (`PdataTime`) USING BTREE;');
 
 -- 更新表 infoarea 所有字段和索引
-CALL add_element_unless_exists('column', 'infoarea', 'ID', 'ALTER TABLE infoarea ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'infoarea', 'AreaName', 'ALTER TABLE infoarea ADD COLUMN `AreaName` varchar(30) NOT NULL DEFAULT AFTER `ID`;');
-CALL add_element_unless_exists('column', 'infoarea', 'AreaName2', 'ALTER TABLE infoarea ADD COLUMN `AreaName2` varchar(30) NOT NULL DEFAULT AFTER `AreaName`;');
+CALL add_element_unless_exists('column', 'infoarea', 'ID', 'ALTER TABLE infoarea ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'infoarea', 'AreaName', 'ALTER TABLE infoarea ADD COLUMN `AreaName` varchar(30) NOT NULL DEFAULT \'\' AFTER `ID`;');
+CALL add_element_unless_exists('column', 'infoarea', 'AreaName2', 'ALTER TABLE infoarea ADD COLUMN `AreaName2` varchar(30) NOT NULL DEFAULT \'\' AFTER `AreaName`;');
 CALL add_element_unless_exists('column', 'infoarea', 'MapId', 'ALTER TABLE infoarea ADD COLUMN `MapId` int(11) NULL DEFAULT 0 AFTER `AreaName2`;');
-CALL add_element_unless_exists('column', 'infoarea', 'MapName', 'ALTER TABLE infoarea ADD COLUMN `MapName` varchar(30) NULL DEFAULT AFTER `MapId`;');
+CALL add_element_unless_exists('column', 'infoarea', 'MapName', 'ALTER TABLE infoarea ADD COLUMN `MapName` varchar(30) NULL DEFAULT \'\' AFTER `MapId`;');
 CALL add_element_unless_exists('column', 'infoarea', 'CliDate', 'ALTER TABLE infoarea ADD COLUMN `CliDate` datetime NULL AFTER `MapName`;');
 CALL add_element_unless_exists('column', 'infoarea', 'CliFlag', 'ALTER TABLE infoarea ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `CliDate`;');
 CALL add_element_unless_exists('column', 'infoarea', 'IsDelete', 'ALTER TABLE infoarea ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliFlag`;');
@@ -1215,21 +1248,21 @@ CALL add_element_unless_exists('column', 'infoarea', 'TotalNum', 'ALTER TABLE in
 CALL add_element_unless_exists('column', 'infoarea', 'FreeNum', 'ALTER TABLE infoarea ADD COLUMN `FreeNum` int(11) NULL DEFAULT 0 AFTER `TotalNum`;');
 CALL add_element_unless_exists('column', 'infoarea', 'AreaType', 'ALTER TABLE infoarea ADD COLUMN `AreaType` int(11) NULL DEFAULT 0 AFTER `FreeNum`;');
 CALL add_element_unless_exists('column', 'infoarea', 'LimitNum', 'ALTER TABLE infoarea ADD COLUMN `LimitNum` int(11) NULL DEFAULT 0 AFTER `AreaType`;');
-CALL add_element_unless_exists('column', 'infoarea', 'AreaName3', 'ALTER TABLE infoarea ADD COLUMN `AreaName3` varchar(30) NULL DEFAULT AFTER `LimitNum`;');
+CALL add_element_unless_exists('column', 'infoarea', 'AreaName3', 'ALTER TABLE infoarea ADD COLUMN `AreaName3` varchar(30) NULL DEFAULT \'\' AFTER `LimitNum`;');
 CALL add_element_unless_exists('column', 'infoarea', 'ClientUpdateTime', 'ALTER TABLE infoarea ADD COLUMN `ClientUpdateTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `AreaName3`;');
-CALL add_element_unless_exists('index', 'infoarea', 'PRIMARY', 'ALTER TABLE infoarea ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infoarea', 'PRIMARY', 'ALTER TABLE infoarea ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 infobus 所有字段和索引
-CALL add_element_unless_exists('column', 'infobus', 'ID', 'ALTER TABLE infobus ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infobus', 'ID', 'ALTER TABLE infobus ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infobus', 'BusNumber', 'ALTER TABLE infobus ADD COLUMN `BusNumber` varchar(40) NULL DEFAULT 0 AFTER `ID`;');
 CALL add_element_unless_exists('column', 'infobus', 'Addr', 'ALTER TABLE infobus ADD COLUMN `Addr` int(11) NULL DEFAULT 0 AFTER `BusNumber`;');
 CALL add_element_unless_exists('column', 'infobus', 'state', 'ALTER TABLE infobus ADD COLUMN `state` int(11) NULL DEFAULT 0 AFTER `Addr`;');
 CALL add_element_unless_exists('column', 'infobus', 'LeaveTime', 'ALTER TABLE infobus ADD COLUMN `LeaveTime` varchar(40) NULL AFTER `state`;');
 CALL add_element_unless_exists('column', 'infobus', 'ComeTime', 'ALTER TABLE infobus ADD COLUMN `ComeTime` varchar(40) NULL AFTER `LeaveTime`;');
 CALL add_element_unless_exists('column', 'infobus', 'carplatenum', 'ALTER TABLE infobus ADD COLUMN `carplatenum` varchar(50) NULL AFTER `ComeTime`;');
-CALL add_element_unless_exists('column', 'infobus', 'lastCarPlateNum', 'ALTER TABLE infobus ADD COLUMN `lastCarPlateNum` varchar(50) NULL DEFAULT AFTER `carplatenum`;');
+CALL add_element_unless_exists('column', 'infobus', 'lastCarPlateNum', 'ALTER TABLE infobus ADD COLUMN `lastCarPlateNum` varchar(50) NULL DEFAULT \'\' AFTER `carplatenum`;');
 CALL add_element_unless_exists('column', 'infobus', 'ImgName', 'ALTER TABLE infobus ADD COLUMN `ImgName` varchar(50) NULL AFTER `lastCarPlateNum`;');
-CALL add_element_unless_exists('column', 'infobus', 'lastImgName', 'ALTER TABLE infobus ADD COLUMN `lastImgName` varchar(50) NULL DEFAULT AFTER `ImgName`;');
+CALL add_element_unless_exists('column', 'infobus', 'lastImgName', 'ALTER TABLE infobus ADD COLUMN `lastImgName` varchar(50) NULL DEFAULT \'\' AFTER `ImgName`;');
 CALL add_element_unless_exists('column', 'infobus', 'AreaID', 'ALTER TABLE infobus ADD COLUMN `AreaID` int(11) NULL DEFAULT 0 AFTER `lastImgName`;');
 CALL add_element_unless_exists('column', 'infobus', 'Flag', 'ALTER TABLE infobus ADD COLUMN `Flag` int(10) unsigned NOT NULL DEFAULT 0 AFTER `AreaID`;');
 CALL add_element_unless_exists('column', 'infobus', 'PreLeaveTime', 'ALTER TABLE infobus ADD COLUMN `PreLeaveTime` varchar(40) NULL AFTER `Flag`;');
@@ -1244,8 +1277,8 @@ CALL add_element_unless_exists('column', 'infobus', 'Trun', 'ALTER TABLE infobus
 CALL add_element_unless_exists('column', 'infobus', 'PosX', 'ALTER TABLE infobus ADD COLUMN `PosX` int(10) unsigned NOT NULL DEFAULT 0 AFTER `Trun`;');
 CALL add_element_unless_exists('column', 'infobus', 'PosY', 'ALTER TABLE infobus ADD COLUMN `PosY` int(10) unsigned NOT NULL DEFAULT 0 AFTER `PosX`;');
 CALL add_element_unless_exists('column', 'infobus', 'IfSetRoute', 'ALTER TABLE infobus ADD COLUMN `IfSetRoute` varchar(255) NULL DEFAULT 0 AFTER `PosY`;');
-CALL add_element_unless_exists('column', 'infobus', 'PSPlaceNum', 'ALTER TABLE infobus ADD COLUMN `PSPlaceNum` varchar(30) NOT NULL DEFAULT AFTER `IfSetRoute`;');
-CALL add_element_unless_exists('column', 'infobus', 'PSPlaceName', 'ALTER TABLE infobus ADD COLUMN `PSPlaceName` varchar(30) NOT NULL DEFAULT AFTER `PSPlaceNum`;');
+CALL add_element_unless_exists('column', 'infobus', 'PSPlaceNum', 'ALTER TABLE infobus ADD COLUMN `PSPlaceNum` varchar(30) NOT NULL DEFAULT \'\' AFTER `IfSetRoute`;');
+CALL add_element_unless_exists('column', 'infobus', 'PSPlaceName', 'ALTER TABLE infobus ADD COLUMN `PSPlaceName` varchar(30) NOT NULL DEFAULT \'\' AFTER `PSPlaceNum`;');
 CALL add_element_unless_exists('column', 'infobus', 'WDCloudFlag', 'ALTER TABLE infobus ADD COLUMN `WDCloudFlag` int(4) NOT NULL DEFAULT 0 AFTER `PSPlaceName`;');
 CALL add_element_unless_exists('column', 'infobus', 'WDCloudDate', 'ALTER TABLE infobus ADD COLUMN `WDCloudDate` datetime NULL AFTER `WDCloudFlag`;');
 CALL add_element_unless_exists('column', 'infobus', 'parktype', 'ALTER TABLE infobus ADD COLUMN `parktype` int(1) NULL DEFAULT 0 AFTER `WDCloudDate`;');
@@ -1259,17 +1292,14 @@ CALL add_element_unless_exists('column', 'infobus', 'LightOcc', 'ALTER TABLE inf
 CALL add_element_unless_exists('column', 'infobus', 'LightErr', 'ALTER TABLE infobus ADD COLUMN `LightErr` int(11) NULL DEFAULT 0 AFTER `LightOcc`;');
 CALL add_element_unless_exists('column', 'infobus', 'CarPlateASI', 'ALTER TABLE infobus ADD COLUMN `CarPlateASI` varchar(30) NULL AFTER `LightErr`;');
 CALL add_element_unless_exists('column', 'infobus', 'ClientUpdateTime', 'ALTER TABLE infobus ADD COLUMN `ClientUpdateTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `CarPlateASI`;');
-CALL add_element_unless_exists('index', 'infobus', 'PRIMARY', 'ALTER TABLE infobus ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'IDX_BusNo_CarNo', 'ALTER TABLE infobus ADD INDEX INDEX `IDX_BusNo_CarNo` (`BusNumber`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'IDX_BusNo_CarNo', 'ALTER TABLE infobus ADD INDEX INDEX `IDX_BusNo_CarNo` (`carplatenum`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'Idx_infobus_Addr_AreaId', 'ALTER TABLE infobus ADD INDEX INDEX `Idx_infobus_Addr_AreaId` (`Addr`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'Idx_infobus_Addr_AreaId', 'ALTER TABLE infobus ADD INDEX INDEX `Idx_infobus_Addr_AreaId` (`AreaID`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'IX_infobus', 'ALTER TABLE infobus ADD INDEX INDEX `IX_infobus` (`Addr`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'IX_infobus', 'ALTER TABLE infobus ADD INDEX INDEX `IX_infobus` (`state`) USING BTREE;');
-CALL add_element_unless_exists('index', 'infobus', 'IX_infobus_Addr', 'ALTER TABLE infobus ADD INDEX INDEX `IX_infobus_Addr` (`Addr`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infobus', 'PRIMARY', 'ALTER TABLE infobus ADD PRIMARY KEY (`ID`);');
+CALL add_element_unless_exists('index', 'infobus', 'IDX_BusNo_CarNo', 'ALTER TABLE infobus ADD  INDEX `IDX_BusNo_CarNo` (`BusNumber`, `carplatenum`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infobus', 'Idx_infobus_Addr_AreaId', 'ALTER TABLE infobus ADD  INDEX `Idx_infobus_Addr_AreaId` (`Addr`, `AreaID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infobus', 'IX_infobus', 'ALTER TABLE infobus ADD  INDEX `IX_infobus` (`Addr`, `state`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infobus', 'IX_infobus_Addr', 'ALTER TABLE infobus ADD  INDEX `IX_infobus_Addr` (`Addr`) USING BTREE;');
 
 -- 更新表 infoconfig 所有字段和索引
-CALL add_element_unless_exists('column', 'infoconfig', 'id', 'ALTER TABLE infoconfig ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infoconfig', 'id', 'ALTER TABLE infoconfig ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infoconfig', 'inquireWays', 'ALTER TABLE infoconfig ADD COLUMN `inquireWays` varchar(200) NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'openAlreadyTime', 'ALTER TABLE infoconfig ADD COLUMN `openAlreadyTime` tinyint(1) NULL AFTER `inquireWays`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'chargePort', 'ALTER TABLE infoconfig ADD COLUMN `chargePort` int(11) NULL DEFAULT 8080 AFTER `openAlreadyTime`;');
@@ -1282,44 +1312,44 @@ CALL add_element_unless_exists('column', 'infoconfig', 'swipingCard', 'ALTER TAB
 CALL add_element_unless_exists('column', 'infoconfig', 'snapCard', 'ALTER TABLE infoconfig ADD COLUMN `snapCard` tinyint(1) NULL DEFAULT 0 AFTER `swipingCard`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'aliPay', 'ALTER TABLE infoconfig ADD COLUMN `aliPay` tinyint(1) NULL DEFAULT 0 AFTER `snapCard`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'weiXin', 'ALTER TABLE infoconfig ADD COLUMN `weiXin` tinyint(1) NULL DEFAULT 0 AFTER `aliPay`;');
-CALL add_element_unless_exists('column', 'infoconfig', 'cloudChargeServiceAdd', 'ALTER TABLE infoconfig ADD COLUMN `cloudChargeServiceAdd` varchar(50) NULL DEFAULT AFTER `weiXin`;');
-CALL add_element_unless_exists('column', 'infoconfig', 'chargeServiceAdd', 'ALTER TABLE infoconfig ADD COLUMN `chargeServiceAdd` varchar(50) NULL DEFAULT AFTER `cloudChargeServiceAdd`;');
+CALL add_element_unless_exists('column', 'infoconfig', 'cloudChargeServiceAdd', 'ALTER TABLE infoconfig ADD COLUMN `cloudChargeServiceAdd` varchar(50) NULL DEFAULT \'\' AFTER `weiXin`;');
+CALL add_element_unless_exists('column', 'infoconfig', 'chargeServiceAdd', 'ALTER TABLE infoconfig ADD COLUMN `chargeServiceAdd` varchar(50) NULL DEFAULT \'\' AFTER `cloudChargeServiceAdd`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'recordCount', 'ALTER TABLE infoconfig ADD COLUMN `recordCount` int(11) NULL DEFAULT 25 AFTER `chargeServiceAdd`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'routeType', 'ALTER TABLE infoconfig ADD COLUMN `routeType` tinyint(1) NULL DEFAULT 1 AFTER `recordCount`;');
-CALL add_element_unless_exists('column', 'infoconfig', 'phoneServiceAdd', 'ALTER TABLE infoconfig ADD COLUMN `phoneServiceAdd` varchar(50) NULL DEFAULT AFTER `routeType`;');
+CALL add_element_unless_exists('column', 'infoconfig', 'phoneServiceAdd', 'ALTER TABLE infoconfig ADD COLUMN `phoneServiceAdd` varchar(50) NULL DEFAULT \'\' AFTER `routeType`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'ifSubSeller', 'ALTER TABLE infoconfig ADD COLUMN `ifSubSeller` tinyint(4) NULL AFTER `phoneServiceAdd`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'plateMaxNum', 'ALTER TABLE infoconfig ADD COLUMN `plateMaxNum` int(11) NULL DEFAULT 5 AFTER `ifSubSeller`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'parkMaxNum', 'ALTER TABLE infoconfig ADD COLUMN `parkMaxNum` int(11) NULL DEFAULT 5 AFTER `plateMaxNum`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'isOpenPrint', 'ALTER TABLE infoconfig ADD COLUMN `isOpenPrint` tinyint(4) NULL AFTER `parkMaxNum`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'isOpenPickUp', 'ALTER TABLE infoconfig ADD COLUMN `isOpenPickUp` tinyint(4) NULL AFTER `isOpenPrint`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'languageSupport', 'ALTER TABLE infoconfig ADD COLUMN `languageSupport` int(11) NULL DEFAULT 0 AFTER `isOpenPickUp`;');
-CALL add_element_unless_exists('column', 'infoconfig', 'foreginLanguage', 'ALTER TABLE infoconfig ADD COLUMN `foreginLanguage` varchar(30) NULL DEFAULT AFTER `languageSupport`;');
+CALL add_element_unless_exists('column', 'infoconfig', 'foreginLanguage', 'ALTER TABLE infoconfig ADD COLUMN `foreginLanguage` varchar(30) NULL DEFAULT \'\' AFTER `languageSupport`;');
 CALL add_element_unless_exists('column', 'infoconfig', 'isOpenQrcode', 'ALTER TABLE infoconfig ADD COLUMN `isOpenQrcode` tinyint(1) NULL DEFAULT 0 AFTER `foreginLanguage`;');
-CALL add_element_unless_exists('index', 'infoconfig', 'PRIMARY', 'ALTER TABLE infoconfig ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infoconfig', 'PRIMARY', 'ALTER TABLE infoconfig ADD PRIMARY KEY (`id`);');
 
 -- 更新表 infofloor 所有字段和索引
-CALL add_element_unless_exists('column', 'infofloor', 'id', 'ALTER TABLE infofloor ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infofloor', 'id', 'ALTER TABLE infofloor ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infofloor', 'curmid', 'ALTER TABLE infofloor ADD COLUMN `curmid` int(11) NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 'infofloor', 'othermid', 'ALTER TABLE infofloor ADD COLUMN `othermid` int(11) NULL DEFAULT 0 AFTER `curmid`;');
 CALL add_element_unless_exists('column', 'infofloor', 'imgsrc', 'ALTER TABLE infofloor ADD COLUMN `imgsrc` varchar(255) NULL AFTER `othermid`;');
 CALL add_element_unless_exists('column', 'infofloor', 'ftype', 'ALTER TABLE infofloor ADD COLUMN `ftype` int(11) NULL DEFAULT 0 AFTER `imgsrc`;');
 CALL add_element_unless_exists('column', 'infofloor', 'pointid', 'ALTER TABLE infofloor ADD COLUMN `pointid` int(11) NULL DEFAULT 0 AFTER `ftype`;');
-CALL add_element_unless_exists('index', 'infofloor', 'PRIMARY', 'ALTER TABLE infofloor ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infofloor', 'PRIMARY', 'ALTER TABLE infofloor ADD PRIMARY KEY (`id`);');
 
 -- 更新表 infohint 所有字段和索引
-CALL add_element_unless_exists('column', 'infohint', 'ID', 'ALTER TABLE infohint ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infohint', 'ID', 'ALTER TABLE infohint ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infohint', 'FindOption', 'ALTER TABLE infohint ADD COLUMN `FindOption` int(11) NULL DEFAULT 0 AFTER `ID`;');
 CALL add_element_unless_exists('column', 'infohint', 'SubOption', 'ALTER TABLE infohint ADD COLUMN `SubOption` int(11) NULL DEFAULT 0 AFTER `FindOption`;');
-CALL add_element_unless_exists('column', 'infohint', 'Memo', 'ALTER TABLE infohint ADD COLUMN `Memo` varchar(255) NULL DEFAULT AFTER `SubOption`;');
-CALL add_element_unless_exists('column', 'infohint', 'cnWarnInfo', 'ALTER TABLE infohint ADD COLUMN `cnWarnInfo` varchar(255) NULL DEFAULT AFTER `Memo`;');
-CALL add_element_unless_exists('column', 'infohint', 'enWarnInfo', 'ALTER TABLE infohint ADD COLUMN `enWarnInfo` varchar(255) NULL DEFAULT AFTER `cnWarnInfo`;');
-CALL add_element_unless_exists('column', 'infohint', 'otherWarnInfo', 'ALTER TABLE infohint ADD COLUMN `otherWarnInfo` varchar(255) NULL DEFAULT AFTER `enWarnInfo`;');
-CALL add_element_unless_exists('index', 'infohint', 'PRIMARY', 'ALTER TABLE infohint ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('column', 'infohint', 'Memo', 'ALTER TABLE infohint ADD COLUMN `Memo` varchar(255) NULL DEFAULT \'\' AFTER `SubOption`;');
+CALL add_element_unless_exists('column', 'infohint', 'cnWarnInfo', 'ALTER TABLE infohint ADD COLUMN `cnWarnInfo` varchar(255) NULL DEFAULT \'\' AFTER `Memo`;');
+CALL add_element_unless_exists('column', 'infohint', 'enWarnInfo', 'ALTER TABLE infohint ADD COLUMN `enWarnInfo` varchar(255) NULL DEFAULT \'\' AFTER `cnWarnInfo`;');
+CALL add_element_unless_exists('column', 'infohint', 'otherWarnInfo', 'ALTER TABLE infohint ADD COLUMN `otherWarnInfo` varchar(255) NULL DEFAULT \'\' AFTER `enWarnInfo`;');
+CALL add_element_unless_exists('index', 'infohint', 'PRIMARY', 'ALTER TABLE infohint ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 infoled 所有字段和索引
-CALL add_element_unless_exists('column', 'infoled', 'ID', 'ALTER TABLE infoled ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infoled', 'ID', 'ALTER TABLE infoled ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infoled', 'Addr', 'ALTER TABLE infoled ADD COLUMN `Addr` int(11) NULL DEFAULT 0 AFTER `ID`;');
-CALL add_element_unless_exists('column', 'infoled', 'LMemo', 'ALTER TABLE infoled ADD COLUMN `LMemo` varchar(255) NULL DEFAULT AFTER `Addr`;');
+CALL add_element_unless_exists('column', 'infoled', 'LMemo', 'ALTER TABLE infoled ADD COLUMN `LMemo` varchar(255) NULL DEFAULT \'\' AFTER `Addr`;');
 CALL add_element_unless_exists('column', 'infoled', 'LType', 'ALTER TABLE infoled ADD COLUMN `LType` varchar(2) NULL AFTER `LMemo`;');
 CALL add_element_unless_exists('column', 'infoled', 'ShowNum', 'ALTER TABLE infoled ADD COLUMN `ShowNum` smallint(6) NULL AFTER `LType`;');
 CALL add_element_unless_exists('column', 'infoled', 'ShowType', 'ALTER TABLE infoled ADD COLUMN `ShowType` int(11) NULL DEFAULT 0 AFTER `ShowNum`;');
@@ -1337,14 +1367,14 @@ CALL add_element_unless_exists('column', 'infoled', 'checknum', 'ALTER TABLE inf
 CALL add_element_unless_exists('column', 'infoled', 'ledtype', 'ALTER TABLE infoled ADD COLUMN `ledtype` int(11) NULL DEFAULT 0 AFTER `checknum`;');
 CALL add_element_unless_exists('column', 'infoled', 'criticalval', 'ALTER TABLE infoled ADD COLUMN `criticalval` int(11) NULL DEFAULT 0 AFTER `ledtype`;');
 CALL add_element_unless_exists('column', 'infoled', 'levaddr', 'ALTER TABLE infoled ADD COLUMN `levaddr` int(11) NULL DEFAULT 0 AFTER `criticalval`;');
-CALL add_element_unless_exists('column', 'infoled', 'inoutledip', 'ALTER TABLE infoled ADD COLUMN `inoutledip` varchar(255) NULL DEFAULT AFTER `levaddr`;');
+CALL add_element_unless_exists('column', 'infoled', 'inoutledip', 'ALTER TABLE infoled ADD COLUMN `inoutledip` varchar(255) NULL DEFAULT \'\' AFTER `levaddr`;');
 CALL add_element_unless_exists('column', 'infoled', 'ledkind', 'ALTER TABLE infoled ADD COLUMN `ledkind` int(2) NULL DEFAULT 0 AFTER `inoutledip`;');
-CALL add_element_unless_exists('index', 'infoled', 'PRIMARY', 'ALTER TABLE infoled ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infoled', 'PRIMARY', 'ALTER TABLE infoled ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 infoledlev 所有字段和索引
-CALL add_element_unless_exists('column', 'infoledlev', 'ID', 'ALTER TABLE infoledlev ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infoledlev', 'ID', 'ALTER TABLE infoledlev ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infoledlev', 'Addr', 'ALTER TABLE infoledlev ADD COLUMN `Addr` int(11) NULL DEFAULT 0 AFTER `ID`;');
-CALL add_element_unless_exists('column', 'infoledlev', 'LMemo', 'ALTER TABLE infoledlev ADD COLUMN `LMemo` varchar(255) NULL DEFAULT AFTER `Addr`;');
+CALL add_element_unless_exists('column', 'infoledlev', 'LMemo', 'ALTER TABLE infoledlev ADD COLUMN `LMemo` varchar(255) NULL DEFAULT \'\' AFTER `Addr`;');
 CALL add_element_unless_exists('column', 'infoledlev', 'LType', 'ALTER TABLE infoledlev ADD COLUMN `LType` varchar(2) NULL AFTER `LMemo`;');
 CALL add_element_unless_exists('column', 'infoledlev', 'ShowNum', 'ALTER TABLE infoledlev ADD COLUMN `ShowNum` smallint(6) NULL AFTER `LType`;');
 CALL add_element_unless_exists('column', 'infoledlev', 'ShowType', 'ALTER TABLE infoledlev ADD COLUMN `ShowType` int(11) NULL DEFAULT 0 AFTER `ShowNum`;');
@@ -1361,17 +1391,17 @@ CALL add_element_unless_exists('column', 'infoledlev', 'posy', 'ALTER TABLE info
 CALL add_element_unless_exists('column', 'infoledlev', 'checknum', 'ALTER TABLE infoledlev ADD COLUMN `checknum` int(11) NULL DEFAULT 0 AFTER `posy`;');
 CALL add_element_unless_exists('column', 'infoledlev', 'ledtype', 'ALTER TABLE infoledlev ADD COLUMN `ledtype` int(11) NULL DEFAULT 3 AFTER `checknum`;');
 CALL add_element_unless_exists('column', 'infoledlev', 'criticalval', 'ALTER TABLE infoledlev ADD COLUMN `criticalval` int(11) NULL DEFAULT 0 AFTER `ledtype`;');
-CALL add_element_unless_exists('index', 'infoledlev', 'PRIMARY', 'ALTER TABLE infoledlev ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infoledlev', 'PRIMARY', 'ALTER TABLE infoledlev ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 infomap 所有字段和索引
-CALL add_element_unless_exists('column', 'infomap', 'ID', 'ALTER TABLE infomap ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'infomap', 'Mapname', 'ALTER TABLE infomap ADD COLUMN `Mapname` varchar(30) NOT NULL DEFAULT AFTER `ID`;');
-CALL add_element_unless_exists('column', 'infomap', 'MapName2', 'ALTER TABLE infomap ADD COLUMN `MapName2` varchar(30) NULL DEFAULT AFTER `Mapname`;');
-CALL add_element_unless_exists('column', 'infomap', 'MapName3', 'ALTER TABLE infomap ADD COLUMN `MapName3` varchar(30) NULL DEFAULT AFTER `MapName2`;');
-CALL add_element_unless_exists('column', 'infomap', 'Mapfile', 'ALTER TABLE infomap ADD COLUMN `Mapfile` varchar(60) NOT NULL DEFAULT AFTER `MapName3`;');
+CALL add_element_unless_exists('column', 'infomap', 'ID', 'ALTER TABLE infomap ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'infomap', 'Mapname', 'ALTER TABLE infomap ADD COLUMN `Mapname` varchar(30) NOT NULL DEFAULT \'\' AFTER `ID`;');
+CALL add_element_unless_exists('column', 'infomap', 'MapName2', 'ALTER TABLE infomap ADD COLUMN `MapName2` varchar(30) NULL DEFAULT \'\' AFTER `Mapname`;');
+CALL add_element_unless_exists('column', 'infomap', 'MapName3', 'ALTER TABLE infomap ADD COLUMN `MapName3` varchar(30) NULL DEFAULT \'\' AFTER `MapName2`;');
+CALL add_element_unless_exists('column', 'infomap', 'Mapfile', 'ALTER TABLE infomap ADD COLUMN `Mapfile` varchar(60) NOT NULL DEFAULT \'\' AFTER `MapName3`;');
 CALL add_element_unless_exists('column', 'infomap', 'Big', 'ALTER TABLE infomap ADD COLUMN `Big` int(11) unsigned NOT NULL DEFAULT 0 AFTER `Mapfile`;');
-CALL add_element_unless_exists('column', 'infomap', 'FloorPoint', 'ALTER TABLE infomap ADD COLUMN `FloorPoint` varchar(50) NOT NULL DEFAULT AFTER `Big`;');
-CALL add_element_unless_exists('column', 'infomap', 'MapDeclare', 'ALTER TABLE infomap ADD COLUMN `MapDeclare` varchar(50) NOT NULL DEFAULT AFTER `FloorPoint`;');
+CALL add_element_unless_exists('column', 'infomap', 'FloorPoint', 'ALTER TABLE infomap ADD COLUMN `FloorPoint` varchar(50) NOT NULL DEFAULT \'\' AFTER `Big`;');
+CALL add_element_unless_exists('column', 'infomap', 'MapDeclare', 'ALTER TABLE infomap ADD COLUMN `MapDeclare` varchar(50) NOT NULL DEFAULT \'\' AFTER `FloorPoint`;');
 CALL add_element_unless_exists('column', 'infomap', 'SpaceL', 'ALTER TABLE infomap ADD COLUMN `SpaceL` int(8) NOT NULL DEFAULT 0 AFTER `MapDeclare`;');
 CALL add_element_unless_exists('column', 'infomap', 'SpaceW', 'ALTER TABLE infomap ADD COLUMN `SpaceW` int(8) NOT NULL DEFAULT 0 AFTER `SpaceL`;');
 CALL add_element_unless_exists('column', 'infomap', 'orderNo', 'ALTER TABLE infomap ADD COLUMN `orderNo` tinyint(4) NOT NULL DEFAULT 0 AFTER `SpaceW`;');
@@ -1379,12 +1409,12 @@ CALL add_element_unless_exists('column', 'infomap', 'CliDate', 'ALTER TABLE info
 CALL add_element_unless_exists('column', 'infomap', 'CliFlag', 'ALTER TABLE infomap ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `CliDate`;');
 CALL add_element_unless_exists('column', 'infomap', 'total', 'ALTER TABLE infomap ADD COLUMN `total` int(11) NULL DEFAULT 0 AFTER `CliFlag`;');
 CALL add_element_unless_exists('column', 'infomap', 'Type', 'ALTER TABLE infomap ADD COLUMN `Type` varchar(255) NULL AFTER `total`;');
-CALL add_element_unless_exists('column', 'infomap', 'MapCode', 'ALTER TABLE infomap ADD COLUMN `MapCode` varchar(50) NULL DEFAULT AFTER `Type`;');
+CALL add_element_unless_exists('column', 'infomap', 'MapCode', 'ALTER TABLE infomap ADD COLUMN `MapCode` varchar(50) NULL DEFAULT \'\' AFTER `Type`;');
 CALL add_element_unless_exists('column', 'infomap', 'IsDelete', 'ALTER TABLE infomap ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `MapCode`;');
-CALL add_element_unless_exists('index', 'infomap', 'PRIMARY', 'ALTER TABLE infomap ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infomap', 'PRIMARY', 'ALTER TABLE infomap ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 infonode 所有字段和索引
-CALL add_element_unless_exists('column', 'infonode', 'ID', 'ALTER TABLE infonode ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infonode', 'ID', 'ALTER TABLE infonode ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infonode', 'Addr', 'ALTER TABLE infonode ADD COLUMN `Addr` int(11) NULL DEFAULT 0 AFTER `ID`;');
 CALL add_element_unless_exists('column', 'infonode', 'BusNum', 'ALTER TABLE infonode ADD COLUMN `BusNum` int(11) NULL DEFAULT 0 AFTER `Addr`;');
 CALL add_element_unless_exists('column', 'infonode', 'NMemo', 'ALTER TABLE infonode ADD COLUMN `NMemo` mediumtext NULL AFTER `BusNum`;');
@@ -1395,40 +1425,40 @@ CALL add_element_unless_exists('column', 'infonode', 'PowerIp', 'ALTER TABLE inf
 CALL add_element_unless_exists('column', 'infonode', 'PowerSend', 'ALTER TABLE infonode ADD COLUMN `PowerSend` varchar(255) NULL AFTER `PowerIp`;');
 CALL add_element_unless_exists('column', 'infonode', 'PowerSendTime', 'ALTER TABLE infonode ADD COLUMN `PowerSendTime` datetime NULL AFTER `PowerSend`;');
 CALL add_element_unless_exists('column', 'infonode', 'DeviceType', 'ALTER TABLE infonode ADD COLUMN `DeviceType` int(11) NULL DEFAULT 0 AFTER `PowerSendTime`;');
-CALL add_element_unless_exists('index', 'infonode', 'PRIMARY', 'ALTER TABLE infonode ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infonode', 'PRIMARY', 'ALTER TABLE infonode ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 infopic 所有字段和索引
-CALL add_element_unless_exists('column', 'infopic', 'id', 'ALTER TABLE infopic ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'infopic', 'imgsrc', 'ALTER TABLE infopic ADD COLUMN `imgsrc` varchar(255) NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 'infopic', 'id', 'ALTER TABLE infopic ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'infopic', 'imgsrc', 'ALTER TABLE infopic ADD COLUMN `imgsrc` varchar(255) NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 'infopic', 'imgname', 'ALTER TABLE infopic ADD COLUMN `imgname` varchar(255) NULL AFTER `imgsrc`;');
-CALL add_element_unless_exists('index', 'infopic', 'PRIMARY', 'ALTER TABLE infopic ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'infopic', 'PRIMARY', 'ALTER TABLE infopic ADD PRIMARY KEY (`id`);');
 
 -- 更新表 inforecorder 所有字段和索引
-CALL add_element_unless_exists('column', 'inforecorder', 'id', 'ALTER TABLE inforecorder ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'inforecorder', 'id', 'ALTER TABLE inforecorder ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'inforecorder', 'ip', 'ALTER TABLE inforecorder ADD COLUMN `ip` varchar(255) NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 'inforecorder', 'Memo', 'ALTER TABLE inforecorder ADD COLUMN `Memo` varchar(255) NULL AFTER `ip`;');
 CALL add_element_unless_exists('column', 'inforecorder', 'loginname', 'ALTER TABLE inforecorder ADD COLUMN `loginname` varchar(255) NULL AFTER `Memo`;');
 CALL add_element_unless_exists('column', 'inforecorder', 'loginpwd', 'ALTER TABLE inforecorder ADD COLUMN `loginpwd` varchar(255) NULL AFTER `loginname`;');
 CALL add_element_unless_exists('column', 'inforecorder', 'port', 'ALTER TABLE inforecorder ADD COLUMN `port` int(11) NULL DEFAULT 0 AFTER `loginpwd`;');
-CALL add_element_unless_exists('index', 'inforecorder', 'PRIMARY', 'ALTER TABLE inforecorder ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'inforecorder', 'PRIMARY', 'ALTER TABLE inforecorder ADD PRIMARY KEY (`id`);');
 
 -- 更新表 infoserlog 所有字段和索引
-CALL add_element_unless_exists('column', 'infoserlog', 'id', 'ALTER TABLE infoserlog ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infoserlog', 'id', 'ALTER TABLE infoserlog ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infoserlog', 'usetime', 'ALTER TABLE infoserlog ADD COLUMN `usetime` datetime NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 'infoserlog', 'usetype', 'ALTER TABLE infoserlog ADD COLUMN `usetype` int(11) NULL DEFAULT 0 AFTER `usetime`;');
 CALL add_element_unless_exists('column', 'infoserlog', 'useval', 'ALTER TABLE infoserlog ADD COLUMN `useval` varchar(255) NULL AFTER `usetype`;');
-CALL add_element_unless_exists('column', 'infoserlog', 'cip', 'ALTER TABLE infoserlog ADD COLUMN `cip` varchar(255) NULL DEFAULT AFTER `useval`;');
-CALL add_element_unless_exists('index', 'infoserlog', 'PRIMARY', 'ALTER TABLE infoserlog ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 'infoserlog', 'cip', 'ALTER TABLE infoserlog ADD COLUMN `cip` varchar(255) NULL DEFAULT \'\' AFTER `useval`;');
+CALL add_element_unless_exists('index', 'infoserlog', 'PRIMARY', 'ALTER TABLE infoserlog ADD PRIMARY KEY (`id`);');
 
 -- 更新表 infosystem 所有字段和索引
-CALL add_element_unless_exists('column', 'infosystem', 'id', 'ALTER TABLE infosystem ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'infosystem', 'id', 'ALTER TABLE infosystem ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'infosystem', 'type', 'ALTER TABLE infosystem ADD COLUMN `type` int(11) NULL DEFAULT 0 AFTER `id`;');
-CALL add_element_unless_exists('column', 'infosystem', 'memo', 'ALTER TABLE infosystem ADD COLUMN `memo` varchar(255) NULL DEFAULT AFTER `type`;');
-CALL add_element_unless_exists('column', 'infosystem', 'value', 'ALTER TABLE infosystem ADD COLUMN `value` varchar(255) NULL DEFAULT AFTER `memo`;');
-CALL add_element_unless_exists('index', 'infosystem', 'PRIMARY', 'ALTER TABLE infosystem ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 'infosystem', 'memo', 'ALTER TABLE infosystem ADD COLUMN `memo` varchar(255) NULL DEFAULT \'\' AFTER `type`;');
+CALL add_element_unless_exists('column', 'infosystem', 'value', 'ALTER TABLE infosystem ADD COLUMN `value` varchar(255) NULL DEFAULT \'\' AFTER `memo`;');
+CALL add_element_unless_exists('index', 'infosystem', 'PRIMARY', 'ALTER TABLE infosystem ADD PRIMARY KEY (`id`);');
 
 -- 更新表 log_carinout 所有字段和索引
-CALL add_element_unless_exists('column', 'log_carinout', 'ID', 'ALTER TABLE log_carinout ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'log_carinout', 'ID', 'ALTER TABLE log_carinout ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'log_carinout', 'ParkDate', 'ALTER TABLE log_carinout ADD COLUMN `ParkDate` date NULL AFTER `ID`;');
 CALL add_element_unless_exists('column', 'log_carinout', 'ParkHour', 'ALTER TABLE log_carinout ADD COLUMN `ParkHour` int(11) NOT NULL DEFAULT 0 AFTER `ParkDate`;');
 CALL add_element_unless_exists('column', 'log_carinout', 'FlowIn', 'ALTER TABLE log_carinout ADD COLUMN `FlowIn` int(11) NOT NULL DEFAULT 0 AFTER `ParkHour`;');
@@ -1439,10 +1469,10 @@ CALL add_element_unless_exists('column', 'log_carinout', 'FlowIn2', 'ALTER TABLE
 CALL add_element_unless_exists('column', 'log_carinout', 'FlowOut2', 'ALTER TABLE log_carinout ADD COLUMN `FlowOut2` int(11) NOT NULL DEFAULT 0 AFTER `FlowIn2`;');
 CALL add_element_unless_exists('column', 'log_carinout', 'FlowIn3', 'ALTER TABLE log_carinout ADD COLUMN `FlowIn3` int(11) NOT NULL DEFAULT 0 AFTER `FlowOut2`;');
 CALL add_element_unless_exists('column', 'log_carinout', 'FlowOut3', 'ALTER TABLE log_carinout ADD COLUMN `FlowOut3` int(11) NOT NULL DEFAULT 0 AFTER `FlowIn3`;');
-CALL add_element_unless_exists('index', 'log_carinout', 'PRIMARY', 'ALTER TABLE log_carinout ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_carinout', 'PRIMARY', 'ALTER TABLE log_carinout ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 log_hourcount 所有字段和索引
-CALL add_element_unless_exists('column', 'log_hourcount', 'ID', 'ALTER TABLE log_hourcount ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'log_hourcount', 'ID', 'ALTER TABLE log_hourcount ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'log_hourcount', 'StaticDate', 'ALTER TABLE log_hourcount ADD COLUMN `StaticDate` date NULL AFTER `ID`;');
 CALL add_element_unless_exists('column', 'log_hourcount', 'StaticHour', 'ALTER TABLE log_hourcount ADD COLUMN `StaticHour` int(11) NULL AFTER `StaticDate`;');
 CALL add_element_unless_exists('column', 'log_hourcount', 'ParkLong', 'ALTER TABLE log_hourcount ADD COLUMN `ParkLong` double NULL AFTER `StaticHour`;');
@@ -1453,29 +1483,29 @@ CALL add_element_unless_exists('column', 'log_hourcount', 'ParkCount', 'ALTER TA
 CALL add_element_unless_exists('column', 'log_hourcount', 'ParkCount1', 'ALTER TABLE log_hourcount ADD COLUMN `ParkCount1` int(11) NULL DEFAULT 0 AFTER `ParkCount`;');
 CALL add_element_unless_exists('column', 'log_hourcount', 'ParkCount2', 'ALTER TABLE log_hourcount ADD COLUMN `ParkCount2` int(11) NULL DEFAULT 0 AFTER `ParkCount1`;');
 CALL add_element_unless_exists('column', 'log_hourcount', 'ParkCount3', 'ALTER TABLE log_hourcount ADD COLUMN `ParkCount3` int(11) NULL DEFAULT 0 AFTER `ParkCount2`;');
-CALL add_element_unless_exists('index', 'log_hourcount', 'PRIMARY', 'ALTER TABLE log_hourcount ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_hourcount', 'PRIMARY', 'ALTER TABLE log_hourcount ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 log_login 所有字段和索引
-CALL add_element_unless_exists('column', 'log_login', 'login_id', 'ALTER TABLE log_login ADD COLUMN `login_id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'log_login', 'login_id', 'ALTER TABLE log_login ADD COLUMN `login_id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'log_login', 'login_account', 'ALTER TABLE log_login ADD COLUMN `login_account` varchar(50) NULL AFTER `login_id`;');
 CALL add_element_unless_exists('column', 'log_login', 'login_time', 'ALTER TABLE log_login ADD COLUMN `login_time` datetime NULL AFTER `login_account`;');
 CALL add_element_unless_exists('column', 'log_login', 'login_desc', 'ALTER TABLE log_login ADD COLUMN `login_desc` varchar(200) NULL AFTER `login_time`;');
 CALL add_element_unless_exists('column', 'log_login', 'login_ip', 'ALTER TABLE log_login ADD COLUMN `login_ip` varchar(50) NULL AFTER `login_desc`;');
-CALL add_element_unless_exists('index', 'log_login', 'PRIMARY', 'ALTER TABLE log_login ADD UNIQUE INDEX `PRIMARY` (`login_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_login', 'PRIMARY', 'ALTER TABLE log_login ADD PRIMARY KEY (`login_id`);');
 
 -- 更新表 log_operate 所有字段和索引
-CALL add_element_unless_exists('column', 'log_operate', 'ope_id', 'ALTER TABLE log_operate ADD COLUMN `ope_id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'log_operate', 'ope_id', 'ALTER TABLE log_operate ADD COLUMN `ope_id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'log_operate', 'ope_user_id', 'ALTER TABLE log_operate ADD COLUMN `ope_user_id` varchar(11) NULL AFTER `ope_id`;');
 CALL add_element_unless_exists('column', 'log_operate', 'ope_time', 'ALTER TABLE log_operate ADD COLUMN `ope_time` datetime NULL AFTER `ope_user_id`;');
 CALL add_element_unless_exists('column', 'log_operate', 'ope_ip', 'ALTER TABLE log_operate ADD COLUMN `ope_ip` varchar(50) NULL AFTER `ope_time`;');
 CALL add_element_unless_exists('column', 'log_operate', 'ope_action', 'ALTER TABLE log_operate ADD COLUMN `ope_action` int(1) NULL AFTER `ope_ip`;');
 CALL add_element_unless_exists('column', 'log_operate', 'ope_content', 'ALTER TABLE log_operate ADD COLUMN `ope_content` longtext NULL AFTER `ope_action`;');
-CALL add_element_unless_exists('index', 'log_operate', 'PRIMARY', 'ALTER TABLE log_operate ADD UNIQUE INDEX `PRIMARY` (`ope_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_operate', 'PRIMARY', 'ALTER TABLE log_operate ADD PRIMARY KEY (`ope_id`);');
 
 -- 更新表 log_parkcount 所有字段和索引
-CALL add_element_unless_exists('column', 'log_parkcount', 'ID', 'ALTER TABLE log_parkcount ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'log_parkcount', 'ID', 'ALTER TABLE log_parkcount ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'log_parkcount', 'AreaId', 'ALTER TABLE log_parkcount ADD COLUMN `AreaId` int(11) NOT NULL DEFAULT 0 AFTER `ID`;');
-CALL add_element_unless_exists('column', 'log_parkcount', 'AreaName', 'ALTER TABLE log_parkcount ADD COLUMN `AreaName` varchar(50) NOT NULL DEFAULT AFTER `AreaId`;');
+CALL add_element_unless_exists('column', 'log_parkcount', 'AreaName', 'ALTER TABLE log_parkcount ADD COLUMN `AreaName` varchar(50) NOT NULL DEFAULT \'\' AFTER `AreaId`;');
 CALL add_element_unless_exists('column', 'log_parkcount', 'ParkDate', 'ALTER TABLE log_parkcount ADD COLUMN `ParkDate` datetime NULL AFTER `AreaName`;');
 CALL add_element_unless_exists('column', 'log_parkcount', 'ParkHour', 'ALTER TABLE log_parkcount ADD COLUMN `ParkHour` int(11) NOT NULL DEFAULT 0 AFTER `ParkDate`;');
 CALL add_element_unless_exists('column', 'log_parkcount', 'ParkCount', 'ALTER TABLE log_parkcount ADD COLUMN `ParkCount` int(11) NOT NULL DEFAULT 0 AFTER `ParkHour`;');
@@ -1484,16 +1514,14 @@ CALL add_element_unless_exists('column', 'log_parkcount', 'FlowOut', 'ALTER TABL
 CALL add_element_unless_exists('column', 'log_parkcount', 'CliDate', 'ALTER TABLE log_parkcount ADD COLUMN `CliDate` datetime NULL AFTER `FlowOut`;');
 CALL add_element_unless_exists('column', 'log_parkcount', 'CliFlag', 'ALTER TABLE log_parkcount ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `CliDate`;');
 CALL add_element_unless_exists('column', 'log_parkcount', 'IsDelete', 'ALTER TABLE log_parkcount ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliFlag`;');
-CALL add_element_unless_exists('index', 'log_parkcount', 'PRIMARY', 'ALTER TABLE log_parkcount ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
-CALL add_element_unless_exists('index', 'log_parkcount', 'UK_log_parkcount', 'ALTER TABLE log_parkcount ADD UNIQUE INDEX `UK_log_parkcount` (`AreaId`) USING BTREE;');
-CALL add_element_unless_exists('index', 'log_parkcount', 'UK_log_parkcount', 'ALTER TABLE log_parkcount ADD UNIQUE INDEX `UK_log_parkcount` (`ParkDate`) USING BTREE;');
-CALL add_element_unless_exists('index', 'log_parkcount', 'UK_log_parkcount', 'ALTER TABLE log_parkcount ADD UNIQUE INDEX `UK_log_parkcount` (`ParkHour`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_parkcount', 'PRIMARY', 'ALTER TABLE log_parkcount ADD PRIMARY KEY (`ID`);');
+CALL add_element_unless_exists('index', 'log_parkcount', 'UK_log_parkcount', 'ALTER TABLE log_parkcount ADD UNIQUE INDEX `UK_log_parkcount` (`AreaId`, `ParkDate`, `ParkHour`) USING BTREE;');
 
 -- 更新表 log_parkinglotlog 所有字段和索引
-CALL add_element_unless_exists('column', 'log_parkinglotlog', 'id', 'ALTER TABLE log_parkinglotlog ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'log_parkinglotlog', 'CarplateNum', 'ALTER TABLE log_parkinglotlog ADD COLUMN `CarplateNum` varchar(20) NOT NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 'log_parkinglotlog', 'id', 'ALTER TABLE log_parkinglotlog ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'log_parkinglotlog', 'CarplateNum', 'ALTER TABLE log_parkinglotlog ADD COLUMN `CarplateNum` varchar(20) NOT NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'CarAddr', 'ALTER TABLE log_parkinglotlog ADD COLUMN `CarAddr` int(11) NOT NULL DEFAULT 0 AFTER `CarplateNum`;');
-CALL add_element_unless_exists('column', 'log_parkinglotlog', 'ImgName', 'ALTER TABLE log_parkinglotlog ADD COLUMN `ImgName` varchar(255) NOT NULL DEFAULT AFTER `CarAddr`;');
+CALL add_element_unless_exists('column', 'log_parkinglotlog', 'ImgName', 'ALTER TABLE log_parkinglotlog ADD COLUMN `ImgName` varchar(255) NOT NULL DEFAULT \'\' AFTER `CarAddr`;');
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'InTime', 'ALTER TABLE log_parkinglotlog ADD COLUMN `InTime` datetime NULL AFTER `ImgName`;');
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'OutTime', 'ALTER TABLE log_parkinglotlog ADD COLUMN `OutTime` datetime NULL AFTER `InTime`;');
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'longTime', 'ALTER TABLE log_parkinglotlog ADD COLUMN `longTime` int(11) NOT NULL DEFAULT 0 AFTER `OutTime`;');
@@ -1501,42 +1529,42 @@ CALL add_element_unless_exists('column', 'log_parkinglotlog', 'AreaId', 'ALTER T
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'CliDate', 'ALTER TABLE log_parkinglotlog ADD COLUMN `CliDate` datetime NULL AFTER `AreaId`;');
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'CliFlag', 'ALTER TABLE log_parkinglotlog ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `CliDate`;');
 CALL add_element_unless_exists('column', 'log_parkinglotlog', 'IsDelete', 'ALTER TABLE log_parkinglotlog ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliFlag`;');
-CALL add_element_unless_exists('index', 'log_parkinglotlog', 'PRIMARY', 'ALTER TABLE log_parkinglotlog ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 'log_parkinglotlog', 'IDX_log_parkinglotlog_OutTime', 'ALTER TABLE log_parkinglotlog ADD INDEX INDEX `IDX_log_parkinglotlog_OutTime` (`OutTime`) USING BTREE;');
-CALL add_element_unless_exists('index', 'log_parkinglotlog', 'IX_log_parkinglotlog_InTime', 'ALTER TABLE log_parkinglotlog ADD INDEX INDEX `IX_log_parkinglotlog_InTime` (`InTime`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_parkinglotlog', 'PRIMARY', 'ALTER TABLE log_parkinglotlog ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 'log_parkinglotlog', 'IDX_log_parkinglotlog_OutTime', 'ALTER TABLE log_parkinglotlog ADD  INDEX `IDX_log_parkinglotlog_OutTime` (`OutTime`) USING BTREE;');
+CALL add_element_unless_exists('index', 'log_parkinglotlog', 'IX_log_parkinglotlog_InTime', 'ALTER TABLE log_parkinglotlog ADD  INDEX `IX_log_parkinglotlog_InTime` (`InTime`) USING BTREE;');
 
 -- 更新表 log_temp 所有字段和索引
 CALL add_element_unless_exists('column', 'log_temp', 'ID', 'ALTER TABLE log_temp ADD COLUMN `ID` int(11) NULL DEFAULT 0;');
 CALL add_element_unless_exists('column', 'log_temp', 'temp', 'ALTER TABLE log_temp ADD COLUMN `temp` int(11) NULL DEFAULT 0 AFTER `ID`;');
 
 -- 更新表 parklampgroup 所有字段和索引
-CALL add_element_unless_exists('column', 'parklampgroup', 'id', 'ALTER TABLE parklampgroup ADD COLUMN `id` int(10) unsigned NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 'parklampgroup', 'groupname', 'ALTER TABLE parklampgroup ADD COLUMN `groupname` varchar(45) NOT NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 'parklampgroup', 'id', 'ALTER TABLE parklampgroup ADD COLUMN `id` int(10) unsigned NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 'parklampgroup', 'groupname', 'ALTER TABLE parklampgroup ADD COLUMN `groupname` varchar(45) NOT NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 'parklampgroup', 'lampId', 'ALTER TABLE parklampgroup ADD COLUMN `lampId` varchar(4096) NULL DEFAULT 0 AFTER `groupname`;');
 CALL add_element_unless_exists('column', 'parklampgroup', 'parkId', 'ALTER TABLE parklampgroup ADD COLUMN `parkId` varchar(4096) NULL DEFAULT 0 AFTER `lampId`;');
 CALL add_element_unless_exists('column', 'parklampgroup', 'empty', 'ALTER TABLE parklampgroup ADD COLUMN `empty` int(10) unsigned NULL DEFAULT 0 AFTER `parkId`;');
 CALL add_element_unless_exists('column', 'parklampgroup', 'state', 'ALTER TABLE parklampgroup ADD COLUMN `state` int(10) unsigned NULL DEFAULT 0 AFTER `empty`;');
-CALL add_element_unless_exists('column', 'parklampgroup', 'lastULTime', 'ALTER TABLE parklampgroup ADD COLUMN `lastULTime` datetime NULL DEFAULT 2013-01-01 00:00:00 AFTER `state`;');
+CALL add_element_unless_exists('column', 'parklampgroup', 'lastULTime', 'ALTER TABLE parklampgroup ADD COLUMN `lastULTime` datetime NULL DEFAULT \'2013-01-01 00:00:00\' AFTER `state`;');
 CALL add_element_unless_exists('column', 'parklampgroup', 'lotid', 'ALTER TABLE parklampgroup ADD COLUMN `lotid` int(11) NULL DEFAULT 0 AFTER `lastULTime`;');
-CALL add_element_unless_exists('column', 'parklampgroup', 'lotname', 'ALTER TABLE parklampgroup ADD COLUMN `lotname` varchar(50) NULL DEFAULT AFTER `lotid`;');
+CALL add_element_unless_exists('column', 'parklampgroup', 'lotname', 'ALTER TABLE parklampgroup ADD COLUMN `lotname` varchar(50) NULL DEFAULT \'\' AFTER `lotid`;');
 CALL add_element_unless_exists('column', 'parklampgroup', 'total', 'ALTER TABLE parklampgroup ADD COLUMN `total` int(11) NULL DEFAULT 0 AFTER `lotname`;');
-CALL add_element_unless_exists('index', 'parklampgroup', 'PRIMARY', 'ALTER TABLE parklampgroup ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'parklampgroup', 'PRIMARY', 'ALTER TABLE parklampgroup ADD PRIMARY KEY (`id`);');
 
 -- 更新表 parkmsglog 所有字段和索引
-CALL add_element_unless_exists('column', 'parkmsglog', 'id', 'ALTER TABLE parkmsglog ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'parkmsglog', 'id', 'ALTER TABLE parkmsglog ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'parkmsglog', 'areaid', 'ALTER TABLE parkmsglog ADD COLUMN `areaid` int(11) NULL AFTER `id`;');
-CALL add_element_unless_exists('column', 'parkmsglog', 'busnumber', 'ALTER TABLE parkmsglog ADD COLUMN `busnumber` varchar(255) NULL DEFAULT AFTER `areaid`;');
-CALL add_element_unless_exists('column', 'parkmsglog', 'plate', 'ALTER TABLE parkmsglog ADD COLUMN `plate` varchar(255) NULL DEFAULT AFTER `busnumber`;');
+CALL add_element_unless_exists('column', 'parkmsglog', 'busnumber', 'ALTER TABLE parkmsglog ADD COLUMN `busnumber` varchar(255) NULL DEFAULT \'\' AFTER `areaid`;');
+CALL add_element_unless_exists('column', 'parkmsglog', 'plate', 'ALTER TABLE parkmsglog ADD COLUMN `plate` varchar(255) NULL DEFAULT \'\' AFTER `busnumber`;');
 CALL add_element_unless_exists('column', 'parkmsglog', 'cometime', 'ALTER TABLE parkmsglog ADD COLUMN `cometime` datetime NULL AFTER `plate`;');
 CALL add_element_unless_exists('column', 'parkmsglog', 'parklong', 'ALTER TABLE parkmsglog ADD COLUMN `parklong` int(11) NULL DEFAULT 0 AFTER `cometime`;');
-CALL add_element_unless_exists('column', 'parkmsglog', 'imgname', 'ALTER TABLE parkmsglog ADD COLUMN `imgname` varchar(255) NULL DEFAULT AFTER `parklong`;');
+CALL add_element_unless_exists('column', 'parkmsglog', 'imgname', 'ALTER TABLE parkmsglog ADD COLUMN `imgname` varchar(255) NULL DEFAULT \'\' AFTER `parklong`;');
 CALL add_element_unless_exists('column', 'parkmsglog', 'toltype', 'ALTER TABLE parkmsglog ADD COLUMN `toltype` int(11) NULL DEFAULT 1 AFTER `imgname`;');
 CALL add_element_unless_exists('column', 'parkmsglog', 'statictime', 'ALTER TABLE parkmsglog ADD COLUMN `statictime` datetime NULL AFTER `toltype`;');
-CALL add_element_unless_exists('index', 'parkmsglog', 'PRIMARY', 'ALTER TABLE parkmsglog ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 'parkmsglog', 'IDX_parkmsglog_statictime', 'ALTER TABLE parkmsglog ADD INDEX INDEX `IDX_parkmsglog_statictime` (`statictime`) USING BTREE;');
+CALL add_element_unless_exists('index', 'parkmsglog', 'PRIMARY', 'ALTER TABLE parkmsglog ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 'parkmsglog', 'IDX_parkmsglog_statictime', 'ALTER TABLE parkmsglog ADD  INDEX `IDX_parkmsglog_statictime` (`statictime`) USING BTREE;');
 
 -- 更新表 parkwarnlog 所有字段和索引
-CALL add_element_unless_exists('column', 'parkwarnlog', 'id', 'ALTER TABLE parkwarnlog ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'parkwarnlog', 'id', 'ALTER TABLE parkwarnlog ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'parkwarnlog', 'areaid', 'ALTER TABLE parkwarnlog ADD COLUMN `areaid` int(11) NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 'parkwarnlog', 'busnumber', 'ALTER TABLE parkwarnlog ADD COLUMN `busnumber` varchar(255) NULL AFTER `areaid`;');
 CALL add_element_unless_exists('column', 'parkwarnlog', 'plate', 'ALTER TABLE parkwarnlog ADD COLUMN `plate` varchar(255) NULL AFTER `busnumber`;');
@@ -1545,19 +1573,19 @@ CALL add_element_unless_exists('column', 'parkwarnlog', 'parklong', 'ALTER TABLE
 CALL add_element_unless_exists('column', 'parkwarnlog', 'imgname', 'ALTER TABLE parkwarnlog ADD COLUMN `imgname` varchar(255) NULL AFTER `parklong`;');
 CALL add_element_unless_exists('column', 'parkwarnlog', 'toltype', 'ALTER TABLE parkwarnlog ADD COLUMN `toltype` int(11) NULL DEFAULT 0 AFTER `imgname`;');
 CALL add_element_unless_exists('column', 'parkwarnlog', 'statictime', 'ALTER TABLE parkwarnlog ADD COLUMN `statictime` datetime NULL AFTER `toltype`;');
-CALL add_element_unless_exists('index', 'parkwarnlog', 'PRIMARY', 'ALTER TABLE parkwarnlog ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 'parkwarnlog', 'IDX_parkwarnlog_statictime', 'ALTER TABLE parkwarnlog ADD INDEX INDEX `IDX_parkwarnlog_statictime` (`statictime`) USING BTREE;');
+CALL add_element_unless_exists('index', 'parkwarnlog', 'PRIMARY', 'ALTER TABLE parkwarnlog ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 'parkwarnlog', 'IDX_parkwarnlog_statictime', 'ALTER TABLE parkwarnlog ADD  INDEX `IDX_parkwarnlog_statictime` (`statictime`) USING BTREE;');
 
 -- 更新表 sys_assign 所有字段和索引
-CALL add_element_unless_exists('column', 'sys_assign', 'assign_id', 'ALTER TABLE sys_assign ADD COLUMN `assign_id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'sys_assign', 'assign_id', 'ALTER TABLE sys_assign ADD COLUMN `assign_id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'sys_assign', 'assign_rela_id', 'ALTER TABLE sys_assign ADD COLUMN `assign_rela_id` char(32) NULL AFTER `assign_id`;');
 CALL add_element_unless_exists('column', 'sys_assign', 'assign_role', 'ALTER TABLE sys_assign ADD COLUMN `assign_role` int(11) NULL AFTER `assign_rela_id`;');
 CALL add_element_unless_exists('column', 'sys_assign', 'assign_type', 'ALTER TABLE sys_assign ADD COLUMN `assign_type` int(1) NULL AFTER `assign_role`;');
 CALL add_element_unless_exists('column', 'sys_assign', 'create_time', 'ALTER TABLE sys_assign ADD COLUMN `create_time` datetime NULL AFTER `assign_type`;');
-CALL add_element_unless_exists('index', 'sys_assign', 'PRIMARY', 'ALTER TABLE sys_assign ADD UNIQUE INDEX `PRIMARY` (`assign_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_assign', 'PRIMARY', 'ALTER TABLE sys_assign ADD PRIMARY KEY (`assign_id`);');
 
 -- 更新表 sys_i18n_message 所有字段和索引
-CALL add_element_unless_exists('column', 'sys_i18n_message', 'ID', 'ALTER TABLE sys_i18n_message ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'sys_i18n_message', 'ID', 'ALTER TABLE sys_i18n_message ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'sys_i18n_message', 'CODE', 'ALTER TABLE sys_i18n_message ADD COLUMN `CODE` varchar(100) NULL AFTER `ID`;');
 CALL add_element_unless_exists('column', 'sys_i18n_message', 'DESCRIPTION', 'ALTER TABLE sys_i18n_message ADD COLUMN `DESCRIPTION` varchar(500) NULL AFTER `CODE`;');
 CALL add_element_unless_exists('column', 'sys_i18n_message', 'MODULE', 'ALTER TABLE sys_i18n_message ADD COLUMN `MODULE` varchar(100) NULL AFTER `DESCRIPTION`;');
@@ -1568,7 +1596,7 @@ CALL add_element_unless_exists('column', 'sys_i18n_message', 'EN_US', 'ALTER TAB
 CALL add_element_unless_exists('column', 'sys_i18n_message', 'QT_LAN', 'ALTER TABLE sys_i18n_message ADD COLUMN `QT_LAN` varchar(500) NULL AFTER `EN_US`;');
 CALL add_element_unless_exists('column', 'sys_i18n_message', 'CREATE_TIME', 'ALTER TABLE sys_i18n_message ADD COLUMN `CREATE_TIME` datetime NULL AFTER `QT_LAN`;');
 CALL add_element_unless_exists('column', 'sys_i18n_message', 'UPDATE_TIME', 'ALTER TABLE sys_i18n_message ADD COLUMN `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `CREATE_TIME`;');
-CALL add_element_unless_exists('index', 'sys_i18n_message', 'PRIMARY', 'ALTER TABLE sys_i18n_message ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_i18n_message', 'PRIMARY', 'ALTER TABLE sys_i18n_message ADD PRIMARY KEY (`ID`);');
 CALL add_element_unless_exists('index', 'sys_i18n_message', 'UK_sys_i18n_message_CODE', 'ALTER TABLE sys_i18n_message ADD UNIQUE INDEX `UK_sys_i18n_message_CODE` (`CODE`) USING BTREE;');
 
 -- 更新表 sys_module 所有字段和索引
@@ -1584,7 +1612,7 @@ CALL add_element_unless_exists('column', 'sys_module', 'module_icon', 'ALTER TAB
 CALL add_element_unless_exists('column', 'sys_module', 'module_val', 'ALTER TABLE sys_module ADD COLUMN `module_val` varchar(50) NULL AFTER `module_icon`;');
 CALL add_element_unless_exists('column', 'sys_module', 'create_time', 'ALTER TABLE sys_module ADD COLUMN `create_time` datetime NULL AFTER `module_val`;');
 CALL add_element_unless_exists('column', 'sys_module', 'update_time', 'ALTER TABLE sys_module ADD COLUMN `update_time` datetime NULL AFTER `create_time`;');
-CALL add_element_unless_exists('index', 'sys_module', 'PRIMARY', 'ALTER TABLE sys_module ADD UNIQUE INDEX `PRIMARY` (`module_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_module', 'PRIMARY', 'ALTER TABLE sys_module ADD PRIMARY KEY (`module_id`);');
 
 -- 更新表 sys_module_node 所有字段和索引
 CALL add_element_unless_exists('column', 'sys_module_node', 'node_id', 'ALTER TABLE sys_module_node ADD COLUMN `node_id` char(32) NOT NULL;');
@@ -1595,7 +1623,7 @@ CALL add_element_unless_exists('column', 'sys_module_node', 'node_val', 'ALTER T
 CALL add_element_unless_exists('column', 'sys_module_node', 'node_order', 'ALTER TABLE sys_module_node ADD COLUMN `node_order` int(5) NULL AFTER `node_val`;');
 CALL add_element_unless_exists('column', 'sys_module_node', 'node_desc', 'ALTER TABLE sys_module_node ADD COLUMN `node_desc` varchar(200) NULL AFTER `node_order`;');
 CALL add_element_unless_exists('column', 'sys_module_node', 'node_i18n_code', 'ALTER TABLE sys_module_node ADD COLUMN `node_i18n_code` varchar(255) NULL AFTER `node_desc`;');
-CALL add_element_unless_exists('index', 'sys_module_node', 'PRIMARY', 'ALTER TABLE sys_module_node ADD UNIQUE INDEX `PRIMARY` (`node_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_module_node', 'PRIMARY', 'ALTER TABLE sys_module_node ADD PRIMARY KEY (`node_id`);');
 
 -- 更新表 sys_org 所有字段和索引
 CALL add_element_unless_exists('column', 'sys_org', 'id', 'ALTER TABLE sys_org ADD COLUMN `id` char(32) NOT NULL;');
@@ -1606,14 +1634,14 @@ CALL add_element_unless_exists('column', 'sys_org', 'remark', 'ALTER TABLE sys_o
 CALL add_element_unless_exists('column', 'sys_org', 'create_time', 'ALTER TABLE sys_org ADD COLUMN `create_time` datetime NULL AFTER `remark`;');
 CALL add_element_unless_exists('column', 'sys_org', 'update_time', 'ALTER TABLE sys_org ADD COLUMN `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `create_time`;');
 CALL add_element_unless_exists('column', 'sys_org', 'is_show', 'ALTER TABLE sys_org ADD COLUMN `is_show` char(1) NOT NULL DEFAULT 1 AFTER `update_time`;');
-CALL add_element_unless_exists('index', 'sys_org', 'PRIMARY', 'ALTER TABLE sys_org ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_org', 'PRIMARY', 'ALTER TABLE sys_org ADD PRIMARY KEY (`id`);');
 
 -- 更新表 sys_org_role 所有字段和索引
-CALL add_element_unless_exists('column', 'sys_org_role', 'id', 'ALTER TABLE sys_org_role ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'sys_org_role', 'id', 'ALTER TABLE sys_org_role ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'sys_org_role', 'role_id', 'ALTER TABLE sys_org_role ADD COLUMN `role_id` char(32) NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 'sys_org_role', 'org_id', 'ALTER TABLE sys_org_role ADD COLUMN `org_id` char(32) NULL AFTER `role_id`;');
 CALL add_element_unless_exists('column', 'sys_org_role', 'create_time', 'ALTER TABLE sys_org_role ADD COLUMN `create_time` datetime NULL AFTER `org_id`;');
-CALL add_element_unless_exists('index', 'sys_org_role', 'PRIMARY', 'ALTER TABLE sys_org_role ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_org_role', 'PRIMARY', 'ALTER TABLE sys_org_role ADD PRIMARY KEY (`id`);');
 
 -- 更新表 sys_org_user 所有字段和索引
 CALL add_element_unless_exists('column', 'sys_org_user', 'id', 'ALTER TABLE sys_org_user ADD COLUMN `id` char(32) NOT NULL;');
@@ -1621,27 +1649,27 @@ CALL add_element_unless_exists('column', 'sys_org_user', 'org_id', 'ALTER TABLE 
 CALL add_element_unless_exists('column', 'sys_org_user', 'user_id', 'ALTER TABLE sys_org_user ADD COLUMN `user_id` char(32) NULL AFTER `org_id`;');
 CALL add_element_unless_exists('column', 'sys_org_user', 'create_time', 'ALTER TABLE sys_org_user ADD COLUMN `create_time` datetime NULL AFTER `user_id`;');
 CALL add_element_unless_exists('column', 'sys_org_user', 'update_time', 'ALTER TABLE sys_org_user ADD COLUMN `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `create_time`;');
-CALL add_element_unless_exists('index', 'sys_org_user', 'PRIMARY', 'ALTER TABLE sys_org_user ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_org_user', 'PRIMARY', 'ALTER TABLE sys_org_user ADD PRIMARY KEY (`id`);');
 
 -- 更新表 sys_role 所有字段和索引
-CALL add_element_unless_exists('column', 'sys_role', 'role_id', 'ALTER TABLE sys_role ADD COLUMN `role_id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'sys_role', 'role_id', 'ALTER TABLE sys_role ADD COLUMN `role_id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'sys_role', 'role_name', 'ALTER TABLE sys_role ADD COLUMN `role_name` varchar(50) NULL AFTER `role_id`;');
 CALL add_element_unless_exists('column', 'sys_role', 'role_remark', 'ALTER TABLE sys_role ADD COLUMN `role_remark` varchar(200) NULL AFTER `role_name`;');
 CALL add_element_unless_exists('column', 'sys_role', 'role_desc', 'ALTER TABLE sys_role ADD COLUMN `role_desc` varchar(200) NULL AFTER `role_remark`;');
 CALL add_element_unless_exists('column', 'sys_role', 'role_status', 'ALTER TABLE sys_role ADD COLUMN `role_status` int(1) NULL AFTER `role_desc`;');
 CALL add_element_unless_exists('column', 'sys_role', 'create_time', 'ALTER TABLE sys_role ADD COLUMN `create_time` datetime NULL AFTER `role_status`;');
 CALL add_element_unless_exists('column', 'sys_role', 'update_time', 'ALTER TABLE sys_role ADD COLUMN `update_time` datetime NULL AFTER `create_time`;');
-CALL add_element_unless_exists('index', 'sys_role', 'PRIMARY', 'ALTER TABLE sys_role ADD UNIQUE INDEX `PRIMARY` (`role_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_role', 'PRIMARY', 'ALTER TABLE sys_role ADD PRIMARY KEY (`role_id`);');
 
 -- 更新表 sys_role_user 所有字段和索引
-CALL add_element_unless_exists('column', 'sys_role_user', 'id', 'ALTER TABLE sys_role_user ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'sys_role_user', 'id', 'ALTER TABLE sys_role_user ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'sys_role_user', 'role_id', 'ALTER TABLE sys_role_user ADD COLUMN `role_id` int(11) NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 'sys_role_user', 'user_id', 'ALTER TABLE sys_role_user ADD COLUMN `user_id` int(11) NULL AFTER `role_id`;');
 CALL add_element_unless_exists('column', 'sys_role_user', 'create_time', 'ALTER TABLE sys_role_user ADD COLUMN `create_time` datetime NULL AFTER `user_id`;');
-CALL add_element_unless_exists('index', 'sys_role_user', 'PRIMARY', 'ALTER TABLE sys_role_user ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_role_user', 'PRIMARY', 'ALTER TABLE sys_role_user ADD PRIMARY KEY (`id`);');
 
 -- 更新表 sys_user 所有字段和索引
-CALL add_element_unless_exists('column', 'sys_user', 'user_id', 'ALTER TABLE sys_user ADD COLUMN `user_id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'sys_user', 'user_id', 'ALTER TABLE sys_user ADD COLUMN `user_id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'sys_user', 'user_name', 'ALTER TABLE sys_user ADD COLUMN `user_name` varchar(50) NULL AFTER `user_id`;');
 CALL add_element_unless_exists('column', 'sys_user', 'user_account', 'ALTER TABLE sys_user ADD COLUMN `user_account` varchar(50) NULL AFTER `user_name`;');
 CALL add_element_unless_exists('column', 'sys_user', 'user_pwd', 'ALTER TABLE sys_user ADD COLUMN `user_pwd` varchar(50) NULL AFTER `user_account`;');
@@ -1652,39 +1680,39 @@ CALL add_element_unless_exists('column', 'sys_user', 'user_status', 'ALTER TABLE
 CALL add_element_unless_exists('column', 'sys_user', 'user_admin', 'ALTER TABLE sys_user ADD COLUMN `user_admin` int(1) NULL AFTER `user_status`;');
 CALL add_element_unless_exists('column', 'sys_user', 'create_time', 'ALTER TABLE sys_user ADD COLUMN `create_time` datetime NULL AFTER `user_admin`;');
 CALL add_element_unless_exists('column', 'sys_user', 'update_time', 'ALTER TABLE sys_user ADD COLUMN `update_time` datetime NULL AFTER `create_time`;');
-CALL add_element_unless_exists('index', 'sys_user', 'PRIMARY', 'ALTER TABLE sys_user ADD UNIQUE INDEX `PRIMARY` (`user_id`) USING BTREE;');
+CALL add_element_unless_exists('index', 'sys_user', 'PRIMARY', 'ALTER TABLE sys_user ADD PRIMARY KEY (`user_id`);');
 
 -- 更新表 t_ad 所有字段和索引
-CALL add_element_unless_exists('column', 't_ad', 'Id', 'ALTER TABLE t_ad ADD COLUMN `Id` int(8) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_ad', 'Id', 'ALTER TABLE t_ad ADD COLUMN `Id` int(8) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_ad', 'ParkId', 'ALTER TABLE t_ad ADD COLUMN `ParkId` int(8) NOT NULL DEFAULT 0 AFTER `Id`;');
-CALL add_element_unless_exists('column', 't_ad', 'ComputerId', 'ALTER TABLE t_ad ADD COLUMN `ComputerId` varchar(20) NOT NULL DEFAULT AFTER `ParkId`;');
+CALL add_element_unless_exists('column', 't_ad', 'ComputerId', 'ALTER TABLE t_ad ADD COLUMN `ComputerId` varchar(20) NOT NULL DEFAULT \'\' AFTER `ParkId`;');
 CALL add_element_unless_exists('column', 't_ad', 'AdType', 'ALTER TABLE t_ad ADD COLUMN `AdType` tinyint(4) NOT NULL DEFAULT 0 AFTER `ComputerId`;');
 CALL add_element_unless_exists('column', 't_ad', 'PlayType', 'ALTER TABLE t_ad ADD COLUMN `PlayType` int(8) NOT NULL DEFAULT 1 AFTER `AdType`;');
-CALL add_element_unless_exists('column', 't_ad', 'VideoUrl', 'ALTER TABLE t_ad ADD COLUMN `VideoUrl` varchar(1000) NOT NULL DEFAULT AFTER `PlayType`;');
+CALL add_element_unless_exists('column', 't_ad', 'VideoUrl', 'ALTER TABLE t_ad ADD COLUMN `VideoUrl` varchar(1000) NOT NULL DEFAULT \'\' AFTER `PlayType`;');
 CALL add_element_unless_exists('column', 't_ad', 'ImagePlayTime', 'ALTER TABLE t_ad ADD COLUMN `ImagePlayTime` int(8) NOT NULL DEFAULT 0 AFTER `VideoUrl`;');
 CALL add_element_unless_exists('column', 't_ad', 'ImagePlayStyle', 'ALTER TABLE t_ad ADD COLUMN `ImagePlayStyle` int(8) NOT NULL DEFAULT 0 AFTER `ImagePlayTime`;');
-CALL add_element_unless_exists('column', 't_ad', 'ImagesUrl', 'ALTER TABLE t_ad ADD COLUMN `ImagesUrl` varchar(1000) NOT NULL DEFAULT AFTER `ImagePlayStyle`;');
-CALL add_element_unless_exists('index', 't_ad', 'PRIMARY', 'ALTER TABLE t_ad ADD UNIQUE INDEX `PRIMARY` (`Id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_ad', 'ImagesUrl', 'ALTER TABLE t_ad ADD COLUMN `ImagesUrl` varchar(1000) NOT NULL DEFAULT \'\' AFTER `ImagePlayStyle`;');
+CALL add_element_unless_exists('index', 't_ad', 'PRIMARY', 'ALTER TABLE t_ad ADD PRIMARY KEY (`Id`);');
 
 -- 更新表 t_adsub 所有字段和索引
-CALL add_element_unless_exists('column', 't_adsub', 'id', 'ALTER TABLE t_adsub ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_adsub', 'id', 'ALTER TABLE t_adsub ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_adsub', 'ObjectId', 'ALTER TABLE t_adsub ADD COLUMN `ObjectId` int(8) NOT NULL DEFAULT 1 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_adsub', 'FormId', 'ALTER TABLE t_adsub ADD COLUMN `FormId` int(11) NOT NULL DEFAULT 0 AFTER `ObjectId`;');
-CALL add_element_unless_exists('column', 't_adsub', 'FilePath', 'ALTER TABLE t_adsub ADD COLUMN `FilePath` varchar(500) NOT NULL DEFAULT AFTER `FormId`;');
-CALL add_element_unless_exists('column', 't_adsub', 'Remark', 'ALTER TABLE t_adsub ADD COLUMN `Remark` varchar(255) NOT NULL DEFAULT AFTER `FilePath`;');
+CALL add_element_unless_exists('column', 't_adsub', 'FilePath', 'ALTER TABLE t_adsub ADD COLUMN `FilePath` varchar(500) NOT NULL DEFAULT \'\' AFTER `FormId`;');
+CALL add_element_unless_exists('column', 't_adsub', 'Remark', 'ALTER TABLE t_adsub ADD COLUMN `Remark` varchar(255) NOT NULL DEFAULT \'\' AFTER `FilePath`;');
 CALL add_element_unless_exists('column', 't_adsub', 'FileType', 'ALTER TABLE t_adsub ADD COLUMN `FileType` tinyint(4) NOT NULL DEFAULT 0 AFTER `Remark`;');
-CALL add_element_unless_exists('index', 't_adsub', 'PRIMARY', 'ALTER TABLE t_adsub ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_adsub', 'PRIMARY', 'ALTER TABLE t_adsub ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_area_device 所有字段和索引
-CALL add_element_unless_exists('column', 't_area_device', 'id', 'ALTER TABLE t_area_device ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_area_device', 'id', 'ALTER TABLE t_area_device ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_area_device', 'deviceaddr', 'ALTER TABLE t_area_device ADD COLUMN `deviceaddr` int(11) NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_area_device', 'areaid', 'ALTER TABLE t_area_device ADD COLUMN `areaid` int(11) NULL DEFAULT 0 AFTER `deviceaddr`;');
 CALL add_element_unless_exists('column', 't_area_device', 'type', 'ALTER TABLE t_area_device ADD COLUMN `type` int(11) NULL DEFAULT 0 AFTER `areaid`;');
 CALL add_element_unless_exists('column', 't_area_device', 'outareaid', 'ALTER TABLE t_area_device ADD COLUMN `outareaid` varchar(255) NULL AFTER `type`;');
-CALL add_element_unless_exists('index', 't_area_device', 'PRIMARY', 'ALTER TABLE t_area_device ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_area_device', 'PRIMARY', 'ALTER TABLE t_area_device ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_businfo 所有字段和索引
-CALL add_element_unless_exists('column', 't_businfo', 'id', 'ALTER TABLE t_businfo ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_businfo', 'id', 'ALTER TABLE t_businfo ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_businfo', 'busid', 'ALTER TABLE t_businfo ADD COLUMN `busid` varchar(32) NOT NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 't_businfo', 'lockDtuId', 'ALTER TABLE t_businfo ADD COLUMN `lockDtuId` varchar(32) NOT NULL AFTER `busid`;');
 CALL add_element_unless_exists('column', 't_businfo', 'lockPos', 'ALTER TABLE t_businfo ADD COLUMN `lockPos` varchar(32) NOT NULL AFTER `lockDtuId`;');
@@ -1694,34 +1722,34 @@ CALL add_element_unless_exists('column', 't_businfo', 'detectDtuId', 'ALTER TABL
 CALL add_element_unless_exists('column', 't_businfo', 'detectPos', 'ALTER TABLE t_businfo ADD COLUMN `detectPos` varchar(32) NOT NULL AFTER `detectDtuId`;');
 CALL add_element_unless_exists('column', 't_businfo', 'detectStatus', 'ALTER TABLE t_businfo ADD COLUMN `detectStatus` int(11) NOT NULL DEFAULT 0 AFTER `detectPos`;');
 CALL add_element_unless_exists('column', 't_businfo', 'updateTime', 'ALTER TABLE t_businfo ADD COLUMN `updateTime` datetime NULL AFTER `detectStatus`;');
-CALL add_element_unless_exists('index', 't_businfo', 'PRIMARY', 'ALTER TABLE t_businfo ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_businfo', 'PRIMARY', 'ALTER TABLE t_businfo ADD PRIMARY KEY (`id`);');
 CALL add_element_unless_exists('index', 't_businfo', 'busid', 'ALTER TABLE t_businfo ADD UNIQUE INDEX `busid` (`busid`) USING BTREE;');
 
 -- 更新表 t_display_config 所有字段和索引
-CALL add_element_unless_exists('column', 't_display_config', 'id', 'ALTER TABLE t_display_config ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_display_config', 'id', 'ALTER TABLE t_display_config ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_display_config', 'lot_id', 'ALTER TABLE t_display_config ADD COLUMN `lot_id` int(11) NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_display_config', 'title_top', 'ALTER TABLE t_display_config ADD COLUMN `title_top` double(255,0) NULL DEFAULT 0 AFTER `lot_id`;');
 CALL add_element_unless_exists('column', 't_display_config', 'title_left', 'ALTER TABLE t_display_config ADD COLUMN `title_left` double NULL DEFAULT 0 AFTER `title_top`;');
 CALL add_element_unless_exists('column', 't_display_config', 'title_font_size', 'ALTER TABLE t_display_config ADD COLUMN `title_font_size` double NULL DEFAULT 0 AFTER `title_left`;');
-CALL add_element_unless_exists('column', 't_display_config', 'title_color', 'ALTER TABLE t_display_config ADD COLUMN `title_color` varchar(255) NULL DEFAULT #fff AFTER `title_font_size`;');
-CALL add_element_unless_exists('column', 't_display_config', 'title_text', 'ALTER TABLE t_display_config ADD COLUMN `title_text` varchar(255) NULL DEFAULT AFTER `title_color`;');
+CALL add_element_unless_exists('column', 't_display_config', 'title_color', 'ALTER TABLE t_display_config ADD COLUMN `title_color` varchar(255) NULL DEFAULT \'#fff\' AFTER `title_font_size`;');
+CALL add_element_unless_exists('column', 't_display_config', 'title_text', 'ALTER TABLE t_display_config ADD COLUMN `title_text` varchar(255) NULL DEFAULT \'\' AFTER `title_color`;');
 CALL add_element_unless_exists('column', 't_display_config', 'led_font_size', 'ALTER TABLE t_display_config ADD COLUMN `led_font_size` double NULL DEFAULT 0 AFTER `title_text`;');
 CALL add_element_unless_exists('column', 't_display_config', 'led_width', 'ALTER TABLE t_display_config ADD COLUMN `led_width` double NULL DEFAULT 0 AFTER `led_font_size`;');
 CALL add_element_unless_exists('column', 't_display_config', 'led_height', 'ALTER TABLE t_display_config ADD COLUMN `led_height` double NULL DEFAULT 0 AFTER `led_width`;');
-CALL add_element_unless_exists('column', 't_display_config', 'led_common_color', 'ALTER TABLE t_display_config ADD COLUMN `led_common_color` varchar(255) NULL DEFAULT #00ffff AFTER `led_height`;');
-CALL add_element_unless_exists('column', 't_display_config', 'led_full_color', 'ALTER TABLE t_display_config ADD COLUMN `led_full_color` varchar(255) NULL DEFAULT #ff1100 AFTER `led_common_color`;');
+CALL add_element_unless_exists('column', 't_display_config', 'led_common_color', 'ALTER TABLE t_display_config ADD COLUMN `led_common_color` varchar(255) NULL DEFAULT \'#00ffff\' AFTER `led_height`;');
+CALL add_element_unless_exists('column', 't_display_config', 'led_full_color', 'ALTER TABLE t_display_config ADD COLUMN `led_full_color` varchar(255) NULL DEFAULT \'#ff1100\' AFTER `led_common_color`;');
 CALL add_element_unless_exists('column', 't_display_config', 'ico_width', 'ALTER TABLE t_display_config ADD COLUMN `ico_width` double NULL DEFAULT 0 AFTER `led_full_color`;');
 CALL add_element_unless_exists('column', 't_display_config', 'ico_height', 'ALTER TABLE t_display_config ADD COLUMN `ico_height` double NULL DEFAULT 0 AFTER `ico_width`;');
-CALL add_element_unless_exists('column', 't_display_config', 'ico_woman_img', 'ALTER TABLE t_display_config ADD COLUMN `ico_woman_img` varchar(255) NULL DEFAULT AFTER `ico_height`;');
-CALL add_element_unless_exists('column', 't_display_config', 'ico_woman_actimg', 'ALTER TABLE t_display_config ADD COLUMN `ico_woman_actimg` varchar(255) NULL DEFAULT AFTER `ico_woman_img`;');
-CALL add_element_unless_exists('column', 't_display_config', 'ico_man_img', 'ALTER TABLE t_display_config ADD COLUMN `ico_man_img` varchar(255) NULL DEFAULT AFTER `ico_woman_actimg`;');
-CALL add_element_unless_exists('column', 't_display_config', 'ico_man_actimg', 'ALTER TABLE t_display_config ADD COLUMN `ico_man_actimg` varchar(255) NULL DEFAULT AFTER `ico_man_img`;');
+CALL add_element_unless_exists('column', 't_display_config', 'ico_woman_img', 'ALTER TABLE t_display_config ADD COLUMN `ico_woman_img` varchar(255) NULL DEFAULT \'\' AFTER `ico_height`;');
+CALL add_element_unless_exists('column', 't_display_config', 'ico_woman_actimg', 'ALTER TABLE t_display_config ADD COLUMN `ico_woman_actimg` varchar(255) NULL DEFAULT \'\' AFTER `ico_woman_img`;');
+CALL add_element_unless_exists('column', 't_display_config', 'ico_man_img', 'ALTER TABLE t_display_config ADD COLUMN `ico_man_img` varchar(255) NULL DEFAULT \'\' AFTER `ico_woman_actimg`;');
+CALL add_element_unless_exists('column', 't_display_config', 'ico_man_actimg', 'ALTER TABLE t_display_config ADD COLUMN `ico_man_actimg` varchar(255) NULL DEFAULT \'\' AFTER `ico_man_img`;');
 CALL add_element_unless_exists('column', 't_display_config', 'create_time', 'ALTER TABLE t_display_config ADD COLUMN `create_time` datetime NULL AFTER `ico_man_actimg`;');
 CALL add_element_unless_exists('column', 't_display_config', 'update_time', 'ALTER TABLE t_display_config ADD COLUMN `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `create_time`;');
-CALL add_element_unless_exists('index', 't_display_config', 'PRIMARY', 'ALTER TABLE t_display_config ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_display_config', 'PRIMARY', 'ALTER TABLE t_display_config ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_events 所有字段和索引
-CALL add_element_unless_exists('column', 't_events', 'id', 'ALTER TABLE t_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_events', 'id', 'ALTER TABLE t_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_events', 'evtType', 'ALTER TABLE t_events ADD COLUMN `evtType` int(11) NOT NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_events', 'imgName', 'ALTER TABLE t_events ADD COLUMN `imgName` varchar(50) NOT NULL DEFAULT 0 AFTER `evtType`;');
 CALL add_element_unless_exists('column', 't_events', 'dspIp', 'ALTER TABLE t_events ADD COLUMN `dspIp` varchar(32) NOT NULL DEFAULT 0 AFTER `imgName`;');
@@ -1739,38 +1767,38 @@ CALL add_element_unless_exists('column', 't_events', 'carplateProty2', 'ALTER TA
 CALL add_element_unless_exists('column', 't_events', 'enchargeFlag', 'ALTER TABLE t_events ADD COLUMN `enchargeFlag` int(1) unsigned NOT NULL DEFAULT 0 AFTER `carplateProty2`;');
 CALL add_element_unless_exists('column', 't_events', 'serialType', 'ALTER TABLE t_events ADD COLUMN `serialType` int(1) unsigned NOT NULL DEFAULT 0 AFTER `enchargeFlag`;');
 CALL add_element_unless_exists('column', 't_events', 'serialNo', 'ALTER TABLE t_events ADD COLUMN `serialNo` varchar(500) NOT NULL DEFAULT 0 AFTER `serialType`;');
-CALL add_element_unless_exists('column', 't_events', 'inImgName', 'ALTER TABLE t_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT AFTER `serialNo`;');
-CALL add_element_unless_exists('column', 't_events', 'CarColor', 'ALTER TABLE t_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT AFTER `inImgName`;');
-CALL add_element_unless_exists('column', 't_events', 'CarBrand', 'ALTER TABLE t_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT AFTER `CarColor`;');
+CALL add_element_unless_exists('column', 't_events', 'inImgName', 'ALTER TABLE t_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT \'\' AFTER `serialNo`;');
+CALL add_element_unless_exists('column', 't_events', 'CarColor', 'ALTER TABLE t_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `inImgName`;');
+CALL add_element_unless_exists('column', 't_events', 'CarBrand', 'ALTER TABLE t_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT \'\' AFTER `CarColor`;');
 CALL add_element_unless_exists('column', 't_events', 'RecogEnable', 'ALTER TABLE t_events ADD COLUMN `RecogEnable` int(8) NOT NULL DEFAULT 0 AFTER `CarBrand`;');
-CALL add_element_unless_exists('column', 't_events', 'CarplateColor', 'ALTER TABLE t_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT AFTER `RecogEnable`;');
+CALL add_element_unless_exists('column', 't_events', 'CarplateColor', 'ALTER TABLE t_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `RecogEnable`;');
 CALL add_element_unless_exists('column', 't_events', 'CameraId', 'ALTER TABLE t_events ADD COLUMN `CameraId` int(11) NOT NULL DEFAULT 0 AFTER `CarplateColor`;');
-CALL add_element_unless_exists('column', 't_events', 'remark', 'ALTER TABLE t_events ADD COLUMN `remark` varchar(50) NULL DEFAULT AFTER `CameraId`;');
-CALL add_element_unless_exists('index', 't_events', 'PRIMARY', 'ALTER TABLE t_events ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_events', 'remark', 'ALTER TABLE t_events ADD COLUMN `remark` varchar(50) NULL DEFAULT \'\' AFTER `CameraId`;');
+CALL add_element_unless_exists('index', 't_events', 'PRIMARY', 'ALTER TABLE t_events ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_faceinfo 所有字段和索引
-CALL add_element_unless_exists('column', 't_faceinfo', 'id', 'ALTER TABLE t_faceinfo ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 't_faceinfo', 'plateNo', 'ALTER TABLE t_faceinfo ADD COLUMN `plateNo` varchar(50) NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 't_faceinfo', 'id', 'ALTER TABLE t_faceinfo ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 't_faceinfo', 'plateNo', 'ALTER TABLE t_faceinfo ADD COLUMN `plateNo` varchar(50) NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 't_faceinfo', 'faceInfo', 'ALTER TABLE t_faceinfo ADD COLUMN `faceInfo` text NULL AFTER `plateNo`;');
 CALL add_element_unless_exists('column', 't_faceinfo', 'createTime', 'ALTER TABLE t_faceinfo ADD COLUMN `createTime` datetime NULL AFTER `faceInfo`;');
 CALL add_element_unless_exists('column', 't_faceinfo', 'isTemp', 'ALTER TABLE t_faceinfo ADD COLUMN `isTemp` int(11) NULL DEFAULT 0 AFTER `createTime`;');
-CALL add_element_unless_exists('column', 't_faceinfo', 'faceId', 'ALTER TABLE t_faceinfo ADD COLUMN `faceId` varchar(50) NULL DEFAULT AFTER `isTemp`;');
-CALL add_element_unless_exists('index', 't_faceinfo', 'PRIMARY', 'ALTER TABLE t_faceinfo ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_faceinfo', 'faceId', 'ALTER TABLE t_faceinfo ADD COLUMN `faceId` varchar(50) NULL DEFAULT \'\' AFTER `isTemp`;');
+CALL add_element_unless_exists('index', 't_faceinfo', 'PRIMARY', 'ALTER TABLE t_faceinfo ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_fcs_seller 所有字段和索引
-CALL add_element_unless_exists('column', 't_fcs_seller', 'id', 'ALTER TABLE t_fcs_seller ADD COLUMN `id` int(20) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 't_fcs_seller', 'seller_name', 'ALTER TABLE t_fcs_seller ADD COLUMN `seller_name` varchar(50) NULL DEFAULT AFTER `id`;');
-CALL add_element_unless_exists('column', 't_fcs_seller', 'seller_code', 'ALTER TABLE t_fcs_seller ADD COLUMN `seller_code` varchar(50) NULL DEFAULT AFTER `seller_name`;');
+CALL add_element_unless_exists('column', 't_fcs_seller', 'id', 'ALTER TABLE t_fcs_seller ADD COLUMN `id` int(20) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 't_fcs_seller', 'seller_name', 'ALTER TABLE t_fcs_seller ADD COLUMN `seller_name` varchar(50) NULL DEFAULT \'\' AFTER `id`;');
+CALL add_element_unless_exists('column', 't_fcs_seller', 'seller_code', 'ALTER TABLE t_fcs_seller ADD COLUMN `seller_code` varchar(50) NULL DEFAULT \'\' AFTER `seller_name`;');
 CALL add_element_unless_exists('column', 't_fcs_seller', 'pos_x', 'ALTER TABLE t_fcs_seller ADD COLUMN `pos_x` int(4) NULL DEFAULT 0 AFTER `seller_code`;');
 CALL add_element_unless_exists('column', 't_fcs_seller', 'pos_y', 'ALTER TABLE t_fcs_seller ADD COLUMN `pos_y` int(4) NULL DEFAULT 0 AFTER `pos_x`;');
 CALL add_element_unless_exists('column', 't_fcs_seller', 'floor_id', 'ALTER TABLE t_fcs_seller ADD COLUMN `floor_id` int(8) NULL DEFAULT 0 AFTER `pos_y`;');
 CALL add_element_unless_exists('column', 't_fcs_seller', 'is_delete', 'ALTER TABLE t_fcs_seller ADD COLUMN `is_delete` int(1) NULL DEFAULT 0 AFTER `floor_id`;');
 CALL add_element_unless_exists('column', 't_fcs_seller', 'create_time', 'ALTER TABLE t_fcs_seller ADD COLUMN `create_time` datetime NULL AFTER `is_delete`;');
 CALL add_element_unless_exists('column', 't_fcs_seller', 'update_time', 'ALTER TABLE t_fcs_seller ADD COLUMN `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP AFTER `create_time`;');
-CALL add_element_unless_exists('index', 't_fcs_seller', 'PRIMARY', 'ALTER TABLE t_fcs_seller ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_fcs_seller', 'PRIMARY', 'ALTER TABLE t_fcs_seller ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_findcar_events 所有字段和索引
-CALL add_element_unless_exists('column', 't_findcar_events', 'id', 'ALTER TABLE t_findcar_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_findcar_events', 'id', 'ALTER TABLE t_findcar_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'evtType', 'ALTER TABLE t_findcar_events ADD COLUMN `evtType` int(11) NOT NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'imgName', 'ALTER TABLE t_findcar_events ADD COLUMN `imgName` varchar(255) NOT NULL DEFAULT 0 AFTER `evtType`;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'dspIp', 'ALTER TABLE t_findcar_events ADD COLUMN `dspIp` varchar(32) NOT NULL DEFAULT 0 AFTER `imgName`;');
@@ -1788,60 +1816,58 @@ CALL add_element_unless_exists('column', 't_findcar_events', 'carplateProty2', '
 CALL add_element_unless_exists('column', 't_findcar_events', 'enchargeFlag', 'ALTER TABLE t_findcar_events ADD COLUMN `enchargeFlag` int(1) unsigned NOT NULL DEFAULT 0 AFTER `carplateProty2`;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'serialType', 'ALTER TABLE t_findcar_events ADD COLUMN `serialType` int(1) unsigned NOT NULL DEFAULT 0 AFTER `enchargeFlag`;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'serialNo', 'ALTER TABLE t_findcar_events ADD COLUMN `serialNo` varchar(45) NOT NULL DEFAULT 0 AFTER `serialType`;');
-CALL add_element_unless_exists('column', 't_findcar_events', 'inImgName', 'ALTER TABLE t_findcar_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT AFTER `serialNo`;');
-CALL add_element_unless_exists('column', 't_findcar_events', 'CarColor', 'ALTER TABLE t_findcar_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT AFTER `inImgName`;');
-CALL add_element_unless_exists('column', 't_findcar_events', 'CarBrand', 'ALTER TABLE t_findcar_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT AFTER `CarColor`;');
+CALL add_element_unless_exists('column', 't_findcar_events', 'inImgName', 'ALTER TABLE t_findcar_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT \'\' AFTER `serialNo`;');
+CALL add_element_unless_exists('column', 't_findcar_events', 'CarColor', 'ALTER TABLE t_findcar_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `inImgName`;');
+CALL add_element_unless_exists('column', 't_findcar_events', 'CarBrand', 'ALTER TABLE t_findcar_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT \'\' AFTER `CarColor`;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'RecogEnable', 'ALTER TABLE t_findcar_events ADD COLUMN `RecogEnable` int(8) NOT NULL DEFAULT 0 AFTER `CarBrand`;');
-CALL add_element_unless_exists('column', 't_findcar_events', 'CarplateColor', 'ALTER TABLE t_findcar_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT AFTER `RecogEnable`;');
+CALL add_element_unless_exists('column', 't_findcar_events', 'CarplateColor', 'ALTER TABLE t_findcar_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `RecogEnable`;');
 CALL add_element_unless_exists('column', 't_findcar_events', 'CameraId', 'ALTER TABLE t_findcar_events ADD COLUMN `CameraId` int(11) NOT NULL DEFAULT 0 AFTER `CarplateColor`;');
-CALL add_element_unless_exists('column', 't_findcar_events', 'remark', 'ALTER TABLE t_findcar_events ADD COLUMN `remark` varchar(50) NULL DEFAULT AFTER `CameraId`;');
-CALL add_element_unless_exists('index', 't_findcar_events', 'PRIMARY', 'ALTER TABLE t_findcar_events ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_findcar_events', 'remark', 'ALTER TABLE t_findcar_events ADD COLUMN `remark` varchar(50) NULL DEFAULT \'\' AFTER `CameraId`;');
+CALL add_element_unless_exists('index', 't_findcar_events', 'PRIMARY', 'ALTER TABLE t_findcar_events ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_findcar_upload 所有字段和索引
-CALL add_element_unless_exists('column', 't_findcar_upload', 'id', 'ALTER TABLE t_findcar_upload ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 't_findcar_upload', 'code', 'ALTER TABLE t_findcar_upload ADD COLUMN `code` varchar(20) NOT NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 't_findcar_upload', 'id', 'ALTER TABLE t_findcar_upload ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 't_findcar_upload', 'code', 'ALTER TABLE t_findcar_upload ADD COLUMN `code` varchar(20) NOT NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 't_findcar_upload', 'uploadTime', 'ALTER TABLE t_findcar_upload ADD COLUMN `uploadTime` datetime NULL AFTER `code`;');
-CALL add_element_unless_exists('column', 't_findcar_upload', 'remark', 'ALTER TABLE t_findcar_upload ADD COLUMN `remark` varchar(256) NULL DEFAULT AFTER `uploadTime`;');
-CALL add_element_unless_exists('index', 't_findcar_upload', 'PRIMARY', 'ALTER TABLE t_findcar_upload ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_findcar_upload', 'remark', 'ALTER TABLE t_findcar_upload ADD COLUMN `remark` varchar(256) NULL DEFAULT \'\' AFTER `uploadTime`;');
+CALL add_element_unless_exists('index', 't_findcar_upload', 'PRIMARY', 'ALTER TABLE t_findcar_upload ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_ibeacon 所有字段和索引
-CALL add_element_unless_exists('column', 't_ibeacon', 'id', 'ALTER TABLE t_ibeacon ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_ibeacon', 'id', 'ALTER TABLE t_ibeacon ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_ibeacon', 'lotCode', 'ALTER TABLE t_ibeacon ADD COLUMN `lotCode` int(11) NOT NULL DEFAULT 0 AFTER `id`;');
-CALL add_element_unless_exists('column', 't_ibeacon', 'UUID', 'ALTER TABLE t_ibeacon ADD COLUMN `UUID` varchar(255) NOT NULL DEFAULT AFTER `lotCode`;');
-CALL add_element_unless_exists('column', 't_ibeacon', 'Major', 'ALTER TABLE t_ibeacon ADD COLUMN `Major` varchar(255) NOT NULL DEFAULT AFTER `UUID`;');
-CALL add_element_unless_exists('column', 't_ibeacon', 'Minor', 'ALTER TABLE t_ibeacon ADD COLUMN `Minor` varchar(255) NOT NULL DEFAULT AFTER `Major`;');
+CALL add_element_unless_exists('column', 't_ibeacon', 'UUID', 'ALTER TABLE t_ibeacon ADD COLUMN `UUID` varchar(255) NOT NULL DEFAULT \'\' AFTER `lotCode`;');
+CALL add_element_unless_exists('column', 't_ibeacon', 'Major', 'ALTER TABLE t_ibeacon ADD COLUMN `Major` varchar(255) NOT NULL DEFAULT \'\' AFTER `UUID`;');
+CALL add_element_unless_exists('column', 't_ibeacon', 'Minor', 'ALTER TABLE t_ibeacon ADD COLUMN `Minor` varchar(255) NOT NULL DEFAULT \'\' AFTER `Major`;');
 CALL add_element_unless_exists('column', 't_ibeacon', 'Addr', 'ALTER TABLE t_ibeacon ADD COLUMN `Addr` int(11) NOT NULL DEFAULT 0 AFTER `Minor`;');
 CALL add_element_unless_exists('column', 't_ibeacon', 'PosX', 'ALTER TABLE t_ibeacon ADD COLUMN `PosX` int(10) unsigned NOT NULL DEFAULT 0 AFTER `Addr`;');
 CALL add_element_unless_exists('column', 't_ibeacon', 'PosY', 'ALTER TABLE t_ibeacon ADD COLUMN `PosY` int(10) unsigned NOT NULL DEFAULT 0 AFTER `PosX`;');
 CALL add_element_unless_exists('column', 't_ibeacon', 'Mid', 'ALTER TABLE t_ibeacon ADD COLUMN `Mid` int(10) unsigned NOT NULL DEFAULT 0 AFTER `PosY`;');
-CALL add_element_unless_exists('index', 't_ibeacon', 'PRIMARY', 'ALTER TABLE t_ibeacon ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_ibeacon', 'UK_t_ibeacon', 'ALTER TABLE t_ibeacon ADD UNIQUE INDEX `UK_t_ibeacon` (`UUID`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_ibeacon', 'UK_t_ibeacon', 'ALTER TABLE t_ibeacon ADD UNIQUE INDEX `UK_t_ibeacon` (`Major`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_ibeacon', 'UK_t_ibeacon', 'ALTER TABLE t_ibeacon ADD UNIQUE INDEX `UK_t_ibeacon` (`Minor`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_ibeacon', 'PRIMARY', 'ALTER TABLE t_ibeacon ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 't_ibeacon', 'UK_t_ibeacon', 'ALTER TABLE t_ibeacon ADD UNIQUE INDEX `UK_t_ibeacon` (`UUID`, `Major`, `Minor`) USING BTREE;');
 
 -- 更新表 t_illegal_report 所有字段和索引
-CALL add_element_unless_exists('column', 't_illegal_report', 'id', 'ALTER TABLE t_illegal_report ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 't_illegal_report', 'carPlateNum', 'ALTER TABLE t_illegal_report ADD COLUMN `carPlateNum` varchar(50) NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 't_illegal_report', 'id', 'ALTER TABLE t_illegal_report ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 't_illegal_report', 'carPlateNum', 'ALTER TABLE t_illegal_report ADD COLUMN `carPlateNum` varchar(50) NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 't_illegal_report', 'parkTime', 'ALTER TABLE t_illegal_report ADD COLUMN `parkTime` datetime NULL AFTER `carPlateNum`;');
-CALL add_element_unless_exists('column', 't_illegal_report', 'busNumber', 'ALTER TABLE t_illegal_report ADD COLUMN `busNumber` varchar(50) NULL DEFAULT AFTER `parkTime`;');
-CALL add_element_unless_exists('column', 't_illegal_report', 'illegalPlate', 'ALTER TABLE t_illegal_report ADD COLUMN `illegalPlate` varchar(50) NULL DEFAULT AFTER `busNumber`;');
-CALL add_element_unless_exists('column', 't_illegal_report', 'imgName', 'ALTER TABLE t_illegal_report ADD COLUMN `imgName` varchar(100) NULL DEFAULT AFTER `illegalPlate`;');
+CALL add_element_unless_exists('column', 't_illegal_report', 'busNumber', 'ALTER TABLE t_illegal_report ADD COLUMN `busNumber` varchar(50) NULL DEFAULT \'\' AFTER `parkTime`;');
+CALL add_element_unless_exists('column', 't_illegal_report', 'illegalPlate', 'ALTER TABLE t_illegal_report ADD COLUMN `illegalPlate` varchar(50) NULL DEFAULT \'\' AFTER `busNumber`;');
+CALL add_element_unless_exists('column', 't_illegal_report', 'imgName', 'ALTER TABLE t_illegal_report ADD COLUMN `imgName` varchar(100) NULL DEFAULT \'\' AFTER `illegalPlate`;');
 CALL add_element_unless_exists('column', 't_illegal_report', 'isAlarm', 'ALTER TABLE t_illegal_report ADD COLUMN `isAlarm` int(11) NOT NULL DEFAULT 0 AFTER `imgName`;');
-CALL add_element_unless_exists('column', 't_illegal_report', 'remark', 'ALTER TABLE t_illegal_report ADD COLUMN `remark` varchar(512) NULL DEFAULT AFTER `isAlarm`;');
+CALL add_element_unless_exists('column', 't_illegal_report', 'remark', 'ALTER TABLE t_illegal_report ADD COLUMN `remark` varchar(512) NULL DEFAULT \'\' AFTER `isAlarm`;');
 CALL add_element_unless_exists('column', 't_illegal_report', 'createTime', 'ALTER TABLE t_illegal_report ADD COLUMN `createTime` datetime NULL AFTER `remark`;');
-CALL add_element_unless_exists('index', 't_illegal_report', 'PRIMARY', 'ALTER TABLE t_illegal_report ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_illegal_report', 'PRIMARY', 'ALTER TABLE t_illegal_report ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_illegal_spaces 所有字段和索引
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'id', 'ALTER TABLE t_illegal_spaces ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'carPlateNum', 'ALTER TABLE t_illegal_spaces ADD COLUMN `carPlateNum` varchar(50) NULL DEFAULT AFTER `id`;');
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'busNumber', 'ALTER TABLE t_illegal_spaces ADD COLUMN `busNumber` varchar(50) NULL DEFAULT AFTER `carPlateNum`;');
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'owner', 'ALTER TABLE t_illegal_spaces ADD COLUMN `owner` varchar(100) NULL DEFAULT AFTER `busNumber`;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'id', 'ALTER TABLE t_illegal_spaces ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'carPlateNum', 'ALTER TABLE t_illegal_spaces ADD COLUMN `carPlateNum` varchar(50) NULL DEFAULT \'\' AFTER `id`;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'busNumber', 'ALTER TABLE t_illegal_spaces ADD COLUMN `busNumber` varchar(50) NULL DEFAULT \'\' AFTER `carPlateNum`;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'owner', 'ALTER TABLE t_illegal_spaces ADD COLUMN `owner` varchar(100) NULL DEFAULT \'\' AFTER `busNumber`;');
 CALL add_element_unless_exists('column', 't_illegal_spaces', 'scheme', 'ALTER TABLE t_illegal_spaces ADD COLUMN `scheme` int(11) NULL DEFAULT 0 AFTER `owner`;');
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'ledIp', 'ALTER TABLE t_illegal_spaces ADD COLUMN `ledIp` varchar(50) NULL DEFAULT AFTER `scheme`;');
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'remark', 'ALTER TABLE t_illegal_spaces ADD COLUMN `remark` varchar(512) NULL DEFAULT AFTER `ledIp`;');
-CALL add_element_unless_exists('column', 't_illegal_spaces', 'operator', 'ALTER TABLE t_illegal_spaces ADD COLUMN `operator` varchar(100) NULL DEFAULT AFTER `remark`;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'ledIp', 'ALTER TABLE t_illegal_spaces ADD COLUMN `ledIp` varchar(50) NULL DEFAULT \'\' AFTER `scheme`;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'remark', 'ALTER TABLE t_illegal_spaces ADD COLUMN `remark` varchar(512) NULL DEFAULT \'\' AFTER `ledIp`;');
+CALL add_element_unless_exists('column', 't_illegal_spaces', 'operator', 'ALTER TABLE t_illegal_spaces ADD COLUMN `operator` varchar(100) NULL DEFAULT \'\' AFTER `remark`;');
 CALL add_element_unless_exists('column', 't_illegal_spaces', 'createTime', 'ALTER TABLE t_illegal_spaces ADD COLUMN `createTime` datetime NULL AFTER `operator`;');
-CALL add_element_unless_exists('index', 't_illegal_spaces', 'PRIMARY', 'ALTER TABLE t_illegal_spaces ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_illegal_spaces', 'PRIMARY', 'ALTER TABLE t_illegal_spaces ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_infobus_getinfobus_tmp 所有字段和索引
 CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'id', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `id` int(11) NOT NULL DEFAULT 0;');
@@ -1862,13 +1888,13 @@ CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'Mid', 'ALT
 CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'Trun', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `Trun` int(10) unsigned NOT NULL DEFAULT 0 AFTER `Mid`;');
 CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'PosX', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `PosX` int(10) unsigned NOT NULL DEFAULT 0 AFTER `Trun`;');
 CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'PosY', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `PosY` int(10) unsigned NOT NULL DEFAULT 0 AFTER `PosX`;');
-CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'PSPlaceNum', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `PSPlaceNum` varchar(30) NOT NULL DEFAULT AFTER `PosY`;');
-CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'PSPlaceName', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `PSPlaceName` varchar(30) NOT NULL DEFAULT AFTER `PSPlaceNum`;');
+CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'PSPlaceNum', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `PSPlaceNum` varchar(30) NOT NULL DEFAULT \'\' AFTER `PosY`;');
+CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'PSPlaceName', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `PSPlaceName` varchar(30) NOT NULL DEFAULT \'\' AFTER `PSPlaceNum`;');
 CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'IsDelete', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `PSPlaceName`;');
 CALL add_element_unless_exists('column', 't_infobus_getinfobus_tmp', 'flag', 'ALTER TABLE t_infobus_getinfobus_tmp ADD COLUMN `flag` int(1) NOT NULL DEFAULT 0 AFTER `IsDelete`;');
 
 -- 更新表 t_keypoint 所有字段和索引
-CALL add_element_unless_exists('column', 't_keypoint', 'id', 'ALTER TABLE t_keypoint ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_keypoint', 'id', 'ALTER TABLE t_keypoint ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_keypoint', 'pointType', 'ALTER TABLE t_keypoint ADD COLUMN `pointType` int(3) NOT NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_keypoint', 'pointName', 'ALTER TABLE t_keypoint ADD COLUMN `pointName` varchar(50) NULL AFTER `pointType`;');
 CALL add_element_unless_exists('column', 't_keypoint', 'locateX', 'ALTER TABLE t_keypoint ADD COLUMN `locateX` int(5) NOT NULL DEFAULT 0 AFTER `pointName`;');
@@ -1877,11 +1903,11 @@ CALL add_element_unless_exists('column', 't_keypoint', 'lotid', 'ALTER TABLE t_k
 CALL add_element_unless_exists('column', 't_keypoint', 'CliFlag', 'ALTER TABLE t_keypoint ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `lotid`;');
 CALL add_element_unless_exists('column', 't_keypoint', 'CliDate', 'ALTER TABLE t_keypoint ADD COLUMN `CliDate` datetime NULL AFTER `CliFlag`;');
 CALL add_element_unless_exists('column', 't_keypoint', 'IsDelete', 'ALTER TABLE t_keypoint ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliDate`;');
-CALL add_element_unless_exists('column', 't_keypoint', 'floorpoint', 'ALTER TABLE t_keypoint ADD COLUMN `floorpoint` varchar(255) NULL DEFAULT AFTER `IsDelete`;');
-CALL add_element_unless_exists('index', 't_keypoint', 'PRIMARY', 'ALTER TABLE t_keypoint ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_keypoint', 'floorpoint', 'ALTER TABLE t_keypoint ADD COLUMN `floorpoint` varchar(255) NULL DEFAULT \'\' AFTER `IsDelete`;');
+CALL add_element_unless_exists('index', 't_keypoint', 'PRIMARY', 'ALTER TABLE t_keypoint ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_keypointlinks 所有字段和索引
-CALL add_element_unless_exists('column', 't_keypointlinks', 'id', 'ALTER TABLE t_keypointlinks ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_keypointlinks', 'id', 'ALTER TABLE t_keypointlinks ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_keypointlinks', 'pointType1', 'ALTER TABLE t_keypointlinks ADD COLUMN `pointType1` int(1) NOT NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_keypointlinks', 'pointId1', 'ALTER TABLE t_keypointlinks ADD COLUMN `pointId1` int(11) NOT NULL AFTER `pointType1`;');
 CALL add_element_unless_exists('column', 't_keypointlinks', 'pointType2', 'ALTER TABLE t_keypointlinks ADD COLUMN `pointType2` int(1) NOT NULL DEFAULT 0 AFTER `pointId1`;');
@@ -1891,10 +1917,10 @@ CALL add_element_unless_exists('column', 't_keypointlinks', 'distance', 'ALTER T
 CALL add_element_unless_exists('column', 't_keypointlinks', 'CliFlag', 'ALTER TABLE t_keypointlinks ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `distance`;');
 CALL add_element_unless_exists('column', 't_keypointlinks', 'CliDate', 'ALTER TABLE t_keypointlinks ADD COLUMN `CliDate` datetime NULL AFTER `CliFlag`;');
 CALL add_element_unless_exists('column', 't_keypointlinks', 'IsDelete', 'ALTER TABLE t_keypointlinks ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliDate`;');
-CALL add_element_unless_exists('index', 't_keypointlinks', 'PRIMARY', 'ALTER TABLE t_keypointlinks ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_keypointlinks', 'PRIMARY', 'ALTER TABLE t_keypointlinks ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_led_events 所有字段和索引
-CALL add_element_unless_exists('column', 't_led_events', 'id', 'ALTER TABLE t_led_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_led_events', 'id', 'ALTER TABLE t_led_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_led_events', 'evtType', 'ALTER TABLE t_led_events ADD COLUMN `evtType` int(11) NOT NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_led_events', 'imgName', 'ALTER TABLE t_led_events ADD COLUMN `imgName` varchar(50) NOT NULL DEFAULT 0 AFTER `evtType`;');
 CALL add_element_unless_exists('column', 't_led_events', 'dspIp', 'ALTER TABLE t_led_events ADD COLUMN `dspIp` varchar(32) NOT NULL DEFAULT 0 AFTER `imgName`;');
@@ -1912,60 +1938,58 @@ CALL add_element_unless_exists('column', 't_led_events', 'carplateProty2', 'ALTE
 CALL add_element_unless_exists('column', 't_led_events', 'enchargeFlag', 'ALTER TABLE t_led_events ADD COLUMN `enchargeFlag` int(1) unsigned NOT NULL DEFAULT 0 AFTER `carplateProty2`;');
 CALL add_element_unless_exists('column', 't_led_events', 'serialType', 'ALTER TABLE t_led_events ADD COLUMN `serialType` int(1) unsigned NOT NULL DEFAULT 0 AFTER `enchargeFlag`;');
 CALL add_element_unless_exists('column', 't_led_events', 'serialNo', 'ALTER TABLE t_led_events ADD COLUMN `serialNo` varchar(45) NOT NULL DEFAULT 0 AFTER `serialType`;');
-CALL add_element_unless_exists('column', 't_led_events', 'inImgName', 'ALTER TABLE t_led_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT AFTER `serialNo`;');
-CALL add_element_unless_exists('column', 't_led_events', 'CarColor', 'ALTER TABLE t_led_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT AFTER `inImgName`;');
-CALL add_element_unless_exists('column', 't_led_events', 'CarBrand', 'ALTER TABLE t_led_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT AFTER `CarColor`;');
+CALL add_element_unless_exists('column', 't_led_events', 'inImgName', 'ALTER TABLE t_led_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT \'\' AFTER `serialNo`;');
+CALL add_element_unless_exists('column', 't_led_events', 'CarColor', 'ALTER TABLE t_led_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `inImgName`;');
+CALL add_element_unless_exists('column', 't_led_events', 'CarBrand', 'ALTER TABLE t_led_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT \'\' AFTER `CarColor`;');
 CALL add_element_unless_exists('column', 't_led_events', 'RecogEnable', 'ALTER TABLE t_led_events ADD COLUMN `RecogEnable` int(8) NOT NULL DEFAULT 0 AFTER `CarBrand`;');
-CALL add_element_unless_exists('column', 't_led_events', 'CarplateColor', 'ALTER TABLE t_led_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT AFTER `RecogEnable`;');
+CALL add_element_unless_exists('column', 't_led_events', 'CarplateColor', 'ALTER TABLE t_led_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `RecogEnable`;');
 CALL add_element_unless_exists('column', 't_led_events', 'CameraId', 'ALTER TABLE t_led_events ADD COLUMN `CameraId` int(11) NOT NULL DEFAULT 0 AFTER `CarplateColor`;');
-CALL add_element_unless_exists('column', 't_led_events', 'remark', 'ALTER TABLE t_led_events ADD COLUMN `remark` varchar(50) NULL DEFAULT AFTER `CameraId`;');
-CALL add_element_unless_exists('index', 't_led_events', 'PRIMARY', 'ALTER TABLE t_led_events ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_led_events', 'remark', 'ALTER TABLE t_led_events ADD COLUMN `remark` varchar(50) NULL DEFAULT \'\' AFTER `CameraId`;');
+CALL add_element_unless_exists('index', 't_led_events', 'PRIMARY', 'ALTER TABLE t_led_events ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_lock_control 所有字段和索引
-CALL add_element_unless_exists('column', 't_lock_control', 'id', 'ALTER TABLE t_lock_control ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_lock_control', 'id', 'ALTER TABLE t_lock_control ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_lock_control', 'busid', 'ALTER TABLE t_lock_control ADD COLUMN `busid` varchar(32) NOT NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 't_lock_control', 'action', 'ALTER TABLE t_lock_control ADD COLUMN `action` int(11) NOT NULL AFTER `busid`;');
 CALL add_element_unless_exists('column', 't_lock_control', 'updateTime', 'ALTER TABLE t_lock_control ADD COLUMN `updateTime` datetime NOT NULL AFTER `action`;');
-CALL add_element_unless_exists('index', 't_lock_control', 'PRIMARY', 'ALTER TABLE t_lock_control ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lock_control', 'PRIMARY', 'ALTER TABLE t_lock_control ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_lotcarforfee 所有字段和索引
 CALL add_element_unless_exists('column', 't_lotcarforfee', 'carNo', 'ALTER TABLE t_lotcarforfee ADD COLUMN `carNo` varchar(32) NOT NULL;');
 CALL add_element_unless_exists('column', 't_lotcarforfee', 'parkTime', 'ALTER TABLE t_lotcarforfee ADD COLUMN `parkTime` datetime NOT NULL AFTER `carNo`;');
 CALL add_element_unless_exists('column', 't_lotcarforfee', 'lastUpdate', 'ALTER TABLE t_lotcarforfee ADD COLUMN `lastUpdate` datetime NOT NULL AFTER `parkTime`;');
 CALL add_element_unless_exists('column', 't_lotcarforfee', 'imgname', 'ALTER TABLE t_lotcarforfee ADD COLUMN `imgname` varchar(100) NOT NULL AFTER `lastUpdate`;');
-CALL add_element_unless_exists('index', 't_lotcarforfee', 'PRIMARY', 'ALTER TABLE t_lotcarforfee ADD UNIQUE INDEX `PRIMARY` (`carNo`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfee', 'idx_lotCarForFee_Update', 'ALTER TABLE t_lotcarforfee ADD INDEX INDEX `idx_lotCarForFee_Update` (`lastUpdate`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lotcarforfee', 'PRIMARY', 'ALTER TABLE t_lotcarforfee ADD PRIMARY KEY (`carNo`);');
+CALL add_element_unless_exists('index', 't_lotcarforfee', 'idx_lotCarForFee_Update', 'ALTER TABLE t_lotcarforfee ADD  INDEX `idx_lotCarForFee_Update` (`lastUpdate`) USING BTREE;');
 
 -- 更新表 t_lotcarforfind 所有字段和索引
 CALL add_element_unless_exists('column', 't_lotcarforfind', 'carNo', 'ALTER TABLE t_lotcarforfind ADD COLUMN `carNo` varchar(32) NOT NULL;');
 CALL add_element_unless_exists('column', 't_lotcarforfind', 'carAddr', 'ALTER TABLE t_lotcarforfind ADD COLUMN `carAddr` int(11) NOT NULL AFTER `carNo`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind', 'parkTime', 'ALTER TABLE t_lotcarforfind ADD COLUMN `parkTime` datetime NOT NULL AFTER `carAddr`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind', 'lastUpdate', 'ALTER TABLE t_lotcarforfind ADD COLUMN `lastUpdate` datetime NOT NULL AFTER `parkTime`;');
-CALL add_element_unless_exists('column', 't_lotcarforfind', 'carNumber', 'ALTER TABLE t_lotcarforfind ADD COLUMN `carNumber` varchar(8) NULL DEFAULT AFTER `lastUpdate`;');
-CALL add_element_unless_exists('column', 't_lotcarforfind', 'imgName', 'ALTER TABLE t_lotcarforfind ADD COLUMN `imgName` varchar(50) NULL DEFAULT AFTER `carNumber`;');
+CALL add_element_unless_exists('column', 't_lotcarforfind', 'carNumber', 'ALTER TABLE t_lotcarforfind ADD COLUMN `carNumber` varchar(8) NULL DEFAULT \'\' AFTER `lastUpdate`;');
+CALL add_element_unless_exists('column', 't_lotcarforfind', 'imgName', 'ALTER TABLE t_lotcarforfind ADD COLUMN `imgName` varchar(50) NULL DEFAULT \'\' AFTER `carNumber`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind', 'carType', 'ALTER TABLE t_lotcarforfind ADD COLUMN `carType` int(2) NULL DEFAULT 0 AFTER `imgName`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind', 'CarPlateASI', 'ALTER TABLE t_lotcarforfind ADD COLUMN `CarPlateASI` varchar(30) NULL AFTER `carType`;');
-CALL add_element_unless_exists('index', 't_lotcarforfind', 'idx_lotcarforfind_carAddr', 'ALTER TABLE t_lotcarforfind ADD INDEX INDEX `idx_lotcarforfind_carAddr` (`carAddr`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfind', 'idx_lotcarforfind_carNoCarAddr', 'ALTER TABLE t_lotcarforfind ADD INDEX INDEX `idx_lotcarforfind_carNoCarAddr` (`carNo`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfind', 'idx_lotcarforfind_carNoCarAddr', 'ALTER TABLE t_lotcarforfind ADD INDEX INDEX `idx_lotcarforfind_carNoCarAddr` (`carAddr`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lotcarforfind', 'idx_lotcarforfind_carAddr', 'ALTER TABLE t_lotcarforfind ADD  INDEX `idx_lotcarforfind_carAddr` (`carAddr`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lotcarforfind', 'idx_lotcarforfind_carNoCarAddr', 'ALTER TABLE t_lotcarforfind ADD  INDEX `idx_lotcarforfind_carNoCarAddr` (`carNo`, `carAddr`) USING BTREE;');
 
 -- 更新表 t_lotcarforfind_area 所有字段和索引
-CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'id', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'id', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'carNo', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `carNo` varchar(32) NOT NULL AFTER `id`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'carAddr', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `carAddr` int(11) NOT NULL AFTER `carNo`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'parkTime', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `parkTime` datetime NOT NULL AFTER `carAddr`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'lastUpdate', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `lastUpdate` datetime NOT NULL AFTER `parkTime`;');
-CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'carNumber', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `carNumber` varchar(8) NULL DEFAULT AFTER `lastUpdate`;');
+CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'carNumber', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `carNumber` varchar(8) NULL DEFAULT \'\' AFTER `lastUpdate`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'imgname', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `imgname` varchar(255) NULL AFTER `carNumber`;');
 CALL add_element_unless_exists('column', 't_lotcarforfind_area', 'CarPlateASI', 'ALTER TABLE t_lotcarforfind_area ADD COLUMN `CarPlateASI` varchar(255) NULL AFTER `imgname`;');
-CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'PRIMARY', 'ALTER TABLE t_lotcarforfind_area ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'IX_t_lotcarforfind_area_carAddr', 'ALTER TABLE t_lotcarforfind_area ADD INDEX INDEX `IX_t_lotcarforfind_area_carAddr` (`carAddr`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'UK_t_lotcarforfind_area_imgname', 'ALTER TABLE t_lotcarforfind_area ADD INDEX INDEX `UK_t_lotcarforfind_area_imgname` (`imgname`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'UK_t_lotcarforfind_carNoCarAddr', 'ALTER TABLE t_lotcarforfind_area ADD INDEX INDEX `UK_t_lotcarforfind_carNoCarAddr` (`carAddr`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'UK_t_lotcarforfind_carNoCarAddr', 'ALTER TABLE t_lotcarforfind_area ADD INDEX INDEX `UK_t_lotcarforfind_carNoCarAddr` (`carNo`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'PRIMARY', 'ALTER TABLE t_lotcarforfind_area ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'IX_t_lotcarforfind_area_carAddr', 'ALTER TABLE t_lotcarforfind_area ADD  INDEX `IX_t_lotcarforfind_area_carAddr` (`carAddr`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'UK_t_lotcarforfind_area_imgname', 'ALTER TABLE t_lotcarforfind_area ADD  INDEX `UK_t_lotcarforfind_area_imgname` (`imgname`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_lotcarforfind_area', 'UK_t_lotcarforfind_carNoCarAddr', 'ALTER TABLE t_lotcarforfind_area ADD  INDEX `UK_t_lotcarforfind_carNoCarAddr` (`carAddr`, `carNo`) USING BTREE;');
 
 -- 更新表 t_parkinglot 所有字段和索引
-CALL add_element_unless_exists('column', 't_parkinglot', 'lotId', 'ALTER TABLE t_parkinglot ADD COLUMN `lotId` int(3) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_parkinglot', 'lotId', 'ALTER TABLE t_parkinglot ADD COLUMN `lotId` int(3) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_parkinglot', 'lotName', 'ALTER TABLE t_parkinglot ADD COLUMN `lotName` varchar(100) NOT NULL AFTER `lotId`;');
 CALL add_element_unless_exists('column', 't_parkinglot', 'bgImgFile', 'ALTER TABLE t_parkinglot ADD COLUMN `bgImgFile` varchar(200) NULL AFTER `lotName`;');
 CALL add_element_unless_exists('column', 't_parkinglot', 'areaCount', 'ALTER TABLE t_parkinglot ADD COLUMN `areaCount` int(5) NOT NULL DEFAULT 1 AFTER `bgImgFile`;');
@@ -1975,14 +1999,14 @@ CALL add_element_unless_exists('column', 't_parkinglot', 'zoomRate', 'ALTER TABL
 CALL add_element_unless_exists('column', 't_parkinglot', 'CliDate', 'ALTER TABLE t_parkinglot ADD COLUMN `CliDate` datetime NULL AFTER `zoomRate`;');
 CALL add_element_unless_exists('column', 't_parkinglot', 'CliFlag', 'ALTER TABLE t_parkinglot ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `CliDate`;');
 CALL add_element_unless_exists('column', 't_parkinglot', 'IsDelete', 'ALTER TABLE t_parkinglot ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliFlag`;');
-CALL add_element_unless_exists('column', 't_parkinglot', 'address', 'ALTER TABLE t_parkinglot ADD COLUMN `address` varchar(200) NULL DEFAULT AFTER `IsDelete`;');
-CALL add_element_unless_exists('column', 't_parkinglot', 'totalSpace', 'ALTER TABLE t_parkinglot ADD COLUMN `totalSpace` varchar(200) NULL DEFAULT AFTER `address`;');
-CALL add_element_unless_exists('column', 't_parkinglot', 'tel', 'ALTER TABLE t_parkinglot ADD COLUMN `tel` varchar(200) NULL DEFAULT AFTER `totalSpace`;');
-CALL add_element_unless_exists('column', 't_parkinglot', 'secret', 'ALTER TABLE t_parkinglot ADD COLUMN `secret` varchar(200) NULL DEFAULT AFTER `tel`;');
-CALL add_element_unless_exists('index', 't_parkinglot', 'PRIMARY', 'ALTER TABLE t_parkinglot ADD UNIQUE INDEX `PRIMARY` (`lotId`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_parkinglot', 'address', 'ALTER TABLE t_parkinglot ADD COLUMN `address` varchar(200) NULL DEFAULT \'\' AFTER `IsDelete`;');
+CALL add_element_unless_exists('column', 't_parkinglot', 'totalSpace', 'ALTER TABLE t_parkinglot ADD COLUMN `totalSpace` varchar(200) NULL DEFAULT \'\' AFTER `address`;');
+CALL add_element_unless_exists('column', 't_parkinglot', 'tel', 'ALTER TABLE t_parkinglot ADD COLUMN `tel` varchar(200) NULL DEFAULT \'\' AFTER `totalSpace`;');
+CALL add_element_unless_exists('column', 't_parkinglot', 'secret', 'ALTER TABLE t_parkinglot ADD COLUMN `secret` varchar(200) NULL DEFAULT \'\' AFTER `tel`;');
+CALL add_element_unless_exists('index', 't_parkinglot', 'PRIMARY', 'ALTER TABLE t_parkinglot ADD PRIMARY KEY (`lotId`);');
 
 -- 更新表 t_power_events 所有字段和索引
-CALL add_element_unless_exists('column', 't_power_events', 'id', 'ALTER TABLE t_power_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 't_power_events', 'id', 'ALTER TABLE t_power_events ADD COLUMN `id` bigint(20) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 't_power_events', 'evtType', 'ALTER TABLE t_power_events ADD COLUMN `evtType` int(11) NOT NULL DEFAULT 0 AFTER `id`;');
 CALL add_element_unless_exists('column', 't_power_events', 'imgName', 'ALTER TABLE t_power_events ADD COLUMN `imgName` varchar(50) NOT NULL DEFAULT 0 AFTER `evtType`;');
 CALL add_element_unless_exists('column', 't_power_events', 'dspIp', 'ALTER TABLE t_power_events ADD COLUMN `dspIp` varchar(32) NOT NULL DEFAULT 0 AFTER `imgName`;');
@@ -2000,16 +2024,16 @@ CALL add_element_unless_exists('column', 't_power_events', 'carplateProty2', 'AL
 CALL add_element_unless_exists('column', 't_power_events', 'enchargeFlag', 'ALTER TABLE t_power_events ADD COLUMN `enchargeFlag` int(1) unsigned NOT NULL DEFAULT 0 AFTER `carplateProty2`;');
 CALL add_element_unless_exists('column', 't_power_events', 'serialType', 'ALTER TABLE t_power_events ADD COLUMN `serialType` int(1) unsigned NOT NULL DEFAULT 0 AFTER `enchargeFlag`;');
 CALL add_element_unless_exists('column', 't_power_events', 'serialNo', 'ALTER TABLE t_power_events ADD COLUMN `serialNo` varchar(45) NOT NULL DEFAULT 0 AFTER `serialType`;');
-CALL add_element_unless_exists('column', 't_power_events', 'inImgName', 'ALTER TABLE t_power_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT AFTER `serialNo`;');
-CALL add_element_unless_exists('column', 't_power_events', 'CarColor', 'ALTER TABLE t_power_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT AFTER `inImgName`;');
-CALL add_element_unless_exists('column', 't_power_events', 'CarBrand', 'ALTER TABLE t_power_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT AFTER `CarColor`;');
+CALL add_element_unless_exists('column', 't_power_events', 'inImgName', 'ALTER TABLE t_power_events ADD COLUMN `inImgName` varchar(50) NULL DEFAULT \'\' AFTER `serialNo`;');
+CALL add_element_unless_exists('column', 't_power_events', 'CarColor', 'ALTER TABLE t_power_events ADD COLUMN `CarColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `inImgName`;');
+CALL add_element_unless_exists('column', 't_power_events', 'CarBrand', 'ALTER TABLE t_power_events ADD COLUMN `CarBrand` varchar(45) NOT NULL DEFAULT \'\' AFTER `CarColor`;');
 CALL add_element_unless_exists('column', 't_power_events', 'RecogEnable', 'ALTER TABLE t_power_events ADD COLUMN `RecogEnable` int(8) NOT NULL DEFAULT 0 AFTER `CarBrand`;');
-CALL add_element_unless_exists('column', 't_power_events', 'CarplateColor', 'ALTER TABLE t_power_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT AFTER `RecogEnable`;');
+CALL add_element_unless_exists('column', 't_power_events', 'CarplateColor', 'ALTER TABLE t_power_events ADD COLUMN `CarplateColor` varchar(45) NOT NULL DEFAULT \'\' AFTER `RecogEnable`;');
 CALL add_element_unless_exists('column', 't_power_events', 'CameraId', 'ALTER TABLE t_power_events ADD COLUMN `CameraId` int(11) NOT NULL DEFAULT 0 AFTER `CarplateColor`;');
-CALL add_element_unless_exists('column', 't_power_events', 'remark', 'ALTER TABLE t_power_events ADD COLUMN `remark` varchar(50) NULL DEFAULT AFTER `CameraId`;');
-CALL add_element_unless_exists('index', 't_power_events', 'PRIMARY', 'ALTER TABLE t_power_events ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_power_events', 'idx_events_dspIp', 'ALTER TABLE t_power_events ADD INDEX INDEX `idx_events_dspIp` (`dspIp`) USING BTREE;');
-CALL add_element_unless_exists('index', 't_power_events', 'idx_events_evtType', 'ALTER TABLE t_power_events ADD INDEX INDEX `idx_events_evtType` (`evtType`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_power_events', 'remark', 'ALTER TABLE t_power_events ADD COLUMN `remark` varchar(50) NULL DEFAULT \'\' AFTER `CameraId`;');
+CALL add_element_unless_exists('index', 't_power_events', 'PRIMARY', 'ALTER TABLE t_power_events ADD PRIMARY KEY (`id`);');
+CALL add_element_unless_exists('index', 't_power_events', 'idx_events_dspIp', 'ALTER TABLE t_power_events ADD  INDEX `idx_events_dspIp` (`dspIp`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_power_events', 'idx_events_evtType', 'ALTER TABLE t_power_events ADD  INDEX `idx_events_evtType` (`evtType`) USING BTREE;');
 
 -- 更新表 t_service_config 所有字段和索引
 CALL add_element_unless_exists('column', 't_service_config', 'id', 'ALTER TABLE t_service_config ADD COLUMN `id` int(11) NOT NULL;');
@@ -2018,19 +2042,19 @@ CALL add_element_unless_exists('column', 't_service_config', 'is_sync_parking_da
 CALL add_element_unless_exists('column', 't_service_config', 'is_sync_lock_instruction', 'ALTER TABLE t_service_config ADD COLUMN `is_sync_lock_instruction` tinyint(1) NULL DEFAULT 0 AFTER `is_sync_parking_data`;');
 CALL add_element_unless_exists('column', 't_service_config', 'create_time', 'ALTER TABLE t_service_config ADD COLUMN `create_time` datetime NULL AFTER `is_sync_lock_instruction`;');
 CALL add_element_unless_exists('column', 't_service_config', 'update_time', 'ALTER TABLE t_service_config ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP AFTER `create_time`;');
-CALL add_element_unless_exists('index', 't_service_config', 'PRIMARY', 'ALTER TABLE t_service_config ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('index', 't_service_config', 'PRIMARY', 'ALTER TABLE t_service_config ADD PRIMARY KEY (`id`);');
 
 -- 更新表 t_toll_ip 所有字段和索引
-CALL add_element_unless_exists('column', 't_toll_ip', 'id', 'ALTER TABLE t_toll_ip ADD COLUMN `id` int(11) NOT NULL  auto_increment;');
-CALL add_element_unless_exists('column', 't_toll_ip', 'ip', 'ALTER TABLE t_toll_ip ADD COLUMN `ip` varchar(20) NOT NULL DEFAULT AFTER `id`;');
+CALL add_element_unless_exists('column', 't_toll_ip', 'id', 'ALTER TABLE t_toll_ip ADD COLUMN `id` int(11) NOT NULL  auto_increment PRIMARY KEY;');
+CALL add_element_unless_exists('column', 't_toll_ip', 'ip', 'ALTER TABLE t_toll_ip ADD COLUMN `ip` varchar(20) NOT NULL DEFAULT \'\' AFTER `id`;');
 CALL add_element_unless_exists('column', 't_toll_ip', 'createTime', 'ALTER TABLE t_toll_ip ADD COLUMN `createTime` datetime NULL AFTER `ip`;');
-CALL add_element_unless_exists('column', 't_toll_ip', 'creator', 'ALTER TABLE t_toll_ip ADD COLUMN `creator` varchar(256) NULL DEFAULT AFTER `createTime`;');
-CALL add_element_unless_exists('index', 't_toll_ip', 'PRIMARY', 'ALTER TABLE t_toll_ip ADD UNIQUE INDEX `PRIMARY` (`id`) USING BTREE;');
+CALL add_element_unless_exists('column', 't_toll_ip', 'creator', 'ALTER TABLE t_toll_ip ADD COLUMN `creator` varchar(256) NULL DEFAULT \'\' AFTER `createTime`;');
+CALL add_element_unless_exists('index', 't_toll_ip', 'PRIMARY', 'ALTER TABLE t_toll_ip ADD PRIMARY KEY (`id`);');
 
 -- 更新表 temp_log_parkcount 所有字段和索引
-CALL add_element_unless_exists('column', 'temp_log_parkcount', 'ID', 'ALTER TABLE temp_log_parkcount ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'temp_log_parkcount', 'ID', 'ALTER TABLE temp_log_parkcount ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'AreaId', 'ALTER TABLE temp_log_parkcount ADD COLUMN `AreaId` int(11) NOT NULL DEFAULT 0 AFTER `ID`;');
-CALL add_element_unless_exists('column', 'temp_log_parkcount', 'AreaName', 'ALTER TABLE temp_log_parkcount ADD COLUMN `AreaName` varchar(50) NOT NULL DEFAULT AFTER `AreaId`;');
+CALL add_element_unless_exists('column', 'temp_log_parkcount', 'AreaName', 'ALTER TABLE temp_log_parkcount ADD COLUMN `AreaName` varchar(50) NOT NULL DEFAULT \'\' AFTER `AreaId`;');
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'ParkDate', 'ALTER TABLE temp_log_parkcount ADD COLUMN `ParkDate` datetime NULL AFTER `AreaName`;');
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'ParkHour', 'ALTER TABLE temp_log_parkcount ADD COLUMN `ParkHour` int(11) NOT NULL DEFAULT 0 AFTER `ParkDate`;');
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'ParkCount', 'ALTER TABLE temp_log_parkcount ADD COLUMN `ParkCount` int(11) NOT NULL DEFAULT 0 AFTER `ParkHour`;');
@@ -2039,14 +2063,14 @@ CALL add_element_unless_exists('column', 'temp_log_parkcount', 'FlowOut', 'ALTER
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'CliDate', 'ALTER TABLE temp_log_parkcount ADD COLUMN `CliDate` datetime NULL AFTER `FlowOut`;');
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'CliFlag', 'ALTER TABLE temp_log_parkcount ADD COLUMN `CliFlag` int(8) NOT NULL DEFAULT 0 AFTER `CliDate`;');
 CALL add_element_unless_exists('column', 'temp_log_parkcount', 'IsDelete', 'ALTER TABLE temp_log_parkcount ADD COLUMN `IsDelete` int(1) NOT NULL DEFAULT 0 AFTER `CliFlag`;');
-CALL add_element_unless_exists('index', 'temp_log_parkcount', 'PRIMARY', 'ALTER TABLE temp_log_parkcount ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'temp_log_parkcount', 'PRIMARY', 'ALTER TABLE temp_log_parkcount ADD PRIMARY KEY (`ID`);');
 
 -- 更新表 user 所有字段和索引
-CALL add_element_unless_exists('column', 'user', 'ID', 'ALTER TABLE user ADD COLUMN `ID` int(11) NOT NULL  auto_increment;');
+CALL add_element_unless_exists('column', 'user', 'ID', 'ALTER TABLE user ADD COLUMN `ID` int(11) NOT NULL  auto_increment PRIMARY KEY;');
 CALL add_element_unless_exists('column', 'user', 'LoginName', 'ALTER TABLE user ADD COLUMN `LoginName` varchar(45) NOT NULL AFTER `ID`;');
 CALL add_element_unless_exists('column', 'user', 'Pwd', 'ALTER TABLE user ADD COLUMN `Pwd` varchar(45) NOT NULL AFTER `LoginName`;');
 CALL add_element_unless_exists('column', 'user', 'URight', 'ALTER TABLE user ADD COLUMN `URight` int(10) unsigned NOT NULL DEFAULT 0 AFTER `Pwd`;');
 CALL add_element_unless_exists('column', 'user', 'lastlogintime', 'ALTER TABLE user ADD COLUMN `lastlogintime` varchar(40) NULL AFTER `URight`;');
 CALL add_element_unless_exists('column', 'user', 'UserType', 'ALTER TABLE user ADD COLUMN `UserType` int(11) NULL DEFAULT 0 AFTER `lastlogintime`;');
-CALL add_element_unless_exists('index', 'user', 'PRIMARY', 'ALTER TABLE user ADD UNIQUE INDEX `PRIMARY` (`ID`) USING BTREE;');
+CALL add_element_unless_exists('index', 'user', 'PRIMARY', 'ALTER TABLE user ADD PRIMARY KEY (`ID`);');
 

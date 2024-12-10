@@ -3,6 +3,7 @@ import queue
 import re
 import sys
 import threading
+from collections import defaultdict
 from datetime import datetime
 import pymysql
 import tkinter as tk
@@ -178,8 +179,8 @@ END;
             self.log_message(f"构建并执行建表语句失败: {e}")
             raise e
 
-    def get_all_column_insert_sentences(self):
-        """获取并写入所有字段和索引创建语句"""
+    def get_all_column_insert_sentences_ktpark(self):
+        """ktpark获取并写入所有字段和索引创建语句"""
         self.log_message("开始获取字段和索引创建语句并写入......")
 
         try:  # 在基线库获取
@@ -230,9 +231,26 @@ END;
                     for column in columns:
                         column_name, column_type, is_nullable, column_default, column_key, extra = column
                         nullable = "NULL" if is_nullable == "YES" else "NOT NULL"
-                        default = f"DEFAULT {column_default}" if column_default is not None else ""
-                        extra_info = extra if extra else ""
+                        # 需要单独处理默认值为空串的情况
+                        if column_default is not None:
+                            if column_default == '':
+                                default = "DEFAULT ''"
+                            elif column_default == "2013-01-01 00:00:00" or "#" in column_default:
+                                default = f"DEFAULT '{column_default}'"
 
+                            else:
+                                default = f"DEFAULT {column_default}"
+                        else:
+                            default = ""
+
+                        # 单独处理附加信息里的auto_increment，变为auto_increment PRIMARY KEY
+                        if extra:
+                            if "auto_increment" in extra.lower():
+                                extra_info = f"{extra} PRIMARY KEY"
+                            else:
+                                extra_info = extra
+                        else:
+                            extra_info = ""
                         # 动态生成 SQL 语句
                         column_definition = f"`{column_name}` {column_type} {nullable} {default} {extra_info}".strip()
                         # 转义单引号以支持 SET 类型的字段
@@ -252,11 +270,22 @@ END;
                         column_pre = column_name
                         column_id += 1
 
-                    # 动态生成索引添加语句
+                    # 先将索引信息按照 index_name 分组
+                    index_dict = defaultdict(list)
+
                     for index in indexes:
                         index_name, non_unique, index_type, column_name = index
-                        index_type = "UNIQUE" if non_unique == 0 else "INDEX"
-                        index_statement = f"ADD {index_type} INDEX `{index_name}` (`{column_name}`) USING BTREE"
+                        index_type = "UNIQUE" if non_unique == 0 else ""
+                        index_dict[(index_name, index_type)].append(column_name)
+
+                    # 遍历分组后的索引信息，生成 SQL 语句
+                    for (index_name, index_type), columns in index_dict.items():
+                        columns_list = ", ".join(f"`{col}`" for col in columns)
+                        if index_name == "PRIMARY":
+                            index_statement = f"ADD PRIMARY KEY ({columns_list})"
+                        else:
+                            index_statement = f"ADD {index_type} INDEX `{index_name}` ({columns_list}) USING BTREE"
+
                         call_procedure_index_sql = f"CALL add_element_unless_exists('index', '{table_name}', '{index_name}', 'ALTER TABLE {table_name} {index_statement};');\n"
 
                         table_call_messages += call_procedure_index_sql  # 打印
@@ -269,6 +298,103 @@ END;
         except Exception as e:
             self.log_message(f"构建字段和索引创建语句并执行失败: {e}")
             raise e
+
+    def get_all_column_insert_sentences_parking_guidance(self):
+        """parking_guidance获取并写入所有字段和索引创建语句"""
+        self.log_message("开始获取字段和索引创建语句并写入......")
+
+        try:  # 在基线库获取
+            with self.base_connection.cursor() as cursor:
+                # 获取所有表名
+                cursor.execute("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")
+                tables = cursor.fetchall()
+
+                self.log_message("-- ===============全量更新所有表字段===============\n")
+                for table in tables:
+                    table_name = table[0]
+
+                    # 获取所有表的初始化语句
+                    cursor.execute(f"SHOW CREATE TABLE `{table_name}`")
+                    create_sentences = cursor.fetchall()
+                    fields = str(create_sentences).split(r'\n')[1:][:-1]
+
+                    # 获取所有的表级别注释
+                    cursor.execute(f"SHOW TABLE STATUS LIKE '{table_name}'")
+                    table_status = cursor.fetchone()
+                    table_comment = table_status[17] if table_status else None
+
+                    # 使用正则表达式单独分组COMMENT之前和之后的内容，方便分开处理格式规范
+                    processed_fields = []
+                    comments = []
+                    table_call_messages = ""
+                    for field in fields:
+                        match = re.match(r"^(.*?)( COMMENT '.*')?,?$", field.strip())
+                        if match:
+                            base_definition = match.group(1)
+                            comment_part = match.group(2) if match.group(2) else ""
+                            processed_fields.append(base_definition)
+                            comments.append(comment_part)
+
+                    # 获取所有字段的字符串并初步规范格式
+                    sentences = str(processed_fields
+                                    ).replace(',"', '"').replace("'`", '"`'
+                                    ).replace("NULL'", 'NULL"').replace("TIMESTAMP'", 'TIMESTAMP"'
+                                    ).replace("longtext'", 'longtext"').split(", ")
+
+                    # 开始生成结构修正语句
+                    self.log_message(f"-- 更新表 {table_name} 所有字段和索引\n")
+                    # file.write(f"ALTER TABLE {table_name} CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;\n")
+                    comment_sentence = f"ALTER TABLE {table_name} COMMENT = '{table_comment}';\n"
+                    format_sentences = f"ALTER TABLE {table_name} ROW_FORMAT=DYNAMIC;\n"
+                    table_call_messages += comment_sentence + format_sentences
+
+                    with self.target_connection.cursor() as cursor_target:
+                        cursor_target.execute(comment_sentence)
+                        cursor_target.execute(format_sentences)
+
+                    # 初始化当前表中的字段位置计数器
+                    column_id = 0
+                    # 储存上一个字段用于编写 after xx
+                    column_pre = None
+
+                    for i, sentence in enumerate(sentences):
+                        if len(sentence) < 20:
+                            continue
+                        # 控制添加索引的字段的格式，去除前后引号
+                        if sentence[0] != "`":
+                            sentence.replace("'", "")
+                        # 规范所有主句部分的格式
+                        processed_format_sentence = sentence.replace("[", "").replace("]", "").replace('"', "").replace("'", '"')
+
+                        # 拼接COMMENT部分
+                        final_sentence = processed_format_sentence + (comments[i].replace("'", '"') if comments[i] else '')
+
+                        # 如果检测到当前语句是以字段开头，则开始生成调取存储过程的字段生成语句，否则则生成索引插入语句
+                        if final_sentence[0] == "`" or final_sentence.startswith('"`'):
+                            column_now = final_sentence.split("`")[1]
+                            if column_id < 1:
+                                call_procedure_column_sql = f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {final_sentence};');\n"
+                            else:
+                                call_procedure_column_sql = f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {final_sentence} AFTER {column_pre};');\n"
+                            table_call_messages += call_procedure_column_sql
+                            with self.target_connection.cursor() as cursor_target:
+                                cursor_target.execute(call_procedure_column_sql)
+
+                            column_pre = column_now
+                            column_id += 1
+                        elif 'PRIMARY' not in final_sentence:
+                            key_name = final_sentence.split("`")[1]
+                            key = final_sentence.split("(`")[1].split("`")[0]
+                            if "udx" in key_name:
+                                call_procedure_column_sql = f"CALL add_element_unless_exists('index', '{table_name}', '{key_name}', 'ALTER TABLE {table_name} ADD UNIQUE INDEX {key_name} ({key}) USING BTREE');\n"
+                            else:
+                                call_procedure_column_sql = f"CALL add_element_unless_exists('index', '{table_name}', '{key_name}', 'ALTER TABLE {table_name} ADD INDEX {key_name} ({key}) USING BTREE');\n"
+                            table_call_messages += call_procedure_column_sql
+                            with self.target_connection.cursor() as cursor_target:
+                                cursor_target.execute(call_procedure_column_sql)
+                    self.log_message(table_call_messages)
+        except Exception as e:
+            print(f"获取{table_name}表结构信息失败: {e}")
 
     def fix_structure_by_file(self, file_path):
         try:
@@ -328,13 +454,14 @@ END;
                             cursor.execute(call_sql)
                 except Exception as e:
                     self.log_message(f"执行补字段/索引插入失败: {e}")
-                    raise e
-            self.log_message(f"成功执行字段/索引插入：{call_message}")     # 打的是最后一次的部分
+                    raise e    # 打的是最后一次的部分
             self.target_connection.commit()
 
         except Exception as e:
             self.log_message(f"执行补表失败: {e}")
             raise e
+        finally:
+            self.log_message(f"成功执行字段/索引插入：{call_message}")
 
 
 class MainWindow(tk.Tk):
@@ -432,7 +559,7 @@ class MainWindow(tk.Tk):
                 self.parking_guidance_databases = sorted_database_names
 
         except Exception as e:
-            messagebox.showwarning("提示", f"连接基线库失败！请确保网络环境可用\n{e}\n如果现场确实没有外网，右侧基线库请选择内置版本")
+            messagebox.showwarning("提示", f"连接到基线库失败，正在使用【离线模式】\n右侧基准结构库只能选择内置的基础版本")
         finally:
             if connection:
                 connection.close()
@@ -531,20 +658,16 @@ class MainWindow(tk.Tk):
             if self.parking_guidance_databases:
                 # 如果左侧选择ktpark，右侧下拉框只显示ktpark
                 self.base_db_select['values'] = ["ktpark"]
-                self.base_db_select.set("ktpark")  # 设置默认选中项
             else:
-                self.base_db_select['values'] = []
-                self.base_db_select.set("内置_ktpark")
-                # messagebox.showwarning("警告", "没有连接到基线库，请确保网络环境可用")
+                self.base_db_select['values'] = ["内置_ktpark"]
+            self.base_db_select.set(self.base_db_select['values'][0])  # 设置默认选中项
         elif selected_option == "parking_guidance":
             # 如果左侧选择parking_guidance，右侧下拉框显示缓存的parking_guidance相关数据库
             if self.parking_guidance_databases:
                 self.base_db_select['values'] = self.parking_guidance_databases
-                self.base_db_select.set(self.parking_guidance_databases[0])  # 设置默认选中项
             else:
-                self.base_db_select['values'] = []
-                self.base_db_select.set("内置_parking_guidance_3.2.3")
-                # messagebox.showwarning("警告", "没有连接到基线库，请确保网络环境可用")
+                self.base_db_select['values'] = ["内置_parking_guidance_3.2.3"]
+            self.base_db_select.set(self.base_db_select['values'][0])  # 设置默认选中项
 
         else:
             # 清空右侧下拉框
@@ -612,6 +735,7 @@ class MainWindow(tk.Tk):
                 file_path = self.parking_guidance_323_path
             else:
                 self.log(f"无法识别的内置库名：{base_database}，已停止修复！")
+                self.start_button.config(state=tk.NORMAL)
                 return
             # 开始执行
             try:
@@ -636,7 +760,11 @@ class MainWindow(tk.Tk):
                 # 从基线库动态构建语句并执行到待修复数据库
                 app.insert_procedure_sentences()
                 app.get_all_construct_sentences()
-                app.get_all_column_insert_sentences()
+                # ktpark和parking_guidance分别走各自的逻辑
+                if "ktpark" in target_database:
+                    app.get_all_column_insert_sentences_ktpark()
+                elif "parking_guidance" in target_database:
+                    app.get_all_column_insert_sentences_parking_guidance()
 
                 self.log("数据库结构修复成功完成！")
             except Exception as e:
