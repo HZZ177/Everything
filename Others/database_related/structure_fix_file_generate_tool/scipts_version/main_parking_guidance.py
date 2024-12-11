@@ -169,7 +169,9 @@ DELIMITER ;
                         # 获取所有表的初始化语句
                         cursor.execute(f"SHOW CREATE TABLE `{table_name}`")
                         create_sentences = cursor.fetchall()
-                        fields = str(create_sentences).split(r'\n')[1:][:-1]
+                        # 去掉所有建表语句中的多行注释
+                        create_sentences_without_annotation = re.sub(r'/\*.*?\*/', '', str(create_sentences), flags=re.S)
+                        fields = str(create_sentences_without_annotation).split(r'\n')[1:][:-1]
 
                         # 获取所有的表级别注释
                         cursor.execute(f"SHOW TABLE STATUS LIKE '{table_name}'")
@@ -227,7 +229,8 @@ DELIMITER ;
                                         f"CALL add_element_unless_exists('column', '{table_name}', '{column_now}', 'ALTER TABLE {table_name} ADD COLUMN {final_sentence} AFTER {column_pre};');\n")
                                 column_pre = column_now
                                 column_id += 1
-                            elif 'PRIMARY' not in final_sentence:
+                            # 排除建表语句中可能没有拆分干净的分表语句等杂项
+                            elif all(keyword not in final_sentence for keyword in ['PRIMARY', 'ENGINE=InnoDB', 'PARTITION']):
                                 key_name = final_sentence.split("`")[1]
                                 key = final_sentence.split("(`")[1].split("`")[0]
                                 if "udx" in key_name:

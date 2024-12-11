@@ -293,6 +293,7 @@ END;
                         with self.target_connection.cursor() as cursor_target:
                             cursor_target.execute(call_procedure_index_sql)  # 执行
                         self.target_connection.commit()  # 提交
+
                     self.log_message(table_call_messages)
             self.log_message("构建字段和索引创建语句并执行成功！")
         except Exception as e:
@@ -316,7 +317,9 @@ END;
                     # 获取所有表的初始化语句
                     cursor.execute(f"SHOW CREATE TABLE `{table_name}`")
                     create_sentences = cursor.fetchall()
-                    fields = str(create_sentences).split(r'\n')[1:][:-1]
+                    # 去掉所有建表语句中的多行注释
+                    create_sentences_without_annotation = re.sub(r'/\*.*?\*/', '', str(create_sentences), flags=re.S)
+                    fields = str(create_sentences_without_annotation).split(r'\n')[1:][:-1]
 
                     # 获取所有的表级别注释
                     cursor.execute(f"SHOW TABLE STATUS LIKE '{table_name}'")
@@ -382,7 +385,8 @@ END;
 
                             column_pre = column_now
                             column_id += 1
-                        elif 'PRIMARY' not in final_sentence:
+                        # 排除建表语句中可能没有拆分干净的分表语句等杂项
+                        elif all(keyword not in final_sentence for keyword in ['PRIMARY', 'ENGINE=InnoDB', 'PARTITION']):
                             key_name = final_sentence.split("`")[1]
                             key = final_sentence.split("(`")[1].split("`")[0]
                             if "udx" in key_name:
@@ -394,18 +398,19 @@ END;
                                 cursor_target.execute(call_procedure_column_sql)
                     self.log_message(table_call_messages)
         except Exception as e:
-            print(f"获取{table_name}表结构信息失败: {e}")
+            self.log_message(f"生成表{table_name} 插入语句失败: {e}")
 
     def fix_structure_by_file(self, file_path):
+        create_tables = []
+        current_statement = []
+        in_create_table = False
+        in_call_lines = False
+        call_lines = []
+        call_message = ""
+
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-
-            create_tables = []
-            current_statement = []
-            in_create_table = False
-            in_call_lines = False
-            call_lines = []
 
             # 处理建表语句部分
             for line in lines:
@@ -441,12 +446,11 @@ END;
                     raise e
 
             # 执行后续插入或补充字段/索引的语句
-            call_message = ""
             for call_sql in call_lines:
                 try:
                     if call_sql.startswith("--"):
-                        self.log_message(f"成功执行字段/索引插入：{call_message}")
-                        call_message = ""
+                        self.log_message(f"{call_message}")
+                        call_message = ""   # --开头表示一个新表的语句，清空call_message，重新拼接
                         call_message += f"{call_sql}\n"
                     else:
                         call_message += f"{call_sql}\n"
