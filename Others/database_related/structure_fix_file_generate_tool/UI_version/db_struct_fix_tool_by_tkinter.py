@@ -179,6 +179,38 @@ END;
             self.log_message(f"构建并执行建表语句失败: {e}")
             raise e
 
+    def init_config_tables(self):
+        try:  # 从基线库获取所有表名
+            with self.target_connection.cursor() as cursor:
+                cursor.execute("select * from ini_config")
+                result = cursor.fetchone()
+                # 如果查询结果为空，执行初始化语句新增基础值
+                if result is None:
+                    self.log_message("检测到ini_config表没有任何值，新增默认值")
+                    cursor.execute("INSERT INTO `ini_config` (`id`, `dsp_recog`, `witch`, `comname`, `ret`, `province`, `pic_switch`, `creator`, `create_time`, `updater`, `update_time`) VALUES (1, 0, 1, 'COM3', 0, NULL, 0, NULL, NULL, NULL, '2024-01-25 10:53:13');",)
+
+                cursor.execute("select * from schedule_config")
+                # 如果查询结果为空，执行初始化语句新增基础值
+                if cursor.fetchone() is None:
+                    self.log_message("检测到schedule_config表没有任何值，新增默认值")
+                    cursor.execute("INSERT INTO `schedule_config` (`id`, `create_time`, `update_time`, `park_img_duration`, `area_park_img_duration`, `in_car_push_switch`, `out_car_push_switch`, `update_plate_push_switch`, `empty_park_push_switch`, `empty_park_push_lot`, `empty_park_push_url`, `park_change_push_switch`, `park_change_push_lot`, `park_change_push_url`, `creator`, `url_prefix_config`, `free_space_num_switch`, `image_upload_switch`, `unified_image_prefix`, `post_bus_in_out`, `post_node_device_status`, `clean_stereoscopic_park_switch`, `free_space_switch`, `post_node_device_url`, `clean_stereoscopic_park_duration`, `car_loc_info_switch`, `area_push_switch`, `tank_warn_push_switch`, `light_scheme_duration`, `grpc_switch`, `screen_cmd_interval`, `screen_cmd_interval_fast`, `statistic_screen_type`, `query_recognize_record`, `plate_match_rule`, `clean_temp_picture`, `clean_recognition_table`, `clean_area_picture`, `warn_switch`) VALUES (1, NULL, '2024-02-07 14:10:30', 30, 1, 0, 1, 0, 1, NULL, NULL, 1, NULL, NULL, NULL, 'http://localhost:8083', 1, 0, 'http://localhost:8083', 1, 1, 1, 1, NULL, 30, 1, 1, 1, 60, 1, 30, 8, 1, 0, 1, 1, 30, 1, 1)",)
+
+                cursor.execute("select * from t_access_config")
+                # 如果查询结果为空，执行初始化语句新增基础值
+                if cursor.fetchone() is None:
+                    self.log_message("检测到t_access_config表没有任何值，新增默认值")
+                    cursor.execute("INSERT INTO `t_access_config` (`id`, `dsp_port`, `node_port`, `ip_Pre`, `broadcast_times`, `broadcast_interval`, `channel_http`, `serial_port`, `baud_rate`, `A`, `B`, `C`, `pr_num`, `army_car`, `police_car`, `wujing_car`, `farm_car`, `embassy_car`, `personality_car`, `civil_car`, `new_energy_car`, `type_pr_num`, `set_lr_num`, `set_lpr_cs`, `province`, `set_priority`, `original_picture_path`, `front_save_path`, `temp_rcv_path`, `recognition_path`, `recognition_lib_path`, `switch_serial_port`, `region_picture_path`, `snap_picture_path`, `quality_inspection_picture_path`, `recognition_switch`, `free_occupy_switch`) VALUES (1, 7799, 7777, '172.10', 3, 5, 'http://127.0.0.1:7072', '/dev/ttyS0', 9600, 1, 1, 1, 9, 1, 1, 0, 1, 1, 1, 1, 1, 9, 2, 1, '川', 0, '/home/findCarApi/FindCarServer/original', '/home/findCarApi/ParkingGuidance/carImage', '/home/findCarApi/FindCarServer/temp', '/home/findCarApi/FindCarServer/recognition', '/home/findCarApi/FindCarServer/lib/', 0, '/home/findCarApi/ParkingGuidance/snappedImage', '/home/findCarApi/ParkingGuidance/carImage/snap', '/home/findCarApi/FindCarServer/qualityInspectionCenter', 0, 0);",)
+
+                cursor.execute("select * from f_config")
+                # 如果查询结果为空，执行初始化语句新增基础值
+                if cursor.fetchone() is None:
+                    self.log_message("检测到f_config表没有任何值，新增默认值")
+                    cursor.execute("INSERT INTO `f_config` (`id`, `config_code`, `config_value`, `config_desc`, `attribute`, `deleted`, `create_time`, `creator`, `update_time`, `updater`, `aws_enable_switch`, `guidance_swagger_switch`, `channel_swagger_switch`) VALUES (1, 'tanker_expel_switch', '1', '油车违停告警开关', '', 0, '2024-01-25 10:53:13', '系统管理员', '2024-01-25 10:53:13', '系统管理员', 0, 0, 0);")
+
+        except Exception as e:
+            self.log_message(f"有配置表没有任何值，但新增初始化数据失败: {e}")
+            raise e
+
     def get_all_column_insert_sentences_ktpark(self):
         """ktpark获取并写入所有字段和索引创建语句"""
         self.log_message("开始获取字段和索引创建语句并写入......")
@@ -399,6 +431,7 @@ END;
                     self.log_message(table_call_messages)
         except Exception as e:
             self.log_message(f"生成表{table_name} 插入语句失败: {e}")
+            raise e
 
     def fix_structure_by_file(self, file_path):
         create_tables = []
@@ -747,6 +780,7 @@ class MainWindow(tk.Tk):
                 app.insert_procedure_sentences()    # 插入存储过程
 
                 app.fix_structure_by_file(file_path)
+                app.init_config_tables()  # 检查四张配置表，没有值的话新增默认数据
                 self.log("数据库结构修复成功完成！")
             except Exception as e:
                 self.log(f"执行时发生错误: {e}\n\n结构补全失败，已停止进程！！！")
@@ -764,6 +798,7 @@ class MainWindow(tk.Tk):
                 # 从基线库动态构建语句并执行到待修复数据库
                 app.insert_procedure_sentences()
                 app.get_all_construct_sentences()
+                app.init_config_tables()    # 检查四张配置表，没有值的话新增默认数据
                 # ktpark和parking_guidance分别走各自的逻辑
                 if "ktpark" in target_database:
                     app.get_all_column_insert_sentences_ktpark()
