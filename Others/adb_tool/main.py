@@ -549,12 +549,12 @@ class Application:
             result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, capture_output=True, text=True)
             if result.returncode == 0:
                 log_choose_top.destroy()
-                messagebox.showinfo("下载完成", f"文件已保存到当前目录的/{save_file_name}路径下")
+                messagebox.showinfo("下载完成", f"下载完成！文件已保存到本软件所在目录下的/{save_file_name}文件夹中！")
             elif "does not exist" in result.stdout:
-                messagebox.showerror("下载失败", "目标文件不存在，请检查文件日期是否正确！")
+                messagebox.showerror("下载失败", "目标文件不存在！请检查文件日期是否正确！")
                 log_choose_top.focus_set()  # 保持焦点在下载日志的页面
             else:
-                messagebox.showerror("下载失败", "文件下载失败,请检查设备类型或设备地址！\n" + result.stderr)
+                messagebox.showerror("下载失败", "文件下载失败！请检查设备类型或设备地址！\n" + result.stderr)
                 log_choose_top.focus_set()  # 保持焦点在下载日志的页面
         except Exception as e:
             messagebox.showerror("错误", "执行下载时发生错误!\n" + str(e))
