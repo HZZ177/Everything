@@ -77,7 +77,7 @@ class Application:
         self.device_number = 0   # 多设备ip在数组中的位置
 
         # 定义版本号
-        self.version = '1.2.4'  # 从打包脚本中获取版本号，不然两边维护容易忘记改
+        self.version = '1.2.5'
 
         # 定义初始化窗口的基本信息
         self.root = base_root
@@ -361,6 +361,8 @@ class Application:
 
     def create_ip_input_table(self, base_root):
         """设备IP输入界面"""
+        # 重置窗口标题
+        root.title(f"ADB-设备调试工具{self.version}")
 
         # 清除之前的页面内容
         for widget in base_root.winfo_children():
@@ -421,6 +423,12 @@ class Application:
 
         # 在连接结果返回后恢复连接设备按钮为可点击状态
         self.btn_connect.config(state=tk.NORMAL)
+
+        # 如果检测到返回已连接，则断开一次所有设备再重连
+        # 用来兼容一些特殊情况，返回已连接但实际adb devices是显示的offline
+        if "already connected" in result.stdout:
+            self.disconnect_all_device()
+            result = self.connect_device(ip)
 
         if "connected" in result.stdout:
             if ip not in self.ip_record:
@@ -535,6 +543,14 @@ class Application:
     def download_device_logs(self, log_choose_top, log_file_path, filename=""):
         """下载当前连接设备的日志"""
 
+        # 创建一个弹窗，显示下载中的状态
+        download_popup = tk.Toplevel()
+        download_popup.title("日志下载中，请稍后...")
+        self.center_window(download_popup, is_absolute=True, absolute_width=300, absolute_height=100)
+
+        label = tk.Label(download_popup, text="正在下载，请稍后...", padx=20, pady=20)
+        label.pack()
+
         # 当前下载时间
         download_time = datetime.date.today().strftime("%Y%m%d")
 
@@ -544,21 +560,37 @@ class Application:
         # 检查路径是否存在，不存在则创建
         os.makedirs(save_path, exist_ok=True)
 
-        command = [self.adb_path, 'pull', f"{log_file_path}/{filename}", save_path]
-        try:
-            result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, capture_output=True, text=True)
-            if result.returncode == 0:
-                log_choose_top.destroy()
-                messagebox.showinfo("下载完成", f"下载完成！文件已保存到本软件所在目录下的/{save_file_name}文件夹中！")
-            elif "does not exist" in result.stdout:
-                messagebox.showerror("下载失败", "目标文件不存在！请检查文件日期是否正确！")
+        # 定义一个线程执行下载命令，避免阻塞主线程
+        def download_device_logs_thread():
+            command = [self.adb_path, 'pull', f"{log_file_path}/{filename}", save_path]
+            try:
+                result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, capture_output=True,
+                                        text=True)
+                if result.returncode == 0:
+                    # 下载完成，关闭下载中的弹窗并显示成功消息
+                    download_popup.destroy()
+                    messagebox.showinfo("下载完成",
+                                        f"下载完成！文件已保存到本软件所在目录下的/{save_file_name}文件夹中！")
+                    log_choose_top.focus_set()  # 保持焦点在下载日志的页面
+                elif "does not exist" in result.stdout:
+                    # 文件不存在，关闭下载中的弹窗并显示错误信息
+                    download_popup.destroy()
+                    messagebox.showerror("下载失败", "目标文件不存在！请检查文件日期是否正确！")
+                    log_choose_top.focus_set()  # 保持焦点在下载日志的页面
+                else:
+                    # 其他错误，关闭下载中的弹窗并显示错误信息
+                    download_popup.destroy()
+                    messagebox.showerror("下载失败", f"文件下载失败！请检查设备类型或设备地址！\n{result.stderr}")
+                    log_choose_top.focus_set()  # 保持焦点在下载日志的页面
+            except Exception as e:
+                # 异常处理，关闭下载中的弹窗并显示错误信息
+                download_popup.destroy()
+                messagebox.showerror("错误", f"执行下载时发生错误!\n{str(e)}")
                 log_choose_top.focus_set()  # 保持焦点在下载日志的页面
-            else:
-                messagebox.showerror("下载失败", "文件下载失败！请检查设备类型或设备地址！\n" + result.stderr)
-                log_choose_top.focus_set()  # 保持焦点在下载日志的页面
-        except Exception as e:
-            messagebox.showerror("错误", "执行下载时发生错误!\n" + str(e))
-            log_choose_top.focus_set()  # 保持焦点在下载日志的页面
+
+        # 使用线程执行下载命令
+        thread = threading.Thread(target=download_device_logs_thread)
+        thread.start()
 
     def download_specific_log(self, log_choose_top, log_file_path):
         """下载自定义日期的日志"""
@@ -688,16 +720,41 @@ class Application:
 
     def restart_device(self):
         """重启设备并检查命令是否成功下发"""
-        command = [self.adb_path, '-s', self.device_ip, 'reboot']
-        result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # 检查进程是否成功结束
-        if result.returncode == 0:
-            messagebox.showinfo("重启设备", "重启指令已经下发！")
-        else:
-            # 如果命令执行失败，显示错误信息
-            error_message = result.stderr.decode()
-            messagebox.showerror("错误", f"重启指令下发失败，请检查IP地址是否正确！\n错误信息：{error_message}")
+        # 创建一个弹窗，显示重启中信息
+        restart_popup = tk.Toplevel()
+        restart_popup.title("重启设备")
+        self.center_window(restart_popup, is_absolute=True, absolute_height=100, absolute_width=300)
+
+        label = tk.Label(restart_popup, text="重启中，请稍后...\n成功/失败后会弹窗提示", padx=20, pady=20)
+        label.pack()
+
+        # 更新弹窗的关闭行为，使得它可以在用户手动关闭时不影响后续操作
+        def on_closing():
+            pass  # 用户点击关闭时不关闭，防止用户手动关闭时引发异常
+
+        restart_popup.protocol("WM_DELETE_WINDOW", on_closing)
+
+        # 定义一个线程执行重启命令，避免阻塞主线程
+        def restart_device_thread():
+            command = [self.adb_path, '-s', self.device_ip, 'reboot']
+            result = subprocess.run(command, creationflags=subprocess.CREATE_NO_WINDOW, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+
+            # 执行完命令后，更新界面
+            if result.returncode == 0:
+                # 重启成功，关闭“重启中...”弹窗并显示成功消息
+                restart_popup.destroy()
+                messagebox.showinfo("重启设备", "重启已完成！")
+            else:
+                # 如果命令执行失败，关闭“重启中...”弹窗并显示错误信息
+                restart_popup.destroy()
+                error_message = result.stderr.decode()
+                messagebox.showerror("错误", f"重启指令下发失败，请检查IP地址是否正确！\n错误信息：{error_message}")
+
+        # 使用线程执行重启命令
+        thread = threading.Thread(target=restart_device_thread)
+        thread.start()
 
     def disconnect_all_device(self):
         """adb断开所有设备连接函数"""
@@ -728,14 +785,18 @@ class Application:
         now_frame.pack_forget()
         self.create_ip_input_table(self.single_device_frame)
 
-    def center_window(self, target_window, relative_size=4, calculate_size=0):
+    def center_window(self, target_window, relative_size=4, calculate_size=0, is_absolute=False, absolute_width=400, absolute_height=600):
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
         width_min_size = 400
 
-        width = max(screen_width // relative_size, width_min_size)
-        height = max(screen_height // relative_size, calculate_size * 50)
+        if is_absolute:
+            width = absolute_width
+            height = absolute_height
+        else:
+            width = max(screen_width // relative_size, width_min_size)
+            height = max(screen_height // relative_size, calculate_size * 50)
 
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2

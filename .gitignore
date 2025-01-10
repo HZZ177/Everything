@@ -8,6 +8,8 @@ Others/adb_tool/logs/
 /Others/adb_tool/Update_logs/
 /Others/database_related/*_wanted_structure.txt
 /Others/database_related/update_database_tool/Update_logs/
+/Others/database_related/update_database_tool/data/new_db*
+/Others/database_related/update_database_tool/data/old_db*
 /Others/API_tool/data/*
 /Others/map/uploads/*
 

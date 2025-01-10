@@ -69,7 +69,7 @@ class UpdateDatabase:
         self.old_db_fixed_dump_file = os.path.join(self.exe_data_path, f"old_db_fixed_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql")
         self.new_db_backup_file = os.path.join(self.exe_data_path, f"new_db_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql")
         self.new_db_internation_backup_file = os.path.join(self.exe_data_path, f"new_db_internation_backup_file_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.sql")
-        self.db_structure_fix_file = os.path.join(self.project_data_path, "parking_guidance_3.2.3_fix.sql")
+        self.db_structure_fix_file = os.path.join(self.project_data_path, "parking_guidance_database_structure_fix.sql")
 
     def connect_database(self, which):
         try:

@@ -10,7 +10,7 @@ import subprocess
 import shutil
 import os
 
-version = "v1.2.4"  # 打包程序名称中的版本号
+version = "v1.2.5"  # 打包程序名称中的版本号
 
 project_path = os.getcwd()  # 项目基础路径
 extra_tool_path = os.path.join(project_path, 'scrcpy_tool')     # 打包的额外资源文件

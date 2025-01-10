@@ -67,8 +67,8 @@ def add_day_coefficient_by_month(project_id, year, month):
 
 if __name__ == '__main__':
 
-    project_id = '6000556'
-    year = 2025
-    month = 1
+    project_id = '6000566'
+    year = 2024
+    month = 12
 
     add_day_coefficient_by_month(project_id, year, month)

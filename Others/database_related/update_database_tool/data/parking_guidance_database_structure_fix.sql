@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `api_access_info` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_app_code` (`app_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='api接入表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='api接入表';
 
 -- 构造表 api_push_info
 CREATE TABLE IF NOT EXISTS `api_push_info` (
@@ -82,20 +82,39 @@ CREATE TABLE IF NOT EXISTS `api_push_info` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_func_module` (`func_module`) USING BTREE,
   KEY `index_app_code` (`app_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='推送信息';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='推送信息';
+
+-- 构造表 api_report_manage
+CREATE TABLE IF NOT EXISTS `api_report_manage` (
+  `cmd` varchar(64) NOT NULL COMMENT '接口编码标识',
+  `name` varchar(255) DEFAULT NULL COMMENT '接口名称',
+  `unified_switch` tinyint(1) DEFAULT '0' COMMENT '统一平台上报开关(0关闭，1开启，9未对接)',
+  `unified_push_url` varchar(255) DEFAULT NULL COMMENT '统一平台上报接口地址',
+  `unified_app_code` varchar(64) DEFAULT NULL COMMENT '统一平台上报租户编码',
+  `unified_secret` varchar(64) DEFAULT NULL COMMENT '统一平台上报秘钥',
+  `other_report_switch` tinyint(1) DEFAULT '0' COMMENT '其他平台上报总开关(0关闭，1开启)',
+  `deleted` tinyint(1) DEFAULT '0' COMMENT '是否删除0未删除1已删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
+  PRIMARY KEY (`cmd`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='上报推送接口管理信息';
 
 -- 构造表 api_supplementary_push
 CREATE TABLE IF NOT EXISTS `api_supplementary_push` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `url` varchar(255) DEFAULT NULL COMMENT '补推完整路径地址',
   `header` varchar(255) DEFAULT NULL COMMENT '请求头相关信息',
-  `params` varchar(255) DEFAULT NULL COMMENT '参数相关信息',
-  `reason` varchar(255) DEFAULT NULL COMMENT '推送失败原因或异常信息',
+  `params` longtext COMMENT '参数相关信息',
+  `reason` longtext COMMENT '推送失败原因或异常信息',
   `status` tinyint(1) DEFAULT '0' COMMENT '补推状态 0：未推送 1：已推送',
-  `req_id` varchar(32) DEFAULT NULL COMMENT '事件ID，用于查询对应绑定事件关系',
+  `req_id` varchar(50) DEFAULT NULL,
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='补推信息表';
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_create_time` (`create_time`) USING BTREE,
+  KEY `idx_createTime` (`create_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='补推信息表';
 
 -- 构造表 area_camera
 CREATE TABLE IF NOT EXISTS `area_camera` (
@@ -106,9 +125,11 @@ CREATE TABLE IF NOT EXISTS `area_camera` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creater` varchar(255) DEFAULT NULL COMMENT '创建者',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `updater` datetime DEFAULT NULL COMMENT '更新者',
+  `updater` datetime DEFAULT NULL COMMENT '更新者（弃用）',
+  `update_by` varchar(255) DEFAULT NULL COMMENT '更新者',
+  `area_state` tinyint(1) DEFAULT '0' COMMENT '区域相机拥堵状态， 0：正常；1：繁忙；2：拥堵',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='区域相机';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域相机';
 
 -- 构造表 area_camera_relate
 CREATE TABLE IF NOT EXISTS `area_camera_relate` (
@@ -121,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `area_camera_relate` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creater` varchar(50) DEFAULT NULL COMMENT '创建者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='区域相机关联区域表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域相机关联区域表';
 
 -- 构造表 area_info
 CREATE TABLE IF NOT EXISTS `area_info` (
@@ -140,8 +161,10 @@ CREATE TABLE IF NOT EXISTS `area_info` (
   `park_space_camera_ip` varchar(64) DEFAULT NULL COMMENT '立体车位相机IP',
   `park_space_camera_unique_id` varchar(64) DEFAULT NULL COMMENT '立体车位相机唯一标识',
   `detector_park_addr_list` varchar(1024) DEFAULT NULL COMMENT '立体车位关联探测器车位唯一标识，以英文,分隔开',
+  `count_statistics_type` tinyint(1) DEFAULT '0' COMMENT '空闲车位数统计逻辑配置 0-关联车位空闲状态  1-区域进出车记录统计',
+  `area_in_out_free_count_number` int(11) DEFAULT '0' COMMENT '设置为区域进出车记录统计时，空闲车位数取值',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='区域信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域信息';
 
 -- 构造表 b_car_in_out_record
 CREATE TABLE IF NOT EXISTS `b_car_in_out_record` (
@@ -175,8 +198,10 @@ CREATE TABLE IF NOT EXISTS `b_car_in_out_record` (
   KEY `idx_out_time` (`out_time`) USING BTREE,
   KEY `index_element_park_id` (`element_park_id`) USING BTREE,
   KEY `index_park_no` (`park_no`) USING BTREE,
-  KEY `index_plate_no` (`plate_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='历史进出车记录表';
+  KEY `index_plate_no` (`plate_no`) USING BTREE,
+  KEY `idx_in_time` (`in_time`) USING BTREE,
+  KEY `idx_unique_id` (`unique_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='历史进出车记录表';
 
 -- 构造表 b_car_in_out_record_area
 CREATE TABLE IF NOT EXISTS `b_car_in_out_record_area` (
@@ -200,7 +225,29 @@ CREATE TABLE IF NOT EXISTS `b_car_in_out_record_area` (
   `updater` varchar(100) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_create_time` (`create_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车辆进出车记录（区域相机）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆进出车记录（区域相机）';
+
+-- 构造表 b_car_in_out_record_area_exception
+CREATE TABLE IF NOT EXISTS `b_car_in_out_record_area_exception` (
+  `id` bigint(20) NOT NULL COMMENT '雪花算法生成的id',
+  `plate_no` varchar(64) DEFAULT NULL COMMENT '车牌号',
+  `exception_type` tinyint(1) DEFAULT NULL COMMENT '异常类型 1-重复入车 2-异常出车',
+  `floor_name` varchar(64) DEFAULT NULL COMMENT '楼层名称',
+  `area_name` varchar(64) DEFAULT NULL COMMENT '区域名称',
+  `trigger_time` datetime DEFAULT NULL COMMENT '触发时间',
+  `last_area_name` varchar(64) DEFAULT NULL COMMENT '上次入车区域名称（主要用于重复入车详情）',
+  `last_in_time` datetime DEFAULT NULL COMMENT '上次入车时间（主要用于重复入车详情）',
+  `car_image_url` varchar(255) DEFAULT NULL COMMENT '抓拍照片路径',
+  `event_id` varchar(64) DEFAULT NULL COMMENT '事件id',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `index_event_id` (`event_id`) USING BTREE,
+  KEY `index_plate_no` (`plate_no`) USING BTREE,
+  KEY `index_trigger_time` (`trigger_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域进出车异常记录表';
 
 -- 构造表 b_present_car_plate_record
 CREATE TABLE IF NOT EXISTS `b_present_car_plate_record` (
@@ -217,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `b_present_car_plate_record` (
   `recognition_number` int(11) DEFAULT '1' COMMENT '图片识别车牌次数',
   `charge_status` tinyint(1) DEFAULT '0' COMMENT '收费系统比对状态，0：未比对  1：已比对',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='在场车车牌记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车车牌记录表';
 
 -- 构造表 b_present_car_record
 CREATE TABLE IF NOT EXISTS `b_present_car_record` (
@@ -240,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `b_present_car_record` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_element_park_id` (`element_park_id`) USING BTREE,
   KEY `index_plate_no` (`plate_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='在场车辆表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表';
 
 -- 构造表 b_present_car_record_area
 CREATE TABLE IF NOT EXISTS `b_present_car_record_area` (
@@ -260,8 +307,30 @@ CREATE TABLE IF NOT EXISTS `b_present_car_record_area` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(100) DEFAULT NULL COMMENT '更新者',
   `data_source` tinyint(1) DEFAULT '0' COMMENT '数据来源 0：区域相机 1：立体车位',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `udx_plate_no` (`plate_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表（区域相机使用）';
+
+-- 构造表 b_present_car_record_area_bak
+CREATE TABLE IF NOT EXISTS `b_present_car_record_area_bak` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `area_camera_id` int(11) DEFAULT NULL COMMENT '区域相机id',
+  `area_camera_ip` varchar(255) DEFAULT NULL COMMENT '区域相机ip',
+  `floor_id` int(11) DEFAULT NULL COMMENT '楼层id',
+  `event_id` varchar(36) DEFAULT NULL COMMENT '事件id',
+  `area_id` int(11) DEFAULT NULL COMMENT '区域id',
+  `plate_no` varchar(100) DEFAULT NULL COMMENT '车牌号',
+  `plate_no_simple` varchar(64) DEFAULT NULL COMMENT '纯数字字母车牌',
+  `plate_no_color` varchar(10) DEFAULT NULL COMMENT '车牌底色',
+  `car_image_url` varchar(255) DEFAULT NULL COMMENT '车辆抓拍照片路径',
+  `in_time` datetime DEFAULT NULL COMMENT '入车时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `creator` varchar(100) DEFAULT NULL COMMENT '创建者',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updater` varchar(100) DEFAULT NULL COMMENT '更新者',
+  `data_source` tinyint(1) DEFAULT '0' COMMENT '数据来源 0：区域相机 1：立体车位',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='在场车辆表（区域相机使用）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='在场车辆表（区域相机使用）';
 
 -- 构造表 b_recognition_record
 CREATE TABLE IF NOT EXISTS `b_recognition_record` (
@@ -271,8 +340,10 @@ CREATE TABLE IF NOT EXISTS `b_recognition_record` (
   `car_image_url` varchar(255) DEFAULT NULL COMMENT '车辆照片地址（相对路径）',
   `plate_no_reliability` int(11) DEFAULT NULL COMMENT '图片识别车牌可信度',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='识别记录表';
+  `plate_no_simple` varchar(64) DEFAULT NULL COMMENT '纯数字字母车牌',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_create_time` (`create_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='识别记录表';
 
 -- 构造表 berth_rate_info
 CREATE TABLE IF NOT EXISTS `berth_rate_info` (
@@ -285,7 +356,21 @@ CREATE TABLE IF NOT EXISTS `berth_rate_info` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=174 ROW_FORMAT=DYNAMIC COMMENT='泊位使用率信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='泊位使用率信息表';
+
+-- 构造表 burying_point_data_record
+CREATE TABLE IF NOT EXISTS `burying_point_data_record` (
+  `id` varchar(32) NOT NULL COMMENT '主键 uuid',
+  `type` tinyint(1) DEFAULT '0' COMMENT '数据来源 0场端 1云端',
+  `record_time` varchar(32) DEFAULT NULL COMMENT '埋点数据记录时间（yyyy-MM-dd格式）',
+  `event_type` varchar(64) DEFAULT NULL COMMENT '事件类型 miniPro_findcar_suc-小程序找车成功 miniPro_findcar_fail-小程序找车失败 miniPro_routeplan_suc-小程序路线规划成功 miniPro_navi_suc-小程序导航使用 miniPro_navi_to_dest-小程序导航到终点 machine_findcar_suc-找车机找车成功 machine_routeplan_suc-找车机路线规划成功',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_record_time` (`record_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='埋点数据记录表';
 
 -- 构造表 color_transparency_styles
 CREATE TABLE IF NOT EXISTS `color_transparency_styles` (
@@ -309,7 +394,7 @@ CREATE TABLE IF NOT EXISTS `color_transparency_styles` (
   `occupy_fill_color` varchar(32) DEFAULT NULL COMMENT '车位占用时填充颜色',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_styles_id` (`map_styles_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='颜色透明度配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='颜色透明度配置表';
 
 -- 构造表 coordinate
 CREATE TABLE IF NOT EXISTS `coordinate` (
@@ -325,7 +410,7 @@ CREATE TABLE IF NOT EXISTS `coordinate` (
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_element_id` (`element_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='元素坐标表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='元素坐标表';
 
 -- 构造表 device_escalation
 CREATE TABLE IF NOT EXISTS `device_escalation` (
@@ -339,7 +424,47 @@ CREATE TABLE IF NOT EXISTS `device_escalation` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `exception` tinyint(1) DEFAULT '0' COMMENT '异常问题(0：正常， 1：车位编号重复， 2：无车位编号)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='设备信息上报表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备信息上报表';
+
+-- 构造表 device_event_log
+CREATE TABLE IF NOT EXISTS `device_event_log` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `device_id` bigint(20) DEFAULT NULL COMMENT '设备id',
+  `device_type` tinyint(4) DEFAULT NULL COMMENT '设备类型',
+  `device_addr` varchar(32) DEFAULT NULL COMMENT '设备地址（ip或拨码）',
+  `event_type` tinyint(4) DEFAULT NULL COMMENT '事件类型（1上线，2离线）',
+  `event_time` datetime DEFAULT NULL COMMENT '故障时间',
+  `event_remark` varchar(255) DEFAULT NULL COMMENT '事件备注',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备事件记录表';
+
+-- 构造表 device_info
+CREATE TABLE IF NOT EXISTS `device_info` (
+  `id` bigint(20) NOT NULL COMMENT '雪花算法生成的id',
+  `device_type` tinyint(4) NOT NULL COMMENT '设备类型  1=车位相机  2=超声波探测器  3=LED屏  4=找车机  5=车位灯 6 LCD屏  7节点设备',
+  `protocol_type` int(11) DEFAULT NULL COMMENT '设备协议类型  101=车位相机  201=超声波  301=TCP网络屏  302=485屏  401=FCCC  501=相机车位灯  502=引导双色灯  503=引导多彩灯 601 LCD屏 701 TCP-4字节 702 8字节 703 10字节  711 485 712=TCP节点',
+  `connect_type` tinyint(4) DEFAULT NULL COMMENT '连接方式  1=直连  2=间连',
+  `node_device_addr` varchar(255) DEFAULT '' COMMENT '节点设备地址',
+  `device_addr` varchar(255) DEFAULT NULL COMMENT '设备地址（业务方存储原格式地址）--已弃用',
+  `node_device_addr_suffix` varchar(255) DEFAULT '' COMMENT '节点设备地址，IP不带前缀',
+  `device_addr_ip` varchar(255) NOT NULL COMMENT '设备地址（IP或者拨码）拨码格式如01，001',
+  `device_addr_ip_suffix` varchar(255) NOT NULL DEFAULT '' COMMENT '设备地址，IP不带后前缀',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `communicate_type` tinyint(4) DEFAULT NULL COMMENT '通讯方式  1=TCP  2=485',
+  `online_status` tinyint(1) DEFAULT '0' COMMENT '在线状态  0=离线  1=在线',
+  `working_status` tinyint(1) DEFAULT '2' COMMENT '工作状态  0=故障  1=正常  2=未知  3=预警',
+  `data_source` int(11) DEFAULT NULL COMMENT '数据来源 1 车位表  2 主屏表  3 节点表',
+  `floor_id` int(11) DEFAULT NULL COMMENT '楼层id',
+  `relate_park_num` int(11) DEFAULT NULL COMMENT '关联车位数',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `working_status_details` varchar(256) DEFAULT NULL COMMENT '运行工作状态详情',
+  `enter_status` tinyint(1) DEFAULT '1' COMMENT '是否录入状态  0=未录入  1=已录入',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `udx_node_device_addr_suffix_device_addr_ip_suffix` (`node_device_addr_suffix`,`device_addr_ip_suffix`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='设备表';
 
 -- 构造表 element_beacon
 CREATE TABLE IF NOT EXISTS `element_beacon` (
@@ -356,7 +481,7 @@ CREATE TABLE IF NOT EXISTS `element_beacon` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='蓝牙信标';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='蓝牙信标';
 
 -- 构造表 element_column
 CREATE TABLE IF NOT EXISTS `element_column` (
@@ -371,7 +496,7 @@ CREATE TABLE IF NOT EXISTS `element_column` (
   `updater` varchar(255) DEFAULT NULL COMMENT '更新人',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='柱子元素表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='柱子元素表';
 
 -- 构造表 element_connector
 CREATE TABLE IF NOT EXISTS `element_connector` (
@@ -379,8 +504,9 @@ CREATE TABLE IF NOT EXISTS `element_connector` (
   `lot_id` int(11) DEFAULT NULL COMMENT '车场id lot_info id',
   `floor_id` int(11) DEFAULT NULL COMMENT '楼层id',
   `name` varchar(255) DEFAULT NULL COMMENT '名称',
-  `species` tinyint(4) DEFAULT NULL COMMENT '种类 1：直梯 2：护梯 3：楼梯 4：出入口',
+  `species` tinyint(4) DEFAULT NULL COMMENT '种类 1：直梯 2：护梯 3：楼梯 4：人行出入口 5：车场入口（车行） 6：车场出口（车行）  7：车场出入口（车行） 8：场内出口（车行） 9：场内入口（车行） 10：场内出入口（车行）',
   `associated_connector_ids` varchar(255) DEFAULT NULL COMMENT '关联设施ids',
+  `area_camera_id` int(11) DEFAULT NULL COMMENT '区域相机id',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '是否删除0未删除1已删除',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
@@ -388,7 +514,7 @@ CREATE TABLE IF NOT EXISTS `element_connector` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_floor_id` (`floor_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='通行设施';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通行设施';
 
 -- 构造表 element_custom
 CREATE TABLE IF NOT EXISTS `element_custom` (
@@ -404,7 +530,7 @@ CREATE TABLE IF NOT EXISTS `element_custom` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='自定义元素表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义元素表';
 
 -- 构造表 element_custom_detail
 CREATE TABLE IF NOT EXISTS `element_custom_detail` (
@@ -422,7 +548,7 @@ CREATE TABLE IF NOT EXISTS `element_custom_detail` (
   KEY `idx_element_custom_id` (`element_custom_id`) USING BTREE,
   KEY `idx_floor_id` (`floor_id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='自定义元素详情表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='自定义元素详情表';
 
 -- 构造表 element_ground
 CREATE TABLE IF NOT EXISTS `element_ground` (
@@ -438,7 +564,7 @@ CREATE TABLE IF NOT EXISTS `element_ground` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_floor_id` (`floor_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='地面元素表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地面元素表';
 
 -- 构造表 element_impassable_path
 CREATE TABLE IF NOT EXISTS `element_impassable_path` (
@@ -453,7 +579,7 @@ CREATE TABLE IF NOT EXISTS `element_impassable_path` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_floor_id` (`floor_id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='不可通行路线';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='不可通行路线';
 
 -- 构造表 element_machine
 CREATE TABLE IF NOT EXISTS `element_machine` (
@@ -472,7 +598,7 @@ CREATE TABLE IF NOT EXISTS `element_machine` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_ip` (`ip`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='找车机';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='找车机';
 
 -- 构造表 element_model
 CREATE TABLE IF NOT EXISTS `element_model` (
@@ -493,7 +619,7 @@ CREATE TABLE IF NOT EXISTS `element_model` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_floor_id` (`floor_id`) USING BTREE,
   KEY `idx_lot_id` (`lot_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='模型';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='模型';
 
 -- 构造表 element_park
 CREATE TABLE IF NOT EXISTS `element_park` (
@@ -524,11 +650,17 @@ CREATE TABLE IF NOT EXISTS `element_park` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `parking_capture` varchar(255) DEFAULT NULL COMMENT '车位相机抓拍照片路径',
+  `device_type` tinyint(4) DEFAULT '1' COMMENT '设备类型（车位相机 1 /超声波探测器  2）默认为1',
+  `parking_lock_equipment_no` varchar(255) DEFAULT NULL COMMENT '车位锁设备编号：仅长度限制36字符',
+  `parking_property_right` varchar(255) DEFAULT NULL COMMENT '车位产权：仅长度限制16字符',
+  `charging_type` varchar(255) DEFAULT NULL COMMENT '充电类型：无充电（0）、快充（2）、慢充（1）',
+  `charging_brand` varchar(255) DEFAULT NULL COMMENT '充电品牌：仅长度限制36字符',
+  `enable` tinyint(4) DEFAULT '1' COMMENT '启用/禁用，默认为启用(0 未启用 1 启用)',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_park_addr` (`park_addr`) USING BTREE,
   KEY `index_area_id` (`area_id`) USING BTREE,
   KEY `index_park_no` (`park_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车位';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位';
 
 -- 构造表 element_path
 CREATE TABLE IF NOT EXISTS `element_path` (
@@ -548,7 +680,7 @@ CREATE TABLE IF NOT EXISTS `element_path` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_floor_id` (`floor_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='路网';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='路网';
 
 -- 构造表 element_screen
 CREATE TABLE IF NOT EXISTS `element_screen` (
@@ -559,8 +691,8 @@ CREATE TABLE IF NOT EXISTS `element_screen` (
   `species` tinyint(4) DEFAULT NULL COMMENT '种类 1：LED屏 2：LCD屏',
   `screen_addr` int(11) DEFAULT NULL COMMENT '屏地址',
   `sub_screen_num` tinyint(4) DEFAULT NULL COMMENT '子屏数 1：单向屏 2：双向屏 3：三向屏',
-  `screen_type` tinyint(4) DEFAULT NULL COMMENT '屏类型 1-单拼接屏 2-双拼接屏 3-三拼接屏',
-  `show_template` tinyint(4) DEFAULT NULL COMMENT '展示模板',
+  `screen_type` tinyint(4) DEFAULT NULL COMMENT '屏类型 0=一体屏 1=双拼接屏',
+  `show_template` tinyint(4) DEFAULT NULL COMMENT '展示模板  0=非标模板 1=模板一',
   `remark` varchar(255) DEFAULT '' COMMENT '备注',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '是否删除 0未删除 1已删除',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -570,7 +702,7 @@ CREATE TABLE IF NOT EXISTS `element_screen` (
   `direction` int(11) DEFAULT '1' COMMENT '屏方向（屏顺序配置字段，用来控制屏从左到右地址是递增(1)还是递减(-1)）',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_screen_addr` (`screen_addr`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='屏';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='屏';
 
 -- 构造表 element_screen_child
 CREATE TABLE IF NOT EXISTS `element_screen_child` (
@@ -582,7 +714,7 @@ CREATE TABLE IF NOT EXISTS `element_screen_child` (
   `screen_species` tinyint(4) DEFAULT NULL COMMENT '屏种类 1：LED屏 2：LCD屏',
   `screen_category` tinyint(4) DEFAULT '1' COMMENT '屏类别   1：LED网络屏、  2：485总屏、3：485子屏',
   `screen_type` tinyint(4) DEFAULT '1' COMMENT '屏类型   1：普通屏、2：总屏',
-  `show_type` tinyint(4) DEFAULT '1' COMMENT '展示内容   1：关联车位空车位数、2：关联车位占用车位数、3：车场总空车位数、4：车位总占用车位数、5：固定显示数值',
+  `show_type` tinyint(4) DEFAULT '1' COMMENT '展示内容   1：关联车位空车位数、2：关联车位占用车位数、3：车场总空车位数、4：车位总占用车位数、5：固定显示数值 6：关联区域剩余车位数',
   `area_id` int(11) DEFAULT NULL COMMENT '区域id',
   `revise_num` int(11) DEFAULT '0' COMMENT '校正数值 （结果数值加上这个值）',
   `critical_num` int(11) DEFAULT '0' COMMENT '临界值（小于临界值直接输出0）',
@@ -597,10 +729,11 @@ CREATE TABLE IF NOT EXISTS `element_screen_child` (
   `creator` varchar(50) DEFAULT NULL COMMENT '创建者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
+  `relation_area_id_list` varchar(256) DEFAULT NULL COMMENT '子屏关联区域id集合信息，以英文,分隔开',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_parent_id` (`parent_id`) USING BTREE,
   KEY `index_screen_addr` (`screen_addr`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='子屏表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='子屏表';
 
 -- 构造表 element_screen_park_relation
 CREATE TABLE IF NOT EXISTS `element_screen_park_relation` (
@@ -612,7 +745,7 @@ CREATE TABLE IF NOT EXISTS `element_screen_park_relation` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_screen_id` (`screen_id`) USING BTREE,
   KEY `idx_park_id` (`park_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='屏和车位的关系表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='屏和车位的关系表';
 
 -- 构造表 f_config
 CREATE TABLE IF NOT EXISTS `f_config` (
@@ -631,7 +764,7 @@ CREATE TABLE IF NOT EXISTS `f_config` (
   `channel_swagger_switch` tinyint(1) DEFAULT '1' COMMENT 'channel_service服务swagger配置开关 0:开启  1:关闭',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_config_code` (`config_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统配置表';
 
 -- 构造表 face_info
 CREATE TABLE IF NOT EXISTS `face_info` (
@@ -644,7 +777,7 @@ CREATE TABLE IF NOT EXISTS `face_info` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='人脸信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸信息表';
 
 -- 构造表 floor_info
 CREATE TABLE IF NOT EXISTS `floor_info` (
@@ -663,19 +796,21 @@ CREATE TABLE IF NOT EXISTS `floor_info` (
   `floor_unique_identification` varchar(32) DEFAULT NULL COMMENT '楼层唯一标识字段',
   `floor_capture` varchar(255) DEFAULT NULL COMMENT '楼层底图截图保存URL',
   `capture_source` tinyint(1) DEFAULT '0' COMMENT '楼层底图来源方式，0:3D手动截图 1:2D地图照片迁移',
+  `belong_region` varchar(32) DEFAULT NULL COMMENT '所属区域',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='楼层信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='楼层信息';
 
 -- 构造表 general_config
 CREATE TABLE IF NOT EXISTS `general_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `config_key` varchar(255) DEFAULT NULL COMMENT '字段唯一标识，禁止重复',
+  `config_key` varchar(128) DEFAULT NULL COMMENT '字段唯一标识，禁止重复',
   `description` varchar(255) DEFAULT NULL COMMENT '字段详细作用描述',
   `config_value` varchar(255) DEFAULT NULL COMMENT '字段具体配置信息',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=2730 ROW_FORMAT=COMPACT COMMENT='通用参数配置信息表';
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `udx_config_key` (`config_key`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=360 DEFAULT CHARSET=utf8mb4 COMMENT='通用参数配置信息表';
 
 -- 构造表 image_styles
 CREATE TABLE IF NOT EXISTS `image_styles` (
@@ -700,7 +835,7 @@ CREATE TABLE IF NOT EXISTS `image_styles` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_map_styles_id` (`map_styles_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='图标配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='图标配置表';
 
 -- 构造表 info_across_floor
 CREATE TABLE IF NOT EXISTS `info_across_floor` (
@@ -719,7 +854,7 @@ CREATE TABLE IF NOT EXISTS `info_across_floor` (
   `updater` varchar(255) DEFAULT NULL COMMENT '更新人',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='跨层寻车用指引设置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='跨层寻车用指引设置表';
 
 -- 构造表 info_machine_config
 CREATE TABLE IF NOT EXISTS `info_machine_config` (
@@ -745,8 +880,9 @@ CREATE TABLE IF NOT EXISTS `info_machine_config` (
   `route_qr_switch` tinyint(4) DEFAULT '0' COMMENT '找车路线二维码开关  0=关  1=开',
   `route_qr_type` tinyint(4) DEFAULT '0' COMMENT '找车路线二维码类型  0=自定义二维码',
   `route_qr_url` varchar(255) DEFAULT NULL COMMENT '找车路线二维码图片路径',
+  `is_road_endpoint_highlight` tinyint(1) DEFAULT '1' COMMENT '路段规划后是否高亮终点  0=否  1=是',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='找车机常用参数表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='找车机常用参数表';
 
 -- 构造表 ini_config
 CREATE TABLE IF NOT EXISTS `ini_config` (
@@ -762,7 +898,7 @@ CREATE TABLE IF NOT EXISTS `ini_config` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='C++参数配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++参数配置表';
 
 -- 构造表 internationalization
 CREATE TABLE IF NOT EXISTS `internationalization` (
@@ -780,7 +916,7 @@ CREATE TABLE IF NOT EXISTS `internationalization` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `udx_code` (`code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=29896 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='国际化';
+) ENGINE=InnoDB AUTO_INCREMENT=37001 DEFAULT CHARSET=utf8mb4 COMMENT='国际化';
 
 -- 构造表 internationalization_relation
 CREATE TABLE IF NOT EXISTS `internationalization_relation` (
@@ -794,7 +930,7 @@ CREATE TABLE IF NOT EXISTS `internationalization_relation` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=4096 ROW_FORMAT=DYNAMIC COMMENT='国际化字段与语言关系表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='国际化字段与语言关系表';
 
 -- 构造表 lcd_advertisement_config
 CREATE TABLE IF NOT EXISTS `lcd_advertisement_config` (
@@ -810,7 +946,7 @@ CREATE TABLE IF NOT EXISTS `lcd_advertisement_config` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_lcd_advertisement_scheme_id` (`lcd_advertisement_scheme_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='LCD屏广告配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏广告配置表';
 
 -- 构造表 lcd_advertisement_scheme
 CREATE TABLE IF NOT EXISTS `lcd_advertisement_scheme` (
@@ -824,7 +960,30 @@ CREATE TABLE IF NOT EXISTS `lcd_advertisement_scheme` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='LCD屏广告方案表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏广告方案表';
+
+-- 构造表 lcd_screen_cmd_log
+CREATE TABLE IF NOT EXISTS `lcd_screen_cmd_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `cmd` varchar(255) DEFAULT NULL COMMENT '指令编码',
+  `reqid` varchar(32) DEFAULT NULL COMMENT '请求ID',
+  `ts` bigint(20) DEFAULT NULL COMMENT '时间戳',
+  `ip` varchar(32) DEFAULT NULL COMMENT 'ip地址',
+  `type` tinyint(1) DEFAULT NULL COMMENT '屏标识(0:一体屏,1:双拼接屏左屏,2:双拼接屏右屏)',
+  `show_template` tinyint(4) DEFAULT NULL COMMENT '展示模板  0=非标模板 1=模板一',
+  `scene` int(11) DEFAULT NULL COMMENT '场景:1标准引导;999非标页面',
+  `message` varchar(1000) DEFAULT NULL COMMENT '消息内容(全内容字符串)',
+  `is_success` tinyint(1) DEFAULT '0' COMMENT '是否下发成功：0否，1是',
+  `error_result` varchar(1000) DEFAULT NULL COMMENT '异常执行命令结果',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `index_ts` (`ts`) USING BTREE,
+  KEY `index_ip` (`ip`) USING BTREE,
+  KEY `index_create_time` (`create_time`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=287 DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏第三方下发指令日志记录表';
 
 -- 构造表 lcd_screen_config
 CREATE TABLE IF NOT EXISTS `lcd_screen_config` (
@@ -833,15 +992,53 @@ CREATE TABLE IF NOT EXISTS `lcd_screen_config` (
   `show_type` tinyint(4) DEFAULT NULL COMMENT '显示内容 1：引导内容 2：广告',
   `attribute_id` int(11) DEFAULT NULL COMMENT '若显示内容是 1，则为子屏id， 若显示内容为2 则为广告id',
   `show_sort` int(11) DEFAULT NULL COMMENT '显示顺序',
-  `belong_id` tinyint(4) DEFAULT NULL COMMENT '所属id id相同表示属于同一个物理屏',
+  `belong_id` tinyint(4) DEFAULT NULL COMMENT '所属id[id相同表示属于同一个物理屏]：屏标识(0:一体屏,1:双拼接屏左屏,2:双拼接屏右屏)',
   `deleted` tinyint(1) DEFAULT '0' COMMENT '是否删除0未删除1已删除',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
+  `background_image_url` varchar(255) DEFAULT NULL COMMENT '背景图片地址',
+  `title` varchar(32) DEFAULT '空位' COMMENT '标题',
+  `subtitle` varchar(32) DEFAULT 'Parking' COMMENT '副标题',
+  `title_position` tinyint(1) DEFAULT '0' COMMENT '标题位置 0：左边  1：右边',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_element_screen_id` (`element_screen_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='LCD屏配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='LCD屏配置';
+
+-- 构造表 light_scheme_group
+CREATE TABLE IF NOT EXISTS `light_scheme_group` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `group_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '分组名称',
+  `device_type` tinyint(4) DEFAULT NULL COMMENT '设备类型  1-车位相机灯  2-超声波探测器灯',
+  `camera_ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '车位相机ip',
+  `detector_device_type` tinyint(4) DEFAULT NULL COMMENT '超声波设备类型  1-TCP  2-485',
+  `detector_ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '超声波探测器ip',
+  `detector_node_dsp` int(11) DEFAULT NULL COMMENT '超声波节点拨码',
+  `detector_dsp` int(11) DEFAULT NULL COMMENT '超声波探测器拨码',
+  `light_type` tinyint(4) DEFAULT NULL COMMENT '车位灯类型 1-有线双色灯 2-有线多彩灯',
+  `light_addr` int(11) DEFAULT NULL COMMENT '车位灯地址（转化后）',
+  `free_color` tinyint(4) DEFAULT NULL COMMENT '空闲颜色',
+  `occupy_color` tinyint(4) DEFAULT NULL COMMENT '占用颜色',
+  `last_color` tinyint(4) DEFAULT NULL COMMENT '上次下发颜色',
+  `create_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '更新人',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='分组车位灯方案（立体车位使用）';
+
+-- 构造表 light_scheme_group_relate
+CREATE TABLE IF NOT EXISTS `light_scheme_group_relate` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `light_scheme_group_id` bigint(20) DEFAULT NULL COMMENT '分组车位灯方案id',
+  `element_park_id` int(11) DEFAULT NULL COMMENT '车位id',
+  `create_by` varchar(255) DEFAULT NULL COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_light_scheme_group_id` (`light_scheme_group_id`) USING BTREE,
+  KEY `idx_element_park_id` (`element_park_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='分组车位灯方案-车位关联（立体车位使用）';
 
 -- 构造表 light_scheme_plan
 CREATE TABLE IF NOT EXISTS `light_scheme_plan` (
@@ -858,8 +1055,10 @@ CREATE TABLE IF NOT EXISTS `light_scheme_plan` (
   `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
+  `light_addr` int(11) DEFAULT NULL COMMENT '车位灯地址',
+  `issuance_type` tinyint(1) DEFAULT '0' COMMENT '下发类型 0：修改车位的车位灯方案 1：修改设备的车位灯方案',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车位灯方案下发计划';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案下发计划';
 
 -- 构造表 light_scheme_plan_park_relation
 CREATE TABLE IF NOT EXISTS `light_scheme_plan_park_relation` (
@@ -869,7 +1068,7 @@ CREATE TABLE IF NOT EXISTS `light_scheme_plan_park_relation` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(64) DEFAULT NULL COMMENT '创建者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车位灯方案下发计划与车位关系表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案下发计划与车位关系表';
 
 -- 构造表 lot_info
 CREATE TABLE IF NOT EXISTS `lot_info` (
@@ -891,8 +1090,9 @@ CREATE TABLE IF NOT EXISTS `lot_info` (
   `machine_debug` int(11) DEFAULT '0' COMMENT '找车机是否为调试模式(0 关闭 1 开启)',
   `lisence_authorize_code` varchar(1024) DEFAULT NULL COMMENT 'Lisence授权码',
   `lisence_trial_period` datetime DEFAULT NULL COMMENT 'Lisence首次默认30天试用期(寻车服务首次启动时，开始生效)，开始试用时间',
+  `default_show_map_type` tinyint(1) DEFAULT '3' COMMENT '默认展示地图类型 2=2D地图，3=3D地图',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='车场信息';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='车场信息';
 
 -- 构造表 machine_advertisement_config
 CREATE TABLE IF NOT EXISTS `machine_advertisement_config` (
@@ -909,7 +1109,7 @@ CREATE TABLE IF NOT EXISTS `machine_advertisement_config` (
   KEY `idx_machine_ad_scheme_id` (`machine_ad_scheme_id`) USING BTREE,
   KEY `idx_machine_ip` (`machine_ip`) USING BTREE,
   KEY `idx_screen_ad_scheme_id` (`screen_ad_scheme_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='找车机广告配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='找车机广告配置';
 
 -- 构造表 map_styles
 CREATE TABLE IF NOT EXISTS `map_styles` (
@@ -924,7 +1124,7 @@ CREATE TABLE IF NOT EXISTS `map_styles` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='地图样式配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='地图样式配置表';
 
 -- 构造表 node_device
 CREATE TABLE IF NOT EXISTS `node_device` (
@@ -944,7 +1144,7 @@ CREATE TABLE IF NOT EXISTS `node_device` (
   `deleted` int(11) DEFAULT '0' COMMENT '是否删除  0：未删除、  1：已删除',
   `floor_id` int(11) DEFAULT NULL COMMENT '楼层id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='节点设备';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='节点设备';
 
 -- 构造表 node_device_relate
 CREATE TABLE IF NOT EXISTS `node_device_relate` (
@@ -955,7 +1155,44 @@ CREATE TABLE IF NOT EXISTS `node_device_relate` (
   `entrance_exit` tinyint(4) DEFAULT NULL COMMENT '相机放置类型  1：入口   2：出口   3：出入口',
   `entrance_exit_name` varchar(255) DEFAULT NULL COMMENT '枚举类型：  入口   出口  出入口',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='区域设备与区域的关系表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域设备与区域的关系表';
+
+-- 构造表 operation_log
+CREATE TABLE IF NOT EXISTS `operation_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+  `user_name` varchar(50) DEFAULT NULL COMMENT '用户名',
+  `user_account` varchar(50) DEFAULT NULL COMMENT '用户账号',
+  `client_ip` varchar(50) DEFAULT NULL COMMENT '登录ip',
+  `uri` varchar(255) DEFAULT NULL COMMENT '接口uri',
+  `operate_time` datetime DEFAULT NULL COMMENT '操作时间',
+  `operate_type` varchar(255) DEFAULT NULL COMMENT '操作内容',
+  `operate_detail` longtext COMMENT '操作详情（接口地址，接口入参信息）',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建者',
+  `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '创建者',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_operation_time` (`operate_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='操作日志';
+
+-- 构造表 overnight_record
+CREATE TABLE IF NOT EXISTS `overnight_record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `unique_id` varchar(32) DEFAULT NULL COMMENT '在场车唯一ID',
+  `floor_id` int(11) DEFAULT NULL COMMENT '楼层ID',
+  `floor_name` varchar(64) DEFAULT NULL COMMENT '楼层名称',
+  `area_id` int(11) DEFAULT NULL COMMENT '区域ID',
+  `area_name` varchar(64) DEFAULT NULL COMMENT '区域名称',
+  `park_no` varchar(64) DEFAULT NULL COMMENT '车位编号',
+  `plate_no` varchar(64) DEFAULT NULL COMMENT '车牌号',
+  `in_time` datetime DEFAULT NULL COMMENT '停入时间',
+  `park_duration` varchar(64) DEFAULT NULL COMMENT '停放时长(单位：分钟)',
+  `record_time` datetime DEFAULT NULL COMMENT '记录数据时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='过夜车日志信息表';
 
 -- 构造表 parking_light_area_relation
 CREATE TABLE IF NOT EXISTS `parking_light_area_relation` (
@@ -970,7 +1207,7 @@ CREATE TABLE IF NOT EXISTS `parking_light_area_relation` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `index_area_id` (`area_id`) USING BTREE,
   KEY `index_parking_light_scheme_id` (`parking_light_scheme_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车位灯方案和区域的关系表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案和区域的关系表';
 
 -- 构造表 parking_light_scheme
 CREATE TABLE IF NOT EXISTS `parking_light_scheme` (
@@ -991,7 +1228,7 @@ CREATE TABLE IF NOT EXISTS `parking_light_scheme` (
   `custom_warning_color` varchar(32) DEFAULT NULL COMMENT '自定义告警颜色',
   `custom_free_color` varchar(32) DEFAULT NULL COMMENT '自定义空闲颜色',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车位灯方案';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位灯方案';
 
 -- 构造表 permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -1010,8 +1247,10 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   `creator` varchar(255) DEFAULT NULL COMMENT '创建时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updator` varchar(255) DEFAULT NULL COMMENT '更新人',
+  `menu_type` tinyint(1) DEFAULT '0' COMMENT '菜单类型(0:内部链接，1:外部链接)'' AFTER `name',
+  `link_way` tinyint(1) DEFAULT '0' COMMENT '跳转方式(0:站内跳转，1:站外跳转)'' AFTER `menu_type',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=598 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='权限';
+) ENGINE=InnoDB AUTO_INCREMENT=703 DEFAULT CHARSET=utf8mb4 COMMENT='权限';
 
 -- 构造表 role
 CREATE TABLE IF NOT EXISTS `role` (
@@ -1025,7 +1264,7 @@ CREATE TABLE IF NOT EXISTS `role` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=5461 ROW_FORMAT=DYNAMIC COMMENT='角色';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='角色';
 
 -- 构造表 role_permission_relation
 CREATE TABLE IF NOT EXISTS `role_permission_relation` (
@@ -1035,7 +1274,7 @@ CREATE TABLE IF NOT EXISTS `role_permission_relation` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `creator` varchar(50) DEFAULT NULL COMMENT '创建者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=971 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=234 ROW_FORMAT=DYNAMIC COMMENT='角色权限关系表';
+) ENGINE=InnoDB AUTO_INCREMENT=1089 DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关系表';
 
 -- 构造表 schedule_config
 CREATE TABLE IF NOT EXISTS `schedule_config` (
@@ -1078,8 +1317,11 @@ CREATE TABLE IF NOT EXISTS `schedule_config` (
   `clean_recognition_table` int(11) DEFAULT '30' COMMENT '车牌识别日志表定时清理（单位：天）',
   `clean_area_picture` int(11) DEFAULT '1' COMMENT '区域照片文件定时清理（单位：天）',
   `warn_switch` int(11) NOT NULL DEFAULT '1' COMMENT '告警开关 1=开 0=关',
+  `clean_area_exception` int(11) DEFAULT '90' COMMENT '进出车异常记录定时清理(单位:天)',
+  `clean_burying_point` int(11) DEFAULT '90' COMMENT '找车接口查询中埋点数据定时清理(单位:天)',
+  `warn_record_expire` int(11) DEFAULT '7' COMMENT '告警记录定时清理（默认定时清理7天前的数据）',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='参数配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='参数配置表';
 
 -- 构造表 t_access_config
 CREATE TABLE IF NOT EXISTS `t_access_config` (
@@ -1119,9 +1361,10 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
   `snap_picture_path` varchar(255) DEFAULT NULL COMMENT '相机抓拍照片保存路径',
   `quality_inspection_picture_path` varchar(255) DEFAULT NULL COMMENT '质检中心抓拍照片保存路径',
   `recognition_switch` tinyint(1) DEFAULT '1' COMMENT '识别库开关，0:关闭 1:开启',
-  `free_occupy_switch` tinyint(1) DEFAULT '0' COMMENT '找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)',
+  `free_occupy_switch` tinyint(1) DEFAULT '1' COMMENT '找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)',
+  `rsc_lock_wait` int(11) DEFAULT '500' COMMENT '485节点锁等待时长(毫秒)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=COMPACT COMMENT='C++重构配置信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++重构配置信息表';
 
 -- 构造表 t_car_in_out_statistics
 CREATE TABLE IF NOT EXISTS `t_car_in_out_statistics` (
@@ -1139,7 +1382,7 @@ CREATE TABLE IF NOT EXISTS `t_car_in_out_statistics` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_record_time` (`record_end_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='出入车流量统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='出入车流量统计';
 
 -- 构造表 t_login_log
 CREATE TABLE IF NOT EXISTS `t_login_log` (
@@ -1157,7 +1400,7 @@ CREATE TABLE IF NOT EXISTS `t_login_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_user_account` (`user_account`) USING BTREE,
   KEY `idx_user_name` (`user_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='登陆日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='登陆日志表';
 
 -- 构造表 t_server_log
 CREATE TABLE IF NOT EXISTS `t_server_log` (
@@ -1173,7 +1416,7 @@ CREATE TABLE IF NOT EXISTS `t_server_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_file_name` (`file_name`) USING BTREE,
   KEY `idx_log_time` (`log_time`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=119 ROW_FORMAT=DYNAMIC COMMENT='服务日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8mb4 COMMENT='服务日志表';
 
 -- 构造表 user
 CREATE TABLE IF NOT EXISTS `user` (
@@ -1197,7 +1440,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `password_record` varchar(255) DEFAULT NULL COMMENT '密码修改信息记录(默认保存最近5条更新数据)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=4096 ROW_FORMAT=DYNAMIC COMMENT='用户';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='用户';
 
 -- 构造表 warn_illegal_park
 CREATE TABLE IF NOT EXISTS `warn_illegal_park` (
@@ -1210,7 +1453,7 @@ CREATE TABLE IF NOT EXISTS `warn_illegal_park` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车辆违停告警配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆违停告警配置';
 
 -- 构造表 warn_illegal_park_relate
 CREATE TABLE IF NOT EXISTS `warn_illegal_park_relate` (
@@ -1222,7 +1465,7 @@ CREATE TABLE IF NOT EXISTS `warn_illegal_park_relate` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车辆违停告警配置关系表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车辆违停告警配置关系表';
 
 -- 构造表 warn_log
 CREATE TABLE IF NOT EXISTS `warn_log` (
@@ -1231,7 +1474,7 @@ CREATE TABLE IF NOT EXISTS `warn_log` (
   `park_no` varchar(50) DEFAULT NULL COMMENT '车位编号',
   `park_plate_no` varchar(50) DEFAULT NULL COMMENT '违停车牌',
   `bind_plate_no` varchar(50) DEFAULT NULL COMMENT '绑定车牌',
-  `warn_type` tinyint(4) DEFAULT NULL COMMENT '告警类型  1：车位占用告警   2：车辆违停告警  3：特殊车辆入车  4：特殊车辆出车  5：车辆压线',
+  `warn_type` tinyint(4) DEFAULT NULL COMMENT '告警类型 1：车位占用告警 2：车辆违停告警 3：特殊车辆入车 4：特殊车辆出车 5：车辆压线 6：油车违停 7：超时停车',
   `warn_source` tinyint(1) NOT NULL DEFAULT '0' COMMENT '告警来源 0-寻车系统 1-第三方',
   `bind_park_area` varchar(1024) DEFAULT NULL COMMENT '绑定的车位编号或者区域的名称  多个之间用英语分号隔开',
   `park_time` datetime DEFAULT NULL COMMENT '停入时间',
@@ -1243,10 +1486,14 @@ CREATE TABLE IF NOT EXISTS `warn_log` (
   `creator` varchar(50) DEFAULT NULL COMMENT '创建者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
+  `present_car_status` tinyint(4) DEFAULT NULL COMMENT '在场车状态  1=在场  2=已出车',
+  `leave_time` datetime DEFAULT NULL COMMENT '出车时间',
+  `present_car_unique_id` varchar(36) DEFAULT NULL COMMENT '进出车事件唯一id uuid',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_park_id` (`park_id`) USING BTREE,
-  KEY `idx_present_car_record_id` (`present_car_record_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='告警记录';
+  KEY `idx_present_car_record_id` (`present_car_record_id`) USING BTREE,
+  KEY `idx_present_car_unique_id` (`present_car_unique_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='告警记录';
 
 -- 构造表 warn_space_occupy
 CREATE TABLE IF NOT EXISTS `warn_space_occupy` (
@@ -1259,7 +1506,7 @@ CREATE TABLE IF NOT EXISTS `warn_space_occupy` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='车位占用告警配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车位占用告警配置';
 
 -- 构造表 warn_special_car
 CREATE TABLE IF NOT EXISTS `warn_special_car` (
@@ -1274,7 +1521,7 @@ CREATE TABLE IF NOT EXISTS `warn_special_car` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='特殊车辆配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='特殊车辆配置';
 
 -- 构造表 warn_time
 CREATE TABLE IF NOT EXISTS `warn_time` (
@@ -1289,7 +1536,7 @@ CREATE TABLE IF NOT EXISTS `warn_time` (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `updater` varchar(50) DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='固定车绑定告警时间';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='固定车绑定告警时间';
 
 -- ===============全量更新所有表字段===============
 -- 更新表 api_access_info 所有字段和索引
@@ -1328,17 +1575,33 @@ CALL add_element_unless_exists('column', 'api_push_info', 'updater', 'ALTER TABL
 CALL add_element_unless_exists('index', 'api_push_info', 'idx_func_module', 'ALTER TABLE api_push_info ADD INDEX idx_func_module (func_module) USING BTREE');
 CALL add_element_unless_exists('index', 'api_push_info', 'index_app_code', 'ALTER TABLE api_push_info ADD INDEX index_app_code (app_code) USING BTREE');
 
+-- 更新表 api_report_manage 所有字段和索引
+ALTER TABLE api_report_manage COMMENT = '上报推送接口管理信息';
+ALTER TABLE api_report_manage ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'api_report_manage', 'cmd', 'ALTER TABLE api_report_manage ADD COLUMN `cmd` varchar(64) NOT NULL COMMENT "接口编码标识";');
+CALL add_element_unless_exists('column', 'api_report_manage', 'name', 'ALTER TABLE api_report_manage ADD COLUMN `name` varchar(255) DEFAULT NULL COMMENT "接口名称" AFTER cmd;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'unified_switch', 'ALTER TABLE api_report_manage ADD COLUMN `unified_switch` tinyint(1) DEFAULT "0" COMMENT "统一平台上报开关(0关闭，1开启，9未对接)" AFTER name;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'unified_push_url', 'ALTER TABLE api_report_manage ADD COLUMN `unified_push_url` varchar(255) DEFAULT NULL COMMENT "统一平台上报接口地址" AFTER unified_switch;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'unified_app_code', 'ALTER TABLE api_report_manage ADD COLUMN `unified_app_code` varchar(64) DEFAULT NULL COMMENT "统一平台上报租户编码" AFTER unified_push_url;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'unified_secret', 'ALTER TABLE api_report_manage ADD COLUMN `unified_secret` varchar(64) DEFAULT NULL COMMENT "统一平台上报秘钥" AFTER unified_app_code;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'other_report_switch', 'ALTER TABLE api_report_manage ADD COLUMN `other_report_switch` tinyint(1) DEFAULT "0" COMMENT "其他平台上报总开关(0关闭，1开启)" AFTER unified_secret;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'deleted', 'ALTER TABLE api_report_manage ADD COLUMN `deleted` tinyint(1) DEFAULT "0" COMMENT "是否删除0未删除1已删除" AFTER other_report_switch;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'create_time', 'ALTER TABLE api_report_manage ADD COLUMN `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT "创建时间" AFTER deleted;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'creator', 'ALTER TABLE api_report_manage ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'update_time', 'ALTER TABLE api_report_manage ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
+CALL add_element_unless_exists('column', 'api_report_manage', 'updater', 'ALTER TABLE api_report_manage ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+
 -- 更新表 api_supplementary_push 所有字段和索引
 ALTER TABLE api_supplementary_push COMMENT = '补推信息表';
 ALTER TABLE api_supplementary_push ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'id', 'ALTER TABLE api_supplementary_push ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'url', 'ALTER TABLE api_supplementary_push ADD COLUMN `url` varchar(255) DEFAULT NULL COMMENT "补推完整路径地址" AFTER id;');
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'header', 'ALTER TABLE api_supplementary_push ADD COLUMN `header` varchar(255) DEFAULT NULL COMMENT "请求头相关信息" AFTER url;');
-CALL add_element_unless_exists('column', 'api_supplementary_push', 'params', 'ALTER TABLE api_supplementary_push ADD COLUMN `params` varchar(255) DEFAULT NULL COMMENT "参数相关信息" AFTER header;');
-CALL add_element_unless_exists('column', 'api_supplementary_push', 'reason', 'ALTER TABLE api_supplementary_push ADD COLUMN `reason` varchar(255) DEFAULT NULL COMMENT "推送失败原因或异常信息" AFTER params;');
-CALL add_element_unless_exists('column', 'api_supplementary_push', 'status', 'ALTER TABLE api_supplementary_push ADD COLUMN `status` tinyint(1) DEFAULT "0" COMMENT "补推状态 0：未推送 1：已推送" AFTER reason;');
-CALL add_element_unless_exists('column', 'api_supplementary_push', 'req_id', 'ALTER TABLE api_supplementary_push ADD COLUMN `req_id` varchar(32) DEFAULT NULL COMMENT "事件ID，用于查询对应绑定事件关系" AFTER status;');
+CALL add_element_unless_exists('column', 'api_supplementary_push', 'status', 'ALTER TABLE api_supplementary_push ADD COLUMN `status` tinyint(1) DEFAULT "0" COMMENT "补推状态 0：未推送 1：已推送" AFTER header;');
+CALL add_element_unless_exists('column', 'api_supplementary_push', 'req_id', 'ALTER TABLE api_supplementary_push ADD COLUMN `req_id` varchar(50) DEFAULT NULL AFTER status;');
 CALL add_element_unless_exists('column', 'api_supplementary_push', 'create_time', 'ALTER TABLE api_supplementary_push ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER req_id;');
+CALL add_element_unless_exists('index', 'api_supplementary_push', 'idx_create_time', 'ALTER TABLE api_supplementary_push ADD INDEX idx_create_time (create_time) USING BTREE');
+CALL add_element_unless_exists('index', 'api_supplementary_push', 'idx_createTime', 'ALTER TABLE api_supplementary_push ADD INDEX idx_createTime (create_time) USING BTREE');
 
 -- 更新表 area_camera 所有字段和索引
 ALTER TABLE area_camera COMMENT = '区域相机';
@@ -1350,7 +1613,9 @@ CALL add_element_unless_exists('column', 'area_camera', 'camera_direction', 'ALT
 CALL add_element_unless_exists('column', 'area_camera', 'create_time', 'ALTER TABLE area_camera ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER camera_direction;');
 CALL add_element_unless_exists('column', 'area_camera', 'creater', 'ALTER TABLE area_camera ADD COLUMN `creater` varchar(255) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'area_camera', 'update_time', 'ALTER TABLE area_camera ADD COLUMN `update_time` datetime DEFAULT NULL COMMENT "更新时间" AFTER creater;');
-CALL add_element_unless_exists('column', 'area_camera', 'updater', 'ALTER TABLE area_camera ADD COLUMN `updater` datetime DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('column', 'area_camera', 'updater', 'ALTER TABLE area_camera ADD COLUMN `updater` datetime DEFAULT NULL COMMENT "更新者（弃用）" AFTER update_time;');
+CALL add_element_unless_exists('column', 'area_camera', 'update_by', 'ALTER TABLE area_camera ADD COLUMN `update_by` varchar(255) DEFAULT NULL COMMENT "更新者" AFTER updater;');
+CALL add_element_unless_exists('column', 'area_camera', 'area_state', 'ALTER TABLE area_camera ADD COLUMN `area_state` tinyint(1) DEFAULT "0" COMMENT "区域相机拥堵状态， 0：正常；1：繁忙；2：拥堵" AFTER update_by;');
 
 -- 更新表 area_camera_relate 所有字段和索引
 ALTER TABLE area_camera_relate COMMENT = '区域相机关联区域表';
@@ -1382,6 +1647,8 @@ CALL add_element_unless_exists('column', 'area_info', 'update_time', 'ALTER TABL
 CALL add_element_unless_exists('column', 'area_info', 'park_space_camera_ip', 'ALTER TABLE area_info ADD COLUMN `park_space_camera_ip` varchar(64) DEFAULT NULL COMMENT "立体车位相机IP" AFTER update_time;');
 CALL add_element_unless_exists('column', 'area_info', 'park_space_camera_unique_id', 'ALTER TABLE area_info ADD COLUMN `park_space_camera_unique_id` varchar(64) DEFAULT NULL COMMENT "立体车位相机唯一标识" AFTER park_space_camera_ip;');
 CALL add_element_unless_exists('column', 'area_info', 'detector_park_addr_list', 'ALTER TABLE area_info ADD COLUMN `detector_park_addr_list` varchar(1024) DEFAULT NULL COMMENT "立体车位关联探测器车位唯一标识，以英文,分隔开" AFTER park_space_camera_unique_id;');
+CALL add_element_unless_exists('column', 'area_info', 'count_statistics_type', 'ALTER TABLE area_info ADD COLUMN `count_statistics_type` tinyint(1) DEFAULT "0" COMMENT "空闲车位数统计逻辑配置 0-关联车位空闲状态  1-区域进出车记录统计" AFTER detector_park_addr_list;');
+CALL add_element_unless_exists('column', 'area_info', 'area_in_out_free_count_number', 'ALTER TABLE area_info ADD COLUMN `area_in_out_free_count_number` int(11) DEFAULT "0" COMMENT "设置为区域进出车记录统计时，空闲车位数取值" AFTER count_statistics_type;');
 
 -- 更新表 b_car_in_out_record 所有字段和索引
 ALTER TABLE b_car_in_out_record COMMENT = '历史进出车记录表';
@@ -1416,6 +1683,8 @@ CALL add_element_unless_exists('index', 'b_car_in_out_record', 'idx_out_time', '
 CALL add_element_unless_exists('index', 'b_car_in_out_record', 'index_element_park_id', 'ALTER TABLE b_car_in_out_record ADD INDEX index_element_park_id (element_park_id) USING BTREE');
 CALL add_element_unless_exists('index', 'b_car_in_out_record', 'index_park_no', 'ALTER TABLE b_car_in_out_record ADD INDEX index_park_no (park_no) USING BTREE');
 CALL add_element_unless_exists('index', 'b_car_in_out_record', 'index_plate_no', 'ALTER TABLE b_car_in_out_record ADD INDEX index_plate_no (plate_no) USING BTREE');
+CALL add_element_unless_exists('index', 'b_car_in_out_record', 'idx_in_time', 'ALTER TABLE b_car_in_out_record ADD INDEX idx_in_time (in_time) USING BTREE');
+CALL add_element_unless_exists('index', 'b_car_in_out_record', 'idx_unique_id', 'ALTER TABLE b_car_in_out_record ADD INDEX idx_unique_id (unique_id) USING BTREE');
 
 -- 更新表 b_car_in_out_record_area 所有字段和索引
 ALTER TABLE b_car_in_out_record_area COMMENT = '车辆进出车记录（区域相机）';
@@ -1439,6 +1708,27 @@ CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'creator', 
 CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'update_time', 'ALTER TABLE b_car_in_out_record_area ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'b_car_in_out_record_area', 'updater', 'ALTER TABLE b_car_in_out_record_area ADD COLUMN `updater` varchar(100) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 CALL add_element_unless_exists('index', 'b_car_in_out_record_area', 'idx_create_time', 'ALTER TABLE b_car_in_out_record_area ADD INDEX idx_create_time (create_time) USING BTREE');
+
+-- 更新表 b_car_in_out_record_area_exception 所有字段和索引
+ALTER TABLE b_car_in_out_record_area_exception COMMENT = '区域进出车异常记录表';
+ALTER TABLE b_car_in_out_record_area_exception ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'id', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `id` bigint(20) NOT NULL COMMENT "雪花算法生成的id";');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'plate_no', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `plate_no` varchar(64) DEFAULT NULL COMMENT "车牌号" AFTER id;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'exception_type', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `exception_type` tinyint(1) DEFAULT NULL COMMENT "异常类型 1-重复入车 2-异常出车" AFTER plate_no;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'floor_name', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `floor_name` varchar(64) DEFAULT NULL COMMENT "楼层名称" AFTER exception_type;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'area_name', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `area_name` varchar(64) DEFAULT NULL COMMENT "区域名称" AFTER floor_name;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'trigger_time', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `trigger_time` datetime DEFAULT NULL COMMENT "触发时间" AFTER area_name;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'last_area_name', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `last_area_name` varchar(64) DEFAULT NULL COMMENT "上次入车区域名称（主要用于重复入车详情）" AFTER trigger_time;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'last_in_time', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `last_in_time` datetime DEFAULT NULL COMMENT "上次入车时间（主要用于重复入车详情）" AFTER last_area_name;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'car_image_url', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `car_image_url` varchar(255) DEFAULT NULL COMMENT "抓拍照片路径" AFTER last_in_time;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'event_id', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `event_id` varchar(64) DEFAULT NULL COMMENT "事件id" AFTER car_image_url;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'create_time', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER event_id;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'creator', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'update_time', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
+CALL add_element_unless_exists('column', 'b_car_in_out_record_area_exception', 'updater', 'ALTER TABLE b_car_in_out_record_area_exception ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('index', 'b_car_in_out_record_area_exception', 'index_event_id', 'ALTER TABLE b_car_in_out_record_area_exception ADD INDEX index_event_id (event_id) USING BTREE');
+CALL add_element_unless_exists('index', 'b_car_in_out_record_area_exception', 'index_plate_no', 'ALTER TABLE b_car_in_out_record_area_exception ADD INDEX index_plate_no (plate_no) USING BTREE');
+CALL add_element_unless_exists('index', 'b_car_in_out_record_area_exception', 'index_trigger_time', 'ALTER TABLE b_car_in_out_record_area_exception ADD INDEX index_trigger_time (trigger_time) USING BTREE');
 
 -- 更新表 b_present_car_plate_record 所有字段和索引
 ALTER TABLE b_present_car_plate_record COMMENT = '在场车车牌记录表';
@@ -1497,6 +1787,27 @@ CALL add_element_unless_exists('column', 'b_present_car_record_area', 'creator',
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'update_time', 'ALTER TABLE b_present_car_record_area ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'updater', 'ALTER TABLE b_present_car_record_area ADD COLUMN `updater` varchar(100) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 CALL add_element_unless_exists('column', 'b_present_car_record_area', 'data_source', 'ALTER TABLE b_present_car_record_area ADD COLUMN `data_source` tinyint(1) DEFAULT "0" COMMENT "数据来源 0：区域相机 1：立体车位" AFTER updater;');
+CALL add_element_unless_exists('index', 'b_present_car_record_area', 'udx_plate_no', 'ALTER TABLE b_present_car_record_area ADD UNIQUE INDEX udx_plate_no (plate_no) USING BTREE');
+
+-- 更新表 b_present_car_record_area_bak 所有字段和索引
+ALTER TABLE b_present_car_record_area_bak COMMENT = '在场车辆表（区域相机使用）';
+ALTER TABLE b_present_car_record_area_bak ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'id', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'area_camera_id', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `area_camera_id` int(11) DEFAULT NULL COMMENT "区域相机id" AFTER id;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'area_camera_ip', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `area_camera_ip` varchar(255) DEFAULT NULL COMMENT "区域相机ip" AFTER area_camera_id;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'floor_id', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER area_camera_ip;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'event_id', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `event_id` varchar(36) DEFAULT NULL COMMENT "事件id" AFTER floor_id;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'area_id', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `area_id` int(11) DEFAULT NULL COMMENT "区域id" AFTER event_id;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'plate_no', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `plate_no` varchar(100) DEFAULT NULL COMMENT "车牌号" AFTER area_id;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'plate_no_simple', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `plate_no_simple` varchar(64) DEFAULT NULL COMMENT "纯数字字母车牌" AFTER plate_no;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'plate_no_color', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `plate_no_color` varchar(10) DEFAULT NULL COMMENT "车牌底色" AFTER plate_no_simple;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'car_image_url', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `car_image_url` varchar(255) DEFAULT NULL COMMENT "车辆抓拍照片路径" AFTER plate_no_color;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'in_time', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `in_time` datetime DEFAULT NULL COMMENT "入车时间" AFTER car_image_url;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'create_time', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER in_time;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'creator', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `creator` varchar(100) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'update_time', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'updater', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `updater` varchar(100) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('column', 'b_present_car_record_area_bak', 'data_source', 'ALTER TABLE b_present_car_record_area_bak ADD COLUMN `data_source` tinyint(1) DEFAULT "0" COMMENT "数据来源 0：区域相机 1：立体车位" AFTER updater;');
 
 -- 更新表 b_recognition_record 所有字段和索引
 ALTER TABLE b_recognition_record COMMENT = '识别记录表';
@@ -1507,6 +1818,8 @@ CALL add_element_unless_exists('column', 'b_recognition_record', 'plate_no', 'AL
 CALL add_element_unless_exists('column', 'b_recognition_record', 'car_image_url', 'ALTER TABLE b_recognition_record ADD COLUMN `car_image_url` varchar(255) DEFAULT NULL COMMENT "车辆照片地址（相对路径）" AFTER plate_no;');
 CALL add_element_unless_exists('column', 'b_recognition_record', 'plate_no_reliability', 'ALTER TABLE b_recognition_record ADD COLUMN `plate_no_reliability` int(11) DEFAULT NULL COMMENT "图片识别车牌可信度" AFTER car_image_url;');
 CALL add_element_unless_exists('column', 'b_recognition_record', 'create_time', 'ALTER TABLE b_recognition_record ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER plate_no_reliability;');
+CALL add_element_unless_exists('column', 'b_recognition_record', 'plate_no_simple', 'ALTER TABLE b_recognition_record ADD COLUMN `plate_no_simple` varchar(64) DEFAULT NULL COMMENT "纯数字字母车牌" AFTER create_time;');
+CALL add_element_unless_exists('index', 'b_recognition_record', 'idx_create_time', 'ALTER TABLE b_recognition_record ADD INDEX idx_create_time (create_time) USING BTREE');
 
 -- 更新表 berth_rate_info 所有字段和索引
 ALTER TABLE berth_rate_info COMMENT = '泊位使用率信息表';
@@ -1519,6 +1832,19 @@ CALL add_element_unless_exists('column', 'berth_rate_info', 'berth_type', 'ALTER
 CALL add_element_unless_exists('column', 'berth_rate_info', 'berth_info', 'ALTER TABLE berth_rate_info ADD COLUMN `berth_info` varchar(256) DEFAULT NULL COMMENT "泊位占用信息,如B1:100,B2:100这样的数据" AFTER berth_type;');
 CALL add_element_unless_exists('column', 'berth_rate_info', 'create_time', 'ALTER TABLE berth_rate_info ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER berth_info;');
 CALL add_element_unless_exists('column', 'berth_rate_info', 'update_time', 'ALTER TABLE berth_rate_info ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
+
+-- 更新表 burying_point_data_record 所有字段和索引
+ALTER TABLE burying_point_data_record COMMENT = '埋点数据记录表';
+ALTER TABLE burying_point_data_record ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'id', 'ALTER TABLE burying_point_data_record ADD COLUMN `id` varchar(32) NOT NULL COMMENT "主键 uuid";');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'type', 'ALTER TABLE burying_point_data_record ADD COLUMN `type` tinyint(1) DEFAULT "0" COMMENT "数据来源 0场端 1云端" AFTER id;');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'record_time', 'ALTER TABLE burying_point_data_record ADD COLUMN `record_time` varchar(32) DEFAULT NULL COMMENT "埋点数据记录时间（yyyy-MM-dd格式）" AFTER type;');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'event_type', 'ALTER TABLE burying_point_data_record ADD COLUMN `event_type` varchar(64) DEFAULT NULL COMMENT "事件类型 miniPro_findcar_suc-小程序找车成功 miniPro_findcar_fail-小程序找车失败 miniPro_routeplan_suc-小程序路线规划成功 miniPro_navi_suc-小程序导航使用 miniPro_navi_to_dest-小程序导航到终点 machine_findcar_suc-找车机找车成功 machine_routeplan_suc-找车机路线规划成功" AFTER record_time;');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'create_time', 'ALTER TABLE burying_point_data_record ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER event_type;');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'creator', 'ALTER TABLE burying_point_data_record ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'update_time', 'ALTER TABLE burying_point_data_record ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
+CALL add_element_unless_exists('column', 'burying_point_data_record', 'updater', 'ALTER TABLE burying_point_data_record ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('index', 'burying_point_data_record', 'idx_record_time', 'ALTER TABLE burying_point_data_record ADD INDEX idx_record_time (record_time) USING BTREE');
 
 -- 更新表 color_transparency_styles 所有字段和索引
 ALTER TABLE color_transparency_styles COMMENT = '颜色透明度配置表';
@@ -1571,6 +1897,44 @@ CALL add_element_unless_exists('column', 'device_escalation', 'create_time', 'AL
 CALL add_element_unless_exists('column', 'device_escalation', 'update_time', 'ALTER TABLE device_escalation ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
 CALL add_element_unless_exists('column', 'device_escalation', 'exception', 'ALTER TABLE device_escalation ADD COLUMN `exception` tinyint(1) DEFAULT "0" COMMENT "异常问题(0：正常， 1：车位编号重复， 2：无车位编号)" AFTER update_time;');
 
+-- 更新表 device_event_log 所有字段和索引
+ALTER TABLE device_event_log COMMENT = '设备事件记录表';
+ALTER TABLE device_event_log ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'device_event_log', 'id', 'ALTER TABLE device_event_log ADD COLUMN `id` bigint(20) NOT NULL COMMENT "主键";');
+CALL add_element_unless_exists('column', 'device_event_log', 'device_id', 'ALTER TABLE device_event_log ADD COLUMN `device_id` bigint(20) DEFAULT NULL COMMENT "设备id" AFTER id;');
+CALL add_element_unless_exists('column', 'device_event_log', 'device_type', 'ALTER TABLE device_event_log ADD COLUMN `device_type` tinyint(4) DEFAULT NULL COMMENT "设备类型" AFTER device_id;');
+CALL add_element_unless_exists('column', 'device_event_log', 'device_addr', 'ALTER TABLE device_event_log ADD COLUMN `device_addr` varchar(32) DEFAULT NULL COMMENT "设备地址（ip或拨码）" AFTER device_type;');
+CALL add_element_unless_exists('column', 'device_event_log', 'event_type', 'ALTER TABLE device_event_log ADD COLUMN `event_type` tinyint(4) DEFAULT NULL COMMENT "事件类型（1上线，2离线）" AFTER device_addr;');
+CALL add_element_unless_exists('column', 'device_event_log', 'event_time', 'ALTER TABLE device_event_log ADD COLUMN `event_time` datetime DEFAULT NULL COMMENT "故障时间" AFTER event_type;');
+CALL add_element_unless_exists('column', 'device_event_log', 'event_remark', 'ALTER TABLE device_event_log ADD COLUMN `event_remark` varchar(255) DEFAULT NULL COMMENT "事件备注" AFTER event_time;');
+CALL add_element_unless_exists('column', 'device_event_log', 'create_time', 'ALTER TABLE device_event_log ADD COLUMN `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT "创建时间" AFTER event_remark;');
+CALL add_element_unless_exists('column', 'device_event_log', 'update_time', 'ALTER TABLE device_event_log ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
+
+-- 更新表 device_info 所有字段和索引
+ALTER TABLE device_info COMMENT = '设备表';
+ALTER TABLE device_info ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'device_info', 'id', 'ALTER TABLE device_info ADD COLUMN `id` bigint(20) NOT NULL COMMENT "雪花算法生成的id";');
+CALL add_element_unless_exists('column', 'device_info', 'device_type', 'ALTER TABLE device_info ADD COLUMN `device_type` tinyint(4) NOT NULL COMMENT "设备类型  1=车位相机  2=超声波探测器  3=LED屏  4=找车机  5=车位灯 6 LCD屏  7节点设备" AFTER id;');
+CALL add_element_unless_exists('column', 'device_info', 'protocol_type', 'ALTER TABLE device_info ADD COLUMN `protocol_type` int(11) DEFAULT NULL COMMENT "设备协议类型  101=车位相机  201=超声波  301=TCP网络屏  302=485屏  401=FCCC  501=相机车位灯  502=引导双色灯  503=引导多彩灯 601 LCD屏 701 TCP-4字节 702 8字节 703 10字节  711 485 712=TCP节点" AFTER device_type;');
+CALL add_element_unless_exists('column', 'device_info', 'connect_type', 'ALTER TABLE device_info ADD COLUMN `connect_type` tinyint(4) DEFAULT NULL COMMENT "连接方式  1=直连  2=间连" AFTER protocol_type;');
+CALL add_element_unless_exists('column', 'device_info', 'node_device_addr', 'ALTER TABLE device_info ADD COLUMN `node_device_addr` varchar(255) DEFAULT "" COMMENT "节点设备地址" AFTER connect_type;');
+CALL add_element_unless_exists('column', 'device_info', 'device_addr', 'ALTER TABLE device_info ADD COLUMN `device_addr` varchar(255) DEFAULT NULL COMMENT "设备地址（业务方存储原格式地址）--已弃用" AFTER node_device_addr;');
+CALL add_element_unless_exists('column', 'device_info', 'node_device_addr_suffix', 'ALTER TABLE device_info ADD COLUMN `node_device_addr_suffix` varchar(255) DEFAULT "" COMMENT "节点设备地址，IP不带前缀" AFTER device_addr;');
+CALL add_element_unless_exists('column', 'device_info', 'device_addr_ip', 'ALTER TABLE device_info ADD COLUMN `device_addr_ip` varchar(255) NOT NULL COMMENT "设备地址（IP或者拨码）拨码格式如01，001" AFTER node_device_addr_suffix;');
+CALL add_element_unless_exists('column', 'device_info', 'device_addr_ip_suffix', 'ALTER TABLE device_info ADD COLUMN `device_addr_ip_suffix` varchar(255) NOT NULL DEFAULT "" COMMENT "设备地址，IP不带后前缀" AFTER device_addr_ip;');
+CALL add_element_unless_exists('column', 'device_info', 'remark', 'ALTER TABLE device_info ADD COLUMN `remark` varchar(255) DEFAULT NULL COMMENT "备注" AFTER device_addr_ip_suffix;');
+CALL add_element_unless_exists('column', 'device_info', 'communicate_type', 'ALTER TABLE device_info ADD COLUMN `communicate_type` tinyint(4) DEFAULT NULL COMMENT "通讯方式  1=TCP  2=485" AFTER remark;');
+CALL add_element_unless_exists('column', 'device_info', 'online_status', 'ALTER TABLE device_info ADD COLUMN `online_status` tinyint(1) DEFAULT "0" COMMENT "在线状态  0=离线  1=在线" AFTER communicate_type;');
+CALL add_element_unless_exists('column', 'device_info', 'working_status', 'ALTER TABLE device_info ADD COLUMN `working_status` tinyint(1) DEFAULT "2" COMMENT "工作状态  0=故障  1=正常  2=未知  3=预警" AFTER online_status;');
+CALL add_element_unless_exists('column', 'device_info', 'data_source', 'ALTER TABLE device_info ADD COLUMN `data_source` int(11) DEFAULT NULL COMMENT "数据来源 1 车位表  2 主屏表  3 节点表" AFTER working_status;');
+CALL add_element_unless_exists('column', 'device_info', 'floor_id', 'ALTER TABLE device_info ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER data_source;');
+CALL add_element_unless_exists('column', 'device_info', 'relate_park_num', 'ALTER TABLE device_info ADD COLUMN `relate_park_num` int(11) DEFAULT NULL COMMENT "关联车位数" AFTER floor_id;');
+CALL add_element_unless_exists('column', 'device_info', 'create_time', 'ALTER TABLE device_info ADD COLUMN `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT "创建时间" AFTER relate_park_num;');
+CALL add_element_unless_exists('column', 'device_info', 'update_time', 'ALTER TABLE device_info ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
+CALL add_element_unless_exists('column', 'device_info', 'working_status_details', 'ALTER TABLE device_info ADD COLUMN `working_status_details` varchar(256) DEFAULT NULL COMMENT "运行工作状态详情" AFTER update_time;');
+CALL add_element_unless_exists('column', 'device_info', 'enter_status', 'ALTER TABLE device_info ADD COLUMN `enter_status` tinyint(1) DEFAULT "1" COMMENT "是否录入状态  0=未录入  1=已录入" AFTER working_status_details;');
+CALL add_element_unless_exists('index', 'device_info', 'udx_node_device_addr_suffix_device_addr_ip_suffix', 'ALTER TABLE device_info ADD UNIQUE INDEX udx_node_device_addr_suffix_device_addr_ip_suffix (node_device_addr_suffix) USING BTREE');
+
 -- 更新表 element_beacon 所有字段和索引
 ALTER TABLE element_beacon COMMENT = '蓝牙信标';
 ALTER TABLE element_beacon ROW_FORMAT=DYNAMIC;
@@ -1608,9 +1972,10 @@ CALL add_element_unless_exists('column', 'element_connector', 'id', 'ALTER TABLE
 CALL add_element_unless_exists('column', 'element_connector', 'lot_id', 'ALTER TABLE element_connector ADD COLUMN `lot_id` int(11) DEFAULT NULL COMMENT "车场id lot_info id" AFTER id;');
 CALL add_element_unless_exists('column', 'element_connector', 'floor_id', 'ALTER TABLE element_connector ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层id" AFTER lot_id;');
 CALL add_element_unless_exists('column', 'element_connector', 'name', 'ALTER TABLE element_connector ADD COLUMN `name` varchar(255) DEFAULT NULL COMMENT "名称" AFTER floor_id;');
-CALL add_element_unless_exists('column', 'element_connector', 'species', 'ALTER TABLE element_connector ADD COLUMN `species` tinyint(4) DEFAULT NULL COMMENT "种类 1：直梯 2：护梯 3：楼梯 4：出入口" AFTER name;');
+CALL add_element_unless_exists('column', 'element_connector', 'species', 'ALTER TABLE element_connector ADD COLUMN `species` tinyint(4) DEFAULT NULL COMMENT "种类 1：直梯 2：护梯 3：楼梯 4：人行出入口 5：车场入口（车行） 6：车场出口（车行）  7：车场出入口（车行） 8：场内出口（车行） 9：场内入口（车行） 10：场内出入口（车行）" AFTER name;');
 CALL add_element_unless_exists('column', 'element_connector', 'associated_connector_ids', 'ALTER TABLE element_connector ADD COLUMN `associated_connector_ids` varchar(255) DEFAULT NULL COMMENT "关联设施ids" AFTER species;');
-CALL add_element_unless_exists('column', 'element_connector', 'deleted', 'ALTER TABLE element_connector ADD COLUMN `deleted` tinyint(1) DEFAULT "0" COMMENT "是否删除0未删除1已删除" AFTER associated_connector_ids;');
+CALL add_element_unless_exists('column', 'element_connector', 'area_camera_id', 'ALTER TABLE element_connector ADD COLUMN `area_camera_id` int(11) DEFAULT NULL COMMENT "区域相机id" AFTER associated_connector_ids;');
+CALL add_element_unless_exists('column', 'element_connector', 'deleted', 'ALTER TABLE element_connector ADD COLUMN `deleted` tinyint(1) DEFAULT "0" COMMENT "是否删除0未删除1已删除" AFTER area_camera_id;');
 CALL add_element_unless_exists('column', 'element_connector', 'create_time', 'ALTER TABLE element_connector ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER deleted;');
 CALL add_element_unless_exists('column', 'element_connector', 'creator', 'ALTER TABLE element_connector ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'element_connector', 'update_time', 'ALTER TABLE element_connector ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
@@ -1746,6 +2111,12 @@ CALL add_element_unless_exists('column', 'element_park', 'create_time', 'ALTER T
 CALL add_element_unless_exists('column', 'element_park', 'updater', 'ALTER TABLE element_park ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'element_park', 'update_time', 'ALTER TABLE element_park ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER updater;');
 CALL add_element_unless_exists('column', 'element_park', 'parking_capture', 'ALTER TABLE element_park ADD COLUMN `parking_capture` varchar(255) DEFAULT NULL COMMENT "车位相机抓拍照片路径" AFTER update_time;');
+CALL add_element_unless_exists('column', 'element_park', 'device_type', 'ALTER TABLE element_park ADD COLUMN `device_type` tinyint(4) DEFAULT "1" COMMENT "设备类型（车位相机 1 /超声波探测器  2）默认为1" AFTER parking_capture;');
+CALL add_element_unless_exists('column', 'element_park', 'parking_lock_equipment_no', 'ALTER TABLE element_park ADD COLUMN `parking_lock_equipment_no` varchar(255) DEFAULT NULL COMMENT "车位锁设备编号：仅长度限制36字符" AFTER device_type;');
+CALL add_element_unless_exists('column', 'element_park', 'parking_property_right', 'ALTER TABLE element_park ADD COLUMN `parking_property_right` varchar(255) DEFAULT NULL COMMENT "车位产权：仅长度限制16字符" AFTER parking_lock_equipment_no;');
+CALL add_element_unless_exists('column', 'element_park', 'charging_type', 'ALTER TABLE element_park ADD COLUMN `charging_type` varchar(255) DEFAULT NULL COMMENT "充电类型：无充电（0）、快充（2）、慢充（1）" AFTER parking_property_right;');
+CALL add_element_unless_exists('column', 'element_park', 'charging_brand', 'ALTER TABLE element_park ADD COLUMN `charging_brand` varchar(255) DEFAULT NULL COMMENT "充电品牌：仅长度限制36字符" AFTER charging_type;');
+CALL add_element_unless_exists('column', 'element_park', 'enable', 'ALTER TABLE element_park ADD COLUMN `enable` tinyint(4) DEFAULT "1" COMMENT "启用/禁用，默认为启用(0 未启用 1 启用)" AFTER charging_brand;');
 CALL add_element_unless_exists('index', 'element_park', 'idx_park_addr', 'ALTER TABLE element_park ADD INDEX idx_park_addr (park_addr) USING BTREE');
 CALL add_element_unless_exists('index', 'element_park', 'index_area_id', 'ALTER TABLE element_park ADD INDEX index_area_id (area_id) USING BTREE');
 CALL add_element_unless_exists('index', 'element_park', 'index_park_no', 'ALTER TABLE element_park ADD INDEX index_park_no (park_no) USING BTREE');
@@ -1779,8 +2150,8 @@ CALL add_element_unless_exists('column', 'element_screen', 'name', 'ALTER TABLE 
 CALL add_element_unless_exists('column', 'element_screen', 'species', 'ALTER TABLE element_screen ADD COLUMN `species` tinyint(4) DEFAULT NULL COMMENT "种类 1：LED屏 2：LCD屏" AFTER name;');
 CALL add_element_unless_exists('column', 'element_screen', 'screen_addr', 'ALTER TABLE element_screen ADD COLUMN `screen_addr` int(11) DEFAULT NULL COMMENT "屏地址" AFTER species;');
 CALL add_element_unless_exists('column', 'element_screen', 'sub_screen_num', 'ALTER TABLE element_screen ADD COLUMN `sub_screen_num` tinyint(4) DEFAULT NULL COMMENT "子屏数 1：单向屏 2：双向屏 3：三向屏" AFTER screen_addr;');
-CALL add_element_unless_exists('column', 'element_screen', 'screen_type', 'ALTER TABLE element_screen ADD COLUMN `screen_type` tinyint(4) DEFAULT NULL COMMENT "屏类型 1-单拼接屏 2-双拼接屏 3-三拼接屏" AFTER sub_screen_num;');
-CALL add_element_unless_exists('column', 'element_screen', 'show_template', 'ALTER TABLE element_screen ADD COLUMN `show_template` tinyint(4) DEFAULT NULL COMMENT "展示模板" AFTER screen_type;');
+CALL add_element_unless_exists('column', 'element_screen', 'screen_type', 'ALTER TABLE element_screen ADD COLUMN `screen_type` tinyint(4) DEFAULT NULL COMMENT "屏类型 0=一体屏 1=双拼接屏" AFTER sub_screen_num;');
+CALL add_element_unless_exists('column', 'element_screen', 'show_template', 'ALTER TABLE element_screen ADD COLUMN `show_template` tinyint(4) DEFAULT NULL COMMENT "展示模板  0=非标模板 1=模板一" AFTER screen_type;');
 CALL add_element_unless_exists('column', 'element_screen', 'remark', 'ALTER TABLE element_screen ADD COLUMN `remark` varchar(255) DEFAULT "" COMMENT "备注" AFTER show_template;');
 CALL add_element_unless_exists('column', 'element_screen', 'deleted', 'ALTER TABLE element_screen ADD COLUMN `deleted` tinyint(1) DEFAULT "0" COMMENT "是否删除 0未删除 1已删除" AFTER remark;');
 CALL add_element_unless_exists('column', 'element_screen', 'create_time', 'ALTER TABLE element_screen ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER deleted;');
@@ -1801,7 +2172,7 @@ CALL add_element_unless_exists('column', 'element_screen_child', 'description', 
 CALL add_element_unless_exists('column', 'element_screen_child', 'screen_species', 'ALTER TABLE element_screen_child ADD COLUMN `screen_species` tinyint(4) DEFAULT NULL COMMENT "屏种类 1：LED屏 2：LCD屏" AFTER description;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'screen_category', 'ALTER TABLE element_screen_child ADD COLUMN `screen_category` tinyint(4) DEFAULT "1" COMMENT "屏类别   1：LED网络屏、  2：485总屏、3：485子屏" AFTER screen_species;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'screen_type', 'ALTER TABLE element_screen_child ADD COLUMN `screen_type` tinyint(4) DEFAULT "1" COMMENT "屏类型   1：普通屏、2：总屏" AFTER screen_category;');
-CALL add_element_unless_exists('column', 'element_screen_child', 'show_type', 'ALTER TABLE element_screen_child ADD COLUMN `show_type` tinyint(4) DEFAULT "1" COMMENT "展示内容   1：关联车位空车位数、2：关联车位占用车位数、3：车场总空车位数、4：车位总占用车位数、5：固定显示数值" AFTER screen_type;');
+CALL add_element_unless_exists('column', 'element_screen_child', 'show_type', 'ALTER TABLE element_screen_child ADD COLUMN `show_type` tinyint(4) DEFAULT "1" COMMENT "展示内容   1：关联车位空车位数、2：关联车位占用车位数、3：车场总空车位数、4：车位总占用车位数、5：固定显示数值 6：关联区域剩余车位数" AFTER screen_type;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'area_id', 'ALTER TABLE element_screen_child ADD COLUMN `area_id` int(11) DEFAULT NULL COMMENT "区域id" AFTER show_type;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'revise_num', 'ALTER TABLE element_screen_child ADD COLUMN `revise_num` int(11) DEFAULT "0" COMMENT "校正数值 （结果数值加上这个值）" AFTER area_id;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'critical_num', 'ALTER TABLE element_screen_child ADD COLUMN `critical_num` int(11) DEFAULT "0" COMMENT "临界值（小于临界值直接输出0）" AFTER revise_num;');
@@ -1816,6 +2187,7 @@ CALL add_element_unless_exists('column', 'element_screen_child', 'create_time', 
 CALL add_element_unless_exists('column', 'element_screen_child', 'creator', 'ALTER TABLE element_screen_child ADD COLUMN `creator` varchar(50) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'update_time', 'ALTER TABLE element_screen_child ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'element_screen_child', 'updater', 'ALTER TABLE element_screen_child ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('column', 'element_screen_child', 'relation_area_id_list', 'ALTER TABLE element_screen_child ADD COLUMN `relation_area_id_list` varchar(256) DEFAULT NULL COMMENT "子屏关联区域id集合信息，以英文,分隔开" AFTER updater;');
 CALL add_element_unless_exists('index', 'element_screen_child', 'index_parent_id', 'ALTER TABLE element_screen_child ADD INDEX index_parent_id (parent_id) USING BTREE');
 CALL add_element_unless_exists('index', 'element_screen_child', 'index_screen_addr', 'ALTER TABLE element_screen_child ADD INDEX index_screen_addr (screen_addr) USING BTREE');
 
@@ -1878,16 +2250,18 @@ CALL add_element_unless_exists('column', 'floor_info', 'remark', 'ALTER TABLE fl
 CALL add_element_unless_exists('column', 'floor_info', 'floor_unique_identification', 'ALTER TABLE floor_info ADD COLUMN `floor_unique_identification` varchar(32) DEFAULT NULL COMMENT "楼层唯一标识字段" AFTER remark;');
 CALL add_element_unless_exists('column', 'floor_info', 'floor_capture', 'ALTER TABLE floor_info ADD COLUMN `floor_capture` varchar(255) DEFAULT NULL COMMENT "楼层底图截图保存URL" AFTER floor_unique_identification;');
 CALL add_element_unless_exists('column', 'floor_info', 'capture_source', 'ALTER TABLE floor_info ADD COLUMN `capture_source` tinyint(1) DEFAULT "0" COMMENT "楼层底图来源方式，0:3D手动截图 1:2D地图照片迁移" AFTER floor_capture;');
+CALL add_element_unless_exists('column', 'floor_info', 'belong_region', 'ALTER TABLE floor_info ADD COLUMN `belong_region` varchar(32) DEFAULT NULL COMMENT "所属区域" AFTER capture_source;');
 
 -- 更新表 general_config 所有字段和索引
 ALTER TABLE general_config COMMENT = '通用参数配置信息表';
 ALTER TABLE general_config ROW_FORMAT=DYNAMIC;
 CALL add_element_unless_exists('column', 'general_config', 'id', 'ALTER TABLE general_config ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
-CALL add_element_unless_exists('column', 'general_config', 'config_key', 'ALTER TABLE general_config ADD COLUMN `config_key` varchar(255) DEFAULT NULL COMMENT "字段唯一标识，禁止重复" AFTER id;');
+CALL add_element_unless_exists('column', 'general_config', 'config_key', 'ALTER TABLE general_config ADD COLUMN `config_key` varchar(128) DEFAULT NULL COMMENT "字段唯一标识，禁止重复" AFTER id;');
 CALL add_element_unless_exists('column', 'general_config', 'description', 'ALTER TABLE general_config ADD COLUMN `description` varchar(255) DEFAULT NULL COMMENT "字段详细作用描述" AFTER config_key;');
 CALL add_element_unless_exists('column', 'general_config', 'config_value', 'ALTER TABLE general_config ADD COLUMN `config_value` varchar(255) DEFAULT NULL COMMENT "字段具体配置信息" AFTER description;');
-CALL add_element_unless_exists('column', 'general_config', 'create_time', 'ALTER TABLE general_config ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER config_value;');
+CALL add_element_unless_exists('column', 'general_config', 'create_time', 'ALTER TABLE general_config ADD COLUMN `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT "创建时间" AFTER config_value;');
 CALL add_element_unless_exists('column', 'general_config', 'update_time', 'ALTER TABLE general_config ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
+CALL add_element_unless_exists('index', 'general_config', 'udx_config_key', 'ALTER TABLE general_config ADD UNIQUE INDEX udx_config_key (config_key) USING BTREE');
 
 -- 更新表 image_styles 所有字段和索引
 ALTER TABLE image_styles COMMENT = '图标配置表';
@@ -1956,6 +2330,7 @@ CALL add_element_unless_exists('column', 'info_machine_config', 'foregin_languag
 CALL add_element_unless_exists('column', 'info_machine_config', 'route_qr_switch', 'ALTER TABLE info_machine_config ADD COLUMN `route_qr_switch` tinyint(4) DEFAULT "0" COMMENT "找车路线二维码开关  0=关  1=开" AFTER foregin_language;');
 CALL add_element_unless_exists('column', 'info_machine_config', 'route_qr_type', 'ALTER TABLE info_machine_config ADD COLUMN `route_qr_type` tinyint(4) DEFAULT "0" COMMENT "找车路线二维码类型  0=自定义二维码" AFTER route_qr_switch;');
 CALL add_element_unless_exists('column', 'info_machine_config', 'route_qr_url', 'ALTER TABLE info_machine_config ADD COLUMN `route_qr_url` varchar(255) DEFAULT NULL COMMENT "找车路线二维码图片路径" AFTER route_qr_type;');
+CALL add_element_unless_exists('column', 'info_machine_config', 'is_road_endpoint_highlight', 'ALTER TABLE info_machine_config ADD COLUMN `is_road_endpoint_highlight` tinyint(1) DEFAULT "1" COMMENT "路段规划后是否高亮终点  0=否  1=是" AFTER route_qr_url;');
 
 -- 更新表 ini_config 所有字段和索引
 ALTER TABLE ini_config COMMENT = 'C++参数配置表';
@@ -2030,6 +2405,28 @@ CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'creator', 
 CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'update_time', 'ALTER TABLE lcd_advertisement_scheme ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'lcd_advertisement_scheme', 'updater', 'ALTER TABLE lcd_advertisement_scheme ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
 
+-- 更新表 lcd_screen_cmd_log 所有字段和索引
+ALTER TABLE lcd_screen_cmd_log COMMENT = 'LCD屏第三方下发指令日志记录表';
+ALTER TABLE lcd_screen_cmd_log ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'id', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'cmd', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `cmd` varchar(255) DEFAULT NULL COMMENT "指令编码" AFTER id;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'reqid', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `reqid` varchar(32) DEFAULT NULL COMMENT "请求ID" AFTER cmd;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'ts', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `ts` bigint(20) DEFAULT NULL COMMENT "时间戳" AFTER reqid;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'ip', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `ip` varchar(32) DEFAULT NULL COMMENT "ip地址" AFTER ts;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'type', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `type` tinyint(1) DEFAULT NULL COMMENT "屏标识(0:一体屏,1:双拼接屏左屏,2:双拼接屏右屏)" AFTER ip;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'show_template', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `show_template` tinyint(4) DEFAULT NULL COMMENT "展示模板  0=非标模板 1=模板一" AFTER type;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'scene', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `scene` int(11) DEFAULT NULL COMMENT "场景:1标准引导;999非标页面" AFTER show_template;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'message', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `message` varchar(1000) DEFAULT NULL COMMENT "消息内容(全内容字符串)" AFTER scene;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'is_success', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `is_success` tinyint(1) DEFAULT "0" COMMENT "是否下发成功：0否，1是" AFTER message;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'error_result', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `error_result` varchar(1000) DEFAULT NULL COMMENT "异常执行命令结果" AFTER is_success;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'create_time', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT "创建时间" AFTER error_result;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'creator', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'update_time', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
+CALL add_element_unless_exists('column', 'lcd_screen_cmd_log', 'updater', 'ALTER TABLE lcd_screen_cmd_log ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('index', 'lcd_screen_cmd_log', 'index_ts', 'ALTER TABLE lcd_screen_cmd_log ADD INDEX index_ts (ts) USING BTREE');
+CALL add_element_unless_exists('index', 'lcd_screen_cmd_log', 'index_ip', 'ALTER TABLE lcd_screen_cmd_log ADD INDEX index_ip (ip) USING BTREE');
+CALL add_element_unless_exists('index', 'lcd_screen_cmd_log', 'index_create_time', 'ALTER TABLE lcd_screen_cmd_log ADD INDEX index_create_time (create_time) USING BTREE');
+
 -- 更新表 lcd_screen_config 所有字段和索引
 ALTER TABLE lcd_screen_config COMMENT = 'LCD屏配置';
 ALTER TABLE lcd_screen_config ROW_FORMAT=DYNAMIC;
@@ -2038,13 +2435,49 @@ CALL add_element_unless_exists('column', 'lcd_screen_config', 'element_screen_id
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'show_type', 'ALTER TABLE lcd_screen_config ADD COLUMN `show_type` tinyint(4) DEFAULT NULL COMMENT "显示内容 1：引导内容 2：广告" AFTER element_screen_id;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'attribute_id', 'ALTER TABLE lcd_screen_config ADD COLUMN `attribute_id` int(11) DEFAULT NULL COMMENT "若显示内容是 1，则为子屏id， 若显示内容为2 则为广告id" AFTER show_type;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'show_sort', 'ALTER TABLE lcd_screen_config ADD COLUMN `show_sort` int(11) DEFAULT NULL COMMENT "显示顺序" AFTER attribute_id;');
-CALL add_element_unless_exists('column', 'lcd_screen_config', 'belong_id', 'ALTER TABLE lcd_screen_config ADD COLUMN `belong_id` tinyint(4) DEFAULT NULL COMMENT "所属id id相同表示属于同一个物理屏" AFTER show_sort;');
+CALL add_element_unless_exists('column', 'lcd_screen_config', 'belong_id', 'ALTER TABLE lcd_screen_config ADD COLUMN `belong_id` tinyint(4) DEFAULT NULL COMMENT "所属id[id相同表示属于同一个物理屏]：屏标识(0:一体屏,1:双拼接屏左屏,2:双拼接屏右屏)" AFTER show_sort;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'deleted', 'ALTER TABLE lcd_screen_config ADD COLUMN `deleted` tinyint(1) DEFAULT "0" COMMENT "是否删除0未删除1已删除" AFTER belong_id;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'create_time', 'ALTER TABLE lcd_screen_config ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER deleted;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'creator', 'ALTER TABLE lcd_screen_config ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'update_time', 'ALTER TABLE lcd_screen_config ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'lcd_screen_config', 'updater', 'ALTER TABLE lcd_screen_config ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('column', 'lcd_screen_config', 'background_image_url', 'ALTER TABLE lcd_screen_config ADD COLUMN `background_image_url` varchar(255) DEFAULT NULL COMMENT "背景图片地址" AFTER updater;');
+CALL add_element_unless_exists('column', 'lcd_screen_config', 'title', 'ALTER TABLE lcd_screen_config ADD COLUMN `title` varchar(32) DEFAULT "空位" COMMENT "标题" AFTER background_image_url;');
+CALL add_element_unless_exists('column', 'lcd_screen_config', 'subtitle', 'ALTER TABLE lcd_screen_config ADD COLUMN `subtitle` varchar(32) DEFAULT "Parking" COMMENT "副标题" AFTER title;');
+CALL add_element_unless_exists('column', 'lcd_screen_config', 'title_position', 'ALTER TABLE lcd_screen_config ADD COLUMN `title_position` tinyint(1) DEFAULT "0" COMMENT "标题位置 0：左边  1：右边" AFTER subtitle;');
 CALL add_element_unless_exists('index', 'lcd_screen_config', 'index_element_screen_id', 'ALTER TABLE lcd_screen_config ADD INDEX index_element_screen_id (element_screen_id) USING BTREE');
+
+-- 更新表 light_scheme_group 所有字段和索引
+ALTER TABLE light_scheme_group COMMENT = '分组车位灯方案（立体车位使用）';
+ALTER TABLE light_scheme_group ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'light_scheme_group', 'id', 'ALTER TABLE light_scheme_group ADD COLUMN `id` bigint(20) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'group_name', 'ALTER TABLE light_scheme_group ADD COLUMN `group_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT "分组名称" AFTER id;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'device_type', 'ALTER TABLE light_scheme_group ADD COLUMN `device_type` tinyint(4) DEFAULT NULL COMMENT "设备类型  1-车位相机灯  2-超声波探测器灯" AFTER group_name;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'camera_ip', 'ALTER TABLE light_scheme_group ADD COLUMN `camera_ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT "车位相机ip" AFTER device_type;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'detector_device_type', 'ALTER TABLE light_scheme_group ADD COLUMN `detector_device_type` tinyint(4) DEFAULT NULL COMMENT "超声波设备类型  1-TCP  2-485" AFTER camera_ip;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'detector_ip', 'ALTER TABLE light_scheme_group ADD COLUMN `detector_ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT "超声波探测器ip" AFTER detector_device_type;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'detector_node_dsp', 'ALTER TABLE light_scheme_group ADD COLUMN `detector_node_dsp` int(11) DEFAULT NULL COMMENT "超声波节点拨码" AFTER detector_ip;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'detector_dsp', 'ALTER TABLE light_scheme_group ADD COLUMN `detector_dsp` int(11) DEFAULT NULL COMMENT "超声波探测器拨码" AFTER detector_node_dsp;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'light_type', 'ALTER TABLE light_scheme_group ADD COLUMN `light_type` tinyint(4) DEFAULT NULL COMMENT "车位灯类型 1-有线双色灯 2-有线多彩灯" AFTER detector_dsp;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'light_addr', 'ALTER TABLE light_scheme_group ADD COLUMN `light_addr` int(11) DEFAULT NULL COMMENT "车位灯地址（转化后）" AFTER light_type;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'free_color', 'ALTER TABLE light_scheme_group ADD COLUMN `free_color` tinyint(4) DEFAULT NULL COMMENT "空闲颜色" AFTER light_addr;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'occupy_color', 'ALTER TABLE light_scheme_group ADD COLUMN `occupy_color` tinyint(4) DEFAULT NULL COMMENT "占用颜色" AFTER free_color;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'last_color', 'ALTER TABLE light_scheme_group ADD COLUMN `last_color` tinyint(4) DEFAULT NULL COMMENT "上次下发颜色" AFTER occupy_color;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'create_by', 'ALTER TABLE light_scheme_group ADD COLUMN `create_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT "创建人" AFTER last_color;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'create_time', 'ALTER TABLE light_scheme_group ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER create_by;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'update_by', 'ALTER TABLE light_scheme_group ADD COLUMN `update_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT "更新人" AFTER create_time;');
+CALL add_element_unless_exists('column', 'light_scheme_group', 'update_time', 'ALTER TABLE light_scheme_group ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER update_by;');
+
+-- 更新表 light_scheme_group_relate 所有字段和索引
+ALTER TABLE light_scheme_group_relate COMMENT = '分组车位灯方案-车位关联（立体车位使用）';
+ALTER TABLE light_scheme_group_relate ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'light_scheme_group_relate', 'id', 'ALTER TABLE light_scheme_group_relate ADD COLUMN `id` bigint(20) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
+CALL add_element_unless_exists('column', 'light_scheme_group_relate', 'light_scheme_group_id', 'ALTER TABLE light_scheme_group_relate ADD COLUMN `light_scheme_group_id` bigint(20) DEFAULT NULL COMMENT "分组车位灯方案id" AFTER id;');
+CALL add_element_unless_exists('column', 'light_scheme_group_relate', 'element_park_id', 'ALTER TABLE light_scheme_group_relate ADD COLUMN `element_park_id` int(11) DEFAULT NULL COMMENT "车位id" AFTER light_scheme_group_id;');
+CALL add_element_unless_exists('column', 'light_scheme_group_relate', 'create_by', 'ALTER TABLE light_scheme_group_relate ADD COLUMN `create_by` varchar(255) DEFAULT NULL COMMENT "创建者" AFTER element_park_id;');
+CALL add_element_unless_exists('column', 'light_scheme_group_relate', 'create_time', 'ALTER TABLE light_scheme_group_relate ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER create_by;');
+CALL add_element_unless_exists('index', 'light_scheme_group_relate', 'idx_light_scheme_group_id', 'ALTER TABLE light_scheme_group_relate ADD INDEX idx_light_scheme_group_id (light_scheme_group_id) USING BTREE');
+CALL add_element_unless_exists('index', 'light_scheme_group_relate', 'idx_element_park_id', 'ALTER TABLE light_scheme_group_relate ADD INDEX idx_element_park_id (element_park_id) USING BTREE');
 
 -- 更新表 light_scheme_plan 所有字段和索引
 ALTER TABLE light_scheme_plan COMMENT = '车位灯方案下发计划';
@@ -2062,6 +2495,8 @@ CALL add_element_unless_exists('column', 'light_scheme_plan', 'create_time', 'AL
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'creator', 'ALTER TABLE light_scheme_plan ADD COLUMN `creator` varchar(64) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'update_time', 'ALTER TABLE light_scheme_plan ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'light_scheme_plan', 'updater', 'ALTER TABLE light_scheme_plan ADD COLUMN `updater` varchar(64) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('column', 'light_scheme_plan', 'light_addr', 'ALTER TABLE light_scheme_plan ADD COLUMN `light_addr` int(11) DEFAULT NULL COMMENT "车位灯地址" AFTER updater;');
+CALL add_element_unless_exists('column', 'light_scheme_plan', 'issuance_type', 'ALTER TABLE light_scheme_plan ADD COLUMN `issuance_type` tinyint(1) DEFAULT "0" COMMENT "下发类型 0：修改车位的车位灯方案 1：修改设备的车位灯方案" AFTER light_addr;');
 
 -- 更新表 light_scheme_plan_park_relation 所有字段和索引
 ALTER TABLE light_scheme_plan_park_relation COMMENT = '车位灯方案下发计划与车位关系表';
@@ -2093,6 +2528,7 @@ CALL add_element_unless_exists('column', 'lot_info', 'status', 'ALTER TABLE lot_
 CALL add_element_unless_exists('column', 'lot_info', 'machine_debug', 'ALTER TABLE lot_info ADD COLUMN `machine_debug` int(11) DEFAULT "0" COMMENT "找车机是否为调试模式(0 关闭 1 开启)" AFTER status;');
 CALL add_element_unless_exists('column', 'lot_info', 'lisence_authorize_code', 'ALTER TABLE lot_info ADD COLUMN `lisence_authorize_code` varchar(1024) DEFAULT NULL COMMENT "Lisence授权码" AFTER machine_debug;');
 CALL add_element_unless_exists('column', 'lot_info', 'lisence_trial_period', 'ALTER TABLE lot_info ADD COLUMN `lisence_trial_period` datetime DEFAULT NULL COMMENT "Lisence首次默认30天试用期(寻车服务首次启动时，开始生效)，开始试用时间" AFTER lisence_authorize_code;');
+CALL add_element_unless_exists('column', 'lot_info', 'default_show_map_type', 'ALTER TABLE lot_info ADD COLUMN `default_show_map_type` tinyint(1) DEFAULT "3" COMMENT "默认展示地图类型 2=2D地图，3=3D地图" AFTER lisence_trial_period;');
 
 -- 更新表 machine_advertisement_config 所有字段和索引
 ALTER TABLE machine_advertisement_config COMMENT = '找车机广告配置';
@@ -2153,6 +2589,41 @@ CALL add_element_unless_exists('column', 'node_device_relate', 'area_id', 'ALTER
 CALL add_element_unless_exists('column', 'node_device_relate', 'entrance_exit', 'ALTER TABLE node_device_relate ADD COLUMN `entrance_exit` tinyint(4) DEFAULT NULL COMMENT "相机放置类型  1：入口   2：出口   3：出入口" AFTER area_id;');
 CALL add_element_unless_exists('column', 'node_device_relate', 'entrance_exit_name', 'ALTER TABLE node_device_relate ADD COLUMN `entrance_exit_name` varchar(255) DEFAULT NULL COMMENT "枚举类型：  入口   出口  出入口" AFTER entrance_exit;');
 
+-- 更新表 operation_log 所有字段和索引
+ALTER TABLE operation_log COMMENT = '操作日志';
+ALTER TABLE operation_log ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'operation_log', 'id', 'ALTER TABLE operation_log ADD COLUMN `id` bigint(20) NOT NULL AUTO_INCREMENT" COMMENT "主键";');
+CALL add_element_unless_exists('column', 'operation_log', 'user_id', 'ALTER TABLE operation_log ADD COLUMN `user_id` int(11) DEFAULT NULL COMMENT "用户id" AFTER id;');
+CALL add_element_unless_exists('column', 'operation_log', 'user_name', 'ALTER TABLE operation_log ADD COLUMN `user_name` varchar(50) DEFAULT NULL COMMENT "用户名" AFTER user_id;');
+CALL add_element_unless_exists('column', 'operation_log', 'user_account', 'ALTER TABLE operation_log ADD COLUMN `user_account` varchar(50) DEFAULT NULL COMMENT "用户账号" AFTER user_name;');
+CALL add_element_unless_exists('column', 'operation_log', 'client_ip', 'ALTER TABLE operation_log ADD COLUMN `client_ip` varchar(50) DEFAULT NULL COMMENT "登录ip" AFTER user_account;');
+CALL add_element_unless_exists('column', 'operation_log', 'uri', 'ALTER TABLE operation_log ADD COLUMN `uri` varchar(255) DEFAULT NULL COMMENT "接口uri" AFTER client_ip;');
+CALL add_element_unless_exists('column', 'operation_log', 'operate_time', 'ALTER TABLE operation_log ADD COLUMN `operate_time` datetime DEFAULT NULL COMMENT "操作时间" AFTER uri;');
+CALL add_element_unless_exists('column', 'operation_log', 'operate_type', 'ALTER TABLE operation_log ADD COLUMN `operate_type` varchar(255) DEFAULT NULL COMMENT "操作内容" AFTER operate_time;');
+CALL add_element_unless_exists('column', 'operation_log', 'operate_detail', 'ALTER TABLE operation_log ADD COLUMN `operate_detail` longtext COMMENT "操作详情（接口地址，接口入参信息）" AFTER operate_type;');
+CALL add_element_unless_exists('column', 'operation_log', 'create_time', 'ALTER TABLE operation_log ADD COLUMN `create_time` datetime DEFAULT NULL COMMENT "创建时间" AFTER operate_detail;');
+CALL add_element_unless_exists('column', 'operation_log', 'create_by', 'ALTER TABLE operation_log ADD COLUMN `create_by` varchar(50) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
+CALL add_element_unless_exists('column', 'operation_log', 'update_time', 'ALTER TABLE operation_log ADD COLUMN `update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_by;');
+CALL add_element_unless_exists('column', 'operation_log', 'update_by', 'ALTER TABLE operation_log ADD COLUMN `update_by` varchar(50) DEFAULT NULL COMMENT "创建者" AFTER update_time;');
+CALL add_element_unless_exists('index', 'operation_log', 'idx_operation_time', 'ALTER TABLE operation_log ADD INDEX idx_operation_time (operate_time) USING BTREE');
+
+-- 更新表 overnight_record 所有字段和索引
+ALTER TABLE overnight_record COMMENT = '过夜车日志信息表';
+ALTER TABLE overnight_record ROW_FORMAT=DYNAMIC;
+CALL add_element_unless_exists('column', 'overnight_record', 'id', 'ALTER TABLE overnight_record ADD COLUMN `id` int(11) NOT NULL AUTO_INCREMENT" COMMENT "主键id";');
+CALL add_element_unless_exists('column', 'overnight_record', 'unique_id', 'ALTER TABLE overnight_record ADD COLUMN `unique_id` varchar(32) DEFAULT NULL COMMENT "在场车唯一ID" AFTER id;');
+CALL add_element_unless_exists('column', 'overnight_record', 'floor_id', 'ALTER TABLE overnight_record ADD COLUMN `floor_id` int(11) DEFAULT NULL COMMENT "楼层ID" AFTER unique_id;');
+CALL add_element_unless_exists('column', 'overnight_record', 'floor_name', 'ALTER TABLE overnight_record ADD COLUMN `floor_name` varchar(64) DEFAULT NULL COMMENT "楼层名称" AFTER floor_id;');
+CALL add_element_unless_exists('column', 'overnight_record', 'area_id', 'ALTER TABLE overnight_record ADD COLUMN `area_id` int(11) DEFAULT NULL COMMENT "区域ID" AFTER floor_name;');
+CALL add_element_unless_exists('column', 'overnight_record', 'area_name', 'ALTER TABLE overnight_record ADD COLUMN `area_name` varchar(64) DEFAULT NULL COMMENT "区域名称" AFTER area_id;');
+CALL add_element_unless_exists('column', 'overnight_record', 'park_no', 'ALTER TABLE overnight_record ADD COLUMN `park_no` varchar(64) DEFAULT NULL COMMENT "车位编号" AFTER area_name;');
+CALL add_element_unless_exists('column', 'overnight_record', 'plate_no', 'ALTER TABLE overnight_record ADD COLUMN `plate_no` varchar(64) DEFAULT NULL COMMENT "车牌号" AFTER park_no;');
+CALL add_element_unless_exists('column', 'overnight_record', 'in_time', 'ALTER TABLE overnight_record ADD COLUMN `in_time` datetime DEFAULT NULL COMMENT "停入时间" AFTER plate_no;');
+CALL add_element_unless_exists('column', 'overnight_record', 'park_duration', 'ALTER TABLE overnight_record ADD COLUMN `park_duration` varchar(64) DEFAULT NULL COMMENT "停放时长(单位：分钟)" AFTER in_time;');
+CALL add_element_unless_exists('column', 'overnight_record', 'record_time', 'ALTER TABLE overnight_record ADD COLUMN `record_time` datetime DEFAULT NULL COMMENT "记录数据时间" AFTER park_duration;');
+CALL add_element_unless_exists('column', 'overnight_record', 'create_time', 'ALTER TABLE overnight_record ADD COLUMN `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT "创建时间" AFTER record_time;');
+CALL add_element_unless_exists('column', 'overnight_record', 'update_time', 'ALTER TABLE overnight_record ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER create_time;');
+
 -- 更新表 parking_light_area_relation 所有字段和索引
 ALTER TABLE parking_light_area_relation COMMENT = '车位灯方案和区域的关系表';
 ALTER TABLE parking_light_area_relation ROW_FORMAT=DYNAMIC;
@@ -2205,6 +2676,8 @@ CALL add_element_unless_exists('column', 'permissions', 'create_time', 'ALTER TA
 CALL add_element_unless_exists('column', 'permissions', 'creator', 'ALTER TABLE permissions ADD COLUMN `creator` varchar(255) DEFAULT NULL COMMENT "创建时间" AFTER create_time;');
 CALL add_element_unless_exists('column', 'permissions', 'update_time', 'ALTER TABLE permissions ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'permissions', 'updator', 'ALTER TABLE permissions ADD COLUMN `updator` varchar(255) DEFAULT NULL COMMENT "更新人" AFTER update_time;');
+CALL add_element_unless_exists('column', 'permissions', 'menu_type', 'ALTER TABLE permissions ADD COLUMN `menu_type` tinyint(1) DEFAULT "0" COMMENT "菜单类型(0:内部链接，1:外部链接)"" AFTER `name" AFTER updator;');
+CALL add_element_unless_exists('column', 'permissions', 'link_way', 'ALTER TABLE permissions ADD COLUMN `link_way` tinyint(1) DEFAULT "0" COMMENT "跳转方式(0:站内跳转，1:站外跳转)"" AFTER `menu_type" AFTER menu_type;');
 
 -- 更新表 role 所有字段和索引
 ALTER TABLE role COMMENT = '角色';
@@ -2270,6 +2743,9 @@ CALL add_element_unless_exists('column', 'schedule_config', 'clean_temp_picture'
 CALL add_element_unless_exists('column', 'schedule_config', 'clean_recognition_table', 'ALTER TABLE schedule_config ADD COLUMN `clean_recognition_table` int(11) DEFAULT "30" COMMENT "车牌识别日志表定时清理（单位：天）" AFTER clean_temp_picture;');
 CALL add_element_unless_exists('column', 'schedule_config', 'clean_area_picture', 'ALTER TABLE schedule_config ADD COLUMN `clean_area_picture` int(11) DEFAULT "1" COMMENT "区域照片文件定时清理（单位：天）" AFTER clean_recognition_table;');
 CALL add_element_unless_exists('column', 'schedule_config', 'warn_switch', 'ALTER TABLE schedule_config ADD COLUMN `warn_switch` int(11) NOT NULL DEFAULT "1" COMMENT "告警开关 1=开 0=关" AFTER clean_area_picture;');
+CALL add_element_unless_exists('column', 'schedule_config', 'clean_area_exception', 'ALTER TABLE schedule_config ADD COLUMN `clean_area_exception` int(11) DEFAULT "90" COMMENT "进出车异常记录定时清理(单位:天)" AFTER warn_switch;');
+CALL add_element_unless_exists('column', 'schedule_config', 'clean_burying_point', 'ALTER TABLE schedule_config ADD COLUMN `clean_burying_point` int(11) DEFAULT "90" COMMENT "找车接口查询中埋点数据定时清理(单位:天)" AFTER clean_area_exception;');
+CALL add_element_unless_exists('column', 'schedule_config', 'warn_record_expire', 'ALTER TABLE schedule_config ADD COLUMN `warn_record_expire` int(11) DEFAULT "7" COMMENT "告警记录定时清理（默认定时清理7天前的数据）" AFTER clean_burying_point;');
 
 -- 更新表 t_access_config 所有字段和索引
 ALTER TABLE t_access_config COMMENT = 'C++重构配置信息表';
@@ -2310,7 +2786,8 @@ CALL add_element_unless_exists('column', 't_access_config', 'region_picture_path
 CALL add_element_unless_exists('column', 't_access_config', 'snap_picture_path', 'ALTER TABLE t_access_config ADD COLUMN `snap_picture_path` varchar(255) DEFAULT NULL COMMENT "相机抓拍照片保存路径" AFTER region_picture_path;');
 CALL add_element_unless_exists('column', 't_access_config', 'quality_inspection_picture_path', 'ALTER TABLE t_access_config ADD COLUMN `quality_inspection_picture_path` varchar(255) DEFAULT NULL COMMENT "质检中心抓拍照片保存路径" AFTER snap_picture_path;');
 CALL add_element_unless_exists('column', 't_access_config', 'recognition_switch', 'ALTER TABLE t_access_config ADD COLUMN `recognition_switch` tinyint(1) DEFAULT "1" COMMENT "识别库开关，0:关闭 1:开启" AFTER quality_inspection_picture_path;');
-CALL add_element_unless_exists('column', 't_access_config', 'free_occupy_switch', 'ALTER TABLE t_access_config ADD COLUMN `free_occupy_switch` tinyint(1) DEFAULT "0" COMMENT "找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)" AFTER recognition_switch;');
+CALL add_element_unless_exists('column', 't_access_config', 'free_occupy_switch', 'ALTER TABLE t_access_config ADD COLUMN `free_occupy_switch` tinyint(1) DEFAULT "1" COMMENT "找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)" AFTER recognition_switch;');
+CALL add_element_unless_exists('column', 't_access_config', 'rsc_lock_wait', 'ALTER TABLE t_access_config ADD COLUMN `rsc_lock_wait` int(11) DEFAULT "500" COMMENT "485节点锁等待时长(毫秒)" AFTER free_occupy_switch;');
 
 -- 更新表 t_car_in_out_statistics 所有字段和索引
 ALTER TABLE t_car_in_out_statistics COMMENT = '出入车流量统计';
@@ -2415,7 +2892,7 @@ CALL add_element_unless_exists('column', 'warn_log', 'park_id', 'ALTER TABLE war
 CALL add_element_unless_exists('column', 'warn_log', 'park_no', 'ALTER TABLE warn_log ADD COLUMN `park_no` varchar(50) DEFAULT NULL COMMENT "车位编号" AFTER park_id;');
 CALL add_element_unless_exists('column', 'warn_log', 'park_plate_no', 'ALTER TABLE warn_log ADD COLUMN `park_plate_no` varchar(50) DEFAULT NULL COMMENT "违停车牌" AFTER park_no;');
 CALL add_element_unless_exists('column', 'warn_log', 'bind_plate_no', 'ALTER TABLE warn_log ADD COLUMN `bind_plate_no` varchar(50) DEFAULT NULL COMMENT "绑定车牌" AFTER park_plate_no;');
-CALL add_element_unless_exists('column', 'warn_log', 'warn_type', 'ALTER TABLE warn_log ADD COLUMN `warn_type` tinyint(4) DEFAULT NULL COMMENT "告警类型  1：车位占用告警   2：车辆违停告警  3：特殊车辆入车  4：特殊车辆出车  5：车辆压线" AFTER bind_plate_no;');
+CALL add_element_unless_exists('column', 'warn_log', 'warn_type', 'ALTER TABLE warn_log ADD COLUMN `warn_type` tinyint(4) DEFAULT NULL COMMENT "告警类型 1：车位占用告警 2：车辆违停告警 3：特殊车辆入车 4：特殊车辆出车 5：车辆压线 6：油车违停 7：超时停车" AFTER bind_plate_no;');
 CALL add_element_unless_exists('column', 'warn_log', 'warn_source', 'ALTER TABLE warn_log ADD COLUMN `warn_source` tinyint(1) NOT NULL DEFAULT "0" COMMENT "告警来源 0-寻车系统 1-第三方" AFTER warn_type;');
 CALL add_element_unless_exists('column', 'warn_log', 'bind_park_area', 'ALTER TABLE warn_log ADD COLUMN `bind_park_area` varchar(1024) DEFAULT NULL COMMENT "绑定的车位编号或者区域的名称  多个之间用英语分号隔开" AFTER warn_source;');
 CALL add_element_unless_exists('column', 'warn_log', 'park_time', 'ALTER TABLE warn_log ADD COLUMN `park_time` datetime DEFAULT NULL COMMENT "停入时间" AFTER bind_park_area;');
@@ -2427,8 +2904,12 @@ CALL add_element_unless_exists('column', 'warn_log', 'create_time', 'ALTER TABLE
 CALL add_element_unless_exists('column', 'warn_log', 'creator', 'ALTER TABLE warn_log ADD COLUMN `creator` varchar(50) DEFAULT NULL COMMENT "创建者" AFTER create_time;');
 CALL add_element_unless_exists('column', 'warn_log', 'update_time', 'ALTER TABLE warn_log ADD COLUMN `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "更新时间" AFTER creator;');
 CALL add_element_unless_exists('column', 'warn_log', 'updater', 'ALTER TABLE warn_log ADD COLUMN `updater` varchar(50) DEFAULT NULL COMMENT "更新者" AFTER update_time;');
+CALL add_element_unless_exists('column', 'warn_log', 'present_car_status', 'ALTER TABLE warn_log ADD COLUMN `present_car_status` tinyint(4) DEFAULT NULL COMMENT "在场车状态  1=在场  2=已出车" AFTER updater;');
+CALL add_element_unless_exists('column', 'warn_log', 'leave_time', 'ALTER TABLE warn_log ADD COLUMN `leave_time` datetime DEFAULT NULL COMMENT "出车时间" AFTER present_car_status;');
+CALL add_element_unless_exists('column', 'warn_log', 'present_car_unique_id', 'ALTER TABLE warn_log ADD COLUMN `present_car_unique_id` varchar(36) DEFAULT NULL COMMENT "进出车事件唯一id uuid" AFTER leave_time;');
 CALL add_element_unless_exists('index', 'warn_log', 'idx_park_id', 'ALTER TABLE warn_log ADD INDEX idx_park_id (park_id) USING BTREE');
 CALL add_element_unless_exists('index', 'warn_log', 'idx_present_car_record_id', 'ALTER TABLE warn_log ADD INDEX idx_present_car_record_id (present_car_record_id) USING BTREE');
+CALL add_element_unless_exists('index', 'warn_log', 'idx_present_car_unique_id', 'ALTER TABLE warn_log ADD INDEX idx_present_car_unique_id (present_car_unique_id) USING BTREE');
 
 -- 更新表 warn_space_occupy 所有字段和索引
 ALTER TABLE warn_space_occupy COMMENT = '车位占用告警配置';

@@ -35,7 +35,7 @@ class Application:
 
         # 文件路径
         self.output_data_path = 'output'
-        self.output_file_path = os.path.join(self.output_data_path, 'parking_guidance_3.2.3_fix.sql')
+        self.output_file_path = os.path.join(self.output_data_path, 'parking_guidance_3.2.16_fix.sql')
 
     def connect_to_database(self):
         try:
@@ -268,7 +268,7 @@ DELIMITER ;
 
 if __name__ == "__main__":
     # 连接云端基线库，只读权限账号，获取3.2.3数据库标准结构
-    app = Application(host="101.91.144.186", port=13049, user="keytop", password="Keytop@2024", database='parking_guidance_3.2.3')
+    app = Application(host="101.91.144.186", port=13049, user="findcar_read", password="Keytop@2024", database='parking_guidance_3.2.16')
 
     # 写入存储过程
     app.insert_procedure_sentences()
