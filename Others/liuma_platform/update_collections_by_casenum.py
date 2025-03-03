@@ -316,7 +316,7 @@ if __name__ == '__main__':
 
     # 登录的账号信息
     account = "heshouyi"
-    password = "19981208@qwer"
+    password = "datah$Tkug3Qxm%vnc%"
 
     # 展示要插入的数据，如果选择继续执行，返回数据集，否则退出程序
     data = app.check_data_from_file()
