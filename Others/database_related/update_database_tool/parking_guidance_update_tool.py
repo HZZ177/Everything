@@ -103,7 +103,13 @@ class UpdateDatabase:
     def update_database(self, log_callback=None):
         """
         将旧数据库导出的mysqldump文件传输到新数据库，会改变结构
-        :return:
+        1、连接旧数据库并备份结构和数据，不包含存储过程和函数
+        2、备份新服务器数据库
+        3、清理旧库大表历史数据
+        4、两个服务器得数据都备份成功后，通过脚本补齐旧服务器数据库结构并dump下来
+        5、连接新服务器数据库并传输数据
+        6、重置国际化
+        7、给lot_info表新增临时到期时间-lisence_trial_period
         """
 
         def log_message(message):
