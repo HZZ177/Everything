@@ -7,7 +7,7 @@ def delete_database_structure():
         host='localhost',
         user='root',
         password='Keytop:wabjtam!',
-        database='ktpark1',
+        database='pg_new',
         port=5831
     )
     cursor = connection.cursor()

@@ -207,7 +207,7 @@ DELIMITER ;
                         column_pre = None
 
                         for i, sentence in enumerate(sentences):
-                            if len(sentence) < 20:
+                            if len(sentence) < 18:
                                 continue
                             # 控制添加索引的字段的格式，去除前后引号
                             if sentence[0] != "`":
@@ -267,7 +267,7 @@ DELIMITER ;
 
 
 if __name__ == "__main__":
-    # 连接云端基线库，只读权限账号，获取3.2.3数据库标准结构
+    # 连接云端基线库，只读权限账号，获取3.2.16数据库标准结构
     app = Application(host="101.91.144.186", port=13049, user="findcar_read", password="Keytop@2024", database='parking_guidance_3.2.16')
 
     # 写入存储过程

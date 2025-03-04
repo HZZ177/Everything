@@ -106,10 +106,10 @@ class UpdateDatabase:
         1、连接旧数据库并备份结构和数据，不包含存储过程和函数
         2、备份新服务器数据库
         3、清理旧库大表历史数据
-        4、两个服务器得数据都备份成功后，通过脚本补齐旧服务器数据库结构并dump下来
-        5、连接新服务器数据库并传输数据
+        4、修正修服务器字符后dump下来，连接新服务器数据库并覆盖进去
+        5、通过脚本修正新服务器数据库结构
         6、重置国际化
-        7、给lot_info表新增临时到期时间-lisence_trial_period
+        7、给lot_info表新增临时到期时间 lisence_trial_period
         """
 
         def log_message(message):
@@ -198,7 +198,7 @@ class UpdateDatabase:
 
         # 两个服务器得数据都备份成功后，通过脚本补齐旧服务器数据库结构并dump下来备用
         try:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行旧服务器数据库结构修正......")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正旧服务器数据库字符防止dump乱码......")
 
             # 修改旧表字符防止备份汉字乱码
             connection = self.connect_database('old')
@@ -210,37 +210,24 @@ class UpdateDatabase:
                 for sql in fix_sqls:
                     cursor.execute(sql)
 
-
-            fix_cmd = f"{self.mysql_path} -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} < {self.db_structure_fix_file}"
-            process = self.execute_cmd(fix_cmd, log_message)
-            stdout, stderr = process.communicate()
-            if process.returncode == 0:
-                if "ERROR" in stdout.decode() or "error" in stdout.decode():
-                    log_message(stdout.decode())
-                    raise Exception(stderr.decode())
+            try:
+                log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行修正后旧服务器数据库下载......")
+                dump_cmd = f"{self.mysqldump_path} -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} > {self.old_db_fixed_dump_file}"
+                process = self.execute_cmd(dump_cmd, log_message)
+                stdout, stderr = process.communicate()
+                if process.returncode == 0:
+                    if "ERROR" in stdout.decode() or "error" in stdout.decode():
+                        log_message(stdout.decode())
+                        raise Exception(stderr.decode())
+                    else:
+                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载成功，备份文件路径：{self.old_db_fixed_dump_file}")
                 else:
-                    log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库结构修正成功！")
-                    # 修正完成后，将修正后的数据库dump下来
-                    try:
-                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 开始进行修正后服务器数据库下载......")
-                        dump_cmd = f"{self.mysqldump_path} -h {self.old_db_config['host']} -P {self.old_db_config['port']} -u {self.old_db_config['user']} -p{self.old_db_config['password']} {self.old_db_config['database']} > {self.old_db_fixed_dump_file}"
-                        process = self.execute_cmd(dump_cmd, log_message)
-                        stdout, stderr = process.communicate()
-                        if process.returncode == 0:
-                            if "ERROR" in stdout.decode() or "error" in stdout.decode():
-                                log_message(stdout.decode())
-                                raise Exception(stderr.decode())
-                            else:
-                                log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载成功，备份文件路径：{self.old_db_fixed_dump_file}")
-                        else:
-                            raise Exception(stderr.decode())
-                    except Exception as e:
-                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
-                        return
-            else:
-                raise Exception(stderr.decode())
+                    raise Exception(stderr.decode())
+            except Exception as e:
+                log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 修正后的旧服务器数据库下载失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
+                return
         except Exception as e:
-            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库结构修正失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
+            log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 旧服务器数据库字符修正失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
             return
 
         # 连接新服务器数据库并传输数据
@@ -254,7 +241,23 @@ class UpdateDatabase:
                     log_message(stdout.decode())
                     raise Exception(stderr.decode())
                 else:
-                    log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输成功！")
+                    log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输成功！正在进行数据库结构修正......")
+                    try:
+                        fix_cmd = f"{self.mysql_path} -h {self.new_db_config['host']} -P {self.new_db_config['port']} -u {self.new_db_config['user']} -p{self.new_db_config['password']} {self.new_db_config['database']} < {self.db_structure_fix_file}"
+                        process = self.execute_cmd(fix_cmd, log_message)
+                        stdout, stderr = process.communicate()
+                        if process.returncode == 0:
+                            if "ERROR" in stdout.decode() or "error" in stdout.decode():
+                                log_message(stdout.decode())
+                                raise Exception(stderr.decode())
+                            else:
+                                log_message(
+                                    f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 迁移后数据库结构修正成功！")
+                        else:
+                            raise Exception(stderr.decode())
+                    except Exception as e:
+                        log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 迁移后数据库结构修正失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
+                        return
 
                     # 执行truncate和insert语句
                     connection = None
@@ -273,7 +276,7 @@ class UpdateDatabase:
 
                             create_sqls = [
                                 """
-CREATE TABLE IF NOT EXISTS `schedule_config` (
+CREATE TABLE `schedule_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `create_time` datetime DEFAULT NULL COMMENT '更新时间',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -313,11 +316,14 @@ CREATE TABLE IF NOT EXISTS `schedule_config` (
   `clean_recognition_table` int(11) DEFAULT '30' COMMENT '车牌识别日志表定时清理（单位：天）',
   `clean_area_picture` int(11) DEFAULT '1' COMMENT '区域照片文件定时清理（单位：天）',
   `warn_switch` int(11) NOT NULL DEFAULT '1' COMMENT '告警开关 1=开 0=关',
+  `clean_area_exception` int(11) DEFAULT '90' COMMENT '进出车异常记录定时清理(单位:天)',
+  `clean_burying_point` int(11) DEFAULT '90' COMMENT '找车接口查询中埋点数据定时清理(单位:天)',
+  `warn_record_expire` int(11) DEFAULT '7' COMMENT '告警记录定时清理（默认定时清理7天前的数据）',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='参数配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='参数配置表';
                                 """,
                                 """
-CREATE TABLE IF NOT EXISTS `f_config` (
+CREATE TABLE `f_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `config_code` varchar(64) DEFAULT '' COMMENT '配置编码',
   `config_value` varchar(64) DEFAULT '' COMMENT '配置值',
@@ -333,10 +339,10 @@ CREATE TABLE IF NOT EXISTS `f_config` (
   `channel_swagger_switch` tinyint(1) DEFAULT '1' COMMENT 'channel_service服务swagger配置开关 0:开启  1:关闭',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_config_code` (`config_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='系统配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统配置表';
                                 """,
                                 """
-CREATE TABLE IF NOT EXISTS `ini_config` (
+CREATE TABLE `ini_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `dsp_recog` tinyint(1) DEFAULT '0' COMMENT '控制软识别与硬识别 0 软识别, 1 硬识别',
   `witch` tinyint(1) DEFAULT '0' COMMENT '控制故障状态的设备的开关 0 关闭， 1 开启',
@@ -349,10 +355,10 @@ CREATE TABLE IF NOT EXISTS `ini_config` (
   `updater` varchar(64) DEFAULT NULL COMMENT '更新者',
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=DYNAMIC COMMENT='C++参数配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++参数配置表';
                                 """,
                                 """
-CREATE TABLE IF NOT EXISTS `t_access_config` (
+CREATE TABLE `t_access_config` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '唯一id',
   `dsp_port` int(11) DEFAULT NULL COMMENT 'dsp 连接端口',
   `node_port` int(11) DEFAULT NULL COMMENT 'node tcp节点连接端口',
@@ -389,16 +395,17 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
   `snap_picture_path` varchar(255) DEFAULT NULL COMMENT '相机抓拍照片保存路径',
   `quality_inspection_picture_path` varchar(255) DEFAULT NULL COMMENT '质检中心抓拍照片保存路径',
   `recognition_switch` tinyint(1) DEFAULT '1' COMMENT '识别库开关，0:关闭 1:开启',
-  `free_occupy_switch` tinyint(1) DEFAULT '0' COMMENT '找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)',
+  `free_occupy_switch` tinyint(1) DEFAULT '1' COMMENT '找车系统-有车 和找车系统-无车数据接口上报开关 (0：关闭，1：开启)',
+  `rsc_lock_wait` int(11) DEFAULT '500' COMMENT '485节点锁等待时长(毫秒)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=16384 ROW_FORMAT=COMPACT COMMENT='C++重构配置信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='C++重构配置信息表';
                                 """
                             ]
 
                             insert_sqls = [
                                 "INSERT INTO `ini_config` (`id`, `dsp_recog`, `witch`, `comname`, `ret`, `province`, `pic_switch`, `creator`, `create_time`, `updater`, `update_time`) VALUES (1, 0, 1, 'COM3', 0, NULL, 0, NULL, NULL, NULL, '2024-01-25 10:53:13');",
-                                "INSERT INTO `schedule_config` (`id`, `create_time`, `update_time`, `park_img_duration`, `area_park_img_duration`, `in_car_push_switch`, `out_car_push_switch`, `update_plate_push_switch`, `empty_park_push_switch`, `empty_park_push_lot`, `empty_park_push_url`, `park_change_push_switch`, `park_change_push_lot`, `park_change_push_url`, `creator`, `url_prefix_config`, `free_space_num_switch`, `image_upload_switch`, `unified_image_prefix`, `post_bus_in_out`, `post_node_device_status`, `clean_stereoscopic_park_switch`, `free_space_switch`, `post_node_device_url`, `clean_stereoscopic_park_duration`, `car_loc_info_switch`, `area_push_switch`, `tank_warn_push_switch`, `light_scheme_duration`, `grpc_switch`, `screen_cmd_interval`, `screen_cmd_interval_fast`, `statistic_screen_type`, `query_recognize_record`, `plate_match_rule`, `clean_temp_picture`, `clean_recognition_table`, `clean_area_picture`, `warn_switch`) VALUES (1, NULL, '2024-02-07 14:10:30', 30, 1, 0, 1, 0, 1, NULL, NULL, 1, NULL, NULL, NULL, 'http://localhost:8083', 1, 0, 'http://localhost:8083', 1, 1, 1, 1, NULL, 30, 1, 1, 1, 60, 1, 30, 8, 1, 0, 1, 1, 30, 1, 1)",
-                                "INSERT INTO `t_access_config` (`id`, `dsp_port`, `node_port`, `ip_Pre`, `broadcast_times`, `broadcast_interval`, `channel_http`, `serial_port`, `baud_rate`, `A`, `B`, `C`, `pr_num`, `army_car`, `police_car`, `wujing_car`, `farm_car`, `embassy_car`, `personality_car`, `civil_car`, `new_energy_car`, `type_pr_num`, `set_lr_num`, `set_lpr_cs`, `province`, `set_priority`, `original_picture_path`, `front_save_path`, `temp_rcv_path`, `recognition_path`, `recognition_lib_path`, `switch_serial_port`, `region_picture_path`, `snap_picture_path`, `quality_inspection_picture_path`, `recognition_switch`, `free_occupy_switch`) VALUES (1, 7799, 7777, '172.10', 3, 5, 'http://127.0.0.1:7072', '/dev/ttyS0', 9600, 1, 1, 1, 9, 1, 1, 0, 1, 1, 1, 1, 1, 9, 2, 1, '川', 0, '/home/findcar/FindCarServer/original', '/home/findcar/ParkingGuidance/carImage', '/home/findcar/FindCarServer/temp', '/home/findcar/FindCarServer/recognition', '/home/findcar/FindCarServer/lib/', 0, '/home/findcar/ParkingGuidance/snappedImage', '/home/findcar/ParkingGuidance/carImage/snap', '/home/findcar/FindCarServer/qualityInspectionCenter', 0, 0);",
+                                "INSERT INTO `schedule_config` (`id`, `create_time`, `update_time`, `park_img_duration`, `area_park_img_duration`, `in_car_push_switch`, `out_car_push_switch`, `update_plate_push_switch`, `empty_park_push_switch`, `empty_park_push_lot`, `empty_park_push_url`, `park_change_push_switch`, `park_change_push_lot`, `park_change_push_url`, `creator`, `url_prefix_config`, `free_space_num_switch`, `image_upload_switch`, `unified_image_prefix`, `post_bus_in_out`, `post_node_device_status`, `clean_stereoscopic_park_switch`, `free_space_switch`, `post_node_device_url`, `clean_stereoscopic_park_duration`, `car_loc_info_switch`, `area_push_switch`, `tank_warn_push_switch`, `light_scheme_duration`, `grpc_switch`, `screen_cmd_interval`, `screen_cmd_interval_fast`, `statistic_screen_type`, `query_recognize_record`, `plate_match_rule`, `clean_temp_picture`, `clean_recognition_table`, `clean_area_picture`, `warn_switch`, `clean_area_exception`, `clean_burying_point`, `warn_record_expire`) VALUES (1, NULL, '2024-02-07 14:10:30', 30, 1, 0, 1, 0, 1, NULL, NULL, 1, NULL, NULL, NULL, 'http://localhost:8083', 1, 0, 'http://localhost:8083', 1, 1, 1, 1, NULL, 30, 1, 1, 1, 60, 1, 30, 8, 1, 0, 1, 1, 30, 1, 1, 90, 90, 7);",
+                                "INSERT INTO `t_access_config` (`id`, `dsp_port`, `node_port`, `ip_Pre`, `broadcast_times`, `broadcast_interval`, `channel_http`, `serial_port`, `baud_rate`, `A`, `B`, `C`, `pr_num`, `army_car`, `police_car`, `wujing_car`, `farm_car`, `embassy_car`, `personality_car`, `civil_car`, `new_energy_car`, `type_pr_num`, `set_lr_num`, `set_lpr_cs`, `province`, `set_priority`, `original_picture_path`, `front_save_path`, `temp_rcv_path`, `recognition_path`, `recognition_lib_path`, `switch_serial_port`, `region_picture_path`, `snap_picture_path`, `quality_inspection_picture_path`, `recognition_switch`, `free_occupy_switch`, `rsc_lock_wait`) VALUES (1, 7799, 7777, '172.10', 3, 5, 'http://127.0.0.1:7072', '/dev/ttyS0', 9600, 1, 1, 1, 9, 1, 1, 0, 1, 1, 1, 1, 1, 9, 2, 1, '川', 0, '/home/findcar/FindCarServer/original', '/home/findcar/ParkingGuidance/carImage', '/home/findcar/FindCarServer/temp', '/home/findcar/FindCarServer/recognition', '/home/findcar/FindCarServer/lib/', 0, '/home/findcar/ParkingGuidance/snappedImage', '/home/findcar/ParkingGuidance/carImage/snap', '/home/findcar/FindCarServer/qualityInspectionCenter', 0, 0, 500);",
                                 "INSERT INTO `f_config` (`id`, `config_code`, `config_value`, `config_desc`, `attribute`, `deleted`, `create_time`, `creator`, `update_time`, `updater`, `aws_enable_switch`, `guidance_swagger_switch`, `channel_swagger_switch`) VALUES (1, 'tanker_expel_switch', '1', '油车违停告警开关', '', 0, '2024-01-25 10:53:13', '系统管理员', '2024-01-25 10:53:13', '系统管理员', 0, 0, 0);"
                             ]
                             alter_sqls = [
@@ -419,10 +426,11 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
                     except Exception as e:
                         log_message(
                             f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 初始化config配置表失败，错误信息:\n{e}\n{stderr}\n\n升级已中断！！！")
+                        return
                     finally:
                         connection.close()
             else:
-                raise Exception(stderr.decode())
+                raise Exception(stderr.decode("GBK"))
         except Exception as e:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 数据传输失败！，错误信息:\n{e}]\n{stderr}\n\n升级已中断！！！")
             return
@@ -445,7 +453,7 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
         except Exception as e:
             log_message(
                 f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 新服务器数据库备份失败，错误信息:\n{e}\n{stderr}\n\n请升级完成后手动检查国际化表")
-
+            return
         # 给lot_info表新增临时到期时间-lisence_trial_period
         update_sql = 'UPDATE lot_info SET lisence_trial_period = IF(lisence_trial_period IS NULL, DATE_ADD(NOW(), INTERVAL 30 DAY), lisence_trial_period) WHERE id = 1;'
         try:
@@ -456,7 +464,7 @@ CREATE TABLE IF NOT EXISTS `t_access_config` (
                 log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} lot_info表更新临时到期时间成功, 影响的行数: {affected_rows}\n\n寻车服务器升级完成！！！")
         except Exception as e:
             log_message(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} 更新lot_info表临时到期时间失败，错误信息:\n{e}\n{stderr}\n\n请升级完成后手动检查lot_info表到期时间")
-
+            return
 
 if __name__ == '__main__':
     # 测试用！！ 清理数据库结构
