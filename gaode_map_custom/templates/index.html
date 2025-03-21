@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标记地图</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script type="text/javascript">
+        window.AMAP_KEY = "{{ amap_key }}";
+        window.AMAP_SECURITY_CODE = "{{ amap_security_code }}";
+    </script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key={{ amap_key }}&plugin=AMap.CircleEditor"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/ui/1.1/main.js?v=1.1.1"></script>
+</head>
+<body>
+    <div id="map-container"></div>
+
+    <div class="image-preview-container" id="image-preview-container">
+        <div class="image-preview-header">
+            <span class="preview-title">图片预览</span>
+            <button class="close-preview" id="close-preview">×</button>
+        </div>
+        <div class="image-preview-content" id="image-preview-content"></div>
+    </div>
+
+    <div class="edit-marker-dialog" id="edit-marker-dialog">
+        <div class="dialog-header">
+            <span class="dialog-title">编辑标记</span>
+            <button class="close-dialog" id="close-edit-dialog">×</button>
+        </div>
+        <div class="dialog-content">
+            <div class="form-group">
+                <label for="marker-note">注释:</label>
+                <input type="text" id="marker-note" placeholder="输入标记注释">
+            </div>
+            <div class="form-group">
+                <label>图片:</label>
+                <div class="image-upload-container">
+                    <input type="file" id="image-upload" accept="image/*" multiple>
+                    <button class="upload-button" id="image-upload-btn">选择图片上传</button>
+                </div>
+            </div>
+            <div class="uploaded-images" id="uploaded-images"></div>
+            <div class="dialog-actions">
+                <button class="save-button" id="save-marker-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="context-menu" id="marker-context-menu">
+        <ul>
+            <li id="edit-marker-menu">编辑</li>
+            <li id="delete-marker-menu">删除</li>
+        </ul>
+    </div>
+
+    <div class="toolbar">
+        <button id="add-marker-btn" class="tool-btn">添加标记</button>
+        <button id="edit-markers-btn" class="tool-btn">编辑标记</button>
+        <button id="delete-markers-btn" class="tool-btn">删除标记</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+</body>
+</html>
