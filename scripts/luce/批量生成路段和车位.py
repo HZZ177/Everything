@@ -1,24 +1,17 @@
 import requests
 
-url_add_road = "http://roadtest.keytop.cn:30031/web/parking/road/add"
-url_get_road_id = "http://roadtest.keytop.cn:30031/web/parking/road/getRoadList"
-url_batch_insert_park = "http://roadtest.keytop.cn:30031/web/parking/parkspace/batchAdd"
 
-headers = {
-    "authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJiNGM5YTY3ZWZmYzM0ZTdmYWNhMGVmOGNiZTc0ZTNjYyIsImF1dGgiOiIiLCJzdWIiOiIxODIyNzYzOTIyOSJ9.ZPGihbr6MuNjiO1BFBNaWLlPAf4PzNyTbSmDBRu4UXYp2ateYS2gRhiDsupEegmr0Rhx_K-jB573Ss7Dhdeiyw_higha8630339fc0a48e3a03a4f26197d52cf",
-    "operatorname": "%E4%BD%95%E5%AE%88%E4%B8%80",
-    "code": "a8630339fc0a48e3a03a4f26197d52cf"
-}
+def create_road_and_park():
+    url_add_road = "http://roadtest.keytop.cn:30031/web/parking/road/add"
+    url_get_road_id = "http://roadtest.keytop.cn:30031/web/parking/road/getRoadList"
+    url_batch_insert_park = "http://roadtest.keytop.cn:30031/web/parking/parkspace/batchAdd"
 
-
-def main():
     for i in range(100):
-        road_name = "守一の超大量路段"
         payload_add_road = {
             "id": "",
             "parkCode":
                 "LC5110000001",
-            "roadName": f"{road_name}_{i + 1}",
+            "roadName": f"{basic_road_name}_{i + 1}",
             "longitude": "",
             "latitude": ""
         }
@@ -51,7 +44,7 @@ def main():
             else:
                 print(f"查询路段id成功：{response_get_road_id.text}，开始批量新增车位")
                 for n in response_get_road_id.json()["data"]:
-                    if n["roadName"] == f"{road_name}_{i + 1}":
+                    if n["roadName"] == f"{basic_road_name}_{i + 1}":
                         payload_batch_insert_park["roadCode"] = n["roadCode"]
                         break
                 # 批量新增车位
@@ -63,5 +56,59 @@ def main():
                     print(f"批量新增车位成功：{response_batch_insert_park.text}")
 
 
+def delete_road():
+    url_query = "http://roadtest.keytop.cn:30031/web/parking/road/page"
+    # 先查询第一页的数据，获取总页数
+    payload = {
+        "current": 1,
+        "parkCode": "LC5110000001",
+        "size": 10
+    }
+    response = requests.post(url_query, headers=headers, json=payload)
+    total_page = response.json()["data"]["size"]
+    print(f"共有{total_page}页数据")
+
+    # 遍历每一页，收集需要删除的路段，以basic_road_name为标识收集待删除路段
+    road_to_delete = {}
+    for i in range(1, total_page + 1):
+        print(f"正在查询第{i}页数据")
+        payload["current"] = i
+        response = requests.post(url_query, headers=headers, json=payload)
+        for n in response.json()["data"]["records"]:
+            if n["roadName"].startswith(basic_road_name):
+                print(f"收集待删除路段：{n['roadName']}")
+                road_to_delete[n["roadName"]] = n["id"]
+            else:
+                print(f"跳过非待删除路段：{n['roadName']}")
+    print(f"待删除路段：{road_to_delete}")
+
+    # 开始删除路段
+    for road_name, road_id in road_to_delete.items():
+        url_delete = "http://roadtest.keytop.cn:30031/web/parking/road/disable"
+        payload = {
+            "id": road_id
+        }
+        response = requests.post(url_delete, headers=headers, json=payload)
+        # print(f"删除路段{road_name}:{road_id}")
+        if response.json()["code"] != 200:
+            print(f"删除路段{road_name}失败：{response.text}")
+        else:
+            print(f"删除路段{road_name}成功：{response.text}")
+
+
 if __name__ == "__main__":
-    main()
+    headers = {
+        "authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI2Zjk3MGJlMTg4MDI0MDY1ODgyZjk1ZmYzNjVkMGQxOCIsImF1dGg"
+                         "iOiIiLCJzdWIiOiIxODIyNzYzOTIyOSJ9.G-tkwbJ6Z19C_epTllUm04EDNK7ZbqTAoOhfKcExcifW_scOLrSJClpXu"
+                         "cPLui9u-XlegciFTqPp9OBvwE-LiQ_higha622d47a8c9a4a818dac00f840e59f37",
+        "operatorname": "%E4%BD%95%E5%AE%88%E4%B8%80",
+        "code": "a622d47a8c9a4a818dac00f840e59f37",
+        "parkcode": "LC5110000001"
+    }
+
+    basic_road_name = "守一の超大量路段"
+
+    # 批量创建路段和车位
+    # create_road_and_park()
+    # 批量删除路段
+    delete_road()
