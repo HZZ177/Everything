@@ -114,7 +114,7 @@ if __name__ == '__main__':
         "url": "",
         "test": 123
     }
-    app_secret = "4eb3b50d24f9469aa25214b9032b1202"
+    app_secret = "157834846581409791322fecc7437c85"
 
     # ---------------------------------------------
     source_object = {
@@ -158,4 +158,4 @@ if __name__ == '__main__':
     uri = ("http://localhost:27810/vehicle-mq-bridge/pulsar/send/message?topic=persistent://yongce-pro/"
            "owner-center/" +
            "temp-pay-callback")
-    print("pulsar-curl组装：\n" + "curl -X POST " + f"-d{result} " + f"'{uri}'")
+    print('pulsar-curl组装：\n' + 'curl -X POST ' + '-H "Content-Type: application/json" ' + f"-d '{result}' " + f'"{uri}"')
