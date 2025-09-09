@@ -33,3 +33,4 @@ Others/adb_tool/logs/
 
 /Others/device_command_tool/device_simulation_engine/app/logs/*
 /Others/device_command_tool/device_simulation_engine/app/resource/*
+/Z-draft/logs/
